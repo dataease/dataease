@@ -82,7 +82,6 @@ public class PgQueryProvider extends QueryProvider {
             case "float8":
             case "money":
                 return DeTypeConstants.DE_FLOAT;// 浮点
-//            case "bool":
             case "TINYINT":
                 return DeTypeConstants.DE_BOOL;// 布尔
             case "bytea":
@@ -216,8 +215,6 @@ public class PgQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -323,8 +320,6 @@ public class PgQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -410,8 +405,6 @@ public class PgQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -522,8 +515,6 @@ public class PgQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -807,10 +798,8 @@ public class PgQueryProvider extends QueryProvider {
                 whereName = originName;
             }
             if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
-//                whereValue = MySQLConstants.WHERE_VALUE_NULL;
                 whereValue = "";
             } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
-//                whereTerm = String.format(whereTerm, originName);
                 whereValue = "";
             } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "empty")) {
                 whereValue = "''";
@@ -995,10 +984,8 @@ public class PgQueryProvider extends QueryProvider {
                 String whereValue = "";
                 // 原始类型不是时间，在de中被转成时间的字段做处理
                 if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-//                whereValue = MySQLConstants.WHERE_VALUE_NULL;
                     whereValue = "";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-//                whereTerm = String.format(whereTerm, originName);
                     whereValue = "";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "empty")) {
                     whereValue = "''";

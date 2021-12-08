@@ -22,10 +22,7 @@ public class ShareServer implements ShareApi {
 
     @Resource
     private ShareService shareService;
-    /*@Override
-    public void share(@RequestBody PanelShareRequest request) {
-        shareService.save(request);
-    }*/
+
 
     @Override
     public List<PanelShareDto> treeList(@RequestBody BaseGridRequest request) {

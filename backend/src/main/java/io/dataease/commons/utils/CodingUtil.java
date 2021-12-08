@@ -153,16 +153,6 @@ public class CodingUtil {
         }
     }
 
-    /*public static String getSignature(String accessKey, String secretKey) throws Exception {
-        return aesEncrypt(accessKey + "|" + UUID.randomUUID().toString() + "|" + System.currentTimeMillis(), secretKey, accessKey);
-    }
-
-    public static void main(String[] args) throws Exception{
-        String accessKey = "gnPFmtAsdLhUEWPA";
-        String secretKey = "TfK5FGUle0KRfJJJ";
-        String signature = getSignature(accessKey, secretKey);
-        System.out.println(signature);
-    }*/
 
     public static String secretKey() {
         try {

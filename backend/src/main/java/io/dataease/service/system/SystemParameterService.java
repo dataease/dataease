@@ -9,28 +9,20 @@ import io.dataease.commons.constants.ParamConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.EncryptUtils;
-import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.sys.response.BasicInfo;
-import io.dataease.controller.sys.response.MailInfo;
 import io.dataease.dto.SystemParameterDTO;
-import io.dataease.i18n.Translator;
 import io.dataease.service.FileService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -43,7 +35,6 @@ public class SystemParameterService {
     @Resource
     private FileService fileService;
 
-
     public String searchEmail() {
         return extSystemParameterMapper.email();
     }
@@ -54,45 +45,15 @@ public class SystemParameterService {
         if (!CollectionUtils.isEmpty(paramList)) {
             for (SystemParameter param : paramList) {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.FRONT_TIME_OUT.getValue())) {
-                    /* result.setFrontTimeOut(StringUtils.isBlank(param.getParamValue()) ? 0 : Integer.parseInt(param.getParamValue())); */
                     result.setFrontTimeOut(param.getParamValue());
-                } 
+                }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.MSG_TIME_OUT.getValue())) {
-                    /* result.setMsgTimeOut(StringUtils.isBlank(param.getParamValue()) ? 0 : Integer.parseInt(param.getParamValue())); */
                     result.setMsgTimeOut(param.getParamValue());
-                } 
+                }
             }
         }
         return result;
     }
-
-
-    public MailInfo mailInfo(String type) {
-        List<SystemParameter> paramList = this.getParamList(type);
-        MailInfo mailInfo = new MailInfo();
-        if (!CollectionUtils.isEmpty(paramList)) {
-            for (SystemParameter param : paramList) {
-                if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.SERVER.getValue())) {
-                    mailInfo.setHost(param.getParamValue());
-                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.PORT.getValue())) {
-                    mailInfo.setPort(param.getParamValue());
-                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.ACCOUNT.getValue())) {
-                    mailInfo.setAccount(param.getParamValue());
-                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.PASSWORD.getValue())) {
-                    String password = EncryptUtils.aesDecrypt(param.getParamValue()).toString();
-                    mailInfo.setPassword(password);
-                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.SSL.getValue())) {
-                    mailInfo.setSsl(param.getParamValue());
-                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.TLS.getValue())) {
-                    mailInfo.setTls(param.getParamValue());
-                } else if (StringUtils.equals(param.getParamKey(), ParamConstants.MAIL.RECIPIENTS.getValue())) {
-                    mailInfo.setRecipient(param.getParamValue());
-                }
-            }
-        }
-        return mailInfo;
-    }
-
 
     public String getSystemLanguage() {
         String result = StringUtils.EMPTY;
@@ -108,35 +69,10 @@ public class SystemParameterService {
         return result;
     }
 
-
-
-    public void editMail(List<SystemParameter> parameters) {
-        List<SystemParameter> paramList = this.getParamList(ParamConstants.Classify.MAIL.getValue());
-        boolean empty = paramList.size() <= 0;
-
+    public void editBasic(List<SystemParameter> parameters) {
         parameters.forEach(parameter -> {
             SystemParameterExample example = new SystemParameterExample();
-            if (parameter.getParamKey().equals(ParamConstants.MAIL.PASSWORD.getValue())) {
-                if (!StringUtils.isBlank(parameter.getParamValue())) {
-                    String string = EncryptUtils.aesEncrypt(parameter.getParamValue()).toString();
-                    parameter.setParamValue(string);
-                }
-            }
-            example.createCriteria().andParamKeyEqualTo(parameter.getParamKey());
-            if (systemParameterMapper.countByExample(example) > 0) {
-                systemParameterMapper.updateByPrimaryKey(parameter);
-            } else {
-                systemParameterMapper.insert(parameter);
-            }
-            example.clear();
 
-        });
-    }
-
-    public void editBasic(List<SystemParameter> parameters) {       
-        parameters.forEach(parameter -> {
-            SystemParameterExample example = new SystemParameterExample();
-            
             example.createCriteria().andParamKeyEqualTo(parameter.getParamKey());
             if (systemParameterMapper.countByExample(example) > 0) {
                 systemParameterMapper.updateByPrimaryKey(parameter);
@@ -154,54 +90,9 @@ public class SystemParameterService {
         return systemParameterMapper.selectByExample(example);
     }
 
-    public void testConnection(HashMap<String, String> hashMap) {
-        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-        javaMailSender.setDefaultEncoding("UTF-8");
-        javaMailSender.setHost(hashMap.get(ParamConstants.MAIL.SERVER.getValue()));
-        javaMailSender.setPort(Integer.valueOf(hashMap.get(ParamConstants.MAIL.PORT.getValue())));
-        javaMailSender.setUsername(hashMap.get(ParamConstants.MAIL.ACCOUNT.getValue()));
-        javaMailSender.setPassword(hashMap.get(ParamConstants.MAIL.PASSWORD.getValue()));
-        Properties props = new Properties();
-        String recipients = hashMap.get(ParamConstants.MAIL.RECIPIENTS.getValue());
-        if (BooleanUtils.toBoolean(hashMap.get(ParamConstants.MAIL.SSL.getValue()))) {
-            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        }
-        if (BooleanUtils.toBoolean(hashMap.get(ParamConstants.MAIL.TLS.getValue()))) {
-            props.put("mail.smtp.starttls.enable", "true");
-        }
-        props.put("mail.smtp.timeout", "30000");
-        props.put("mail.smtp.connectiontimeout", "5000");
-        javaMailSender.setJavaMailProperties(props);
-        try {
-            javaMailSender.testConnection();
-        } catch (MessagingException e) {
-            LogUtil.error(e.getMessage(), e);
-            DEException.throwException(Translator.get("connection_failed"));
-        }
-        if(!StringUtils.isBlank(recipients)){
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = null;
-            try {
-                helper = new MimeMessageHelper(mimeMessage, true);
-                helper.setFrom(javaMailSender.getUsername());
-                helper.setSubject("DataEase测试邮件 " );
-                helper.setText("这是一封测试邮件，邮件发送成功", true);
-                helper.setTo(recipients);
-                javaMailSender.send(mimeMessage);
-            } catch (MessagingException e) {
-                LogUtil.error(e.getMessage(), e);
-                DEException.throwException(Translator.get("connection_failed"));
-            }
-        }
-
-
-    }
-
     public String getVersion() {
         return System.getenv("MS_VERSION");
     }
-
-
 
     public void saveLdap(List<SystemParameter> parameters) {
         SystemParameterExample example = new SystemParameterExample();
@@ -228,7 +119,6 @@ public class SystemParameterService {
         return param.getParamValue();
     }
 
-
     public List<SystemParameterDTO> getSystemParameterInfo(String paramConstantsType) {
         List<SystemParameter> paramList = this.getParamList(paramConstantsType);
         List<SystemParameterDTO> dtoList = new ArrayList<>();
@@ -247,31 +137,29 @@ public class SystemParameterService {
         return dtoList;
     }
 
-
-
-    public void saveUIInfo(Map<String,List<SystemParameterDTO>> request, List<MultipartFile> bodyFiles) throws IOException {
+    public void saveUIInfo(Map<String, List<SystemParameterDTO>> request, List<MultipartFile> bodyFiles) throws IOException {
         List<SystemParameterDTO> parameters = request.get("systemParams");
         if (null != bodyFiles)
-        for (MultipartFile multipartFile : bodyFiles) {
-            if (!multipartFile.isEmpty()) {
-                //防止添加非图片文件
-                try (InputStream input = multipartFile.getInputStream()) {
-                    try {
-                        // It's an image (only BMP, GIF, JPG and PNG are recognized).
-                        ImageIO.read(input).toString();
-                    } catch (Exception e) {
-                        DEException.throwException("Uploaded images do not meet the image format requirements");
-                        return;
+            for (MultipartFile multipartFile : bodyFiles) {
+                if (!multipartFile.isEmpty()) {
+                    //防止添加非图片文件
+                    try (InputStream input = multipartFile.getInputStream()) {
+                        try {
+                            // It's an image (only BMP, GIF, JPG and PNG are recognized).
+                            ImageIO.read(input).toString();
+                        } catch (Exception e) {
+                            DEException.throwException("Uploaded images do not meet the image format requirements");
+                            return;
+                        }
                     }
+                    String multipartFileName = multipartFile.getOriginalFilename();
+                    String[] split = Objects.requireNonNull(multipartFileName).split(",");
+                    parameters.stream().filter(systemParameterDTO -> systemParameterDTO.getParamKey().equalsIgnoreCase(split[1])).forEach(systemParameterDTO -> {
+                        systemParameterDTO.setFileName(split[0]);
+                        systemParameterDTO.setFile(multipartFile);
+                    });
                 }
-                String multipartFileName = multipartFile.getOriginalFilename();
-                String[] split = Objects.requireNonNull(multipartFileName).split(",");
-                parameters.stream().filter(systemParameterDTO -> systemParameterDTO.getParamKey().equalsIgnoreCase(split[1])).forEach(systemParameterDTO -> {
-                    systemParameterDTO.setFileName(split[0]);
-                    systemParameterDTO.setFile(multipartFile);
-                });
             }
-        }
         for (SystemParameterDTO systemParameter : parameters) {
             MultipartFile file = systemParameter.getFile();
             if (systemParameter.getType().equalsIgnoreCase("file")) {
@@ -280,7 +168,7 @@ public class SystemParameterService {
                 }
                 if (file != null) {
                     fileService.deleteFileById(systemParameter.getParamValue());
-                    FileMetadata fileMetadata = fileService.saveFile(systemParameter.getFile(),systemParameter.getFileName());
+                    FileMetadata fileMetadata = fileService.saveFile(systemParameter.getFile(), systemParameter.getFileName());
                     systemParameter.setParamValue(fileMetadata.getId());
                 }
                 if (file == null && systemParameter.getFileName() == null) {
@@ -293,9 +181,5 @@ public class SystemParameterService {
 
     }
 
-    /* public static void main(String[] args) {
-        String info="[{\"paramKey\":\"base.url\",\"paramValue\":null,\"type\":\"text\",\"sort\":1,\"file\":null,\"fileName\":null},{\"paramKey\":\"base.title\",\"paramValue\":\"DataEase Title\",\"type\":\"text\",\"sort\":3,\"file\":null,\"fileName\":null},{\"paramKey\":\"base.logo\",\"paramValue\":\"DataEase\",\"type\":\"text\",\"sort\":4,\"file\":null,\"fileName\":\"favicon.icon.png\"}]";
-        List<SystemParameterDTO> temp = JSON.parseArray(info,SystemParameterDTO.class);
-//        System.out.println("===>");
-    } */
+
 }

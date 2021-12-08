@@ -4,7 +4,7 @@
       <el-tabs v-model="activeName" class="tab-panel" :stretch="true" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
           <span slot="label"><i class="el-icon-document tablepanel-i" />{{ $t('panel.panel_list') }}</span>
-          <panel-list ref="panelList" v-if="activeName==='PanelList'" />
+          <panel-list v-if="activeName==='PanelList'" ref="panelList" />
         </el-tab-pane>
         <el-tab-pane name="panels_star" :lazy="true">
           <span slot="label"><i class="el-icon-star-off tablepanel-i" />{{ $t('panel.store') }}</span>
@@ -17,7 +17,7 @@
       </el-tabs>
     </de-aside-container>
     <de-main-container>
-      <PanelViewShow v-if="mainActiveName==='PanelMain'" :active-tab="activeName"  @editPanel="editPanel"/>
+      <PanelViewShow v-if="mainActiveName==='PanelMain'" :active-tab="activeName" @editPanel="editPanel" />
     </de-main-container>
   </de-container>
 </template>

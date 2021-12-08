@@ -7,7 +7,6 @@
 </template>
 
 <script>
-// import Axios from 'axios'
 
 import { get } from '@/api/system/dynamic'
 

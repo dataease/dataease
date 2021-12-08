@@ -593,6 +593,196 @@ public class VAuthModelExample {
             addCriterion("create_by not between", value1, value2, "createBy");
             return (Criteria) this;
         }
+
+        public Criteria andLevelIsNull() {
+            addCriterion("`level` is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLevelIsNotNull() {
+            addCriterion("`level` is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLevelEqualTo(Long value) {
+            addCriterion("`level` =", value, "level");
+            return (Criteria) this;
+        }
+
+        public Criteria andLevelNotEqualTo(Long value) {
+            addCriterion("`level` <>", value, "level");
+            return (Criteria) this;
+        }
+
+        public Criteria andLevelGreaterThan(Long value) {
+            addCriterion("`level` >", value, "level");
+            return (Criteria) this;
+        }
+
+        public Criteria andLevelGreaterThanOrEqualTo(Long value) {
+            addCriterion("`level` >=", value, "level");
+            return (Criteria) this;
+        }
+
+        public Criteria andLevelLessThan(Long value) {
+            addCriterion("`level` <", value, "level");
+            return (Criteria) this;
+        }
+
+        public Criteria andLevelLessThanOrEqualTo(Long value) {
+            addCriterion("`level` <=", value, "level");
+            return (Criteria) this;
+        }
+
+        public Criteria andLevelIn(List<Long> values) {
+            addCriterion("`level` in", values, "level");
+            return (Criteria) this;
+        }
+
+        public Criteria andLevelNotIn(List<Long> values) {
+            addCriterion("`level` not in", values, "level");
+            return (Criteria) this;
+        }
+
+        public Criteria andLevelBetween(Long value1, Long value2) {
+            addCriterion("`level` between", value1, value2, "level");
+            return (Criteria) this;
+        }
+
+        public Criteria andLevelNotBetween(Long value1, Long value2) {
+            addCriterion("`level` not between", value1, value2, "level");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeIsNull() {
+            addCriterion("`mode` is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeIsNotNull() {
+            addCriterion("`mode` is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeEqualTo(Long value) {
+            addCriterion("`mode` =", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeNotEqualTo(Long value) {
+            addCriterion("`mode` <>", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeGreaterThan(Long value) {
+            addCriterion("`mode` >", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeGreaterThanOrEqualTo(Long value) {
+            addCriterion("`mode` >=", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeLessThan(Long value) {
+            addCriterion("`mode` <", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeLessThanOrEqualTo(Long value) {
+            addCriterion("`mode` <=", value, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeIn(List<Long> values) {
+            addCriterion("`mode` in", values, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeNotIn(List<Long> values) {
+            addCriterion("`mode` not in", values, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeBetween(Long value1, Long value2) {
+            addCriterion("`mode` between", value1, value2, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andModeNotBetween(Long value1, Long value2) {
+            addCriterion("`mode` not between", value1, value2, "mode");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdIsNull() {
+            addCriterion("data_source_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdIsNotNull() {
+            addCriterion("data_source_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdEqualTo(String value) {
+            addCriterion("data_source_id =", value, "dataSourceId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdNotEqualTo(String value) {
+            addCriterion("data_source_id <>", value, "dataSourceId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdGreaterThan(String value) {
+            addCriterion("data_source_id >", value, "dataSourceId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdGreaterThanOrEqualTo(String value) {
+            addCriterion("data_source_id >=", value, "dataSourceId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdLessThan(String value) {
+            addCriterion("data_source_id <", value, "dataSourceId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdLessThanOrEqualTo(String value) {
+            addCriterion("data_source_id <=", value, "dataSourceId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdLike(String value) {
+            addCriterion("data_source_id like", value, "dataSourceId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdNotLike(String value) {
+            addCriterion("data_source_id not like", value, "dataSourceId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdIn(List<String> values) {
+            addCriterion("data_source_id in", values, "dataSourceId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdNotIn(List<String> values) {
+            addCriterion("data_source_id not in", values, "dataSourceId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdBetween(String value1, String value2) {
+            addCriterion("data_source_id between", value1, value2, "dataSourceId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataSourceIdNotBetween(String value1, String value2) {
+            addCriterion("data_source_id not between", value1, value2, "dataSourceId");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

@@ -1,7 +1,6 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
   <el-col class="tree-style">
-    <!-- group -->
-    <el-col v-if="!sceneMode">
+    <el-col>
       <el-row class="title-css">
         <span class="title-text">
           {{ $t('chart.datalist') }}
@@ -9,44 +8,57 @@
         <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="add('group')" />
       </el-row>
       <el-divider />
-      <el-row>
-        <el-form>
-          <el-form-item class="form-item">
-            <el-input
-              v-model="search"
-              size="mini"
-              :placeholder="$t('chart.search')"
-              prefix-icon="el-icon-search"
-              clearable
-              class="main-area-input"
-            />
-          </el-form-item>
-        </el-form>
+      <el-row style="margin-bottom: 10px">
+        <el-col :span="16">
+          <el-input
+            v-model="filterText"
+            size="mini"
+            :placeholder="$t('commons.search')"
+            prefix-icon="el-icon-search"
+            clearable
+            class="main-area-input"
+          />
+        </el-col>
+        <el-col :span="8">
+          <el-dropdown>
+            <el-button size="mini" type="primary">
+              {{ searchMap[searchType] }}<i class="el-icon-arrow-down el-icon--right" />
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="searchTypeClick('all')">{{ $t('commons.all') }}</el-dropdown-item>
+              <el-dropdown-item @click.native="searchTypeClick('folder')">{{ this.$t('commons.folder') }}
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </el-col>
       </el-row>
 
       <el-col class="custom-tree-container">
         <div class="block">
           <el-tree
-            ref="asyncTree"
+            ref="chartTreeRef"
             :default-expanded-keys="expandedArray"
             :data="tData"
             node-key="id"
-            :expand-on-click-node="true"
-            :load="loadNode"
-            lazy
-            :props="treeProps"
             highlight-current
+            :expand-on-click-node="true"
+            :filter-node-method="filterNode"
             @node-click="nodeClick"
+            @node-expand="nodeExpand"
+            @node-collapse="nodeCollapse"
           >
-            <span v-if="data.type ==='group'" slot-scope="{ node, data }" class="custom-tree-node father">
+            <span v-if="data.modelInnerType ==='group'" slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex;flex: 1;width: 0;">
                 <span>
                   <i class="el-icon-folder" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+                <span
+                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                  :title="data.name"
+                >{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)" class="child">
-                <span v-if="data.type ==='group'" @click.stop>
+                <span v-if="data.modelInnerType ==='group'" @click.stop>
                   <el-dropdown trigger="click" size="small" @command="clickAdd">
                     <span class="el-dropdown-link">
                       <el-button
@@ -91,8 +103,11 @@
             </span>
             <span v-else slot-scope="{ node, data }" class="custom-tree-node-list father">
               <span style="display: flex;flex: 1;width: 0;">
-                <span><svg-icon :icon-class="data.type" /></span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+                <span><svg-icon :icon-class="data.modelInnerType" /></span>
+                <span
+                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                  :title="data.name"
+                >{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)" class="child">
                 <span style="margin-left: 12px;" @click.stop>
@@ -125,7 +140,12 @@
 
       <!--group add/edit-->
       <el-dialog v-dialogDrag :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
-        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @keypress.enter.native="saveGroup(groupForm)">
+        <el-form
+          ref="groupForm"
+          :model="groupForm"
+          :rules="groupFormRules"
+          @keypress.enter.native="saveGroup(groupForm)"
+        >
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="groupForm.name" />
           </el-form-item>
@@ -219,28 +239,60 @@
 
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeCreateChart">{{ $t('chart.cancel') }}</el-button>
-        <el-button v-if="createActive === 2" type="primary" size="mini" @click="createPreview">{{ $t('chart.preview') }}</el-button>
-        <el-button v-if="createActive === 1" type="primary" size="mini" :disabled="!table.id || !currGroup.id" @click="createNext">{{ $t('chart.next') }}</el-button>
-        <el-button v-if="createActive === 2" type="primary" size="mini" :disabled="!table.id || !currGroup.id || !view.type" @click="createChart">{{ $t('chart.confirm') }}</el-button>
+        <el-button v-if="createActive === 2" type="primary" size="mini" @click="createPreview">{{ $t('chart.preview')
+        }}
+        </el-button>
+        <el-button
+          v-if="createActive === 1"
+          type="primary"
+          size="mini"
+          :disabled="!table.id || !currGroup.id"
+          @click="createNext"
+        >{{ $t('chart.next') }}
+        </el-button>
+        <el-button
+          v-if="createActive === 2"
+          type="primary"
+          size="mini"
+          :disabled="!table.id || !currGroup.id || !view.type"
+          @click="createChart"
+        >{{ $t('chart.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
 
     <!--移动分组-->
-    <el-dialog v-dialogDrag :title="moveDialogTitle" :visible="moveGroup" :show-close="false" width="30%" class="dialog-css">
+    <el-dialog
+      v-dialogDrag
+      :title="moveDialogTitle"
+      :visible="moveGroup"
+      :show-close="false"
+      width="30%"
+      class="dialog-css"
+    >
       <group-move-selector :item="groupForm" @targetGroup="targetGroup" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeMoveGroup()">{{ $t('dataset.cancel') }}</el-button>
-        <el-button :disabled="groupMoveConfirmDisabled" type="primary" size="mini" @click="saveMoveGroup(tGroup)">{{ $t('dataset.confirm') }}
+        <el-button :disabled="groupMoveConfirmDisabled" type="primary" size="mini" @click="saveMoveGroup(tGroup)">{{
+          $t('dataset.confirm') }}
         </el-button>
       </div>
     </el-dialog>
 
     <!--移动视图-->
-    <el-dialog v-dialogDrag :title="moveDialogTitle" :visible="moveDs" :show-close="false" width="30%" class="dialog-css">
+    <el-dialog
+      v-dialogDrag
+      :title="moveDialogTitle"
+      :visible="moveDs"
+      :show-close="false"
+      width="30%"
+      class="dialog-css"
+    >
       <chart-move-selector :item="dsForm" @targetDs="targetDs" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeMoveDs()">{{ $t('dataset.cancel') }}</el-button>
-        <el-button :disabled="dsMoveConfirmDisabled" type="primary" size="mini" @click="saveMoveDs(tDs)">{{ $t('dataset.confirm') }}
+        <el-button :disabled="dsMoveConfirmDisabled" type="primary" size="mini" @click="saveMoveDs(tDs)">{{
+          $t('dataset.confirm') }}
         </el-button>
       </div>
     </el-dialog>
@@ -249,6 +301,7 @@
 
 <script>
 import { post, chartGroupTree } from '@/api/chart/chart'
+import { queryAuthModel } from '@/api/authModel/authModel'
 import TableSelector from '../view/TableSelector'
 import GroupMoveSelector from '../components/TreeSelector/GroupMoveSelector'
 import ChartMoveSelector from '../components/TreeSelector/ChartMoveSelector'
@@ -286,6 +339,11 @@ export default {
       type: String,
       required: false,
       default: null
+    },
+    mountedInit: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data() {
@@ -359,46 +417,42 @@ export default {
       renderOptions: [
         { name: 'AntV', value: 'antv' },
         { name: 'ECharts', value: 'echarts' }
-      ]
+      ],
+      searchPids: [], // 查询命中的pid
+      filterText: '',
+      searchType: 'all',
+      searchMap: {
+        all: this.$t('commons.all'),
+        folder: this.$t('commons.folder')
+      },
+      currentNodeData: {},
+      currentKey: null
     }
   },
-  computed: {
-    // sceneData: function() {
-    //   this.reviewChartList()
-    //   return this.$store.state.chart.chartSceneData
-    // }
-  },
   watch: {
-    search(val) {
-      // if (val && val !== '') {
-      //   this.chartData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.includes(val) })))
-      // } else {
-      //   this.chartData = JSON.parse(JSON.stringify(this.tables))
-      // }
-      this.$emit('switchComponent', { name: '' })
-      this.tData = []
-      this.expandedArray = []
-      if (this.timer) {
-        clearTimeout(this.timer)
-      }
-      this.timer = setTimeout(() => {
-        this.getTreeData(val)
-      }, (val && val !== '') ? 500 : 0)
-    },
     saveStatus() {
-      this.refreshNodeBy(this.saveStatus.sceneId)
     },
     adviceGroupId() {
       // 仪表板新建视图建议的存放路径
       if (this.optFrom === 'panel') {
         this.currGroup['id'] = this.adviceGroupId
       }
+    },
+    filterText(val) {
+      this.searchPids = []
+      this.$refs.chartTreeRef.filter(val)
+    },
+    searchType(val) {
+      this.searchPids = []
+      this.$refs.chartTreeRef.filter(this.filterText)
     }
+
   },
   mounted() {
-    this.treeNode(this.groupForm)
+    if (this.mountedInit) {
+      this.treeNode(true)
+    }
     this.refresh()
-    // this.chartTree()
     this.getChartGroupTree()
   },
   methods: {
@@ -424,7 +478,7 @@ export default {
     clickMore(param) {
       switch (param.type) {
         case 'rename':
-          this.add(param.data.type)
+          this.add(param.data.modelInnerType)
           this.groupForm = JSON.parse(JSON.stringify(param.data))
           break
         case 'move':
@@ -479,15 +533,9 @@ export default {
               type: 'success',
               showClose: true
             })
-            // this.treeNode(this.groupForm)
-            this.refreshNodeBy(group.pid)
+            this.treeNode()
           })
         } else {
-          // this.$message({
-          //   message: this.$t('commons.input_content'),
-          //   type: 'error',
-          //   showClose: true
-          // })
           return false
         }
       })
@@ -504,10 +552,7 @@ export default {
               type: 'success',
               showClose: true
             })
-            // this.chartTree()
-            this.refreshNodeBy(view.sceneId)
-            // this.$router.push('/chart/home')
-            // this.$emit('switchComponent', { name: '' })
+            this.treeNode()
             this.$store.dispatch('chart/setTable', null)
           })
         } else {
@@ -533,8 +578,7 @@ export default {
             message: this.$t('chart.delete_success'),
             showClose: true
           })
-          // this.treeNode(this.groupForm)
-          this.refreshNodeBy(data.pid)
+          this.treeNode()
         })
       }).catch(() => {
       })
@@ -552,9 +596,7 @@ export default {
             message: this.$t('chart.delete_success'),
             showClose: true
           })
-          // this.chartTree()
-          this.refreshNodeBy(data.sceneId)
-          // this.$router.push('/chart/home')
+          this.treeNode()
           this.$emit('switchComponent', { name: '' })
           this.$store.dispatch('chart/setTable', null)
         })
@@ -588,9 +630,29 @@ export default {
       })
     },
 
-    treeNode(group) {
-      post('/chart/group/treeNode', group).then(res => {
-        this.tData = res.data
+    initCurrentNode() {
+      if (this.currentKey) {
+        this.$nextTick(() => {
+          this.$refs.chartTreeRef.setCurrentKey(this.currentKey)
+          this.$nextTick(() => {
+            document.querySelector('.is-current').firstChild.click()
+          })
+        })
+      }
+    },
+    treeNode(cache = false) {
+      const modelInfo = localStorage.getItem('chart-tree')
+      const userCache = (modelInfo && cache)
+      if (userCache) {
+        this.tData = JSON.parse(modelInfo)
+        this.initCurrentNode()
+      }
+      queryAuthModel({ modelType: 'chart' }, !userCache).then(res => {
+        localStorage.setItem('chart-tree', JSON.stringify(res.data))
+        if (!userCache) {
+          this.tData = res.data
+          this.initCurrentNode()
+        }
       })
     },
 
@@ -609,7 +671,8 @@ export default {
     },
 
     nodeClick(data, node) {
-      if (data.type !== 'group') {
+      this.currentNodeData = data
+      if (data.modelInnerType !== 'group') {
         this.$emit('switchComponent', { name: 'ChartEdit', param: data })
       }
     },
@@ -704,18 +767,17 @@ export default {
       view.customFilter = JSON.stringify([])
       view.drillFields = JSON.stringify([])
       view.extBubble = JSON.stringify([])
+      const _this = this
       post('/chart/view/save', view).then(response => {
         this.closeCreateChart()
         this.$store.dispatch('chart/setTableId', null)
         this.$store.dispatch('chart/setTableId', this.table.id)
-        // this.$router.push('/chart/chart-edit')
         if (this.optFrom === 'panel') {
           this.$emit('newViewInfo', { 'id': response.data.id })
         } else {
-          this.$emit('switchComponent', { name: 'ChartEdit', param: response.data })
-          // this.$store.dispatch('chart/setViewId', response.data.id)
-          // this.chartTree()
-          this.refreshNodeBy(view.sceneId)
+          _this.expandedArray.push(response.data.sceneId)
+          _this.currentKey = response.data.id
+          _this.treeNode()
         }
       })
     },
@@ -767,22 +829,6 @@ export default {
       }
     },
 
-    refreshNodeBy(id) {
-      if (this.isTreeSearch) {
-        this.tData = []
-        this.expandedArray = []
-        this.searchTree(this.search)
-      } else {
-        if (!id || id === '0') {
-          this.treeNode(this.groupForm)
-        } else {
-          const node = this.$refs.asyncTree.getNode(id) // 通过节点id找到对应树节点对象
-          node.loaded = false
-          node.expand() // 主动调用展开节点方法，重新查询该节点下的所有子节点
-        }
-      }
-    },
-
     moveTo(data) {
       this.moveGroup = true
       this.moveDialogTitle = this.$t('dataset.m1') + (data.name.length > 10 ? (data.name.substr(0, 10) + '...') : data.name) + this.$t('dataset.m2')
@@ -802,8 +848,7 @@ export default {
       this.groupForm.pid = this.tGroup.id
       post('/chart/group/save', this.groupForm).then(res => {
         this.closeMoveGroup()
-        // this.tree(this.groupForm)
-        this.refreshNodeBy(this.groupForm.pid)
+        this.treeNode()
       })
     },
     targetGroup(val) {
@@ -827,17 +872,12 @@ export default {
       }
     },
     saveMoveDs() {
-      // if (this.tDs && this.tDs.type === 'group') {
-      //   return
-      // }
-      const oldSceneId = this.dsForm.sceneId
       const newSceneId = this.tDs.id
       this.dsForm.sceneId = newSceneId
       post('/chart/view/save', this.dsForm).then(res => {
         this.closeMoveDs()
-        // this.tableTree()
-        this.refreshNodeBy(oldSceneId)
-        this.refreshNodeBy(newSceneId)
+        this.expandedArray.push(newSceneId)
+        this.treeNode()
       })
     },
     targetDs(val) {
@@ -846,72 +886,6 @@ export default {
         this.dsMoveConfirmDisabled = false
       } else {
         this.dsMoveConfirmDisabled = false
-      }
-    },
-
-    searchTree(val) {
-      const queryCondition = {
-        // withExtend: 'parent',
-        // modelType: 'chart',
-        name: val
-      }
-      // authModel(queryCondition).then(res => {
-      //   // this.highlights(res.data)
-      //   this.tData = this.buildTree(res.data)
-      //   // console.log(this.tData)
-      // })
-
-      post('/chart/view/search', queryCondition).then(res => {
-        this.tData = this.buildTree(res.data)
-      })
-    },
-
-    buildTree(arrs) {
-      const idMapping = arrs.reduce((acc, el, i) => {
-        acc[el[this.treeProps.id]] = i
-        return acc
-      }, {})
-      const roots = []
-      arrs.forEach(el => {
-        // 判断根节点 ###
-        // el.type = el.modelInnerType
-        // el.isLeaf = el.leaf
-        if (el[this.treeProps.parentId] === null || el[this.treeProps.parentId] === 0 || el[this.treeProps.parentId] === '0') {
-          roots.push(el)
-          return
-        }
-        // 用映射表找到父元素
-        const parentEl = arrs[idMapping[el[this.treeProps.parentId]]]
-        // 把当前元素添加到父元素的`children`数组中
-        parentEl.children = [...(parentEl.children || []), el]
-
-        // 设置展开节点 如果没有子节点则不进行展开
-        if (parentEl.children.length > 0) {
-          this.expandedArray.push(parentEl[this.treeProps.id])
-        }
-      })
-      return roots
-    },
-
-    // 高亮显示搜索内容
-    highlights(data) {
-      if (data && this.search && this.search.length > 0) {
-        const replaceReg = new RegExp(this.search, 'g')// 匹配关键字正则
-        const replaceString = '<span style="color: #0a7be0">' + this.search + '</span>' // 高亮替换v-html值
-        data.forEach(item => {
-          item.name = item.name.replace(replaceReg, replaceString) // 开始替换
-          item.label = item.label.replace(replaceReg, replaceString) // 开始替换
-        })
-      }
-    },
-
-    getTreeData(val) {
-      if (val) {
-        this.isTreeSearch = true
-        this.searchTree(val)
-      } else {
-        this.isTreeSearch = false
-        this.treeNode(this.groupForm)
       }
     },
 
@@ -936,6 +910,32 @@ export default {
       if (this.createActive < 2) {
         this.createActive++
       }
+    },
+    filterNode(value, data) {
+      if (!value) return true
+      if (this.searchType === 'folder') {
+        if (data.modelInnerType === 'group' && data.label.indexOf(value) !== -1) {
+          this.searchPids.push(data.id)
+          return true
+        }
+        if (this.searchPids.indexOf(data.pid) !== -1) {
+          if (data.modelInnerType === 'group') {
+            this.searchPids.push(data.id)
+          }
+          return true
+        }
+      } else {
+        return data.label.indexOf(value) !== -1
+      }
+      return false
+    },
+    searchTypeClick(searchTypeInfo) {
+      this.searchType = searchTypeInfo
+    },
+    nodeTypeChange(newType) {
+      if (this.currentNodeData) {
+        this.currentNodeData.modelInnerType = newType
+      }
     }
   }
 }
@@ -950,7 +950,7 @@ export default {
     padding: 12px 0;
   }
 
-  .custom-tree-container{
+  .custom-tree-container {
     margin-top: 10px;
   }
 
@@ -960,7 +960,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    padding-right:8px;
+    padding-right: 8px;
   }
 
   .custom-tree-node-list {
@@ -969,10 +969,10 @@ export default {
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    padding:0 8px;
+    padding: 0 8px;
   }
 
-  .tree-list>>>.el-tree-node__expand-icon.is-leaf{
+  .tree-list >>> .el-tree-node__expand-icon.is-leaf {
     display: none;
   }
 
@@ -1004,63 +1004,73 @@ export default {
     padding: 10px 20px 20px;
   }
 
-  .form-item>>>.el-form-item__label{
+  .form-item >>> .el-form-item__label {
     font-size: 12px;
   }
 
-  .scene-title{
+  .scene-title {
     width: 100%;
     display: flex;
   }
-  .scene-title-name{
+
+  .scene-title-name {
     width: 100%;
     overflow: hidden;
     display: inline-block;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
+
   .father .child {
     /*display: none;*/
     visibility: hidden;
   }
+
   .father:hover .child {
     /*display: inline;*/
     visibility: visible;
   }
+
   .tree-style {
     padding: 10px 15px;
     height: 100%;
     overflow-y: auto;
   }
-  /deep/ .vue-treeselect__control{
+
+  /deep/ .vue-treeselect__control {
     height: 28px;
   }
-  /deep/ .vue-treeselect__single-value{
-    color:#606266;
-    line-height: 28px!important;
+
+  /deep/ .vue-treeselect__single-value {
+    color: #606266;
+    line-height: 28px !important;
   }
 
-  .render-select>>>.el-input__suffix{
+  .render-select >>> .el-input__suffix {
     width: 20px;
   }
-  .render-select>>>.el-input__inner{
+
+  .render-select >>> .el-input__inner {
     padding-right: 10px;
     padding-left: 6px;
   }
-  .dialog-css>>>.el-step__title{
+
+  .dialog-css >>> .el-step__title {
     font-weight: 400;
     font-size: 12px;
   }
-  .chart-icon{
+
+  .chart-icon {
     width: 200px;
     height: 200px;
   }
-  .chart-box{
-    box-sizing:border-box;
-    -moz-box-sizing:border-box;
-    -webkit-box-sizing:border-box;
-    width:50%;
-    float:left;
+
+  .chart-box {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    width: 50%;
+    float: left;
     height: 380px;
   }
 </style>

@@ -5,8 +5,7 @@ CREATE TABLE `demo_recent_local_cases` (
   `existing`     bigint(13) COMMENT '现有',
   `risk`    varchar(50) NOT NULL COMMENT '区域风险',
   PRIMARY KEY (`city`)
-)ENGINE = InnoDB
-DEFAULT CHARSET = utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 
 INSERT INTO `demo_recent_local_cases` (`city`, `province`, `new_add`, `existing`, `risk`) VALUES ('广州', '广东', '8', '106', '部分中高风险');
@@ -21,8 +20,7 @@ CREATE TABLE `demo_vaccination` (
    `cumulative`    DECIMAL(10,2) NOT NULL   COMMENT '累计接种',
    `new_add`     DECIMAL(10,2) COMMENT '较上日新增',
    `vaccination_per_100_people`    DECIMAL(10,2) NOT NULL COMMENT '每百人接种'
-)ENGINE = InnoDB
-DEFAULT CHARSET = utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 INSERT INTO `demo_vaccination` (`cumulative`, `new_add`, `vaccination_per_100_people`) VALUES (7.9, 1625.5, 55.17);
 
@@ -35,8 +33,7 @@ CREATE TABLE `demo_domestic_epidemic` (
    `asymptomatic_patient`     bigint(13) COMMENT '无症状感染者',
    `input`     bigint(13) COMMENT '境外输入',
    `cumulative_death`     bigint(13) COMMENT '累计死亡'
-)ENGINE = InnoDB
-DEFAULT CHARSET = utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 INSERT INTO `demo_domestic_epidemic` (`statistical_time`, `cumulative_cure`, `current_diagnosis`, `cumulative_diagnosis`, `asymptomatic_patient`, `input` , `cumulative_death`) VALUES ('2021-06-09 10:24:27 ', 99071, 10740, 114929, 361, 6173, 5154);
 

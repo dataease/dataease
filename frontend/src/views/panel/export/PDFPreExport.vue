@@ -27,6 +27,7 @@ import { pdfTemplateReplaceAll } from '@/utils/StringUtils.js'
 export default {
   name: 'PDFPreExport',
   props: {
+    // eslint-disable-next-line vue/require-default-prop
     panelName: {
       type: String,
       required: false
@@ -96,7 +97,8 @@ export default {
           const contentWidth = canvas.width
           const contentHeight = canvas.height
           const pageData = canvas.toDataURL('image/jpeg', 1.0)
-          const PDF = new JsPDF('l', 'px', [contentWidth, contentHeight])
+          const lp = contentWidth > contentHeight ? 'l' : 'p'
+          const PDF = new JsPDF(lp, 'pt', [contentWidth, contentHeight])
           PDF.addImage(pageData, 'JPEG', 0, 0, contentWidth, contentHeight)
           PDF.save(_this.panelName + '.pdf')
           _this.$emit('closePreExport')

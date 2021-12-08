@@ -1,6 +1,6 @@
 <template>
 
-  <el-select v-if="options!== null && options.attrs!==null" v-model="values" :multiple="options.attrs.multiple" :placeholder="options.attrs.placeholder"  :popper-append-to-body="inScreen" @change="changeValue">
+  <el-select v-if="options!== null && options.attrs!==null" v-model="values" :multiple="options.attrs.multiple" :placeholder="options.attrs.placeholder" :popper-append-to-body="inScreen" @change="changeValue">
     <el-option
       v-for="item in options.attrs.datas"
       :key="item[options.attrs.key]"

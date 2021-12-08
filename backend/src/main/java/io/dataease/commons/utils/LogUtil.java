@@ -8,8 +8,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class LogUtil {
-    //日志工具类
-//	public static final Log Logger = LogFactory.getLog(LogUtil.class);
 
     private static final String DEBUG = "DEBUG";
     private static final String INFO = "INFO";

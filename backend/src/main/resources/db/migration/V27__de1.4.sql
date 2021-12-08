@@ -2,10 +2,7 @@ ALTER TABLE `chart_view` ADD COLUMN `render` varchar(50)  COMMENT '视图渲染�
 UPDATE `chart_view` SET `render` = 'echarts' WHERE `type` != 'liquid';
 UPDATE `chart_view` SET `render` = 'antv' WHERE `type` = 'liquid';
 
-
-
 ALTER TABLE `panel_link` ADD COLUMN `over_time` bigint(13) NULL DEFAULT NULL COMMENT '有效截止时间' AFTER `pwd`;
-
 
 CREATE TABLE `panel_link_jump` (
   `id` varchar(50) NOT NULL,
@@ -14,7 +11,7 @@ CREATE TABLE `panel_link_jump` (
   `link_jump_info` varchar(4000) DEFAULT NULL COMMENT '跳转信息',
   `checked` tinyint(1) DEFAULT NULL COMMENT '是否启用',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `panel_link_jump_info` (
   `id` varchar(50) NOT NULL,
@@ -26,7 +23,7 @@ CREATE TABLE `panel_link_jump_info` (
   `content` varchar(4000) DEFAULT NULL COMMENT '内容 linkType = outer时使用',
   `checked` tinyint(1) DEFAULT NULL COMMENT '是否可用',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `panel_link_jump_target_view_info` (
   `target_id` varchar(50) NOT NULL,
@@ -34,7 +31,7 @@ CREATE TABLE `panel_link_jump_target_view_info` (
   `target_view_id` varchar(50) DEFAULT NULL,
   `target_field_id` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`target_id`) USING BTREE
-) ENGINE=InnoDB ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 BEGIN;
 INSERT INTO `sys_menu` VALUES (6, 1, 0, 1, '系统参数', 'system-param', 'system/SysParam/index', 6, 'sys-tools', 'system-param', b'0', b'0', b'0', 'sysparam:read', NULL, NULL, NULL, NULL);
@@ -42,8 +39,8 @@ COMMIT;
 
 
 ALTER TABLE `chart_view`
-MODIFY COLUMN `name` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '名称' AFTER `id`,
-MODIFY COLUMN `title` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'EChart标题' AFTER `name`;
+MODIFY COLUMN `name` varchar(1024) NULL DEFAULT NULL COMMENT '名称' AFTER `id`,
+MODIFY COLUMN `title` varchar(1024) NULL DEFAULT NULL COMMENT 'EChart标题' AFTER `name`;
 
 ALTER TABLE `chart_view` ADD COLUMN `result_count` int(10)  COMMENT '展示结果' AFTER `render`;
 ALTER TABLE `chart_view` ADD COLUMN `result_mode` varchar(50)  COMMENT '展示模式' AFTER `result_count`;
@@ -51,12 +48,11 @@ UPDATE `chart_view` SET `result_count` = 1000;
 UPDATE `chart_view` SET `result_mode` = 'custom';
 
 ALTER TABLE `dataset_table`
-    MODIFY COLUMN `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
+    MODIFY COLUMN `name` varchar(128) NULL DEFAULT NULL;
 
 -- ----------------------------
 -- Table structure for sys_theme
 -- ----------------------------
-DROP TABLE IF EXISTS `sys_theme`;
 CREATE TABLE `sys_theme` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主题id',
   `name` varchar(255) NOT NULL COMMENT '主题名称',
@@ -64,7 +60,7 @@ CREATE TABLE `sys_theme` (
   `img` varchar(255) DEFAULT NULL COMMENT '主题缩略图',
   `status` tinyint(1) DEFAULT NULL COMMENT '状态',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci AUTO_INCREMENT=4 ROW_FORMAT=COMPACT;
 
 -- ----------------------------
 -- Records of sys_theme
@@ -82,12 +78,11 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ----------------------------
 -- Table structure for sys_theme_item
 -- ----------------------------
-DROP TABLE IF EXISTS `sys_theme_item`;
 CREATE TABLE `sys_theme_item` (
   `theme_id` bigint(20) NOT NULL COMMENT '主题ID',
   `key` varchar(255) DEFAULT NULL COMMENT '样式key',
   `val` varchar(255) DEFAULT NULL COMMENT '样式val'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of sys_theme_item

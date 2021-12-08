@@ -6,8 +6,8 @@ import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.controller.sys.response.MailInfo;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.service.FileService;
+import io.dataease.service.system.EmailService;
 import io.dataease.service.system.SystemParameterService;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,12 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
-
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 @ApiIgnore
 @RestController
 @RequestMapping(value = "/system")
@@ -32,10 +32,13 @@ public class SystemParameterController {
     @Resource
     private FileService fileService;
 
+    @Resource
+    private EmailService emailService;
+
 
     @GetMapping("/mail/info")
     public MailInfo mailInfo() {
-        return systemParameterService.mailInfo(ParamConstants.Classify.MAIL.getValue());
+        return emailService.mailInfo();
     }
 
     @GetMapping("/basic/info")
@@ -51,7 +54,7 @@ public class SystemParameterController {
 
     @PostMapping("/edit/email")
     public void editMail(@RequestBody List<SystemParameter> systemParameter) {
-        systemParameterService.editMail(systemParameter);
+        emailService.editMail(systemParameter);
     }
 
     @PostMapping("/edit/basic")
@@ -61,7 +64,7 @@ public class SystemParameterController {
 
     @PostMapping("/testConnection")
     public void testConnection(@RequestBody HashMap<String, String> hashMap) {
-        systemParameterService.testConnection(hashMap);
+        emailService.testConnection(hashMap);
     }
 
     @GetMapping("/version")

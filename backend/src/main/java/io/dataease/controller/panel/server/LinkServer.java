@@ -2,7 +2,6 @@ package io.dataease.controller.panel.server;
 
 
 import io.dataease.base.domain.PanelLink;
-import io.dataease.controller.ResultHolder;
 import io.dataease.controller.panel.api.LinkApi;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.panel.link.*;
@@ -17,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.net.URLDecoder;
 import java.util.Map;
 
 
 @RestController
 public class LinkServer implements LinkApi {
-
 
 
     @Autowired
@@ -42,12 +41,11 @@ public class LinkServer implements LinkApi {
         panelLinkService.changeEnablePwd(request);
     }
 
-    
 
     @Override
     public void resetOverTime(@RequestBody OverTimeRequest request) {
         panelLinkService.overTime(request);
-        
+
     }
 
     @Override
@@ -61,16 +59,16 @@ public class LinkServer implements LinkApi {
     }
 
     @Override
-    public ValidateDto validate(@RequestBody LinkValidateRequest request)  throws Exception{
+    public ValidateDto validate(@RequestBody LinkValidateRequest request) throws Exception {
         String link = request.getLink();
+        link = URLDecoder.decode(link, "UTF-8");
         String json = panelLinkService.decryptParam(link);
 
         ValidateDto dto = new ValidateDto();
         String resourceId = json;
-       /*  String resourceId = request.getResourceId(); */
         PanelLink one = panelLinkService.findOne(resourceId);
         dto.setResourceId(resourceId);
-        if (ObjectUtils.isEmpty(one)){
+        if (ObjectUtils.isEmpty(one)) {
             dto.setValid(false);
             return dto;
         }
@@ -92,18 +90,13 @@ public class LinkServer implements LinkApi {
     }
 
     @Override
-    public Object viewDetail(String viewId, ChartExtRequest requestList) throws Exception{
+    public Object viewDetail(String viewId, ChartExtRequest requestList) throws Exception {
         return chartViewService.getData(viewId, requestList);
     }
 
-    /*@Override
-    public ResultHolder shortUrl(Map<String,String> param) {
-        String url = param.get("url");
-        return panelLinkService.getShortUrl(url);
-    }*/
 
     @Override
-    public String shortUrl(Map<String,String> param) {
+    public String shortUrl(Map<String, String> param) {
         String resourceId = param.get("resourceId");
         return panelLinkService.getShortUrl(resourceId);
     }

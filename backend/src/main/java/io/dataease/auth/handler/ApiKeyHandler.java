@@ -16,7 +16,6 @@ public class ApiKeyHandler {
 
     public static final String API_SIGNATURE = "signature";
 
-
     public static String random = UUID.randomUUID().toString() + UUID.randomUUID().toString();
 
     public static Long getUser(HttpServletRequest request) {

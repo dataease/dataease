@@ -20,6 +20,8 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,9 +46,9 @@ public class F2CRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         Long userId = JWTUtils.tokenInfoByToken(principals.toString()).getUserId();
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
-        Set<String> role = authUserService.roles(userId).stream().collect(Collectors.toSet());
+        Set<String> role = new HashSet<>(authUserService.roles(userId));
         simpleAuthorizationInfo.addRoles(role);
-        Set<String> permission = authUserService.permissions(userId).stream().collect(Collectors.toSet());
+        Set<String> permission = new HashSet<>(authUserService.permissions(userId));
         simpleAuthorizationInfo.addStringPermissions(permission);
         return simpleAuthorizationInfo;
     }
@@ -79,8 +81,8 @@ public class F2CRealm extends AuthorizingRealm {
             throw new AuthenticationException("license error");
         }
 
-        TokenInfo tokenInfo = null;
-        String token = null;
+        TokenInfo tokenInfo;
+        String token;
         try {
             token = (String) auth.getCredentials();
             // 解密获得username，用于和数据库进行对比
@@ -94,14 +96,7 @@ public class F2CRealm extends AuthorizingRealm {
         if (username == null) {
             throw new AuthenticationException("token invalid");
         }
-        // 使用缓存
-        /*SysUserEntity user = authUserService.getUserById(userId);
-        if (user == null) {
-            throw new AuthenticationException("User didn't existed!");
-        }
-        if (user.getEnabled()==0) {
-            throw new AuthenticationException("User is valid!");
-        }*/
+
         SysUserEntity user = userWithId(userId);
         String pass = null;
         try {
@@ -112,13 +107,7 @@ public class F2CRealm extends AuthorizingRealm {
         if (! JWTUtils.verify(token, tokenInfo, pass)) {
             throw new AuthenticationException("Username or password error");
         }
-        /*// 使用缓存
-        List<CurrentRoleDto> currentRoleDtos = authUserService.roleInfos(user.getUserId());
-        // 使用缓存
-        List<String> permissions = authUserService.permissions(user.getUserId());
-        CurrentUserDto currentUserDto = BeanUtils.copyBean(new CurrentUserDto(), user);
-        currentUserDto.setRoles(currentRoleDtos);
-        currentUserDto.setPermissions(permissions);*/
+
         CurrentUserDto currentUserDto = queryCacheUserDto(user);
         return new SimpleAuthenticationInfo(currentUserDto, token, "f2cReam");
     }

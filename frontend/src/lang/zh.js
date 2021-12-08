@@ -343,7 +343,8 @@ export default {
       cancel: '取消'
     },
     ukey_title: 'API Keys',
-    thumbnail: '缩略图'
+    thumbnail: '缩略图',
+    confirm_delete: '确认删除'
   },
   documentation: {
     documentation: '文档',
@@ -958,6 +959,7 @@ export default {
     table_page_size_unit: '条/页',
     result_count: '结果展示',
     result_mode_all: '全部',
+    result_mode_custom: '自定义',
     chart_word_cloud: '词云',
     drag_block_word_cloud_label: '词标签',
     drag_block_word_cloud_size: '词大小',
@@ -1163,7 +1165,18 @@ export default {
       value: '值',
       add: '添加行权限',
       edit: '编辑行权限'
-    }
+    },
+    union_data: '关联数据集',
+    add_union_table: '添加关联数据集',
+    edit_union: '编辑关联数据集',
+    union: '关联',
+    edit_union_relation: '编辑关联关系',
+    add_union_relation: '新建关联关系',
+    field_select: '字段选择',
+    add_union_field: '添加关联字段',
+    union_error: '关联关系与关联字段不能为空',
+    union_repeat: '当前数据集已被关联，请勿重复关联',
+    preview_result: '预览结果'
   },
   datasource: {
     datasource: '数据源',
@@ -1201,7 +1214,7 @@ export default {
     get_schema: '获取 Schema',
     schema: '数据库 Schema',
     please_choose_schema: '请选择数据库 Schema',
-    edit_datasource_msg: '修改数据源信息，可能会导致改数据源下的数据集不可用，确认修改？',
+    edit_datasource_msg: '修改数据源信息，可能会导致该数据源下的数据集不可用，确认修改？',
     in_valid: '无效数据源',
     initial_pool_size: '初始连接数',
     min_pool_size: '最小连接数',
@@ -1426,12 +1439,17 @@ export default {
     online_video: '在线视频',
     streaming_media: '流媒体',
     auto_play: '自动播放',
-    video_tips: '非HTTPS链接，可能导致无法播放',
+    video_tips: '优先HTTPS链接；当前支持格式mp4,webm',
     play_frequency: '播放频率',
     play_once: '播放一次',
     play_circle: '循环播放',
     video_links: '视频链接',
-    video_add_tips: '请点击添加配置视频信息...'
+    video_add_tips: '请点击添加配置视频信息...',
+    panel_view_result_show: '视图结果展示',
+    panel_view_result_tips: '选择仪表板会覆盖视图的结果展示数量，取值范围1~10000',
+    timeout_refresh: '请求超时，稍后刷新...',
+    mobile_layout: '移动端布局',
+    component_hidden: '隐藏的组件'
   },
   plugin: {
     local_install: '本地安装',
@@ -1654,6 +1672,50 @@ export default {
     select_openMode: '请选择展示风格',
     select_time_format: '请选择时间格式',
     select_date_format: '请选择日期格式'
+
+  },
+  xpacktask: {
+    add: '新增任务',
+    edit: '编辑任务',
+    task_id: '任务ID',
+    name: '任务名称',
+    last_exec_time: '上次执行时间',
+    last_exec_status: '上次执行状态',
+    ready: '就绪',
+    success: '成功',
+    underway: '执行中',
+    error: '失败',
+    creator: '创建人',
+    create_time: '创建时间',
+    search_by_name: '根据名称搜索',
+    exec_time: '执行时间',
+    status: '执行状态',
+    pixel_error: '分辨率支持{800 - 10000} * {500 - 6250}'
+
+  },
+  emailtask: {
+    title: '邮件主题',
+    panel: '仪表板',
+    content: '邮件正文',
+    recipients: '收件人',
+    pixel: '分辨率',
+    default: '默认',
+    custom: '自定义',
+    rate_type: '发送频率',
+    cron_exp: 'cron表达式',
+    exec_time: '执行时间',
+    start_time: '开始时间',
+    end_time: '结束时间',
+
+    preview: '预览',
+    emial_preview: '邮件预览',
+
+    simple_repeat: '简单重复',
+    once_a_day: '每天一次',
+    once_a_week: '每周一次',
+    once_a_month: '每月一次',
+    complex_repeat: '复杂重复',
+    pixel_tip: '可直接输入自定义分辨率或选择'
 
   }
 }

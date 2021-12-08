@@ -1,12 +1,11 @@
 <template>
   <div
     :style="getOutStyleDefault(config.style)"
-    :class="{'gap_class':canvasStyleData.panel.gap==='yes'}"
     class="component"
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <edit-bar v-if="curComponent && config === curComponent" :element="config" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="editBarShow" :element="config" @showViewDetails="showViewDetails" />
     <de-out-widget
       v-if="config.type==='custom'"
       :id="'component' + config.id"
@@ -16,7 +15,6 @@
       :element="config"
       :in-screen="inScreen"
     />
-
     <component
       :is="config.component"
       v-else
@@ -28,6 +26,7 @@
       :element="config"
       :search-count="searchCount"
       :h="config.style.height"
+      :edit-mode="'preview'"
     />
   </div>
 </template>
@@ -39,9 +38,10 @@ import { mixins } from '@/components/canvas/utils/events'
 import { mapState } from 'vuex'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
+import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 
 export default {
-  components: { DeOutWidget, EditBar },
+  components: { MobileCheckBar, DeOutWidget, EditBar },
   mixins: [mixins],
   props: {
     config: {
@@ -66,9 +66,17 @@ export default {
     }
   },
   computed: {
+    editBarShow() {
+      return this.curComponent && this.config === this.curComponent
+    },
+    curGap() {
+      return this.config.auxiliaryMatrix ? this.componentGap : 0
+    },
     ...mapState([
+      'mobileLayoutStatus',
       'canvasStyleData',
-      'curComponent'
+      'curComponent',
+      'componentGap'
     ])
   },
   mounted() {
@@ -76,7 +84,6 @@ export default {
   },
   methods: {
     getStyle,
-
     getShapeStyleIntDeDrag(style, prop) {
       if (prop === 'rotate') {
         return style['rotate']
@@ -92,7 +99,6 @@ export default {
       }
       if (prop === 'top') {
         const top = this.format(style['top'], this.scaleHeight)
-        // console.log('top:' + top)
         return top
       }
     },
@@ -101,25 +107,35 @@ export default {
       return value * scale / 100
     },
     getOutStyleDefault(style) {
-      const result = {};
-      ['width', 'left'].forEach(attr => {
-        result[attr] = style[attr] + 'px'
-      });
-      ['height', 'top'].forEach(attr => {
-        result[attr] = style[attr] + 'px'
-      })
-      result['rotate'] = style['rotate']
-      // result['opacity'] = style['opacity']
-
+      const result = {
+        padding: this.curGap + 'px'
+      }
+      // 移动端编辑状态 且 未被移动端选中的组件 放满容器
+      if (this.mobileLayoutStatus && !this.config.mobileSelected) {
+        result.width = '100%'
+        result.height = '100%'
+      } else {
+        ['width', 'left'].forEach(attr => {
+          result[attr] = style[attr] + 'px'
+        });
+        ['height', 'top'].forEach(attr => {
+          result[attr] = style[attr] + 'px'
+        })
+        result['rotate'] = style['rotate']
+      }
       return result
-      // return style
     },
 
     getComponentStyleDefault(style) {
-      return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
-      // console.log('styleInfo', JSON.stringify(styleInfo))
-      // return styleInfo
-      // return style
+      // 移动端编辑状态 且 未被移动端选中的组件 放满容器
+      if (this.mobileLayoutStatus && !this.config.mobileSelected) {
+        return {
+          width: '100%',
+          height: '100%'
+        }
+      } else {
+        return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+      }
     },
 
     handleClick() {
@@ -146,19 +162,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.component {
+  .component {
     position: absolute;
-}
+  }
 
-.component:hover {
-  box-shadow:0px 0px 7px #0a7be0;
-}
-.gap_class{
-  padding:5px;
-}
-.component-custom {
-  outline: none;
-  width: 100% !important;
-  height: 100%;
-}
+  .component:hover {
+    box-shadow: 0px 0px 7px #0a7be0;
+  }
+
+  .gap_class {
+    padding: 5px;
+  }
+
+  .component-custom {
+    outline: none;
+    width: 100% !important;
+    height: 100%;
+  }
 </style>

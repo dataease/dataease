@@ -92,7 +92,13 @@ export default {
       axiosFinished: false,
       loginTypes: [0],
       isPluginLoaded: false,
-      contentShow: false
+      contentShow: false,
+      clearLocalStorage: [
+        'panel-main-tree',
+        'panel-default-tree',
+        'chart-tree',
+        'dataset-tree'
+      ]
     }
   },
   computed: {
@@ -178,8 +184,14 @@ export default {
         }
       } */
     },
+    initCache() {
+      this.clearLocalStorage.forEach(item => {
+        localStorage.removeItem(item)
+      })
+    },
 
     handleLogin() {
+      this.initCache()
       this.clearOidcMsg()
       this.$refs.loginForm.validate(valid => {
         if (valid) {

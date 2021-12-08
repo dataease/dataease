@@ -6,7 +6,6 @@
     </de-aside-container>
 
     <de-main-container>
-      <!--<router-view/>-->
       <component :is="component" ref="dynamic_component" :param="param" @switchComponent="switchComponent" @saveSuccess="saveSuccess" />
     </de-main-container>
   </de-container>
@@ -24,9 +23,9 @@ import AddDB from './add/AddDB'
 import AddSQL from './add/AddSQL'
 import AddExcel from './add/AddExcel'
 import AddCustom from './add/AddCustom'
+import AddUnion from '@/views/dataset/add/AddUnion'
 import FieldEdit from './data/FieldEdit'
 import { removeClass } from '@/utils'
-// import bus from '@/utils/bus'
 export default {
   name: 'DataSet',
   components: { DeMainContainer, DeContainer, DeAsideContainer, Group, DataHome, ViewTable, AddDB, AddSQL, AddExcel, AddCustom },
@@ -39,31 +38,11 @@ export default {
   },
   mounted() {
     removeClass(document.body, 'showRightPanel')
-    // bus.$on('to-msg-dataset', params => {
-    //   this.toMsgShare(params)
-    // })
   },
   created() {
     this.$store.dispatch('app/toggleSideBarHide', true)
     const routerParam = this.$router.currentRoute.params
     this.toMsgShare(routerParam)
-    // if ((routerParam = this.$router.currentRoute.params) !== null && routerParam.msgNotification) {
-    //   // 说明是从消息通知跳转过来的
-    //   if (routerParam.msgType === 1) { // 是数据集同步
-    //     if (routerParam.sourceParam) {
-    //       try {
-    //         const msgParam = JSON.parse(routerParam.sourceParam)
-    //         this.param = msgParam.tableId
-    //         this.component = ViewTable
-    //         this.$nextTick(() => {
-    //           this.$refs.dynamic_component.msg2Current(routerParam.sourceParam)
-    //         })
-    //       } catch (error) {
-    //         console.error(error)
-    //       }
-    //     }
-    //   }
-    // }
   },
   methods: {
     switchComponent(c) {
@@ -83,6 +62,9 @@ export default {
           break
         case 'AddCustom':
           this.component = AddCustom
+          break
+        case 'AddUnion':
+          this.component = AddUnion
           break
         case 'FieldEdit':
           this.component = FieldEdit

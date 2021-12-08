@@ -80,7 +80,7 @@ export function listDatasource() {
 export function getTable(id, hideMsg = false) {
   return request({
     url: '/dataset/table/get/' + id,
-    loading: true,
+    loading: false,
     method: 'post',
     hideMsg: hideMsg
   })
@@ -150,6 +150,7 @@ export function taskList(spage, size, data) {
   return request({
     url: '/dataset/group/isKettleRunning',
     method: 'post',
+    // eslint-disable-next-line no-undef
     loading: showLoading
   })
 }

@@ -7,7 +7,6 @@ import io.dataease.base.domain.PanelGroupWithBLOBs;
 import io.dataease.base.mapper.ext.ExtPanelViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
-import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.panel.PanelViewDto;
 import io.dataease.dto.panel.PanelViewTableDTO;
 import io.dataease.dto.panel.po.PanelViewInsertDTO;
@@ -33,7 +32,6 @@ public class PanelViewService {
     @Autowired(required = false)
     private ExtPanelViewMapper extPanelViewMapper;
 
-
     private final static String SCENE_TYPE = "scene";
 
     public List<PanelViewDto> groups(){
@@ -45,9 +43,7 @@ public class PanelViewService {
     }
 
     public List<PanelViewDto> buildTree(List<PanelViewPo> groups, List<PanelViewPo> views){
-
         if (CollectionUtils.isEmpty(groups) || CollectionUtils.isEmpty(views)) return null;
-
         Map<String, List<PanelViewPo>> viewsMap = views.stream().collect(Collectors.groupingBy(PanelViewPo::getPid));
         List<PanelViewDto> dtos = groups.stream().map(group -> BeanUtils.copyBean(new PanelViewDto(), group)).collect(Collectors.toList());
         List<PanelViewDto> roots = new ArrayList<>();
@@ -98,8 +94,6 @@ public class PanelViewService {
     }
 
     public List<PanelViewTableDTO> detailList(String panelId){
-
-
        return extPanelViewMapper.getPanelViewDetails(panelId);
     }
 }

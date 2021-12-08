@@ -7,15 +7,15 @@ import java.util.List;
 
 @Data
 public class EsReponse {
-    private List<Column>columns = new ArrayList<>();
-    private List<String[]>rows = new ArrayList<>();
+    private List<Column> columns = new ArrayList<>();
+    private List<String[]> rows = new ArrayList<>();
     private String cursor;
     private Integer status;
     private Error error;
     private String version;
 
     @Data
-    public class Error{
+    public class Error {
         private String type;
         private String reason;
     }

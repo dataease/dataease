@@ -1,14 +1,11 @@
 package io.dataease.service.panel;
 
-import com.alibaba.fastjson.JSONObject;
 import io.dataease.base.domain.DatasetTableField;
-import io.dataease.base.domain.PanelLinkJumpTargetViewInfo;
 import io.dataease.base.mapper.PanelLinkJumpInfoMapper;
 import io.dataease.base.mapper.PanelLinkJumpMapper;
 import io.dataease.base.mapper.PanelLinkJumpTargetViewInfoMapper;
 import io.dataease.base.mapper.ext.ExtPanelLinkJumpMapper;
 import io.dataease.base.mapper.ext.ExtPanelViewLinkageMapper;
-import io.dataease.dto.LinkageInfoDTO;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseRequest;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseResponse;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpDTO;
@@ -17,7 +14,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -52,8 +48,7 @@ public class PanelLinkJumpService {
     }
 
     public List<PanelLinkJumpDTO> queryWithPanelId(String panelId) {
-        List<PanelLinkJumpDTO> resultInfo = extPanelLinkJumpMapper.queryWithPanelId(panelId);
-        return resultInfo;
+        return extPanelLinkJumpMapper.queryWithPanelId(panelId);
     }
 
     //获取仪表板的跳转信息
@@ -64,31 +59,26 @@ public class PanelLinkJumpService {
             if (resultLinkJump.getChecked()) {
                 String sourceViewId = resultLinkJump.getSourceViewId();
                 Optional.ofNullable(resultLinkJump.getLinkJumpInfoArray()).orElse(new ArrayList<>()).forEach(linkJumpInfo -> {
-                    if(linkJumpInfo.getChecked()){
+                    if (linkJumpInfo.getChecked()) {
                         String sourceJumpInfo = sourceViewId + "#" + linkJumpInfo.getSourceFieldId();
                         // 内部仪表板跳转 需要设置好仪表板ID
-                        if("inner".equals(linkJumpInfo.getLinkType())){
-                            if(StringUtils.isNotEmpty(linkJumpInfo.getTargetPanelId())){
-                                resultBase.put(sourceJumpInfo,linkJumpInfo);
+                        if ("inner".equals(linkJumpInfo.getLinkType())) {
+                            if (StringUtils.isNotEmpty(linkJumpInfo.getTargetPanelId())) {
+                                resultBase.put(sourceJumpInfo, linkJumpInfo);
                             }
-                        }else{
+                        } else {
                             // 外部跳转
-                            resultBase.put(sourceJumpInfo,linkJumpInfo);
+                            resultBase.put(sourceJumpInfo, linkJumpInfo);
                         }
                     }
                 });
             }
         });
-        return new PanelLinkJumpBaseResponse(resultBase,null);
+        return new PanelLinkJumpBaseResponse(resultBase, null);
     }
 
     public PanelLinkJumpDTO queryWithView(String panelId, String viewId) {
-        PanelLinkJumpDTO resultInfo = extPanelLinkJumpMapper.queryWithViewId(panelId, viewId);
-        // 获取链接类型为仪表板的关联视图fieldId-PanelLinkJumpInfo Map 映射关系
-//        Map<String, PanelLinkJumpInfoDTO> mapJumpInfoArray = resultInfo.getLinkJumpInfoArray().stream().filter(jumpInfo -> StringUtils.isNotEmpty(jumpInfo.getFieldId()))
-//                .collect(Collectors.toMap(PanelLinkJumpInfoDTO::getFieldId, PanelViewLinkageDTO->PanelViewLinkageDTO));
-//        resultInfo.setMapJumpInfoArray(mapJumpInfoArray);
-        return resultInfo;
+        return extPanelLinkJumpMapper.queryWithViewId(panelId, viewId);
     }
 
     @Transactional
@@ -120,9 +110,9 @@ public class PanelLinkJumpService {
         });
     }
 
-    public PanelLinkJumpBaseResponse queryTargetPanelJumpInfo(PanelLinkJumpBaseRequest request){
+    public PanelLinkJumpBaseResponse queryTargetPanelJumpInfo(PanelLinkJumpBaseRequest request) {
         List<PanelLinkJumpDTO> result = extPanelLinkJumpMapper.getTargetPanelJumpInfo(request);
-        return new PanelLinkJumpBaseResponse(null,Optional.ofNullable(result).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(PanelLinkJumpDTO::getSourceInfo,PanelLinkJumpDTO::getTargetInfoList)));
+        return new PanelLinkJumpBaseResponse(null, Optional.ofNullable(result).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(PanelLinkJumpDTO::getSourceInfo, PanelLinkJumpDTO::getTargetInfoList)));
     }
 
 }

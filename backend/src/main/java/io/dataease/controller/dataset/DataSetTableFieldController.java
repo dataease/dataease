@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author gin
@@ -65,6 +63,7 @@ public class DataSetTableFieldController {
     public DatasetTableField save(@RequestBody DatasetTableField datasetTableField) {
         return dataSetTableFieldsService.save(datasetTableField);
     }
+
     @ApiOperation("删除")
     @PostMapping("delete/{id}")
     public void delete(@PathVariable String id) {

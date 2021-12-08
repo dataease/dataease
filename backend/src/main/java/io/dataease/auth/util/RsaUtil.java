@@ -16,7 +16,7 @@ public class RsaUtil {
      * 私钥解密
      *
      * @param privateKeyText 私钥
-     * @param text 待解密的文本
+     * @param text           待解密的文本
      * @return /
      * @throws Exception /
      */
@@ -26,12 +26,11 @@ public class RsaUtil {
         PrivateKey privateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec5);
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
-//        byte[] result = cipher.doFinal(Base64.decodeBase64(text));
         // 下面该用分段加密
         byte[] result = null;
         byte[] b = Base64.decodeBase64(text);
         for (int i = 0; i < b.length; i += 64) {
-            byte[] doFinal  = cipher.doFinal(ArrayUtils.subarray(b, i,i + 64));
+            byte[] doFinal = cipher.doFinal(ArrayUtils.subarray(b, i, i + 64));
             result = ArrayUtils.addAll(result, doFinal);
         }
         return new String(result);
@@ -41,7 +40,7 @@ public class RsaUtil {
      * 公钥加密
      *
      * @param publicKeyText 公钥
-     * @param text 待加密的文本
+     * @param text          待加密的文本
      * @return /
      */
     public static String encryptByPublicKey(String publicKeyText, String text) throws Exception {
@@ -50,12 +49,11 @@ public class RsaUtil {
         PublicKey publicKey = keyFactory.generatePublic(x509EncodedKeySpec2);
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        /*byte[] result = cipher.doFinal(text.getBytes());*/
         // 下面该用分段加密
         byte[] result = null;
         byte[] b = text.getBytes("utf-8");
         for (int i = 0; i < b.length; i += 50) {
-            byte[] doFinal  = cipher.doFinal(ArrayUtils.subarray(b, i,i + 50));
+            byte[] doFinal = cipher.doFinal(ArrayUtils.subarray(b, i, i + 50));
             result = ArrayUtils.addAll(result, doFinal);
         }
         return Base64.encodeBase64String(result);

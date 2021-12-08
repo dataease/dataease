@@ -9,7 +9,7 @@ public class CommonConstants {
 
 
     //操作类型
-    public static final class OPT_TYPE{
+    public static final class OPT_TYPE {
 
         public static final String INSERT = "insert";
 
@@ -22,19 +22,36 @@ public class CommonConstants {
     }
 
     //操作类型
-    public static final class CHECK_RESULT{
+    public static final class CHECK_RESULT {
 
         // 不存在
         public static final String NONE = "none";
 
         // 全局存在
-        public static final String EXIST_ALL= "exist_all";
+        public static final String EXIST_ALL = "exist_all";
 
         // 当前用户存在
-        public static final String EXIST_USER= "exist_user";
+        public static final String EXIST_USER = "exist_user";
 
         // 其他用户存在
-        public static final String EXIST_OTHER= "exist_other";
+        public static final String EXIST_OTHER = "exist_other";
 
+    }
+
+    //视图数据查询来源
+    public static final class VIEW_QUERY_FROM {
+
+        // 仪表板
+        public static final String PANEL = "panel";
+    }
+
+    //视图数据查询模式
+    public static final class VIEW_RESULT_MODE {
+
+        // 所有
+        public static final String ALL = "all";
+
+        // 自定义
+        public static final String CUSTOM = "custom";
     }
 }

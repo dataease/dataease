@@ -37,7 +37,21 @@ export function toTop(arr, i, j) {
 
 export function toBottom(arr, i) {
   arr.unshift(arr.splice(i, 1)[0])
- }
+}
 export function $(selector) {
   return document.querySelector(selector)
+}
+
+export function mobile2MainCanvas(mainSource, mobileSource) {
+  mainSource.mobileSelected = true
+  mainSource.mobileStyle.style = {
+    width: mobileSource.style.width,
+    height: mobileSource.style.height,
+    left: mobileSource.style.left,
+    top: mobileSource.style.top
+  }
+  mainSource.mobileStyle.x = mobileSource.x
+  mainSource.mobileStyle.y = mobileSource.x
+  mainSource.mobileStyle.sizex = mobileSource.sizex
+  mainSource.mobileStyle.sizey = mobileSource.sizey
 }

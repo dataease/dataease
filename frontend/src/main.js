@@ -3,8 +3,7 @@ import Cookies from 'js-cookie'
 import '@/styles/index.scss' // global css
 import ElementUI from 'element-ui'
 import Fit2CloudUI from 'fit2cloud-ui'
-// import axios from 'axios'
-// import VueAxios from 'vue-axios'
+
 import i18n from './lang' // internationalization
 import App from './App'
 import store from './store'
@@ -83,10 +82,12 @@ import vueToPdf from 'vue-to-pdf'
 Vue.use(vueToPdf)
 
 import VueVideoPlayer from 'vue-video-player'
-
 import 'video.js/dist/video-js.css'
-
 Vue.use(VueVideoPlayer)
+
+// 控制标签宽高成比例的指令
+import proportion from 'vue-proportion-directive'
+Vue.use(proportion)
 
 Vue.prototype.hasDataPermission = function(pTarget, pSource) {
   if (this.$store.state.user.user.isAdmin) {

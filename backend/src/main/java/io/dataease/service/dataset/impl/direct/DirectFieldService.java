@@ -79,6 +79,10 @@ public class DirectFieldService implements DataSetFieldService {
                 List<DataSetTableUnionDTO> listUnion = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
                 String sql = dataSetTableService.getCustomSQLDatasource(dt, listUnion, ds);
                 datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, Collections.singletonList(field), true, customFilter));
+            } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "union")) {
+                DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+                String sql = (String) dataSetTableService.getUnionSQLDatasource(dt, ds).get("sql");
+                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, Collections.singletonList(field), true, customFilter));
             }
         } else if (datasetTable.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询

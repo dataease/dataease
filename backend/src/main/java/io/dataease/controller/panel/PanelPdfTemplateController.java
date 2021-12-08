@@ -27,7 +27,7 @@ public class PanelPdfTemplateController {
 
     @GetMapping("queryAll")
     @ApiOperation("查询所有仪表板模板")
-    public List<PanelPdfTemplate> queryAll(){
+    public List<PanelPdfTemplate> queryAll() {
         return panelPdfTemplateService.queryAll();
     }
 

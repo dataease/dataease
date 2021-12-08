@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <router-view />
-    <plugin-com v-show="false" ref="de-theme" component-name="ThemeSetting" />
+    <router-view/>
+    <plugin-com v-show="false" ref="de-theme" component-name="ThemeSetting"/>
   </div>
 </template>
 
@@ -10,7 +10,7 @@ import PluginCom from '@/views/system/plugin/PluginCom'
 
 export default {
   name: 'App',
-  components: { PluginCom },
+  components: {PluginCom},
   beforeCreate() {
 
   }

@@ -91,7 +91,6 @@ public class RedshiftQueryProvider extends QueryProvider {
             case "float8":
             case "money":
                 return DeTypeConstants.DE_FLOAT;// 浮点
-//            case "bool":
             case "TINYINT":
                 return DeTypeConstants.DE_BOOL;// 布尔
             case "bytea":
@@ -225,8 +224,6 @@ public class RedshiftQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -351,8 +348,6 @@ public class RedshiftQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()
@@ -463,8 +458,6 @@ public class RedshiftQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
-                // 处理横轴过滤
-//                xWheres.addAll(getXWheres(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
                     xOrders.add(SQLObj.builder()

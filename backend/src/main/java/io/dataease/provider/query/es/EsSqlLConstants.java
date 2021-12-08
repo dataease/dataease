@@ -19,11 +19,9 @@ public class EsSqlLConstants extends SQLConstants {
 
     public static final String CAST = "CAST(%s AS %s)";
 
+    public static final String ROUND = "ROUND(%s, %s)";
+
     public static final String DEFAULT_DATE_FORMAT = "YYYY-MM-dd HH:mm:ss";
-
-    public static final String DEFAULT_INT_FORMAT = "DECIMAL(20,0)";
-
-    public static final String DEFAULT_FLOAT_FORMAT = "DECIMAL(20,2)";
 
     public static final String WHERE_VALUE_NULL = "(NULL,'')";
 

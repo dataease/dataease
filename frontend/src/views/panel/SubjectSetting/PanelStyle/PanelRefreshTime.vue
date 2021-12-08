@@ -18,37 +18,37 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item :label="'刷新时间频率'" class="form-item form-item-slider">
-              <el-slider v-model="canvasStyleData.refreshTime" show-input :show-input-controls="false" input-size="mini" :min="1" :max="3600" @change="onChangePanelStyle" />
+              <el-slider
+                v-model="canvasStyleData.refreshTime"
+                show-input
+                :show-input-controls="false"
+                input-size="mini"
+                :min="1"
+                :max="3600"
+                @change="onChangePanelStyle"
+              />
             </el-form-item>
           </el-form>
         </el-col>
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('panel.refresh_time') }} <i class="el-icon-setting el-icon--right" /></el-button>
+        <el-button slot="reference" size="mini" class="shape-item">{{ $t('panel.refresh_time') }} <i
+          class="el-icon-setting el-icon--right"
+        /></el-button>
       </el-popover>
     </div>
   </div>
 </template>
 
 <script>
-// eslint-disable-next-line no-unused-vars
-import { deepCopy } from '@/components/canvas/utils/utils'
-import {
-  CANVAS_STYLE
-} from '@/views/panel/panel'
 
 export default {
   name: 'PanelRefreshTime',
-  props: {
-  },
+  props: {},
   computed: {
     canvasStyleData() {
       return this.$store.state.canvasStyleData
     }
   },
   created() {
-    // 初始化赋值
-    // if (!this.canvasStyleData.refreshTime) {
-    //   this.canvasStyleData['refreshTime'] = CANVAS_STYLE.refreshTime
-    // }
   },
   methods: {
     onChangePanelStyle() {
@@ -59,19 +59,22 @@ export default {
 </script>
 
 <style scoped>
-  .avatar-uploader>>>.el-upload {
+  .avatar-uploader >>> .el-upload {
     width: 100px;
     height: 60px;
     line-height: 70px;
   }
-  .avatar-uploader>>>.el-upload-list li{
+
+  .avatar-uploader >>> .el-upload-list li {
     width: 100px !important;
     height: 60px !important;
   }
-  .disabled>>>.el-upload--picture-card {
+
+  .disabled >>> .el-upload--picture-card {
     display: none;
   }
-  .shape-item{
+
+  .shape-item {
     padding: 6px;
     border: none;
     width: 100%;
@@ -79,20 +82,25 @@ export default {
     justify-content: space-between;
     align-items: center;
   }
-  .form-item-slider>>>.el-form-item__label{
+
+  .form-item-slider >>> .el-form-item__label {
     font-size: 12px;
     line-height: 38px;
   }
-  .form-item>>>.el-form-item__label{
+
+  .form-item >>> .el-form-item__label {
     font-size: 12px;
   }
-  .el-select-dropdown__item{
+
+  .el-select-dropdown__item {
     padding: 0 20px;
   }
-  span{
+
+  span {
     font-size: 12px
   }
-  .el-form-item{
+
+  .el-form-item {
     margin-bottom: 6px;
   }
 </style>

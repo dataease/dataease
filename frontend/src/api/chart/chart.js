@@ -40,7 +40,7 @@ export function chartGroupTree(data) {
   return request({
     url: '/chart/group/tree',
     method: 'post',
-    loading: true,
+    loading: false,
     data
   })
 }
@@ -50,5 +50,24 @@ export function searchAdviceSceneId(panelId) {
     url: '/chart/view/searchAdviceSceneId/' + panelId,
     method: 'get',
     loading: true
+  })
+}
+
+export function checkSameDataSet(viewIdSource, viewIdTarget) {
+  return request({
+    url: '/chart/view/checkSameDataSet/' + viewIdSource + '/' + viewIdTarget,
+    method: 'get',
+    loading: false
+  })
+}
+
+export function ajaxGetDataOnly(id, data) {
+  return request({
+    url: '/chart/view/getData/' + id,
+    method: 'post',
+    loading: true,
+    hideMsg: true,
+    timeout: 30000,
+    data
   })
 }

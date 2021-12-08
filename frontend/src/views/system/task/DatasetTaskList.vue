@@ -60,7 +60,7 @@
             <span v-if="scope.row.status === 'Underway'" style="color: green">
               <el-link type="success" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.underway') }}</el-link>
             </span>
-            <span v-if="scope.row.status === 'Stopped'" >
+            <span v-if="scope.row.status === 'Stopped'">
               <div style="font-size: 12px">{{ $t('dataset.task.stopped') }}</div>
             </span>
             <span v-if="scope.row.status === 'Pending'" class="blue-color">
@@ -79,18 +79,18 @@
 
     <el-dialog v-dialogDrag :title="update_task_dialog_title" :visible="update_task" :show-close="false" width="50%" class="dialog-css" append-to-body>
       <el-col>
-        <el-form ref="taskForm" :form="taskForm" :model="taskForm" label-width="100px" size="mini" :rules="taskFormRules">
+        <el-form ref="taskForm" :form="taskForm" :model="taskForm" label-width="100px" size="small" :rules="taskFormRules">
           <el-form-item :label="$t('dataset.task_name')" prop="name">
-            <el-input v-model="taskForm.name" size="mini" style="width: 50%" :placeholder="$t('dataset.task_name')" />
+            <el-input v-model="taskForm.name" size="small" style="width: 50%" :placeholder="$t('dataset.task_name')" />
           </el-form-item>
           <el-form-item :label="$t('dataset.update_type')" prop="type">
-            <el-select v-model="taskForm.type" size="mini">
+            <el-select v-model="taskForm.type" size="small">
               <el-option :label="$t('dataset.all_scope')" value="all_scope" />
               <el-option :label="$t('dataset.add_scope')" value="add_scope" />
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('dataset.execute_rate')" prop="rate">
-            <el-select v-model="taskForm.rate" size="mini" @change="onRateChange">
+            <el-select v-model="taskForm.rate" size="small" @change="onRateChange">
               <el-option :label="$t('dataset.execute_once')" value="SIMPLE" />
               <el-option :label="$t('dataset.cron_config')" value="CRON" />
               <el-option :label="$t('dataset.simple_cron')" value="SIMPLE_CRON" />
@@ -100,18 +100,18 @@
           <el-form-item v-if="taskForm.rate === 'CRON'" label="">
             <el-popover v-model="cronEdit">
               <cron v-model="taskForm.cron" @close="cronEdit = false" />
-              <el-input slot="reference" v-model="taskForm.cron" size="mini" style="width: 50%" @click="cronEdit = true" />
+              <el-input slot="reference" v-model="taskForm.cron" size="small" style="width: 50%" @click="cronEdit = true" />
             </el-popover>
           </el-form-item>
 
           <el-form-item v-if="taskForm.rate === 'SIMPLE_CRON'" label="">
             <el-form :inline="true">
               <el-form-item :label="$t('cron.every')">
-                <el-input v-model="taskForm.extraData.simple_cron_value" size="mini" type="number" min="1" @change="onSimpleCronChange()" />
+                <el-input v-model="taskForm.extraData.simple_cron_value" size="small" type="number" min="1" @change="onSimpleCronChange()" />
               </el-form-item>
 
               <el-form-item class="form-item">
-                <el-select v-model="taskForm.extraData.simple_cron_type" filterable size="mini" @change="onSimpleCronChange()">
+                <el-select v-model="taskForm.extraData.simple_cron_type" filterable size="small" @change="onSimpleCronChange()">
                   <el-option :label="$t('cron.minute_default')" value="minute" />
                   <el-option :label="$t('cron.hour_default')" value="hour" />
                   <el-option :label="$t('cron.day_default')" value="day" />
@@ -123,20 +123,20 @@
           </el-form-item>
 
           <el-form-item v-if="taskForm.rate !== 'SIMPLE'" :label="$t('dataset.start_time')" prop="startTime">
-            <el-date-picker v-model="taskForm.startTime" type="datetime" :placeholder="$t('dataset.select_data_time')" size="mini" />
+            <el-date-picker v-model="taskForm.startTime" type="datetime" :placeholder="$t('dataset.select_data_time')" size="small" />
           </el-form-item>
           <el-form-item v-if="taskForm.rate !== 'SIMPLE'" :label="$t('dataset.end_time')" prop="end">
-            <el-select v-model="taskForm.end" size="mini">
+            <el-select v-model="taskForm.end" size="small">
               <el-option :label="$t('dataset.no_limit')" value="0" />
               <el-option :label="$t('dataset.set_end_time')" value="1" />
             </el-select>
           </el-form-item>
           <el-form-item v-if="taskForm.end === '1'" label="">
-            <el-date-picker v-model="taskForm.endTime" type="datetime" :placeholder="$t('dataset.select_data_time')" size="mini" />
+            <el-date-picker v-model="taskForm.endTime" type="datetime" :placeholder="$t('dataset.select_data_time')" size="small" />
           </el-form-item>
 
           <el-form-item v-if="taskForm.type === 'add_scope'" :label="$t('dataset.incremental_update_type')">
-            <el-radio-group v-model="incrementalUpdateType" size="mini" @change="incrementalUpdateTypeChange">
+            <el-radio-group v-model="incrementalUpdateType" size="small" @change="incrementalUpdateTypeChange">
               <el-radio label="incrementalAdd">{{ $t('dataset.incremental_add') }}</el-radio>
               <el-radio label="incrementalDelete">{{ $t('dataset.incremental_delete') }}</el-radio>
             </el-radio-group>
@@ -144,8 +144,8 @@
           </el-form-item>
 
           <el-form-item v-if="taskForm.type === 'add_scope'" :label="$t('dataset.param')">
-            <el-button type="text" size="mini" @click="insertParamToCodeMirror('${__last_update_time__}')">{{ $t('dataset.last_update_time') }}</el-button>
-            <el-button type="text" size="mini" @click="insertParamToCodeMirror('${__current_update_time__}')">{{ $t('dataset.current_update_time') }}</el-button>
+            <el-button type="text" size="small" @click="insertParamToCodeMirror('${__last_update_time__}')">{{ $t('dataset.last_update_time') }}</el-button>
+            <el-button type="text" size="small" @click="insertParamToCodeMirror('${__current_update_time__}')">{{ $t('dataset.current_update_time') }}</el-button>
           </el-form-item>
 
           <codemirror
@@ -161,17 +161,17 @@
         </el-form>
       </el-col>
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeTask">{{ $t('dataset.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="saveTask(taskForm)">{{ $t('dataset.confirm') }}</el-button>
+        <el-button size="small" @click="closeTask">{{ $t('dataset.cancel') }}</el-button>
+        <el-button type="primary" size="small" @click="saveTask(taskForm)">{{ $t('dataset.confirm') }}</el-button>
       </div>
     </el-dialog>
 
     <!--添加任务-选择数据集-->
     <el-dialog v-dialogDrag :title="$t('dataset.task.create')" :visible="selectDatasetFlag" :show-close="false" width="70%" class="dialog-css" :destroy-on-close="true">
-      <table-selector privileges="manage" :mode="1" :custom-type="customType" show-mode="datasetTask" @getTable="getTable" />
+      <table-selector privileges="manage" :mode="1" :clear-empty-dir="true" :custom-type="customType" show-mode="datasetTask" @getTable="getTable" />
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeCreateTask">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="mini" :disabled="!table.id" @click="create(undefined)">{{ $t('chart.confirm') }}</el-button>
+        <el-button size="small" @click="closeCreateTask">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="small" :disabled="!table.id" @click="create(undefined)">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -185,7 +185,7 @@
     >
       <span class="err-msg">{{ error_massage }}</span>
       <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="show_error_massage = false">{{ $t('dataset.close') }}</el-button>
+        <el-button size="small" @click="show_error_massage = false">{{ $t('dataset.close') }}</el-button>
       </span>
     </el-dialog>
   </el-col>
@@ -689,7 +689,7 @@ export default {
 }
 
 .el-form-item {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .codemirror {

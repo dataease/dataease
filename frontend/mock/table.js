@@ -13,7 +13,7 @@ const data = Mock.mock({
 
 export default [
   {
-    url: '/vue-admin-template/table/list',
+    url: '/dataease/table/list',
     type: 'get',
     response: config => {
       const items = data.items

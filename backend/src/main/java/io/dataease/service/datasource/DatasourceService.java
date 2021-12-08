@@ -34,13 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -67,7 +61,6 @@ public class DatasourceService {
         checkAndUpdateDatasourceStatus(datasource);
         datasourceMapper.insertSelective(datasource);
         handleConnectionPool(datasource, "add");
-
         return datasource;
     }
 
@@ -126,7 +119,7 @@ public class DatasourceService {
             conditionEntity.setField("1");
             conditionEntity.setOperator("eq");
             conditionEntity.setValue("1");
-            request.setConditions(Arrays.asList(conditionEntity));
+            request.setConditions(Collections.singletonList(conditionEntity));
         }
         GridExample gridExample = request.convertExample();
         gridExample.setExtendCondition(String.valueOf(AuthUtils.getUser().getUserId()));
@@ -263,10 +256,7 @@ public class DatasourceService {
 
     public void updateDatasourceStatus(){
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
-        datasources.forEach(datasource -> {
-            // checkAndUpdateDatasourceStatus(datasource);
-            checkAndUpdateDatasourceStatus(datasource, true);
-        });
+        datasources.forEach(datasource -> checkAndUpdateDatasourceStatus(datasource, true));
     }
 
     private void checkAndUpdateDatasourceStatus(Datasource datasource){
@@ -300,9 +290,7 @@ public class DatasourceService {
         }
     }
 
-
     private void sendWebMsg(Datasource datasource) {
-        
         String id = datasource.getId();
         AuthURD authURD = AuthUtils.authURDR(id);
         Set<Long> userIds = AuthUtils.userIdsByURD(authURD);
@@ -312,11 +300,8 @@ public class DatasourceService {
             Map<String, Object> param = new HashMap<>();
             param.put("id", id);
             param.put("name", datasource.getName());
-            
-            
             String content = "数据源【" + datasource.getName() + "】无效";
-            
-            DeMsgutil.sendMsg(userId, typeId, 1L, content, gson.toJson(param));
+            DeMsgutil.sendMsg(userId, typeId,  content, gson.toJson(param));
         });
     }
 }

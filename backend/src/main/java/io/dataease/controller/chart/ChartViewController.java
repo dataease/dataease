@@ -16,7 +16,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author gin
@@ -89,10 +88,6 @@ public class ChartViewController {
     public ChartViewDTO getOneWithPermission(@PathVariable String id, @RequestBody ChartExtRequest requestList) throws Exception {
         //如果能获取用户 则添加对应的权限
         ChartViewDTO dto = chartViewService.getData(id, requestList);
-        if (dto != null && AuthUtils.getUser() != null) {
-            ChartViewDTO permissionDto = chartViewService.getOneWithPermission(dto.getId());
-            dto.setPrivileges(permissionDto.getPrivileges());
-        }
         return dto;
     }
 
@@ -106,5 +101,11 @@ public class ChartViewController {
     @PostMapping("/calcData")
     public ChartViewDTO calcData(@RequestBody ChartCalRequest request) throws Exception {
         return chartViewService.calcData(request.getView(), request.getRequestList(), false);
+    }
+
+    @ApiOperation("验证视图是否使用相同数据集")
+    @GetMapping("/checkSameDataSet/{viewIdSource}/{viewIdTarget}")
+    public String checkSameDataSet(@PathVariable String viewIdSource, @PathVariable String viewIdTarget) throws Exception {
+        return chartViewService.checkSameDataSet(viewIdSource, viewIdTarget);
     }
 }

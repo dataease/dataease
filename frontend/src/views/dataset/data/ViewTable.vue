@@ -36,6 +36,9 @@
         <el-button v-if="table.type ==='sql'" size="mini" @click="editSql">
           {{ $t('dataset.edit_sql') }}
         </el-button>
+        <el-button v-if="table.type ==='union'" size="mini" @click="editUnion">
+          {{ $t('dataset.edit_union') }}
+        </el-button>
         <!--        <el-button size="mini" @click="edit">-->
         <!--          {{ $t('dataset.edit_field') }}-->
         <!--        </el-button>-->
@@ -171,6 +174,9 @@ export default {
     },
     editCustom() {
       this.$emit('switchComponent', { name: 'AddCustom', param: { id: this.table.sceneId, tableId: this.table.id, table: this.table }})
+    },
+    editUnion() {
+      this.$emit('switchComponent', { name: 'AddUnion', param: { id: this.table.sceneId, tableId: this.table.id, table: this.table }})
     },
 
     reSearch(val) {

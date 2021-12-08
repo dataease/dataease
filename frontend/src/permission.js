@@ -11,7 +11,7 @@ import { filterAsyncRouter } from '@/store/modules/permission'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login', '/401', '/404'] // no redirect whitelist
+const whiteList = ['/login', '/401', '/404', '/delink', '/nolic'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
   // start progress bar
@@ -29,7 +29,7 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done()
     } else {
       const hasGetUserInfo = store.getters.name
-      if (hasGetUserInfo || to.path.indexOf('/preview/') > -1) {
+      if (hasGetUserInfo || to.path.indexOf('/preview/') > -1 || to.path.indexOf('/delink') > -1 || to.path.indexOf('/nolic') > -1) {
         next()
         store.dispatch('permission/setCurrentPath', to.path)
       } else {
@@ -74,7 +74,9 @@ router.beforeEach(async(to, from, next) => {
 })
 export const loadMenus = (next, to) => {
   buildMenus().then(res => {
-    const filterDatas = filterRouter(res.data)
+    const datas = res.data
+    disableSomeMenu(datas)
+    const filterDatas = filterRouter(datas)
     const asyncRouter = filterAsyncRouter(filterDatas)
     asyncRouter.push({ path: '*', redirect: '/404', hidden: true })
     store.dispatch('permission/GenerateRoutes', asyncRouter).then(() => { // 存储路由
@@ -85,6 +87,17 @@ export const loadMenus = (next, to) => {
         next('/')
       }
     })
+  })
+}
+const disableSomeMenu = datas => {
+  datas.forEach(menu => {
+    if (menu.name === 'system') {
+      menu.children.forEach(item => {
+        if (item.name === 'sys-task') {
+          item.children = [item.children[0]]
+        }
+      })
+    }
   })
 }
 

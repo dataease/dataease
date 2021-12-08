@@ -3,7 +3,6 @@
     <div v-if="linkageSettingStatus&&element!==curLinkageView&&element.type==='view'" style="margin-right: -1px;width: 18px">
       <el-checkbox v-model="linkageInfo.linkageActive" />
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
-      <!--      <i v-if="linkageInfo.linkageActive" class="icon iconfont icon-edit" @click.stop="linkageEdit" />-->
     </div>
     <div v-else-if="!linkageSettingStatus">
       <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet">
@@ -26,9 +25,6 @@
       <span :title="$t('panel.cancel_linkage')">
         <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
       </span>
-      <!--      <spa>-->
-      <!--        {{ curComponent.x }}-{{ curComponent.y }}&#45;&#45;{{ curComponent.sizex }}-{{ curComponent.sizey }}-->
-      <!--      </spa>-->
     </div>
 
   </div>
@@ -39,7 +35,6 @@ import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 import LinkageField from '@/components/canvas/components/Editor/LinkageField'
-import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
   components: { SettingMenu, LinkageField },
@@ -73,7 +68,6 @@ export default {
     }
   },
   mounted() {
-    // this.createTimer()
   },
   computed: {
     existLinkage() {
@@ -106,7 +100,6 @@ export default {
     ])
   },
   beforeDestroy() {
-    // this.destroyTimer()
   },
   methods: {
     createTimer() {
@@ -172,9 +165,7 @@ export default {
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit')
       }
-
       // 编辑样式组件
-
       if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
         bus.$emit('component-dialog-style')
       }

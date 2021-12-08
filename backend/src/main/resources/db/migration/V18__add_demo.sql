@@ -6,29 +6,29 @@ CREATE TABLE `demo_olympiad_athlete` (
      `game` varchar(255) DEFAULT NULL,
      `hot_num` int(11) DEFAULT NULL,
      PRIMARY KEY (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `demo_olympiad_audience_age` (
       `age` varchar(255) NOT NULL,
       `percent` float(255,2) DEFAULT NULL,
   PRIMARY KEY (`age`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `demo_olympiad_audience_sex` (
   `sex` varchar(255) NOT NULL,
   `percent` float(255,2) DEFAULT NULL,
   PRIMARY KEY (`sex`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `demo_olympiad_country` (
  `code` varchar(255) NOT NULL,
  `name` varchar(255) DEFAULT NULL,
  PRIMARY KEY (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `demo_olympiad_data_update` (
     `update_date` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `demo_olympiad_gold_date` (
        `id` varchar(255) NOT NULL,
@@ -36,26 +36,27 @@ CREATE TABLE `demo_olympiad_gold_date` (
        `game` varchar(255) DEFAULT NULL,
        `qty` varchar(255) DEFAULT NULL,
        PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `demo_olympiad_hot_game` (
       `code` varchar(255) NOT NULL,
       `sort` varchar(255) DEFAULT NULL,
       `name` varchar(255) DEFAULT NULL,
       PRIMARY KEY (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
 CREATE TABLE `demo_olympiad_medal` (
        `code` int(11) NOT NULL,
        `name` varchar(50) NOT NULL,
        PRIMARY KEY (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `demo_olympiad_medal_qty` (
        `id` varchar(255) DEFAULT NULL,
        `country` varchar(255) DEFAULT NULL,
        `medal` varchar(255) DEFAULT NULL,
        `qty` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 
 CREATE TABLE `demo_sales_dashboard` (
@@ -66,7 +67,7 @@ CREATE TABLE `demo_sales_dashboard` (
     `sales_qty` int(11) DEFAULT NULL,
     `sales_amount` int(255) DEFAULT NULL,
     `target_qty` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 
 INSERT INTO `demo_olympiad_athlete` (`code`,`sort`,`name`,`country`,`game`,`hot_num`) VALUES ('1',1,'郑妮娜力','1','3',37770);
@@ -222,20 +223,16 @@ INSERT INTO `demo_sales_dashboard` (`year`,`mounth`,`sales_dept`,`product_name`,
 INSERT INTO `demo_sales_dashboard` (`year`,`mounth`,`sales_dept`,`product_name`,`sales_qty`,`sales_amount`,`target_qty`) VALUES (2020,11,'销售三部','睡袋',77,777,500);
 INSERT INTO `demo_sales_dashboard` (`year`,`mounth`,`sales_dept`,`product_name`,`sales_qty`,`sales_amount`,`target_qty`) VALUES (2020,12,'销售一部','睡袋',67,545,500);
 
-
-
-SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
 -- Table structure for demo_new_trend_of_diagnosis
 -- ----------------------------
-DROP TABLE IF EXISTS `demo_new_trend_of_diagnosis`;
 CREATE TABLE `demo_new_trend_of_diagnosis` (
-                                               `date` varchar(50) NOT NULL DEFAULT '' COMMENT '日期',
-                                               `new_diagnosis` bigint(13) DEFAULT NULL COMMENT '新增确诊',
-                                               `current_diagnosis` bigint(13) DEFAULT NULL COMMENT '现有确诊'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+   `date` varchar(50) NOT NULL DEFAULT '' COMMENT '日期',
+   `new_diagnosis` bigint(13) DEFAULT NULL COMMENT '新增确诊',
+   `current_diagnosis` bigint(13) DEFAULT NULL COMMENT '现有确诊'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_new_trend_of_diagnosis

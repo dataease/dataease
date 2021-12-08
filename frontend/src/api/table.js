@@ -10,11 +10,6 @@ const data = Mock.mock({
   }]
 })
 export function getList(params) {
-//   return request({
-//     url: '/vue-admin-template/table/list',
-//     method: 'get',
-//     params
-//   })
   return new Promise((resolve, reject) => {
     const items = data.items
     const result = {

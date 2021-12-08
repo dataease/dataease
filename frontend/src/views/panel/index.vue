@@ -1,10 +1,9 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="background-color: #f7f8fa">
-    <de-main-container>
+    <de-main-container :class="{'full-height':fullHeightFlag}">
       <panel-main v-show="componentName==='PanelMain'" ref="panel_main" />
       <chart-edit v-if="componentName==='ChartEdit'" :param="param" />
       <panel-edit v-if="componentName==='PanelEdit'" />
-      <!--      <component :is="component" :param="param" />-->
     </de-main-container>
   </de-container>
 </template>
@@ -27,6 +26,11 @@ export default {
       param: {}
     }
   },
+  computed: {
+    fullHeightFlag() {
+      return this.$route.path.indexOf('panel') > -1 && (this.componentName === 'PanelEdit' || this.componentName === 'ChartEdit')
+    }
+  },
   watch: {
     $route(to, from) {
       console.log(to)
@@ -42,34 +46,12 @@ export default {
       this.param = c.param
       this.componentName = c.name
       this.$store.dispatch('panel/setMainActiveName', c.name)
-      // switch (c.name) {
-      //   case 'PanelEdit':
-      //     this.component = PanelEdit
-      //     this.componentName = 'PanelEdit'
-      //     break
-      //   case 'ChartEdit':
-      //     this.component = ChartEdit
-      //     this.componentName = 'ChartEdit'
-      //     break
-      //   default:
-      //     this.component = PanelMain
-      //     this.componentName = 'PanelMain'
-      //     break
-      // }
     })
   },
   created() {
+    bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
     this.$store.dispatch('app/toggleSideBarHide', true)
     const routerParam = this.$router.currentRoute.params
-    // if ((routerParam = this.$router.currentRoute.params) !== null && routerParam.msgNotification) {
-    //   // 说明是从消息通知跳转过来的
-    //   if (routerParam.msgType === 0) { // 是仪表板分享
-    //     this.componentName = 'PanelMain'
-    //     this.$nextTick(() => {
-    //       this.$refs.panel_main.msg2Current(routerParam.sourceParam)
-    //     })
-    //   }
-    // }
     this.toMsgShare(routerParam)
   },
   methods: {
@@ -103,4 +85,7 @@ export default {
     padding: 0;
   }
 
+  .full-height {
+    height: 100vh !important;
+  }
 </style>
