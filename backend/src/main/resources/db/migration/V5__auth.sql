@@ -333,7 +333,7 @@ DECLARE oTempChild VARCHAR(8000);
 
 SET oTemp = '';
 
-SET oTempChild = CAST(parentId AS CHAR);
+SET oTempChild = CAST(parentId AS CHAR CHARACTER set utf8mb4) COLLATE utf8mb4_general_ci;
 
 WHILE oTempChild IS NOT NULL
 
@@ -366,7 +366,8 @@ DECLARE oTempChild VARCHAR(8000);
 
 SET oTemp = '';
 
-SET oTempChild = CAST(parentId AS CHAR);
+SET oTempChild = CAST(parentId AS CHAR CHARACTER set utf8mb4) COLLATE utf8mb4_general_ci;
+
 
 WHILE oTempChild IS NOT NULL
 
@@ -420,7 +421,7 @@ DECLARE oTempChild longtext;
 
 SET oTemp = '';
 
-SET oTempChild = CAST(parentId AS CHAR);
+SET oTempChild = CAST(parentId AS CHAR CHARACTER set utf8mb4) COLLATE utf8mb4_general_ci;
 
 WHILE oTempChild IS NOT NULL
 
@@ -453,7 +454,7 @@ DECLARE oTempParent longtext;
 
 SET oTemp = '';
 
-SET oTempParent = CAST(childrenId AS CHAR);
+SET oTempParent = CAST(childrenId AS CHAR CHARACTER set utf8mb4) COLLATE utf8mb4_general_ci;
 
 WHILE oTempParent IS NOT NULL
 
