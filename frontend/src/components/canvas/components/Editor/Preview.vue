@@ -213,8 +213,8 @@ export default {
     restore() {
       const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
       const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
-      this.scaleWidth = canvasWidth * 100 / parseInt(this.canvasStyleData.width)// 获取宽度比
-      this.scaleHeight = canvasHeight * 100 / parseInt(this.canvasStyleData.height)// 获取高度比
+      this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
+      this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
       this.handleScaleChange()
     },
     resetID(data) {
@@ -226,7 +226,7 @@ export default {
       return data
     },
     format(value, scale) {
-      return value * parseInt(scale) / 100
+      return value * scale / 100
     },
     handleScaleChange() {
       if (this.componentData) {
@@ -294,10 +294,6 @@ export default {
     font-size: 14px;
     flex-flow: row nowrap;
     color: #9ea6b2;
-  }
-
-  .gap_class {
-    padding: 5px;
   }
 
   .dialog-css > > > .el-dialog__title {

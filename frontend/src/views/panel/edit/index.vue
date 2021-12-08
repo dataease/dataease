@@ -321,7 +321,9 @@ export default {
       return !this.linkageSettingStatus && !this.mobileLayoutStatus
     },
     showAttr() {
-      if (this.curComponent && this.showAttrComponent.includes(this.curComponent.type)) {
+      if (this.mobileLayoutStatus) {
+        return false
+      } else if (this.curComponent && this.showAttrComponent.includes(this.curComponent.type)) {
         // 过滤组件有标题才显示
         if (this.curComponent.type === 'custom' && !this.curComponent.options.attrs.title) {
           return false
