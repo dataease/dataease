@@ -11,7 +11,6 @@
 </body>
 <script>
     function getQueryVariable(variable) {
-        debugger
         let query = window.location.search.substring(1)
         let vars = []
         if (!query) {
@@ -27,7 +26,11 @@
         return (false)
     }
     const link = getQueryVariable('link')
-    const url = "/#/delink?link="+encodeURIComponent(link)
+    const terminal = getQueryVariable('terminal')
+    let url = "/#/delink?link="+encodeURIComponent(link)
+    if (terminal) {
+        url += '&terminal='+terminal
+    }
     window.location.href = url
 </script>
 </html>
