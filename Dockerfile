@@ -34,4 +34,7 @@ ENV JAVA_OPTIONS=-Dfile.encoding=utf-8
 
 HEALTHCHECK --interval=15s --timeout=5s --retries=20 --start-period=30s CMD curl -f 127.0.0.1:8081
 
-CMD ["/deployments/run-java.sh"]
+EXPOSE 8081
+
+ENTRYPOINT java -jar /opt/apps/backend-$IMAGE_TAG.jar
+#CMD ["/deployments/run-java.sh"]
