@@ -97,7 +97,8 @@ export default {
           const contentWidth = canvas.width
           const contentHeight = canvas.height
           const pageData = canvas.toDataURL('image/jpeg', 1.0)
-          const PDF = new JsPDF('p', 'pt', [contentWidth, contentHeight])
+          const lp = contentWidth > contentHeight ? 'l' : 'p'
+          const PDF = new JsPDF(lp, 'pt', [contentWidth, contentHeight])
           PDF.addImage(pageData, 'JPEG', 0, 0, contentWidth, contentHeight)
           PDF.save(_this.panelName + '.pdf')
           _this.$emit('closePreExport')
