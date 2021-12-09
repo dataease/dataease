@@ -125,7 +125,7 @@ import SaveToTemplate from '@/views/panel/list/SaveToTemplate'
 import { mapState } from 'vuex'
 import html2canvas from 'html2canvasde'
 import FileSaver from 'file-saver'
-import { enshrineList, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
+import { starStatus, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
@@ -294,9 +294,8 @@ export default {
       })
     },
     initHasStar() {
-      const param = {}
-      enshrineList(param).then(res => {
-        this.hasStar = res.data && res.data.some(item => item.panelGroupId === this.panelInfo.id)
+      starStatus(this.panelInfo.id).then(res => {
+        this.hasStar = res.data
       })
     },
     refreshStarList(isStar) {

@@ -53,4 +53,11 @@ public class StoreService {
         return extPanelStoreMapper.query(example);
     }
 
+    public Long count(String panelId) {
+        PanelStoreExample example = new PanelStoreExample();
+        example.createCriteria().andUserIdEqualTo(AuthUtils.getUser().getUserId()).andPanelGroupIdEqualTo(panelId);
+        return panelStoreMapper.countByExample(example);
+    }
+
+
 }
