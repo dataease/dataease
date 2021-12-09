@@ -203,7 +203,7 @@ public class EmailService {
             props.put("mail.smtp.starttls.enable", "true");
         }
         props.put("mail.smtp.timeout", "30000");
-        props.put("mail.smtp.connectiontimeout", "5000");
+        props.put("mail.smtp.connectiontimeout", "10000");
         javaMailSender.setJavaMailProperties(props);
         try {
             javaMailSender.testConnection();
@@ -221,7 +221,7 @@ public class EmailService {
                 helper.setText("这是一封测试邮件，邮件发送成功", true);
                 helper.setTo(recipients);
                 javaMailSender.send(mimeMessage);
-            } catch (MessagingException e) {
+            } catch (Exception e) {
                 LogUtil.error(e.getMessage(), e);
                 DEException.throwException(Translator.get("connection_failed"));
             }

@@ -75,7 +75,6 @@ router.beforeEach(async(to, from, next) => {
 export const loadMenus = (next, to) => {
   buildMenus().then(res => {
     const datas = res.data
-    disableSomeMenu(datas)
     const filterDatas = filterRouter(datas)
     const asyncRouter = filterAsyncRouter(filterDatas)
     asyncRouter.push({ path: '*', redirect: '/404', hidden: true })
@@ -87,17 +86,6 @@ export const loadMenus = (next, to) => {
         next('/')
       }
     })
-  })
-}
-const disableSomeMenu = datas => {
-  datas.forEach(menu => {
-    if (menu.name === 'system') {
-      menu.children.forEach(item => {
-        if (item.name === 'sys-task') {
-          item.children = [item.children[0]]
-        }
-      })
-    }
   })
 }
 
