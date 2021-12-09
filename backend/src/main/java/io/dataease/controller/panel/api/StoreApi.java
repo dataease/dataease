@@ -32,7 +32,12 @@ public interface StoreApi {
 
 
     @ApiOperation("移除收藏")
-    @PostMapping("/remove/{storeId}")
-    void remove(@PathVariable("storeId") String storeId);
+    @PostMapping("/remove/{panelId}")
+    void remove(@PathVariable("panelId") String panelId);
+
+    @ApiOperation("收藏状态")
+    @PostMapping("/status/{id}")
+    Boolean hasStar(@PathVariable("id") String id);
+
 
 }
