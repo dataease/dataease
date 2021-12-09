@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -433,6 +434,87 @@ public class ChartViewService {
             }
         }
 
+        // 同比/环比计算，通过对比类型和数据设置，计算出对应指标的结果，然后替换结果data数组中的对应元素
+        // 如果因维度变化（如时间字段缺失，时间字段的展示格式变化）导致无法计算结果的，则结果data数组中的对应元素全置为null
+        // 根据不同图表类型，获得需要替换的指标index array
+        for (int i = 0; i < yAxis.size(); i++) {
+            ChartViewFieldDTO chartViewFieldDTO = yAxis.get(i);
+            ChartFieldCompareDTO compareCalc = chartViewFieldDTO.getCompareCalc();
+            if (ObjectUtils.isEmpty(compareCalc)) {
+                continue;
+            }
+            if (StringUtils.isNotEmpty(compareCalc.getType())
+                    && !StringUtils.equalsIgnoreCase(compareCalc.getType(), "none")) {
+                String compareFieldId = compareCalc.getField();// 选中字段
+                String resultData = compareCalc.getResultData();// 数据设置
+                // 获取选中字段以及下标
+                List<ChartViewFieldDTO> checkedField = new ArrayList<>(xAxis);
+                if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                    checkedField.addAll(extStack);
+                }
+                int timeIndex = 0;// 时间字段下标
+                ChartViewFieldDTO timeField = null;
+                for (int j = 0; j < checkedField.size(); j++) {
+                    if (StringUtils.equalsIgnoreCase(checkedField.get(j).getId(), compareFieldId)) {
+                        timeIndex = j;
+                        timeField = checkedField.get(j);
+                    }
+                }
+                // 计算指标对应的下标
+                int dataIndex = 0;// 数据字段下标
+                if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                    dataIndex = xAxis.size() + extStack.size() + i;
+                } else {
+                    dataIndex = xAxis.size() + i;
+                }
+                // 无选中字段，或者选中字段已经不在维度list中，或者选中字段日期格式不符合对比类型的，直接将对应数据置为null
+                if (ObjectUtils.isEmpty(timeField) || !checkCalcType(timeField.getDateStyle(), compareCalc.getType())) {
+                    // set null
+                    for (String[] item : data) {
+                        item[dataIndex] = null;
+                    }
+                } else {
+                    // 计算 同比/环比
+                    // 1，处理当期数据；2，根据type计算上一期数据；3，根据resultData计算结果
+                    Map<String, String> currentMap = new LinkedHashMap<>();
+                    for (String[] item : data) {
+                        currentMap.put(item[timeIndex], item[dataIndex]);
+                    }
+
+                    Iterator<Map.Entry<String, String>> iterator = currentMap.entrySet().iterator();
+                    int index = 0;
+                    while (iterator.hasNext()) {
+                        Map.Entry<String, String> next = iterator.next();
+                        String cTime = next.getKey();
+                        String cValue = next.getValue();
+
+                        String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle());
+                        String lastValue = currentMap.get(lastTime);
+                        if (StringUtils.isEmpty(cValue) || StringUtils.isEmpty(lastValue)) {
+                            data.get(index)[dataIndex] = null;
+                        } else {
+                            if (StringUtils.equalsIgnoreCase(resultData, "sub")) {
+                                data.get(index)[dataIndex] = new BigDecimal(cValue).subtract(new BigDecimal(lastValue)).toString();
+                            } else if (StringUtils.equalsIgnoreCase(resultData, "percent")) {
+                                if (StringUtils.isEmpty(lastValue)) {
+                                    data.get(index)[dataIndex] = null;
+                                } else {
+                                    data.get(index)[dataIndex] = new BigDecimal(cValue)
+                                            .divide(new BigDecimal(lastValue), 2, RoundingMode.HALF_UP)
+                                            .subtract(new BigDecimal(1))
+                                            .setScale(2, RoundingMode.HALF_UP)
+                                            .toString();
+                                }
+                            }
+                        }
+                        index++;
+                    }
+
+                }
+            }
+        }
+
+        // 构建结果
         Map<String, Object> map = new TreeMap<>();
         // 图表组件可再扩展
         Map<String, Object> mapChart = new HashMap<>();
@@ -489,6 +571,68 @@ public class ChartViewService {
         dto.setDrill(isDrill);
         dto.setDrillFilters(drillFilters);
         return dto;
+    }
+
+    private boolean checkCalcType(String dateStyle, String calcType) {
+        switch (dateStyle) {
+            case "y":
+                return StringUtils.equalsIgnoreCase(calcType, "year_mom");
+            case "y_M":
+                return StringUtils.equalsIgnoreCase(calcType, "month_mom")
+                        || StringUtils.equalsIgnoreCase(calcType, "year_yoy");
+            case "y_M_d":
+                return StringUtils.equalsIgnoreCase(calcType, "day_mom")
+                        || StringUtils.equalsIgnoreCase(calcType, "month_yoy")
+                        || StringUtils.equalsIgnoreCase(calcType, "year_yoy");
+        }
+        return false;
+    }
+
+    private String calcLastTime(String cTime, String type, String dateStyle) throws Exception {
+        String lastTime = null;
+        Calendar calendar = Calendar.getInstance();
+        if (StringUtils.equalsIgnoreCase(type, ChartConstants.YEAR_MOM)) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
+            Date date = simpleDateFormat.parse(cTime);
+            calendar.setTime(date);
+            calendar.add(Calendar.YEAR, -1);
+            lastTime = simpleDateFormat.format(calendar.getTime());
+        } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.MONTH_MOM)) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+            Date date = simpleDateFormat.parse(cTime);
+            calendar.setTime(date);
+            calendar.add(Calendar.MONTH, -1);
+            lastTime = simpleDateFormat.format(calendar.getTime());
+        } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.YEAR_YOY)) {
+            SimpleDateFormat simpleDateFormat = null;
+            if (StringUtils.equalsIgnoreCase(dateStyle, "y_M")) {
+                simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+            } else if (StringUtils.equalsIgnoreCase(dateStyle, "y_M_d")) {
+                simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            }
+            Date date = simpleDateFormat.parse(cTime);
+            calendar.setTime(date);
+            calendar.add(Calendar.YEAR, -1);
+            lastTime = simpleDateFormat.format(calendar.getTime());
+        } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.DAY_MOM)) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = simpleDateFormat.parse(cTime);
+            calendar.setTime(date);
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+            lastTime = simpleDateFormat.format(calendar.getTime());
+        } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.MONTH_YOY)) {
+            SimpleDateFormat simpleDateFormat = null;
+            if (StringUtils.equalsIgnoreCase(dateStyle, "y_M")) {
+                simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+            } else if (StringUtils.equalsIgnoreCase(dateStyle, "y_M_d")) {
+                simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            }
+            Date date = simpleDateFormat.parse(cTime);
+            calendar.setTime(date);
+            calendar.add(Calendar.MONTH, -1);
+            lastTime = simpleDateFormat.format(calendar.getTime());
+        }
+        return lastTime;
     }
 
     private boolean checkDrillExist(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> extStack, ChartViewFieldDTO dto, ChartViewWithBLOBs view) {

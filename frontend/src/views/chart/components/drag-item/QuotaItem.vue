@@ -195,7 +195,7 @@ export default {
       const t2 = extStack.filter(ele => {
         return ele.deType === 1
       })
-      if ((t1.length > 0 || t2.length > 0) && this.chart.type !== 'text' && this.chart.type !== 'gauge' && this.chart.type !== 'liquid') {
+      if ((t1.length + t2.length === 1) && this.chart.type !== 'text' && this.chart.type !== 'gauge' && this.chart.type !== 'liquid') {
         this.disableEditCompare = false
       } else {
         this.disableEditCompare = true

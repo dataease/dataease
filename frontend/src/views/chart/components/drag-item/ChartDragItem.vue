@@ -11,6 +11,9 @@
       </span>
       <span class="item-span-style" :title="item.name">{{ item.name }}</span>
       <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
+      <span v-if="item.deType === 1" class="summary-span">
+        {{ $t('chart.' + item.dateStyle) }}
+      </span>
     </el-tag>
     <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
@@ -25,6 +28,9 @@
           </span>
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
           <span v-if="item.summary" class="summary-span">{{ $t('chart.'+item.summary) }}</span>
+          <span v-if="item.deType === 1" class="summary-span">
+            {{ $t('chart.' + item.dateStyle) }}
+          </span>
           <i class="el-icon-arrow-down el-icon--right" style="position: absolute;top: 6px;right: 10px;" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
@@ -239,7 +245,7 @@ export default {
 
   .item-span-style{
     display: inline-block;
-    width: 80px;
+    width: 70px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -254,6 +260,6 @@ export default {
     margin-left: 4px;
     color: #878d9f;
     position: absolute;
-    right: 30px;
+    right: 25px;
   }
 </style>
