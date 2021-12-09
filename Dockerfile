@@ -1,12 +1,18 @@
-FROM registry.cn-qingdao.aliyuncs.com/dataease/fabric8-java-alpine-openjdk8-jre
+#FROM registry.cn-qingdao.aliyuncs.com/dataease/fabric8-java-alpine-openjdk8-jre
+FROM alpine
+
+RUN echo -e 'http://mirrors.aliyun.com/alpine/v3.15/main/\nhttp://mirrors.aliyun.com/alpine/v3.15/community/' > /etc/apk/repositories 
+
+RUN apk add openjdk8 chromium chromium-chromedriver fontconfig --no-cache --allow-untrusted
+
+ADD simsun.ttc /usr/share/fonts/
+
+RUN cd /usr/share/fonts/ \
+    && mkfontscale \
+    && mkfontdir \
+    && fc-cache -fv
 
 ARG IMAGE_TAG
-
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-
-RUN apk add chromium=77.0.3865.120-r0 --no-cache
-
-RUN apk add chromium-chromedriver=77.0.3865.120-r0 --no-cache
 
 RUN mkdir -p /opt/apps
 
