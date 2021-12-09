@@ -1262,6 +1262,9 @@ export default {
           if (!ele.filter) {
             ele.filter = []
           }
+          if (!ele.compareCalc) {
+            ele.compareCalc = compareItem
+          }
         })
       }
       view.extStack.forEach(function(ele) {
