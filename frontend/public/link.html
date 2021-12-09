@@ -1,33 +1,42 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  
+
 </head>
+
 <body style="height: 100%;">
-<div id="link"></div>
+  <div id="link"></div>
 </body>
 <script>
-    function getQueryVariable(variable) {
-        debugger
-        let query = window.location.search.substring(1)
-        let vars = []
-        if (!query) {
-            query = document.cookie   
-            vars = query.split(';')         
-        }else {
-            vars = query.split('&')
-        }
-        for (var i = 0; i < vars.length; i++) {
-            const pair = vars[i].split('=')
-            if (pair[0].trim() === variable) { return pair[1] }
-        }
-        return (false)
+  function getQueryVariable(variable) {
+    let query = window.location.search.substring(1)
+    let vars = []
+    if (!query) {
+      query = document.cookie
+      vars = query.split(';')
+    } else {
+      vars = query.split('&')
     }
-    const link = getQueryVariable('link')
-    const url = "/#/delink?link="+encodeURIComponent(link)
-    window.location.href = url
+    for (var i = 0; i < vars.length; i++) {
+      const pair = vars[i].split('=')
+      if (pair[0].trim() === variable) {
+        return pair[1]
+      }
+    }
+    return (false)
+  }
+  const link = getQueryVariable('link')
+  const terminal = getQueryVariable('terminal')
+  let url = "/#/delink?link=" + encodeURIComponent(link)
+  if (terminal) {
+    url += '&terminal=' + terminal
+  }
+  window.location.href = url
+
 </script>
+
 </html>
