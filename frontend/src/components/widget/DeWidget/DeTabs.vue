@@ -35,7 +35,7 @@
         </span>
 
         <div v-if="activeTabName === item.name" class="de-tab-content">
-          <user-view v-if="item.content && item.content.propValue && item.content.propValue.viewId" :ref="item.name" :element="item.content" :out-style="outStyle" />
+          <user-view v-if="item.content && item.content.propValue && item.content.propValue.viewId" :ref="item.name" :in-tab="true" :is-edit="isEdit" :active="active" :element="item.content" :out-style="outStyle" />
         </div>
 
       </el-tab-pane>
@@ -94,6 +94,7 @@ import ViewSelect from '@/views/panel/ViewSelect'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import componentList from '@/components/canvas/custom-component/component-list'
+import { mapState } from 'vuex'
 
 export default {
   name: 'DeTabls',
@@ -106,6 +107,10 @@ export default {
     isEdit: {
       type: Boolean,
       default: true
+    },
+    active: {
+      type: Boolean,
+      default: false
     },
     outStyle: {
       type: Object,
@@ -129,10 +134,23 @@ export default {
       tabList: []
     }
   },
+  watch: {
+    curComponent: {
+      handler(newVal, oldVla) {
+        console.log(newVal)
+      },
+      deep: true
+    }
+  },
   created() {
     bus.$on('add-new-tab', this.addNewTab)
     this.tabList = this.element.options && this.element.options.tabList
     this.activeTabName = this.tabList[0].name
+  },
+  computed: {
+    ...mapState([
+      'curComponent'
+    ])
   },
   methods: {
     beforeHandleCommond(item, param) {
