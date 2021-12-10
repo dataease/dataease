@@ -478,28 +478,31 @@ public class ChartViewService {
                     // 1，处理当期数据；2，根据type计算上一期数据；3，根据resultData计算结果
                     Map<String, String> currentMap = new LinkedHashMap<>();
                     for (String[] item : data) {
-                        currentMap.put(item[timeIndex], item[dataIndex]);
+                        String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
+                        currentMap.put(StringUtils.join(dimension, "-"), item[dataIndex]);
                     }
 
-                    Iterator<Map.Entry<String, String>> iterator = currentMap.entrySet().iterator();
-                    int index = 0;
-                    while (iterator.hasNext()) {
-                        Map.Entry<String, String> next = iterator.next();
-                        String cTime = next.getKey();
-                        String cValue = next.getValue();
+                    for (int index = 0; index < data.size(); index++) {
+                        String[] item = data.get(index);
+                        String cTime = item[timeIndex];
+                        String cValue = item[dataIndex];
 
+                        // 获取计算后的时间，并且与所有维度拼接
                         String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle());
-                        String lastValue = currentMap.get(lastTime);
+                        String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
+                        dimension[timeIndex] = lastTime;
+
+                        String lastValue = currentMap.get(StringUtils.join(dimension, "-"));
                         if (StringUtils.isEmpty(cValue) || StringUtils.isEmpty(lastValue)) {
-                            data.get(index)[dataIndex] = null;
+                            item[dataIndex] = null;
                         } else {
                             if (StringUtils.equalsIgnoreCase(resultData, "sub")) {
-                                data.get(index)[dataIndex] = new BigDecimal(cValue).subtract(new BigDecimal(lastValue)).toString();
+                                item[dataIndex] = new BigDecimal(cValue).subtract(new BigDecimal(lastValue)).toString();
                             } else if (StringUtils.equalsIgnoreCase(resultData, "percent")) {
-                                if (StringUtils.isEmpty(lastValue)) {
-                                    data.get(index)[dataIndex] = null;
+                                if (Integer.parseInt(lastValue) == 0) {
+                                    item[dataIndex] = null;
                                 } else {
-                                    data.get(index)[dataIndex] = new BigDecimal(cValue)
+                                    item[dataIndex] = new BigDecimal(cValue)
                                             .divide(new BigDecimal(lastValue), 2, RoundingMode.HALF_UP)
                                             .subtract(new BigDecimal(1))
                                             .setScale(2, RoundingMode.HALF_UP)
@@ -507,9 +510,7 @@ public class ChartViewService {
                                 }
                             }
                         }
-                        index++;
                     }
-
                 }
             }
         }
