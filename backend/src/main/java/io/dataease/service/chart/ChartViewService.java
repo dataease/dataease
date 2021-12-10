@@ -733,7 +733,7 @@ public class ChartViewService {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
-                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(row[i]) ? "0" : row[i]));
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
@@ -789,7 +789,7 @@ public class ChartViewService {
                     quotaList.add(chartQuotaDTO);
                     axisChartDataDTO.setQuotaList(quotaList);
                     try {
-                        axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(row[valueIndex]) ? "0" : row[valueIndex]));
+                        axisChartDataDTO.setValue(StringUtils.isEmpty(row[valueIndex]) ? null : new BigDecimal(row[valueIndex]));
                     } catch (Exception e) {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
@@ -837,7 +837,7 @@ public class ChartViewService {
                     quotaList.add(chartQuotaDTO);
                     axisChartDataDTO.setQuotaList(quotaList);
                     try {
-                        axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(row[i]) ? "0" : row[i]));
+                        axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
                     } catch (Exception e) {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
@@ -892,14 +892,18 @@ public class ChartViewService {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
-                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(row[i]) ? "0" : row[i]));
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
                 axisChartDataDTO.setCategory(yAxis.get(j).getName());
                 // pop
                 if (CollectionUtils.isNotEmpty(extBubble)) {
-                    axisChartDataDTO.setPopSize(new BigDecimal(StringUtils.isEmpty(row[xAxis.size() + yAxis.size()]) ? "0" : row[xAxis.size() + yAxis.size()]));
+                    try {
+                        axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[xAxis.size() + yAxis.size()]) ? null : new BigDecimal(row[xAxis.size() + yAxis.size()]));
+                    } catch (Exception e) {
+                        axisChartDataDTO.setPopSize(new BigDecimal(0));
+                    }
                 }
                 datas.add(axisChartDataDTO);
             }
@@ -951,7 +955,7 @@ public class ChartViewService {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
-                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(row[i]) ? "0" : row[i]));
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
@@ -1013,7 +1017,7 @@ public class ChartViewService {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
-                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]));
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
@@ -1061,7 +1065,7 @@ public class ChartViewService {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
-                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]));
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
@@ -1122,7 +1126,7 @@ public class ChartViewService {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
-                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]));
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
@@ -1177,7 +1181,7 @@ public class ChartViewService {
             for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
                 int j = i - xAxis.size();
                 try {
-                    series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                    series.get(j).getData().add(StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]));
                 } catch (Exception e) {
                     series.get(j).getData().add(new BigDecimal(0));
                 }
@@ -1219,7 +1223,7 @@ public class ChartViewService {
             for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
                 int j = i - xAxis.size();
                 try {
-                    series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                    series.get(j).getData().add(StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]));
                 } catch (Exception e) {
                     series.get(j).getData().add(new BigDecimal(0));
                 }
@@ -1359,7 +1363,7 @@ public class ChartViewService {
                     quotaList.add(chartQuotaDTO);
                     axisChartDataDTO.setQuotaList(quotaList);
                     try {
-                        axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                        axisChartDataDTO.setValue(StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]));
                     } catch (Exception e) {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
@@ -1437,8 +1441,8 @@ public class ChartViewService {
                     try {
                         scatterChartDataDTO.setValue(new Object[]{
                                 a.toString(),
-                                new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]),
-                                new BigDecimal(StringUtils.isEmpty(d[xAxis.size() + yAxis.size()]) ? "0" : d[xAxis.size() + yAxis.size()])
+                                StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]),
+                                StringUtils.isEmpty(d[xAxis.size() + yAxis.size()]) ? null : new BigDecimal(d[xAxis.size() + yAxis.size()])
                         });
                     } catch (Exception e) {
                         scatterChartDataDTO.setValue(new Object[]{a.toString(), new BigDecimal(0), new BigDecimal(0)});
@@ -1447,7 +1451,7 @@ public class ChartViewService {
                     try {
                         scatterChartDataDTO.setValue(new Object[]{
                                 a.toString(),
-                                new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i])
+                                StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i])
                         });
                     } catch (Exception e) {
                         scatterChartDataDTO.setValue(new Object[]{a.toString(), new BigDecimal(0)});
@@ -1483,7 +1487,7 @@ public class ChartViewService {
                 if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1) {
                     d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
                 } else if (chartViewFieldDTO.getDeType() == 2 || chartViewFieldDTO.getDeType() == 3) {
-                    d.put(fields.get(i).getDataeaseName(), new BigDecimal(StringUtils.isEmpty(ele[i]) ? "0" : ele[i]).setScale(2, RoundingMode.HALF_UP));
+                    d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? null : new BigDecimal(ele[i]).setScale(2, RoundingMode.HALF_UP));
                 }
             }
             tableRow.add(d);
