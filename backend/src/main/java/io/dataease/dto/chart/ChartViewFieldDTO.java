@@ -46,4 +46,6 @@ public class ChartViewFieldDTO implements Serializable {
     private Integer extField;
 
     private String chartType;
+
+    private ChartFieldCompareDTO compareCalc;
 }

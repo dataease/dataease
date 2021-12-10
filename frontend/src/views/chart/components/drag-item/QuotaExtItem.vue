@@ -14,7 +14,7 @@
       </span>
       <span class="item-span-style" :title="item.name">{{ item.name }}</span>
       <span v-if="chart.type !== 'table-info' && item.summary" class="summary-span">
-        {{ $t('chart.' + item.summary) }}<span v-if="item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
+        {{ $t('chart.' + item.summary) }}<span v-if="item.compareCalc && item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
       </span>
     </el-tag>
     <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
@@ -33,7 +33,7 @@
           </span>
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
           <span v-if="chart.type !== 'table-info' && item.summary" class="summary-span">
-            {{ $t('chart.' + item.summary) }}<span v-if="item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
+            {{ $t('chart.' + item.summary) }}<span v-if="item.compareCalc && item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
           </span>
           <i class="el-icon-arrow-down el-icon--right" style="position: absolute;top: 6px;right: 10px;" />
         </el-tag>
@@ -97,15 +97,15 @@
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="quickCalc">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
-                  <i class="el-icon-crop" />
-                  <span>{{ $t('chart.yoy_label') }}</span>
+                  <i class="el-icon-s-grid" />
+                  <span>{{ $t('chart.quick_calc') }}</span>
                   <span class="summary-span-item">({{ !item.compareCalc ? $t('chart.none') : $t('chart.' + item.compareCalc.type) }})</span>
                 </span>
                 <i class="el-icon-arrow-right el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item :command="beforeQuickCalc('none')">{{ $t('chart.none') }}</el-dropdown-item>
-                <el-dropdown-item :disabled="disableEditCompare" :command="beforeQuickCalc('setting')">{{ $t('commons.setting') }}...</el-dropdown-item>
+                <el-dropdown-item :disabled="disableEditCompare" :command="beforeQuickCalc('setting')">{{ $t('chart.yoy_label') }}...</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
@@ -191,14 +191,11 @@ export default {
     },
     isEnableCompare() {
       const xAxis = JSON.parse(this.chart.xaxis)
-      const extStack = JSON.parse(this.chart.extStack)
       const t1 = xAxis.filter(ele => {
         return ele.deType === 1
       })
-      const t2 = extStack.filter(ele => {
-        return ele.deType === 1
-      })
-      if (t1.length > 0 || t2.length > 0) {
+      // 暂时只支持类别轴/维度的时间类型字段，且视图中有且只有一个时间字段
+      if (t1.length === 1 && this.chart.type !== 'text' && this.chart.type !== 'gauge' && this.chart.type !== 'liquid') {
         this.disableEditCompare = false
       } else {
         this.disableEditCompare = true

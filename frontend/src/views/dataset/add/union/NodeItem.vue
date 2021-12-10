@@ -28,7 +28,7 @@
     </div>
 
     <!--选择数据集-->
-    <el-dialog v-if="selectDsDialog" v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="360px" class="dialog-css">
+    <el-dialog v-if="selectDsDialog" v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="400px" class="dialog-css">
       <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" :mode="currentNode.currentDs.mode" @getTable="firstDs" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
@@ -37,7 +37,7 @@
     </el-dialog>
 
     <!--编辑单个数据集字段-->
-    <el-dialog v-if="editField" v-dialogDrag :title="$t('dataset.field_select')" :visible="editField" :show-close="false" width="360px" class="dialog-css">
+    <el-dialog v-if="editField" v-dialogDrag :title="$t('dataset.field_select')" :visible="editField" :show-close="false" width="400px" class="dialog-css">
       <union-field-edit :node="currentNode" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeEditField()">{{ $t('dataset.cancel') }}</el-button>
