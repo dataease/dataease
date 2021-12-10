@@ -97,15 +97,15 @@
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="quickCalc">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
-                  <i class="el-icon-crop" />
-                  <span>{{ $t('chart.yoy_label') }}</span>
+                  <i class="el-icon-s-grid" />
+                  <span>{{ $t('chart.quick_calc') }}</span>
                   <span class="summary-span-item">({{ !item.compareCalc ? $t('chart.none') : $t('chart.' + item.compareCalc.type) }})</span>
                 </span>
                 <i class="el-icon-arrow-right el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item :command="beforeQuickCalc('none')">{{ $t('chart.none') }}</el-dropdown-item>
-                <el-dropdown-item :disabled="disableEditCompare" :command="beforeQuickCalc('setting')">{{ $t('commons.setting') }}...</el-dropdown-item>
+                <el-dropdown-item :disabled="disableEditCompare" :command="beforeQuickCalc('setting')">{{ $t('chart.yoy_label') }}...</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
@@ -188,14 +188,10 @@ export default {
     },
     isEnableCompare() {
       const xAxis = JSON.parse(this.chart.xaxis)
-      const extStack = JSON.parse(this.chart.extStack)
       const t1 = xAxis.filter(ele => {
         return ele.deType === 1
       })
-      const t2 = extStack.filter(ele => {
-        return ele.deType === 1
-      })
-      if ((t1.length + t2.length === 1) && this.chart.type !== 'text' && this.chart.type !== 'gauge' && this.chart.type !== 'liquid') {
+      if (t1.length > 0 && this.chart.type !== 'text' && this.chart.type !== 'gauge' && this.chart.type !== 'liquid') {
         this.disableEditCompare = false
       } else {
         this.disableEditCompare = true

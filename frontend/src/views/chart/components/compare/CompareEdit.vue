@@ -63,10 +63,8 @@ export default {
     // 过滤xaxis，extStack所有日期字段
     initFieldList() {
       const xAxis = JSON.parse(this.chart.xaxis)
-      const extStack = JSON.parse(this.chart.extStack)
       const t1 = xAxis.filter(ele => { return ele.deType === 1 })
-      const t2 = extStack.filter(ele => { return ele.deType === 1 })
-      this.fieldList = t1.concat(t2)
+      this.fieldList = t1
       // 如果没有选中字段，则默认选中第一个
       if ((!this.compareItem.compareCalc.field || this.compareItem.compareCalc.field === '') && this.fieldList.length > 0) {
         this.compareItem.compareCalc.field = this.fieldList[0].id
