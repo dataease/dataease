@@ -14,7 +14,7 @@
       </span>
       <span class="item-span-style" :title="item.name">{{ item.name }}</span>
       <span v-if="chart.type !== 'table-info' && item.summary" class="summary-span">
-        {{ $t('chart.' + item.summary) }}<span v-if="item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
+        {{ $t('chart.' + item.summary) }}<span v-if="item.compareCalc && item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
       </span>
     </el-tag>
     <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
@@ -33,7 +33,7 @@
           </span>
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
           <span v-if="chart.type !== 'table-info' && item.summary" class="summary-span">
-            {{ $t('chart.' + item.summary) }}<span v-if="item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
+            {{ $t('chart.' + item.summary) }}<span v-if="item.compareCalc && item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
           </span>
           <i class="el-icon-arrow-down el-icon--right" style="position: absolute;top: 6px;right: 10px;" />
         </el-tag>
