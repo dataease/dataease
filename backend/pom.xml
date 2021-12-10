@@ -207,7 +207,7 @@
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-interface</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
@@ -387,34 +387,34 @@
                 </dependencies>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <?m2e execute onConfiguration?>
-                        <id>main-class-placement</id>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <target>
-                                <move todir="src/main/resources/static">
-                                    <fileset dir="../frontend/dist">
-                                        <exclude name="*.html"/>
-                                    </fileset>
-                                </move>
-                                <move todir="src/main/resources/templates">
-                                    <fileset dir="../frontend/dist">
-                                        <include name="*.html"/>
-                                    </fileset>
-                                </move>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-antrun-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <?m2e execute onConfiguration?>-->
+<!--                        <id>main-class-placement</id>-->
+<!--                        <phase>generate-resources</phase>-->
+<!--                        <configuration>-->
+<!--                            <target>-->
+<!--                                <move todir="src/main/resources/static">-->
+<!--                                    <fileset dir="../frontend/dist">-->
+<!--                                        <exclude name="*.html"/>-->
+<!--                                    </fileset>-->
+<!--                                </move>-->
+<!--                                <move todir="src/main/resources/templates">-->
+<!--                                    <fileset dir="../frontend/dist">-->
+<!--                                        <include name="*.html"/>-->
+<!--                                    </fileset>-->
+<!--                                </move>-->
+<!--                            </target>-->
+<!--                        </configuration>-->
+<!--                        <goals>-->
+<!--                            <goal>run</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 

@@ -164,4 +164,13 @@ export function datasetTaskList(page, size, data, loading) {
   })
 }
 
+export function datasetRowPermissionsList(datasetId, page, size, data, loading) {
+  return request({
+    url: '/dataset/rowpermissions/pageList/' + datasetId + '/' + page + '/' + size,
+    method: 'post',
+    data,
+    loading: loading
+  })
+}
+
 export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree }

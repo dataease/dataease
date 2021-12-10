@@ -76,7 +76,7 @@ public class Db2QueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds) {
+    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartCustomFilterDTO> customFilter) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(Db2Constants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
@@ -139,30 +139,30 @@ public class Db2QueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null);
+    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup, List<ChartCustomFilterDTO> customFilter) {
+        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, customFilter);
     }
 
     @Override
-    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
+    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds, List<ChartCustomFilterDTO> customFilter) {
         Integer size = (page - 1) * pageSize + realSize;
-        return createQuerySQL(table, fields, isGroup, null) + String.format(" fetch first %s rows only; ", size);
+        return createQuerySQL(table, fields, isGroup, null, customFilter) + String.format(" fetch first %s rows only; ", size);
     }
 
     @Override
-    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds) {
-        return createQuerySQL(table, fields, isGroup, null) + String.format(" fetch first %s rows only; ", limit);
+    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds, List<ChartCustomFilterDTO> customFilter) {
+        return createQuerySQL(table, fields, isGroup, null, customFilter) + String.format(" fetch first %s rows only; ", limit);
     }
 
     @Override
-    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
-        return createQuerySQLAsTmp(sql, fields, isGroup) + String.format(" fetch first %s rows only; ", limit);
+    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup, List<ChartCustomFilterDTO> customFilter) {
+        return createQuerySQLAsTmp(sql, fields, isGroup, customFilter) + String.format(" fetch first %s rows only; ", limit);
     }
 
     @Override
-    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
+    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, List<ChartCustomFilterDTO> customFilter) {
         Integer size = (page - 1) * pageSize + realSize;
-        return createQuerySQLAsTmp(sql, fields, isGroup) + String.format(" fetch first %s rows only; ", size);
+        return createQuerySQLAsTmp(sql, fields, isGroup, customFilter) + String.format(" fetch first %s rows only; ", size);
     }
 
     @Override

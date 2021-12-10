@@ -107,7 +107,7 @@ public class CKQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds) {
+    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartCustomFilterDTO> customFilter) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CKConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
@@ -170,32 +170,36 @@ public class CKQueryProvider extends QueryProvider {
         st_sql.add("isGroup", isGroup);
         if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
+        List<SQLObj> customWheres = transCustomFilterList(tableObj, customFilter);
+        List<SQLObj> wheres = new ArrayList<>();
+        if (customWheres != null) wheres.addAll(customWheres);
+        if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         return st_sql.render();
     }
 
     @Override
-    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null);
+    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup, List<ChartCustomFilterDTO> customFilter) {
+        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, customFilter);
     }
 
     @Override
-    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds) {
-        return createQuerySQL(table, fields, isGroup, null) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
+    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds, List<ChartCustomFilterDTO> customFilter) {
+        return createQuerySQL(table, fields, isGroup, null, customFilter) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
     }
 
     @Override
-    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds) {
-        return createQuerySQL(table, fields, isGroup, null) + " LIMIT 0," + limit;
+    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds, List<ChartCustomFilterDTO> customFilter) {
+        return createQuerySQL(table, fields, isGroup, null, customFilter) + " LIMIT 0," + limit;
     }
 
     @Override
-    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup) {
-        return createQuerySQLAsTmp(sql, fields, isGroup) + " LIMIT 0," + limit;
+    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup, List<ChartCustomFilterDTO> customFilter) {
+        return createQuerySQLAsTmp(sql, fields, isGroup, customFilter) + " LIMIT 0," + limit;
     }
 
     @Override
-    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup) {
-        return createQuerySQLAsTmp(sql, fields, isGroup) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
+    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, List<ChartCustomFilterDTO> customFilter) {
+        return createQuerySQLAsTmp(sql, fields, isGroup, customFilter) + " LIMIT " + (page - 1) * pageSize + "," + realSize;
     }
 
     @Override
