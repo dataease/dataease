@@ -13,7 +13,7 @@
           <el-dropdown-item icon="el-icon-arrow-down" @click.native="downComponent">{{ $t('panel.downComponent') }}</el-dropdown-item>
           <el-dropdown-item v-if="'view'===curComponent.type" icon="el-icon-link" @click.native="linkageSetting">{{ $t('panel.linkage_setting') }}</el-dropdown-item>
           <el-dropdown-item v-if="'de-tabs'===curComponent.type" icon="el-icon-link" @click.native="addTab">{{ $t('panel.add_tab') }}</el-dropdown-item>
-          <el-dropdown-item  v-if="'view'===curComponent.type" icon="el-icon-connection" @click.native="linkJumpSet">跳转设置</el-dropdown-item>
+          <el-dropdown-item v-if="'view'===curComponent.type" icon="el-icon-connection" @click.native="linkJumpSet">跳转设置</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
