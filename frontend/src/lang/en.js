@@ -1154,6 +1154,16 @@ export default {
     confirm_sync_field_tips: 'Sync field maybe change edit field，please confirm',
     sync_success: 'Success',
     sync_success_1: 'Success，please sync data again',
+    row_permission: {
+      type: 'Type',
+      name: 'Name',
+      condition: 'Conditions',
+      value: 'Value',
+      add: 'Add row permissions',
+      edit: 'Edit row permissions',
+      please_select_field: 'Please select a field'
+    },
+    row_permissions: 'Row Permissions',
     union_data: 'Union Dataset',
     add_union_table: 'Add Union Dataset',
     edit_union: 'Edit Union Dataset',

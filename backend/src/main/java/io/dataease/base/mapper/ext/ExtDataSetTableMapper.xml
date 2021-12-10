@@ -7,9 +7,6 @@
         <result column="privileges" property="privileges"/>
     </resultMap>
 
-    <resultMap id="RowPermissonsDTO" type="io.dataease.dto.dataset.DataSetRowPermissionsDTO"
-               extends="io.dataease.base.mapper.DatasetRowPermissionsMapper.BaseResultMap">
-    </resultMap>
 
     <resultMap id="roleItemMap" type="io.dataease.controller.sys.response.RoleUserItem">
         <id property="id" column="id"/>
@@ -102,59 +99,5 @@
         </where>
         ORDER BY CONVERT(`name` using gbk)
     </select>
-
-    <select id="searchRowPermissons" resultMap="RowPermissonsDTO" parameterType="io.dataease.base.mapper.ext.query.GridExample">
-        SELECT dataset_table.name as datasetName, dataset_table_field.name as fieldName, dataset_row_permissions.*
-        FROM dataset_row_permissions
-        left join dataset_table on dataset_table.id=dataset_row_permissions.dataset_id
-        left join dataset_table_field on dataset_table_field.id=dataset_row_permissions.dataset_field_id
-        <if test="_parameter != null">
-            <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
-        </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
-        <if test="orderByClause == null">
-            order by dataset_row_permissions.update_time desc
-        </if>
-    </select>
-
-
-    <select id="searchAuthUsers" resultMap="roleItemMap">
-        SELECT sys_user.user_id as id, sys_user.username as name
-        FROM sys_auth
-        left join sys_auth_detail on sys_auth.id=sys_auth_detail.auth_id
-        left join sys_user on sys_user.user_id=sys_auth.auth_target
-        where sys_auth.auth_target_type='user'
-            and sys_auth.auth_source_type='dataset'
-            and sys_auth.auth_source=#{datasetId,jdbcType=VARCHAR}
-            and sys_auth_detail.privilege_type=1
-            and sys_auth_detail.privilege_value=1;
-    </select>
-
-    <select id="searchAuthRoles" resultMap="roleItemMap">
-        SELECT sys_role.role_id as id, sys_role.name as name
-        FROM sys_auth
-        left join sys_auth_detail on sys_auth.id=sys_auth_detail.auth_id
-        left join sys_role on sys_role.role_id=sys_auth.auth_target
-        where sys_auth.auth_target_type='role'
-            and sys_auth.auth_source_type='dataset'
-            and sys_auth.auth_source=#{datasetId,jdbcType=VARCHAR}
-            and sys_auth_detail.privilege_type=1
-            and sys_auth_detail.privilege_value=1;
-    </select>
-
-    <select id="searchAuthDepts" resultMap="roleItemMap">
-        SELECT sys_dept.dept_id as id, sys_dept.name as name
-        FROM sys_auth
-        left join sys_auth_detail on sys_auth.id=sys_auth_detail.auth_id
-        left join sys_dept on sys_dept.dept_id=sys_auth.auth_target
-        where sys_auth.auth_target_type='dept'
-            and sys_auth.auth_source_type='dataset'
-            and sys_auth.auth_source=#{datasetId,jdbcType=VARCHAR}
-            and sys_auth_detail.privilege_type=1
-            and sys_auth_detail.privilege_value=1;
-    </select>
-
 
 </mapper>

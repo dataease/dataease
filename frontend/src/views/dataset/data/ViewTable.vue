@@ -59,9 +59,6 @@
       <el-tab-pane v-if="table.type !== 'custom' && !(table.type === 'sql' && table.mode === 0)" :label="$t('dataset.join_view')" name="joinView">
         <union-view :param="param" :table="table" />
       </el-tab-pane>
-      <el-tab-pane :label="$t('dataset.row_permissions')" name="rowPermissions">
-        <row-permissions v-if="tabActive=='rowPermissions'" :param="param" :table="table" />
-      </el-tab-pane>
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'excel' || table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
         <update-info v-if="tabActive=='updateInfo'" :param="param" :table="table" />
       </el-tab-pane>
@@ -75,12 +72,11 @@ import TabDataPreview from './TabDataPreview'
 import UpdateInfo from './UpdateInfo'
 import DatasetChartDetail from '../common/DatasetChartDetail'
 import UnionView from './UnionView'
-import RowPermissions from './RowPermissions'
 import FieldEdit from './FieldEdit'
 
 export default {
   name: 'ViewTable',
-  components: {RowPermissions, FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview },
+  components: {FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview },
   props: {
     param: {
       type: Object,

@@ -1016,7 +1016,6 @@ export default {
     field_check: '选中',
     update_info: '更新信息',
     join_view: '数据关联',
-    row_permissions: '行权限',
     text: '文本',
     time: '时间',
     value: '数值',
@@ -1164,8 +1163,10 @@ export default {
       condition: '条件',
       value: '值',
       add: '添加行权限',
-      edit: '编辑行权限'
+      edit: '编辑行权限',
+      please_select_field: '请选择字段'
     },
+    row_permissions: '行权限',
     union_data: '关联数据集',
     add_union_table: '添加关联数据集',
     edit_union: '编辑关联数据集',

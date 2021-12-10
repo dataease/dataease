@@ -1155,6 +1155,16 @@ export default {
     confirm_sync_field_tips: '同步字段可能會導致已編輯字段發生變更，請確認',
     sync_success: '同步成功',
     sync_success_1: '同步成功，請對當前數據集重新執行數據同步操作',
+    row_permission: {
+      type: '類型',
+      name: '名稱',
+      condition: '條件',
+      value: '值',
+      add: '添加行權限',
+      edit: '編輯行權限',
+      please_select_field: '請選擇字段'
+    },
+    row_permissions: '行權限',
     union_data: '關聯數據集',
     add_union_table: '添加關聯數據集',
     edit_union: '編輯關聯數據集',
