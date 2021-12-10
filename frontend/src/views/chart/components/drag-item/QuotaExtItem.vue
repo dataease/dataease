@@ -194,7 +194,8 @@ export default {
       const t1 = xAxis.filter(ele => {
         return ele.deType === 1
       })
-      if (t1.length > 0 && this.chart.type !== 'text' && this.chart.type !== 'gauge' && this.chart.type !== 'liquid') {
+      // 暂时只支持类别轴/维度的时间类型字段，且视图中有且只有一个时间字段
+      if (t1.length === 1 && this.chart.type !== 'text' && this.chart.type !== 'gauge' && this.chart.type !== 'liquid') {
         this.disableEditCompare = false
       } else {
         this.disableEditCompare = true
