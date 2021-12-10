@@ -9,7 +9,7 @@
         @mouseup="deselectCurComponent"
         @mousedown="handleMouseDown"
       >
-        <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
+        <el-row v-if="componentDataShow.length===0" class="custom-position">
           {{ $t('panel.panelNull') }}
         </el-row>
         <canvas-opt-bar />
@@ -103,7 +103,15 @@ export default {
       searchCount: 0,
       chartDetailsVisible: false,
       showChartInfo: {},
-      showChartTableInfo: {}
+      showChartTableInfo: {},
+      // 布局展示 1.pc pc端布局 2.mobile 移动端布局
+      terminal: 'pc'
+    }
+  },
+  created() {
+    const terminalInfo = this.$route.query.terminal
+    if (terminalInfo) {
+      this.terminal = terminalInfo
     }
   },
   computed: {
@@ -158,16 +166,15 @@ export default {
   mounted() {
     const _this = this
     const erd = elementResizeDetectorMaker()
-    // 监听div变动事件
-    const mainDom = document.getElementById('canvasInfoMain')
-    erd.listenTo(mainDom, element => {
+    // 监听主div变动事件
+    erd.listenTo(document.getElementById('canvasInfoMain'), element => {
       _this.$nextTick(() => {
         _this.restore()
       })
     })
-    // 监听div变动事件
+    // 监听画布div变动事件
     const tempCanvas = document.getElementById('canvasInfoTemp')
-    erd.listenTo(tempCanvas, element => {
+    erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
       _this.$nextTick(() => {
         // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
         _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
@@ -176,6 +183,10 @@ export default {
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     _this.$store.commit('clearLinkageSettingInfo', false)
     _this.canvasStyleDataInit()
+    // 如果当前终端设备是移动端，则进行移动端的布局设计
+    if (_this.terminal === 'mobile') {
+      _this.initMobileCanvas()
+    }
   },
   beforeDestroy() {
     clearInterval(this.timer)
@@ -202,8 +213,8 @@ export default {
     restore() {
       const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
       const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
-      this.scaleWidth = canvasWidth * 100 / parseInt(this.canvasStyleData.width)// 获取宽度比
-      this.scaleHeight = canvasHeight * 100 / parseInt(this.canvasStyleData.height)// 获取高度比
+      this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
+      this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
       this.handleScaleChange()
     },
     resetID(data) {
@@ -215,7 +226,7 @@ export default {
       return data
     },
     format(value, scale) {
-      return value * parseInt(scale) / 100
+      return value * scale / 100
     },
     handleScaleChange() {
       if (this.componentData) {
@@ -249,6 +260,9 @@ export default {
     },
     handleMouseDown() {
       this.$store.commit('setClickComponentStatus', false)
+    },
+    initMobileCanvas() {
+      this.$store.commit('openMobileLayout')
     }
   }
 }
@@ -257,7 +271,7 @@ export default {
 <style lang="scss" scoped>
   .bg {
     padding: 5px;
-    min-width: 600px;
+    min-width: 200px;
     min-height: 300px;
     width: 100%;
     height: 100%;
@@ -272,6 +286,7 @@ export default {
   }
 
   .custom-position {
+    height: 100%;
     flex: 1;
     display: flex;
     align-items: center;
@@ -279,10 +294,6 @@ export default {
     font-size: 14px;
     flex-flow: row nowrap;
     color: #9ea6b2;
-  }
-
-  .gap_class {
-    padding: 5px;
   }
 
   .dialog-css > > > .el-dialog__title {

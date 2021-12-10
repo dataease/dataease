@@ -330,6 +330,7 @@
                           @onQuotaItemRemove="quotaItemRemove"
                           @editItemFilter="showQuotaEditFilter"
                           @onNameEdit="showRename"
+                          @editItemCompare="showQuotaEditCompare"
                         />
                       </transition-group>
                     </draggable>
@@ -365,6 +366,7 @@
                           @onQuotaItemRemove="quotaItemRemove"
                           @editItemFilter="showQuotaEditFilter"
                           @onNameEdit="showRename"
+                          @editItemCompare="showQuotaEditCompare"
                         />
                       </transition-group>
                     </draggable>
@@ -858,8 +860,8 @@
       <p style="margin-top: 10px;color:#F56C6C;font-size: 12px;">{{ $t('chart.change_ds_tip') }}</p>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeChangeChart">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="mini" :disabled="!changeTable || !changeTable.id" @click="changeChart">{{
-          $t('chart.confirm') }}
+        <el-button type="primary" size="mini" :disabled="!changeTable || !changeTable.id" @click="changeChart">
+          {{ $t('chart.confirm') }}
         </el-button>
       </div>
     </el-dialog>
@@ -881,11 +883,27 @@
         <el-button size="mini" style="float: right;" @click="closeEditDsField">{{ $t('chart.close') }}</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog
+      v-if="showEditQuotaCompare"
+      v-dialogDrag
+      :title="$t('chart.yoy_setting')"
+      :visible="showEditQuotaCompare"
+      :show-close="false"
+      width="600px"
+      class="dialog-css"
+    >
+      <compare-edit :compare-item="quotaItemCompare" :chart="chart" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeQuotaEditCompare">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveQuotaEditCompare">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
 <script>
-import { ajaxGetData, ajaxGetDataOnly, post } from '@/api/chart/chart'
+import { ajaxGetDataOnly, post } from '@/api/chart/chart'
 import draggable from 'vuedraggable'
 import DimensionItem from '../components/drag-item/DimensionItem'
 import QuotaItem from '../components/drag-item/QuotaItem'
@@ -904,12 +922,12 @@ import {
   DEFAULT_LABEL,
   DEFAULT_LEGEND_STYLE,
   DEFAULT_SIZE,
+  DEFAULT_SPLIT,
   DEFAULT_TITLE_STYLE,
   DEFAULT_TOOLTIP,
   DEFAULT_XAXIS_STYLE,
-  DEFAULT_YAXIS_STYLE,
-  DEFAULT_SPLIT,
-  DEFAULT_YAXIS_EXT_STYLE
+  DEFAULT_YAXIS_EXT_STYLE,
+  DEFAULT_YAXIS_STYLE
 } from '../chart/chart'
 import ColorSelector from '../components/shape-attr/ColorSelector'
 import SizeSelector from '../components/shape-attr/SizeSelector'
@@ -942,10 +960,13 @@ import YAxisSelectorAntV from '@/views/chart/components/component-style/YAxisSel
 import YAxisExtSelectorAntV from '@/views/chart/components/component-style/YAxisExtSelectorAntV'
 import SizeSelectorAntV from '@/views/chart/components/shape-attr/SizeSelectorAntV'
 import SplitSelectorAntV from '@/views/chart/components/component-style/SplitSelectorAntV'
+import CompareEdit from '@/views/chart/components/compare/CompareEdit'
+import { compareItem } from '@/views/chart/chart/compare'
 
 export default {
   name: 'ChartEdit',
   components: {
+    CompareEdit,
     SplitSelectorAntV,
     SizeSelectorAntV,
     YAxisExtSelectorAntV,
@@ -1071,7 +1092,9 @@ export default {
         { name: 'ECharts', value: 'echarts' }
       ],
       drill: false,
-      hasEdit: false
+      hasEdit: false,
+      quotaItemCompare: {},
+      showEditQuotaCompare: false
     }
   },
   computed: {
@@ -1217,6 +1240,9 @@ export default {
         if (!ele.filter) {
           ele.filter = []
         }
+        if (!ele.compareCalc) {
+          ele.compareCalc = compareItem
+        }
       })
       if (view.type === 'chart-mix') {
         view.yaxisExt.forEach(function(ele) {
@@ -1235,6 +1261,9 @@ export default {
           }
           if (!ele.filter) {
             ele.filter = []
+          }
+          if (!ele.compareCalc) {
+            ele.compareCalc = compareItem
           }
         })
       }
@@ -1489,12 +1518,6 @@ export default {
     },
 
     quotaItemChange(item) {
-      // 更新item
-      // this.view.yaxis.forEach(function(ele) {
-      //   if (ele.id === item.id) {
-      //     ele.summary = item.summary
-      //   }
-      // })
       this.calcData(true)
     },
 
@@ -1671,6 +1694,24 @@ export default {
     },
     resetRename() {
       // this.itemForm = {}
+    },
+
+    showQuotaEditCompare(item) {
+      this.quotaItemCompare = JSON.parse(JSON.stringify(item))
+      this.showEditQuotaCompare = true
+    },
+    closeQuotaEditCompare() {
+      this.showEditQuotaCompare = false
+    },
+    saveQuotaEditCompare() {
+      // 更新指标
+      if (this.quotaItemCompare.calcType === 'quota') {
+        this.view.yaxis[this.quotaItemCompare.index].compareCalc = this.quotaItemCompare.compareCalc
+      } else if (this.quotaItemCompare.calcType === 'quotaExt') {
+        this.view.yaxisExt[this.quotaItemCompare.index].compareCalc = this.quotaItemCompare.compareCalc
+      }
+      this.calcData(true)
+      this.closeQuotaEditCompare()
     },
 
     showTab() {

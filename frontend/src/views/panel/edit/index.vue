@@ -125,13 +125,14 @@
               <el-row
                 id="canvasInfoMobile"
                 class="this_mobile_canvas_main"
+                :style="mobileCanvasStyle"
               >
                 <Editor ref="editorMobile" :matrix-count="mobileMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
               </el-row>
               <el-row class="this_mobile_canvas_bottom" />
             </div>
           </el-col>
-          <el-col :span="16" class="this_mobile_canvas_cell">
+          <el-col :span="16" class="this_mobile_canvas_cell this_mobile_canvas_wait_cell" :style="mobileCanvasStyle">
             <component-wait />
           </el-col>
         </el-row>
@@ -143,6 +144,7 @@
       :title="(currentWidget && currentWidget.getLeftPanel && currentWidget.getLeftPanel().label ? $t(currentWidget.getLeftPanel().label) : '') + $t('panel.module')"
       :visible.sync="filterVisible"
       custom-class="de-filter-dialog"
+      @close="cancelFilter"
     >
       <filter-dialog v-if="filterVisible && currentWidget" :widget-info="currentWidget" :component-info="currentFilterCom" @re-fresh-component="reFreshComponent">
         <component
@@ -320,7 +322,9 @@ export default {
       return !this.linkageSettingStatus && !this.mobileLayoutStatus
     },
     showAttr() {
-      if (this.curComponent && this.showAttrComponent.includes(this.curComponent.type)) {
+      if (this.mobileLayoutStatus) {
+        return false
+      } else if (this.curComponent && this.showAttrComponent.includes(this.curComponent.type)) {
         // 过滤组件有标题才显示
         if (this.curComponent.type === 'custom' && !this.curComponent.options.attrs.title) {
           return false
@@ -335,6 +339,25 @@ export default {
       return {
         padding: this.componentGap + 'px'
       }
+    },
+    mobileCanvasStyle() {
+      let style
+      if (this.canvasStyleData.openCommonStyle) {
+        if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
+          style = {
+            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`
+          }
+        } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          style = {
+            background: this.canvasStyleData.panel.color
+          }
+        } else {
+          style = {
+            background: '#f7f8fa'
+          }
+        }
+      }
+      return style
     },
     customCanvasStyle() {
       let style = {
@@ -684,7 +707,6 @@ export default {
     },
     closeLeftPanel() {
       this.show = false
-      // this.beforeDestroy()
     },
     previewFullScreen() {
       this.previewVisible = true
@@ -974,6 +996,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.this_mobile_canvas_wait_cell{
+  background-size:100% 100% !important;
+  border: 2px solid #9ea6b2
 }
 
 .this_canvas{

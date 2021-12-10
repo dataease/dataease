@@ -5,7 +5,7 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <edit-bar v-if="editBarShow" :element="config" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
     <de-out-widget
       v-if="config.type==='custom'"
       :id="'component' + config.id"
@@ -23,6 +23,7 @@
       :style="getComponentStyleDefault(config.style)"
       :prop-value="config.propValue"
       :is-edit="false"
+      :active="componentActiveFlag"
       :element="config"
       :search-count="searchCount"
       :h="config.style.height"
@@ -66,7 +67,7 @@ export default {
     }
   },
   computed: {
-    editBarShow() {
+    componentActiveFlag() {
       return this.curComponent && this.config === this.curComponent
     },
     curGap() {

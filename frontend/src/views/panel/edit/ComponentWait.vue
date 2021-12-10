@@ -82,7 +82,6 @@ export default {
     width: 100%;
     height: calc(100% - 30px);
     overflow-y: auto;
-    background-color: lightgray;
   }
   .component-custom {
     outline: none;
