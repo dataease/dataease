@@ -804,6 +804,7 @@
 
     <!--指标过滤器-->
     <el-dialog
+      v-if="quotaFilterEdit"
       v-dialogDrag
       :title="$t('chart.add_filter')"
       :visible="quotaFilterEdit"
@@ -818,6 +819,7 @@
       </div>
     </el-dialog>
     <el-dialog
+      v-if="dimensionFilterEdit"
       v-dialogDrag
       :title="$t('chart.add_filter')"
       :visible="dimensionFilterEdit"
@@ -832,6 +834,7 @@
       </div>
     </el-dialog>
     <el-dialog
+      v-if="resultFilterEdit"
       v-dialogDrag
       :title="$t('chart.add_filter')"
       :visible="resultFilterEdit"
@@ -1612,6 +1615,9 @@ export default {
 
     showQuotaEditFilter(item) {
       this.quotaItem = JSON.parse(JSON.stringify(item))
+      if (!this.quotaItem.logic) {
+        this.quotaItem.logic = 'and'
+      }
       this.quotaFilterEdit = true
     },
     closeQuotaFilter() {
@@ -1631,8 +1637,10 @@ export default {
       }
       if (this.quotaItem.filterType === 'quota') {
         this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
+        this.view.yaxis[this.quotaItem.index].logic = this.quotaItem.logic
       } else if (this.quotaItem.filterType === 'quotaExt') {
         this.view.yaxisExt[this.quotaItem.index].filter = this.quotaItem.filter
+        this.view.yaxisExt[this.quotaItem.index].logic = this.quotaItem.logic
       }
       this.calcData(true)
       this.closeQuotaFilter()
@@ -1645,6 +1653,9 @@ export default {
     showEditFilter(item) {
       this.filterItem = JSON.parse(JSON.stringify(item))
       this.chartForFilter = JSON.parse(JSON.stringify(this.view))
+      if (!this.filterItem.logic) {
+        this.filterItem.logic = 'and'
+      }
       this.resultFilterEdit = true
     },
     closeResultFilter() {
@@ -1663,6 +1674,7 @@ export default {
         }
       }
       this.view.customFilter[this.filterItem.index].filter = this.filterItem.filter
+      this.view.customFilter[this.filterItem.index].logic = this.filterItem.logic
       this.calcData(true)
       this.closeResultFilter()
     },

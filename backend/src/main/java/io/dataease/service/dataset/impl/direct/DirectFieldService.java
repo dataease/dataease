@@ -6,6 +6,7 @@ import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.Datasource;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.dto.chart.ChartCustomFilterDTO;
+import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.controller.request.datasource.DatasourceRequest;
@@ -57,7 +58,7 @@ public class DirectFieldService implements DataSetFieldService {
 
         DatasetTableField datasetTableField = DatasetTableField.builder().tableId(tableId).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
-        List<ChartCustomFilterDTO> customFilter = dataSetTableService.getCustomFilters(fields, datasetTable);
+        List<ChartFieldCustomFilterDTO> customFilter = dataSetTableService.getCustomFilters(fields, datasetTable);
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceProvider datasourceProvider = null;

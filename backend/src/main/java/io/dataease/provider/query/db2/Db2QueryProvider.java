@@ -7,7 +7,8 @@ import io.dataease.base.domain.Datasource;
 import io.dataease.base.mapper.DatasetTableFieldMapper;
 import io.dataease.commons.constants.DeTypeConstants;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
-import io.dataease.dto.chart.ChartCustomFilterDTO;
+import io.dataease.dto.chart.ChartCustomFilterItemDTO;
+import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.query.QueryProvider;
@@ -26,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static io.dataease.provider.query.SQLConstants.TABLE_ALIAS_PREFIX;
 
@@ -76,7 +78,7 @@ public class Db2QueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartCustomFilterDTO> customFilter) {
+    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(Db2Constants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
@@ -139,41 +141,40 @@ public class Db2QueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup, List<ChartCustomFilterDTO> customFilter) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, customFilter);
+    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
+        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter);
     }
 
     @Override
-    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds, List<ChartCustomFilterDTO> customFilter) {
+    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
         Integer size = (page - 1) * pageSize + realSize;
-        return createQuerySQL(table, fields, isGroup, null, customFilter) + String.format(" fetch first %s rows only; ", size);
+        return createQuerySQL(table, fields, isGroup, null, fieldCustomFilter) + String.format(" fetch first %s rows only; ", size);
     }
 
     @Override
-    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds, List<ChartCustomFilterDTO> customFilter) {
-        return createQuerySQL(table, fields, isGroup, null, customFilter) + String.format(" fetch first %s rows only; ", limit);
+    public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
+        return createQuerySQL(table, fields, isGroup, null, fieldCustomFilter) + String.format(" fetch first %s rows only; ", limit);
     }
 
     @Override
-    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup, List<ChartCustomFilterDTO> customFilter) {
-        return createQuerySQLAsTmp(sql, fields, isGroup, customFilter) + String.format(" fetch first %s rows only; ", limit);
+    public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
+        return createQuerySQLAsTmp(sql, fields, isGroup, fieldCustomFilter) + String.format(" fetch first %s rows only; ", limit);
     }
 
     @Override
-    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, List<ChartCustomFilterDTO> customFilter) {
+    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
         Integer size = (page - 1) * pageSize + realSize;
-        return createQuerySQLAsTmp(sql, fields, isGroup, customFilter) + String.format(" fetch first %s rows only; ", size);
+        return createQuerySQLAsTmp(sql, fields, isGroup, fieldCustomFilter) + String.format(" fetch first %s rows only; ", size);
     }
 
     @Override
-    public String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+    public String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
         System.out.println(table);
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(Db2Constants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
-        List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
@@ -202,7 +203,7 @@ public class Db2QueryProvider extends QueryProvider {
             }
         }
         List<SQLObj> yFields = new ArrayList<>();
-        List<SQLObj> yWheres = new ArrayList<>();
+        List<String> yWheres = new ArrayList<>();
         List<SQLObj> yOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(yAxis)) {
             for (int i = 0; i < yAxis.size(); i++) {
@@ -220,7 +221,7 @@ public class Db2QueryProvider extends QueryProvider {
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
                 // 处理纵轴过滤
-                yWheres.addAll(getYWheres(y, originField, fieldAlias));
+                yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
                 if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
                     yOrders.add(SQLObj.builder()
@@ -232,25 +233,24 @@ public class Db2QueryProvider extends QueryProvider {
             }
         }
         // 处理视图中字段过滤
-        List<SQLObj> customWheres = transCustomFilterList(tableObj, customFilter);
+        String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤
-        List<SQLObj> extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        String extWheres = transExtFilterList(tableObj, extFilterRequestList);
         // 构建sql所有参数
         List<SQLObj> fields = new ArrayList<>();
         fields.addAll(xFields);
         fields.addAll(yFields);
-        List<SQLObj> wheres = new ArrayList<>();
-        wheres.addAll(xWheres);
-        if (customWheres != null) wheres.addAll(customWheres);
-        if (extWheres != null) wheres.addAll(extWheres);
+        List<String> wheres = new ArrayList<>();
+        if (customWheres != null) wheres.add(customWheres);
+        if (extWheres != null) wheres.add(extWheres);
         List<SQLObj> groups = new ArrayList<>();
         groups.addAll(xFields);
         // 外层再次套sql
         List<SQLObj> orders = new ArrayList<>();
         orders.addAll(xOrders);
         orders.addAll(yOrders);
-        List<SQLObj> aggWheres = new ArrayList<>();
-        aggWheres.addAll(yWheres);
+        List<String> aggWheres = new ArrayList<>();
+        aggWheres.addAll(yWheres.stream().filter(ObjectUtils::isNotEmpty).collect(Collectors.toList()));
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("querySql");
@@ -272,13 +272,12 @@ public class Db2QueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+    public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(Db2Constants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
-        List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
@@ -307,16 +306,15 @@ public class Db2QueryProvider extends QueryProvider {
             }
         }
         // 处理视图中字段过滤
-        List<SQLObj> customWheres = transCustomFilterList(tableObj, customFilter);
+        String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤
-        List<SQLObj> extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        String extWheres = transExtFilterList(tableObj, extFilterRequestList);
         // 构建sql所有参数
         List<SQLObj> fields = new ArrayList<>();
         fields.addAll(xFields);
-        List<SQLObj> wheres = new ArrayList<>();
-        wheres.addAll(xWheres);
-        if (customWheres != null) wheres.addAll(customWheres);
-        if (extWheres != null) wheres.addAll(extWheres);
+        List<String> wheres = new ArrayList<>();
+        if (customWheres != null) wheres.add(customWheres);
+        if (extWheres != null) wheres.add(extWheres);
         List<SQLObj> groups = new ArrayList<>();
         groups.addAll(xFields);
         // 外层再次套sql
@@ -343,24 +341,23 @@ public class Db2QueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLAsTmpTableInfo(String sql, List<ChartViewFieldDTO> xAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
-        return getSQLTableInfo("(" + sqlFix(sql) + ")", xAxis, customFilter, extFilterRequestList, null, view);
+    public String getSQLAsTmpTableInfo(String sql, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+        return getSQLTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, extFilterRequestList, null, view);
     }
 
 
     @Override
-    public String getSQLAsTmp(String sql, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, ChartViewWithBLOBs view) {
-        return getSQL("(" + sqlFix(sql) + ")", xAxis, yAxis, customFilter, extFilterRequestList, null, view);
+    public String getSQLAsTmp(String sql, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, ChartViewWithBLOBs view) {
+        return getSQL("(" + sqlFix(sql) + ")", xAxis, yAxis, fieldCustomFilter, extFilterRequestList, null, view);
     }
 
     @Override
-    public String getSQLStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, Datasource ds, ChartViewWithBLOBs view) {
+    public String getSQLStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, Datasource ds, ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(Db2Constants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
-        List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
         List<ChartViewFieldDTO> xList = new ArrayList<>();
         xList.addAll(xAxis);
@@ -392,7 +389,7 @@ public class Db2QueryProvider extends QueryProvider {
             }
         }
         List<SQLObj> yFields = new ArrayList<>();
-        List<SQLObj> yWheres = new ArrayList<>();
+        List<String> yWheres = new ArrayList<>();
         List<SQLObj> yOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(yAxis)) {
             for (int i = 0; i < yAxis.size(); i++) {
@@ -410,7 +407,7 @@ public class Db2QueryProvider extends QueryProvider {
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
                 // 处理纵轴过滤
-                yWheres.addAll(getYWheres(y, originField, fieldAlias));
+                yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
                 if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
                     yOrders.add(SQLObj.builder()
@@ -422,25 +419,24 @@ public class Db2QueryProvider extends QueryProvider {
             }
         }
         // 处理视图中字段过滤
-        List<SQLObj> customWheres = transCustomFilterList(tableObj, customFilter);
+        String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤
-        List<SQLObj> extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        String extWheres = transExtFilterList(tableObj, extFilterRequestList);
         // 构建sql所有参数
         List<SQLObj> fields = new ArrayList<>();
         fields.addAll(xFields);
         fields.addAll(yFields);
-        List<SQLObj> wheres = new ArrayList<>();
-        wheres.addAll(xWheres);
-        if (customWheres != null) wheres.addAll(customWheres);
-        if (extWheres != null) wheres.addAll(extWheres);
+        List<String> wheres = new ArrayList<>();
+        if (customWheres != null) wheres.add(customWheres);
+        if (extWheres != null) wheres.add(extWheres);
         List<SQLObj> groups = new ArrayList<>();
         groups.addAll(xFields);
         // 外层再次套sql
         List<SQLObj> orders = new ArrayList<>();
         orders.addAll(xOrders);
         orders.addAll(yOrders);
-        List<SQLObj> aggWheres = new ArrayList<>();
-        aggWheres.addAll(yWheres);
+        List<String> aggWheres = new ArrayList<>();
+        aggWheres.addAll(yWheres.stream().filter(ObjectUtils::isNotEmpty).collect(Collectors.toList()));
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("querySql");
@@ -462,18 +458,17 @@ public class Db2QueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLAsTmpStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, ChartViewWithBLOBs view) {
-        return getSQLStack("(" + sqlFix(table) + ")", xAxis, yAxis, customFilter, extFilterRequestList, extStack, null, view);
+    public String getSQLAsTmpStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, ChartViewWithBLOBs view) {
+        return getSQLStack("(" + sqlFix(table) + ")", xAxis, yAxis, fieldCustomFilter, extFilterRequestList, extStack, null, view);
     }
 
     @Override
-    public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, Datasource ds, ChartViewWithBLOBs view) {
+    public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, Datasource ds, ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(Db2Constants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
-        List<SQLObj> xWheres = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
@@ -502,7 +497,7 @@ public class Db2QueryProvider extends QueryProvider {
             }
         }
         List<SQLObj> yFields = new ArrayList<>();
-        List<SQLObj> yWheres = new ArrayList<>();
+        List<String> yWheres = new ArrayList<>();
         List<SQLObj> yOrders = new ArrayList<>();
         List<ChartViewFieldDTO> yList = new ArrayList<>();
         yList.addAll(yAxis);
@@ -523,7 +518,7 @@ public class Db2QueryProvider extends QueryProvider {
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
                 // 处理纵轴过滤
-                yWheres.addAll(getYWheres(y, originField, fieldAlias));
+                yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
                 if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
                     yOrders.add(SQLObj.builder()
@@ -535,25 +530,24 @@ public class Db2QueryProvider extends QueryProvider {
             }
         }
         // 处理视图中字段过滤
-        List<SQLObj> customWheres = transCustomFilterList(tableObj, customFilter);
+        String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤
-        List<SQLObj> extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        String extWheres = transExtFilterList(tableObj, extFilterRequestList);
         // 构建sql所有参数
         List<SQLObj> fields = new ArrayList<>();
         fields.addAll(xFields);
         fields.addAll(yFields);
-        List<SQLObj> wheres = new ArrayList<>();
-        wheres.addAll(xWheres);
-        if (customWheres != null) wheres.addAll(customWheres);
-        if (extWheres != null) wheres.addAll(extWheres);
+        List<String> wheres = new ArrayList<>();
+        if (customWheres != null) wheres.add(customWheres);
+        if (extWheres != null) wheres.add(extWheres);
         List<SQLObj> groups = new ArrayList<>();
         groups.addAll(xFields);
         // 外层再次套sql
         List<SQLObj> orders = new ArrayList<>();
         orders.addAll(xOrders);
         orders.addAll(yOrders);
-        List<SQLObj> aggWheres = new ArrayList<>();
-        aggWheres.addAll(yWheres);
+        List<String> aggWheres = new ArrayList<>();
+        aggWheres.addAll(yWheres.stream().filter(ObjectUtils::isNotEmpty).collect(Collectors.toList()));
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("querySql");
@@ -575,8 +569,8 @@ public class Db2QueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLAsTmpScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, ChartViewWithBLOBs view) {
-        return getSQLScatter("(" + sqlFix(table) + ")", xAxis, yAxis, customFilter, extFilterRequestList, extBubble, null, view);
+    public String getSQLAsTmpScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, ChartViewWithBLOBs view) {
+        return getSQLScatter("(" + sqlFix(table) + ")", xAxis, yAxis, fieldCustomFilter, extFilterRequestList, extBubble, null, view);
     }
 
     @Override
@@ -585,14 +579,14 @@ public class Db2QueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLSummary(String table, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, ChartViewWithBLOBs view) {
+    public String getSQLSummary(String table, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, ChartViewWithBLOBs view) {
         // 字段汇总 排序等
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(Db2Constants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> yFields = new ArrayList<>();
-        List<SQLObj> yWheres = new ArrayList<>();
+        List<String> yWheres = new ArrayList<>();
         List<SQLObj> yOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(yAxis)) {
             for (int i = 0; i < yAxis.size(); i++) {
@@ -610,7 +604,7 @@ public class Db2QueryProvider extends QueryProvider {
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
                 // 处理纵轴过滤
-                yWheres.addAll(getYWheres(y, originField, fieldAlias));
+                yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
                 if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
                     yOrders.add(SQLObj.builder()
@@ -622,21 +616,21 @@ public class Db2QueryProvider extends QueryProvider {
             }
         }
         // 处理视图中字段过滤
-        List<SQLObj> customWheres = transCustomFilterList(tableObj, customFilter);
+        String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤
-        List<SQLObj> extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        String extWheres = transExtFilterList(tableObj, extFilterRequestList);
         // 构建sql所有参数
         List<SQLObj> fields = new ArrayList<>();
         fields.addAll(yFields);
-        List<SQLObj> wheres = new ArrayList<>();
-        if (customWheres != null) wheres.addAll(customWheres);
-        if (extWheres != null) wheres.addAll(extWheres);
+        List<String> wheres = new ArrayList<>();
+        if (customWheres != null) wheres.add(customWheres);
+        if (extWheres != null) wheres.add(extWheres);
         List<SQLObj> groups = new ArrayList<>();
         // 外层再次套sql
         List<SQLObj> orders = new ArrayList<>();
         orders.addAll(yOrders);
-        List<SQLObj> aggWheres = new ArrayList<>();
-        aggWheres.addAll(yWheres);
+        List<String> aggWheres = new ArrayList<>();
+        aggWheres.addAll(yWheres.stream().filter(ObjectUtils::isNotEmpty).collect(Collectors.toList()));
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("querySql");
@@ -657,8 +651,8 @@ public class Db2QueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLSummaryAsTmp(String sql, List<ChartViewFieldDTO> yAxis, List<ChartCustomFilterDTO> customFilter, List<ChartExtFilterRequest> extFilterRequestList, ChartViewWithBLOBs view) {
-        return getSQLSummary("(" + sqlFix(sql) + ")", yAxis, customFilter, extFilterRequestList, view);
+    public String getSQLSummaryAsTmp(String sql, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, ChartViewWithBLOBs view) {
+        return getSQLSummary("(" + sqlFix(sql) + ")", yAxis, fieldCustomFilter, extFilterRequestList, view);
     }
 
     @Override
@@ -728,72 +722,80 @@ public class Db2QueryProvider extends QueryProvider {
         }
     }
 
-    public List<SQLObj> transCustomFilterList(SQLObj tableObj, List<ChartCustomFilterDTO> requestList) {
+    public String transCustomFilterList(SQLObj tableObj, List<ChartFieldCustomFilterDTO> requestList) {
         if (CollectionUtils.isEmpty(requestList)) {
             return null;
         }
-        List<SQLObj> list = new ArrayList<>();
-        for (ChartCustomFilterDTO request : requestList) {
+        List<String> res = new ArrayList<>();
+        for (ChartFieldCustomFilterDTO request : requestList) {
+            List<SQLObj> list = new ArrayList<>();
             DatasetTableField field = request.getField();
-            if (ObjectUtils.isEmpty(field)) {
-                continue;
-            }
-            String value = request.getValue();
-            String whereName = "";
-            String whereTerm = transMysqlFilterTerm(request.getTerm());
-            String whereValue = "";
-            String originName;
-            if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
-                // 解析origin name中有关联的字段生成sql表达式
-                originName = calcFieldRegex(field.getOriginName(), tableObj);
-            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format(Db2Constants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            } else {
-                originName = String.format(Db2Constants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-            }
-            if (field.getDeType() == DeTypeConstants.DE_TIME) {
-                if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-                    originName = String.format(Db2Constants.STR_TO_DATE, originName);
-                    whereName = String.format(Db2Constants.DATE_FORMAT, originName, Db2Constants.DEFAULT_DATE_FORMAT);
+            List<ChartCustomFilterItemDTO> filter = request.getFilter();
+            for (ChartCustomFilterItemDTO filterItemDTO : filter) {
+                if (ObjectUtils.isEmpty(field)) {
+                    continue;
                 }
-                if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT) {
-                    String cast = String.format(Db2Constants.CAST, originName, Db2Constants.DEFAULT_INT_FORMAT);
-                    whereName = String.format(Db2Constants.FROM_UNIXTIME, cast, Db2Constants.DEFAULT_DATE_FORMAT);
+                String value = filterItemDTO.getValue();
+                String whereName = "";
+                String whereTerm = transMysqlFilterTerm(filterItemDTO.getTerm());
+                String whereValue = "";
+                String originName;
+                if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originName = calcFieldRegex(field.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
+                    originName = String.format(Db2Constants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                } else {
+                    originName = String.format(Db2Constants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
                 }
-                if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
+                if (field.getDeType() == DeTypeConstants.DE_TIME) {
+                    if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
+                        originName = String.format(Db2Constants.STR_TO_DATE, originName);
+                        whereName = String.format(Db2Constants.DATE_FORMAT, originName, Db2Constants.DEFAULT_DATE_FORMAT);
+                    }
+                    if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT) {
+                        String cast = String.format(Db2Constants.CAST, originName, Db2Constants.DEFAULT_INT_FORMAT);
+                        whereName = String.format(Db2Constants.FROM_UNIXTIME, cast, Db2Constants.DEFAULT_DATE_FORMAT);
+                    }
+                    if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
+                        whereName = originName;
+                    }
+                } else {
                     whereName = originName;
                 }
-            } else {
-                whereName = originName;
-            }
-            if (StringUtils.equalsIgnoreCase(request.getTerm(), "null")) {
-                whereValue = "";
-            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_null")) {
-                whereValue = "";
-            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "empty")) {
-                whereValue = "''";
-            } else if (StringUtils.equalsIgnoreCase(request.getTerm(), "not_empty")) {
-                whereValue = "''";
-            } else if (StringUtils.containsIgnoreCase(request.getTerm(), "in")) {
-                whereValue = "('" + StringUtils.join(value, "','") + "')";
-            } else if (StringUtils.containsIgnoreCase(request.getTerm(), "like")) {
-                whereValue = "'%" + value + "%'";
-            } else {
-                if(field.getDeType().equals(DeTypeConstants.DE_TIME)){
-                    whereValue = String.format(Db2Constants.DATE_FORMAT, "'" + value + "'", Db2Constants.DEFAULT_DATE_FORMAT);;
-                }else {
-                    whereValue = String.format(Db2Constants.WHERE_VALUE_VALUE, value);
+                if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "null")) {
+                    whereValue = "";
+                } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_null")) {
+                    whereValue = "";
+                } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "empty")) {
+                    whereValue = "''";
+                } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_empty")) {
+                    whereValue = "''";
+                } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in")) {
+                    whereValue = "('" + StringUtils.join(value, "','") + "')";
+                } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
+                    whereValue = "'%" + value + "%'";
+                } else {
+                    if (field.getDeType().equals(DeTypeConstants.DE_TIME)) {
+                        whereValue = String.format(Db2Constants.DATE_FORMAT, "'" + value + "'", Db2Constants.DEFAULT_DATE_FORMAT);
+                    } else {
+                        whereValue = String.format(Db2Constants.WHERE_VALUE_VALUE, value);
+                    }
                 }
+                list.add(SQLObj.builder()
+                        .whereField(whereName)
+                        .whereTermAndValue(whereTerm + whereValue)
+                        .build());
             }
-            list.add(SQLObj.builder()
-                    .whereField(whereName)
-                    .whereTermAndValue(whereTerm + whereValue)
-                    .build());
+
+            List<String> strList = new ArrayList<>();
+            list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
+            res.add("(" + String.join(" " + getLogic(request.getLogic()) + " ", strList) + ")");
         }
-        return list;
+        return "(" + String.join(" AND ", res) + ")";
     }
 
-    public List<SQLObj> transExtFilterList(SQLObj tableObj, List<ChartExtFilterRequest> requestList) {
+    public String transExtFilterList(SQLObj tableObj, List<ChartExtFilterRequest> requestList) {
         if (CollectionUtils.isEmpty(requestList)) {
             return null;
         }
@@ -856,7 +858,9 @@ public class Db2QueryProvider extends QueryProvider {
                     .whereTermAndValue(whereTerm + whereValue)
                     .build());
         }
-        return list;
+        List<String> strList = new ArrayList<>();
+        list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
+        return "(" + String.join(" AND ", strList) + ")";
     }
 
     private String sqlFix(String sql) {
@@ -951,7 +955,7 @@ public class Db2QueryProvider extends QueryProvider {
                 .build();
     }
 
-    private List<SQLObj> getYWheres(ChartViewFieldDTO y, String originField, String fieldAlias) {
+    private String getYWheres(ChartViewFieldDTO y, String originField, String fieldAlias) {
         List<SQLObj> list = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(y.getFilter()) && y.getFilter().size() > 0) {
             y.getFilter().forEach(f -> {
@@ -971,9 +975,10 @@ public class Db2QueryProvider extends QueryProvider {
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
                 } else {
-                    if(y.getDeType().equals(DeTypeConstants.DE_TIME)){
-                        whereValue = String.format(Db2Constants.DATE_FORMAT, "'" + f.getValue() + "'", Db2Constants.DEFAULT_DATE_FORMAT);;
-                    }else {
+                    if (y.getDeType().equals(DeTypeConstants.DE_TIME)) {
+                        whereValue = String.format(Db2Constants.DATE_FORMAT, "'" + f.getValue() + "'", Db2Constants.DEFAULT_DATE_FORMAT);
+                        ;
+                    } else {
                         whereValue = String.format(Db2Constants.WHERE_VALUE_VALUE, f.getValue());
                     }
                 }
@@ -984,7 +989,9 @@ public class Db2QueryProvider extends QueryProvider {
                         .build());
             });
         }
-        return list;
+        List<String> strList = new ArrayList<>();
+        list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
+        return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" " + getLogic(y.getLogic()) + " ", strList) + ")" : null;
     }
 
     private String calcFieldRegex(String originField, SQLObj tableObj) {
@@ -1017,5 +1024,15 @@ public class Db2QueryProvider extends QueryProvider {
         } else {
             return sql;
         }
+    }
+
+    private String getLogic(String logic) {
+        switch (logic) {
+            case "and":
+                return "AND";
+            case "or":
+                return "OR";
+        }
+        return "AND";
     }
 }

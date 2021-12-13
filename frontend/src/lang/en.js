@@ -992,7 +992,9 @@ export default {
     day_mom: 'Day mom',
     data_sub: 'Sub',
     data_percent: 'Percent',
-    compare_calc_expression: 'Expression'
+    compare_calc_expression: 'Expression',
+    and: 'And',
+    or: 'Or'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
