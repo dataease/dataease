@@ -18,24 +18,23 @@ import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
-import io.dataease.controller.response.DataSetDetail;
-import io.dataease.dto.chart.ChartCustomFilterDTO;
-import io.dataease.dto.datasource.TableFiled;
-import io.dataease.plugins.config.SpringContextUtil;
-import io.dataease.plugins.xpack.auth.dto.request.DatasetRowPermissions;
-import io.dataease.plugins.xpack.auth.service.RowPermissionService;
-import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
-import io.dataease.provider.datasource.DatasourceProvider;
-import io.dataease.provider.datasource.JdbcProvider;
-import io.dataease.provider.ProviderFactory;
 import io.dataease.controller.request.datasource.DatasourceRequest;
+import io.dataease.controller.response.DataSetDetail;
+import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.dto.dataset.*;
 import io.dataease.dto.dataset.union.UnionDTO;
 import io.dataease.dto.dataset.union.UnionItemDTO;
-import io.dataease.dto.dataset.union.UnionParamDTO;;
+import io.dataease.dto.dataset.union.UnionParamDTO;
+import io.dataease.dto.datasource.TableFiled;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.loader.ClassloaderResponsity;
+import io.dataease.plugins.xpack.auth.dto.request.DatasetRowPermissions;
+import io.dataease.plugins.xpack.auth.service.RowPermissionService;
+import io.dataease.provider.ProviderFactory;
+import io.dataease.provider.datasource.DatasourceProvider;
+import io.dataease.provider.datasource.JdbcProvider;
 import io.dataease.provider.query.DDLProvider;
 import io.dataease.provider.query.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
@@ -66,6 +65,8 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+
+;
 
 /**
  * @Author gin
@@ -439,38 +440,38 @@ public class DataSetTableService {
         return map;
     }
 
-    private List<DatasetRowPermissions> rowPermissions(String datasetId){
+    private List<DatasetRowPermissions> rowPermissions(String datasetId) {
         List<DatasetRowPermissions> datasetRowPermissions = new ArrayList<>();
         Map<String, RowPermissionService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((RowPermissionService.class));
-        if(beansOfType.keySet().size() == 0) {
-           return new ArrayList<>();
+        if (beansOfType.keySet().size() == 0) {
+            return new ArrayList<>();
         }
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
         datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(AuthUtils.getUser().getUserId()), "user"));
-        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, AuthUtils.getUser().getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList()) , "role"));
+        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, AuthUtils.getUser().getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList()), "role"));
         datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(AuthUtils.getUser().getDeptId()), "dept"));
         return datasetRowPermissions;
     }
 
-    private DatasetTableField getFieldById(List<DatasetTableField> fields, String fieldId){
+    private DatasetTableField getFieldById(List<DatasetTableField> fields, String fieldId) {
         DatasetTableField field = null;
         for (DatasetTableField datasetTableField : fields) {
-            if(fieldId.equalsIgnoreCase(datasetTableField.getId())){
-                field =  datasetTableField;
+            if (fieldId.equalsIgnoreCase(datasetTableField.getId())) {
+                field = datasetTableField;
             }
         }
         return field;
     }
 
 
-    public List<ChartCustomFilterDTO> getCustomFilters(List<DatasetTableField> fields, DatasetTable datasetTable) {
-        List<ChartCustomFilterDTO> customFilter = new ArrayList<>();
+    public List<ChartFieldCustomFilterDTO> getCustomFilters(List<DatasetTableField> fields, DatasetTable datasetTable) {
+        List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
         rowPermissions(datasetTable.getId()).forEach(datasetRowPermissions -> {
-            List<ChartCustomFilterDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartCustomFilterDTO.class);
+            List<ChartFieldCustomFilterDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartFieldCustomFilterDTO.class);
             lists.forEach(chartCustomFilterDTO -> {
                 DatasetTableField field = getFieldById(fields, datasetRowPermissions.getDatasetFieldId());
-                if(field != null){
-                    chartCustomFilterDTO.setFieldId(datasetRowPermissions.getDatasetFieldId());
+                if (field != null) {
+                    chartCustomFilterDTO.setId(datasetRowPermissions.getDatasetFieldId());
                     chartCustomFilterDTO.setField(field);
                 }
             });
@@ -490,7 +491,7 @@ public class DataSetTableService {
             return map;
         }
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(dataSetTableRequest.getId());
-        List<ChartCustomFilterDTO> customFilter = getCustomFilters(fields, datasetTable);
+        List<ChartFieldCustomFilterDTO> customFilter = getCustomFilters(fields, datasetTable);
         String[] fieldArray = fields.stream().map(DatasetTableField::getDataeaseName).toArray(String[]::new);
 
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);

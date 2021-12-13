@@ -995,7 +995,9 @@ export default {
     day_mom: '日环比',
     data_sub: '对比差值',
     data_percent: '差值百分比',
-    compare_calc_expression: '计算公式'
+    compare_calc_expression: '计算公式',
+    and: '与',
+    or: '或'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

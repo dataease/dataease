@@ -992,7 +992,9 @@ export default {
     day_mom: '日環比',
     data_sub: '對比差值',
     data_percent: '差值百分比',
-    compare_calc_expression: '計算公式'
+    compare_calc_expression: '計算公式',
+    and: '與',
+    or: '或'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

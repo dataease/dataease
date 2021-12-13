@@ -18,7 +18,7 @@ FROM
     <table.tableName>   <table.tableAlias>
 <if(filters)>
 WHERE
-    <filters:{filter|<if(filter)><filter.whereField> <filter.whereTermAndValue><endif>}; separator="\nAND ">
+    <filters:{filter|<if(filter)><filter><endif>}; separator="\nAND ">
 <endif>
 <if(groups)>
 GROUP BY
@@ -51,7 +51,7 @@ FROM
     <table.tableName>   <table.tableAlias>
 <if(filters)>
 WHERE
-    <filters:{filter|<if(filter)><filter.whereField> <filter.whereTermAndValue><endif>}; separator="\nAND ">
+    <filters:{filter|<if(filter)><filter><endif>}; separator="\nAND ">
 <endif>
 <if(isGroup && groups)>
 GROUP BY

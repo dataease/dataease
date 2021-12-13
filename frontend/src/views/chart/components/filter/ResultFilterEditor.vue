@@ -1,6 +1,18 @@
 <template>
   <el-col>
-    <el-button icon="el-icon-plus" circle size="mini" style="margin-bottom: 10px;" @click="addFilter" />
+    <div style="display: inline-block;">
+      <el-button icon="el-icon-plus" circle size="mini" style="margin-bottom: 10px;" @click="addFilter" />
+      <el-radio-group
+        v-model="logic"
+        size="mini"
+        style="margin-left: 10px;"
+        @change="logicChange"
+      >
+        <el-radio-button label="and">{{ $t('chart.and') }}</el-radio-button>
+        <el-radio-button label="or">{{ $t('chart.or') }}</el-radio-button>
+      </el-radio-group>
+    </div>
+
     <div style="max-height: 50vh;overflow-y: auto;">
       <el-row v-for="(f,index) in item.filter" :key="index" class="filter-item">
         <el-col :span="4">
@@ -156,7 +168,8 @@ export default {
           }]
         }
       ],
-      options: []
+      options: [],
+      logic: ''
     }
   },
   watch: {
@@ -166,6 +179,7 @@ export default {
   },
   mounted() {
     this.initOptions()
+    this.init()
   },
   methods: {
     initOptions() {
@@ -179,6 +193,9 @@ export default {
         }
       }
     },
+    init() {
+      this.logic = this.item.logic
+    },
     addFilter() {
       this.item.filter.push({
         fieldId: this.item.id,
@@ -188,6 +205,9 @@ export default {
     },
     removeFilter(index) {
       this.item.filter.splice(index, 1)
+    },
+    logicChange(val) {
+      this.item.logic = val
     }
   }
 }
