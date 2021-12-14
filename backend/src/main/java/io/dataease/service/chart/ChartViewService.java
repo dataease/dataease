@@ -208,6 +208,13 @@ public class ChartViewService {
         }.getType());
         List<ChartViewFieldDTO> drill = new Gson().fromJson(view.getDrillFields(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
+        // 获取对应数据集行权限
+        DatasetTableField datasetTableFieldObj = DatasetTableField.builder().tableId(view.getTableId()).checked(Boolean.TRUE).build();
+        List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableFieldObj);
+        DatasetTable datasetTable = dataSetTableService.get(view.getTableId());
+        List<ChartFieldCustomFilterDTO> permissionFields = dataSetTableService.getCustomFilters(fields, datasetTable);
+        fieldCustomFilter.addAll(permissionFields);
+
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
             ele.setField(dataSetTableFieldsService.get(ele.getId()));
         }

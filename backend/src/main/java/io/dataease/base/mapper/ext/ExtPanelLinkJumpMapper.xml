@@ -12,6 +12,7 @@
     <resultMap id="LinkJumpInfoMap" type="io.dataease.dto.panel.linkJump.PanelLinkJumpInfoDTO" extends="io.dataease.base.mapper.PanelLinkJumpInfoMapper.BaseResultMap">
         <result column="source_field_id" jdbcType="VARCHAR" property="sourceFieldId"/>
         <result column="source_field_name" jdbcType="VARCHAR" property="sourceFieldName"/>
+        <result column="publicJumpId" jdbcType="VARCHAR" property="publicJumpId"/>
         <collection property="targetViewInfoList" ofType="io.dataease.base.domain.PanelLinkJumpTargetViewInfo">
             <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId"/>
             <result column="target_field_id" jdbcType="VARCHAR" property="targetFieldId"/>
@@ -35,6 +36,7 @@
             panel_link_jump_info.jump_type,
             panel_link_jump_info.target_panel_id,
             panel_link_jump_info.content,
+            panel_link_mapping.id as publicJumpId,
             ifnull( panel_link_jump_info.checked, 0 ) AS checked,
             panel_link_jump_target_view_info.target_view_id,
             panel_link_jump_target_view_info.target_field_id
@@ -45,6 +47,7 @@
             LEFT JOIN panel_link_jump_info ON panel_link_jump.id = panel_link_jump_info.link_jump_id
             AND dataset_table_field.id = panel_link_jump_info.source_field_id
             LEFT JOIN panel_link_jump_target_view_info ON panel_link_jump_info.id = panel_link_jump_target_view_info.link_jump_info_id
+            LEFT JOIN panel_link_mapping on panel_link_jump_info.target_panel_id = panel_link_mapping.resource_id
         WHERE
             chart_view.id =#{source_view_id}
         ORDER BY

@@ -21,6 +21,7 @@ import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.controller.response.DataSetDetail;
+import io.dataease.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.dto.dataset.*;
 import io.dataease.dto.dataset.union.UnionDTO;
@@ -471,15 +472,19 @@ public class DataSetTableService {
     public List<ChartFieldCustomFilterDTO> getCustomFilters(List<DatasetTableField> fields, DatasetTable datasetTable) {
         List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
         rowPermissions(datasetTable.getId()).forEach(datasetRowPermissions -> {
-            List<ChartFieldCustomFilterDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartFieldCustomFilterDTO.class);
+            List<ChartCustomFilterItemDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartCustomFilterItemDTO.class);
+            ChartFieldCustomFilterDTO dto = new ChartFieldCustomFilterDTO();
+            DatasetTableField field = getFieldById(fields, datasetRowPermissions.getDatasetFieldId());
             lists.forEach(chartCustomFilterDTO -> {
-                DatasetTableField field = getFieldById(fields, datasetRowPermissions.getDatasetFieldId());
-                if (field != null) {
-                    chartCustomFilterDTO.setId(datasetRowPermissions.getDatasetFieldId());
-                    chartCustomFilterDTO.setField(field);
-                }
+                chartCustomFilterDTO.setFieldId(field.getId());
             });
-            customFilter.addAll(lists);
+            if (field != null) {
+                dto.setFilter(lists);
+                dto.setField(field);
+                dto.setId(field.getId());
+                dto.setLogic("and");
+                customFilter.add(dto);
+            }
         });
         return customFilter;
     }
