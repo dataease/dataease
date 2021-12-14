@@ -32,6 +32,10 @@ export default {
   methods: {
     setPanelInfo() {
       loadResource(this.resourceId).then(res => {
+        this.$store.dispatch('panel/setPanelInfo', {
+          id: res.data.id,
+          name: res.data.name
+        })
         // 刷新联动信息
         getPanelAllLinkageInfo(this.resourceId).then(rsp => {
           this.$store.commit('setNowPanelTrackInfo', rsp.data)
@@ -52,7 +56,7 @@ export default {
             sourcePanelId: jumpParam.sourcePanelId,
             sourceViewId: jumpParam.sourceViewId,
             sourceFieldId: jumpParam.sourceFieldId,
-            targetPanelId: this.panelId
+            targetPanelId: this.resourceId
           }
           this.show = false
           // 刷新跳转目标仪表板联动信息

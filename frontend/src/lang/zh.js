@@ -1471,7 +1471,8 @@ export default {
     panel_view_result_tips: '选择仪表板会覆盖视图的结果展示数量，取值范围1~10000',
     timeout_refresh: '请求超时，稍后刷新...',
     mobile_layout: '移动端布局',
-    component_hidden: '隐藏的组件'
+    component_hidden: '隐藏的组件',
+    public_link_tips: '当前是公共链接模式，目标仪表板未设置公共链接，无法跳转'
   },
   plugin: {
     local_install: '本地安装',
