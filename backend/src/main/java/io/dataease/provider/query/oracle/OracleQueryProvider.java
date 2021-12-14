@@ -847,9 +847,11 @@ public class OracleQueryProvider extends QueryProvider {
 
             List<String> strList = new ArrayList<>();
             list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
-            res.add("(" + String.join(" " + getLogic(request.getLogic()) + " ", strList) + ")");
+            if (CollectionUtils.isNotEmpty(list)) {
+                res.add("(" + String.join(" " + getLogic(request.getLogic()) + " ", strList) + ")");
+            }
         }
-        return "(" + String.join(" AND ", res) + ")";
+        return CollectionUtils.isNotEmpty(res) ? "(" + String.join(" AND ", res) + ")" : null;
     }
 
     public String transExtFilterList(SQLObj tableObj, List<ChartExtFilterRequest> requestList) {
@@ -917,7 +919,7 @@ public class OracleQueryProvider extends QueryProvider {
         }
         List<String> strList = new ArrayList<>();
         list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
-        return "(" + String.join(" AND ", strList) + ")";
+        return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" AND ", strList) + ")" : null;
     }
 
     private String sqlFix(String sql) {

@@ -4,6 +4,7 @@ package io.dataease.service.dataset;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentRoleDto;
+import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
@@ -447,9 +448,12 @@ public class DataSetTableService {
             return new ArrayList<>();
         }
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
-        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(AuthUtils.getUser().getUserId()), "user"));
-        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, AuthUtils.getUser().getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList()), "role"));
-        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(AuthUtils.getUser().getDeptId()), "dept"));
+        CurrentUserDto user = AuthUtils.getUser();
+        if (user != null) {
+            datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(user.getUserId()), "user"));
+            datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList()), "role"));
+            datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(user.getDeptId()), "dept"));
+        }
         return datasetRowPermissions;
     }
 
