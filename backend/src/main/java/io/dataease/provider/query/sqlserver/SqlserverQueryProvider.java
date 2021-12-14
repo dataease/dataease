@@ -1089,14 +1089,4 @@ public class SqlserverQueryProvider extends QueryProvider {
         }
         return originField;
     }
-
-    private String getLogic(String logic) {
-        switch (logic) {
-            case "and":
-                return "AND";
-            case "or":
-                return "OR";
-        }
-        return "AND";
-    }
 }

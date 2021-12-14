@@ -78,4 +78,16 @@ public abstract class QueryProvider {
     public String convertTableToSql(String tableName, Datasource ds) {
         return "select * from  TABLE_NAME".replace("TABLE_NAME", tableName);
     }
+
+    public String getLogic(String logic) {
+        if (logic != null) {
+            switch (logic) {
+                case "and":
+                    return "AND";
+                case "or":
+                    return "OR";
+            }
+        }
+        return "AND";
+    }
 }

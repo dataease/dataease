@@ -974,14 +974,4 @@ public class RedshiftQueryProvider extends QueryProvider {
             return sql;
         }
     }
-
-    private String getLogic(String logic) {
-        switch (logic) {
-            case "and":
-                return "AND";
-            case "or":
-                return "OR";
-        }
-        return "AND";
-    }
 }
