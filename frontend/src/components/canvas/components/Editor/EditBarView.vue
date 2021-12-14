@@ -40,7 +40,9 @@ export default {
   },
   computed: {
     ...mapState([
-      'linkageSettingStatus'
+      'linkageSettingStatus',
+      'componentData',
+      'canvasStyleData'
     ])
   },
   mounted() {

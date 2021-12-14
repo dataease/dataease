@@ -79,6 +79,8 @@ const data = {
     componentGap: 5,
     // 移动端布局状态
     mobileLayoutStatus: false,
+    // 公共链接状态(当前是否是公共链接打开)
+    publicLinkStatus: false,
     pcMatrixCount: {
       x: 36,
       y: 18
@@ -325,6 +327,9 @@ const data = {
     },
     setMobileLayoutStatus(state, status) {
       state.mobileLayoutStatus = status
+    },
+    setPublicLinkStatus(state, status) {
+      state.publicLinkStatus = status
     },
     // 启用移动端布局
     openMobileLayout(state) {
