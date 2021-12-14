@@ -19,7 +19,7 @@ public class DefaultLicenseService {
     private InnerLicenseService innerLicenseService;
 
     private static final String LICENSE_ID = "fit2cloud_license";
-    private static final String validatorUtil = "/usr/local/bin/validator";
+    private static final String validatorUtil = "/usr/bin/validator";
     private static final String product = "DataEase";
 
     public F2CLicenseResponse validateLicense(String product, String licenseKey) {
