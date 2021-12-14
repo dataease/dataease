@@ -208,7 +208,8 @@ export default {
     ...mapState([
       'canvasStyleData',
       'nowPanelTrackInfo',
-      'nowPanelJumpInfo'
+      'nowPanelJumpInfo',
+      'publicLinkStatus'
     ])
   },
 
@@ -399,9 +400,23 @@ export default {
         // 内部仪表板跳转
         if (jumpInfo.linkType === 'inner') {
           if (jumpInfo.targetPanelId) {
-            const url = '#/preview/' + jumpInfo.targetPanelId
             localStorage.setItem('jumpInfoParam', JSON.stringify(param))
-            window.open(url, jumpInfo.jumpType)
+            if (this.publicLinkStatus) {
+              // 判断是否有公共链接ID
+              if (jumpInfo.publicJumpId) {
+                const url = '/link/' + jumpInfo.publicJumpId
+                window.open(url, jumpInfo.jumpType)
+              } else {
+                this.$message({
+                  type: 'warn',
+                  message: '当前是公共链接模式，目标仪表板未设置公共链接，无法跳转',
+                  showClose: true
+                })
+              }
+            } else {
+              const url = '#/preview/' + jumpInfo.targetPanelId
+              window.open(url, jumpInfo.jumpType)
+            }
           } else {
             this.$message({
               type: 'warn',
