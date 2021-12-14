@@ -468,7 +468,6 @@ public class DataSetTableService {
         return field;
     }
 
-
     public List<ChartFieldCustomFilterDTO> getCustomFilters(List<DatasetTableField> fields, DatasetTable datasetTable) {
         List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
         rowPermissions(datasetTable.getId()).forEach(datasetRowPermissions -> {
@@ -482,7 +481,7 @@ public class DataSetTableService {
                 dto.setFilter(lists);
                 dto.setField(field);
                 dto.setId(field.getId());
-                dto.setLogic("and");
+                dto.setLogic(datasetRowPermissions.getLogic());
                 customFilter.add(dto);
             }
         });
