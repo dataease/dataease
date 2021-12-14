@@ -1567,12 +1567,6 @@ export default {
    padding:3px;
 }
 
-// 拖拽组件样式
-
-.de-drag-active{
-  outline: 1px solid #70c0ff;
-  user-select: none;
-}
 
 .ref-line {
   position: absolute;
