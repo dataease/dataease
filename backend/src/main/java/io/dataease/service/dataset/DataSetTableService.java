@@ -21,7 +21,6 @@ import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.controller.response.DataSetDetail;
-import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.dto.dataset.*;
