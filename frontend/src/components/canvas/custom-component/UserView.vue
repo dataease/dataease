@@ -409,7 +409,7 @@ export default {
               } else {
                 this.$message({
                   type: 'warn',
-                  message: '当前是公共链接模式，目标仪表板未设置公共链接，无法跳转',
+                  message: this.$t('panel.public_link_tips'),
                   showClose: true
                 })
               }
