@@ -85,7 +85,7 @@ export const assistList = [
     component: 'rect-shape',
     type: 'rect-shape',
     label: '矩形',
-    icon: 'iconfont icon-juxing',
+    icon: 'iconfont icon-juxing1',
     defaultClass: 'text-filter'
   },
   {
