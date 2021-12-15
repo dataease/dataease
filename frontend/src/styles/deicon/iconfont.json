@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "23446403",
+      "name": "矩形",
+      "font_class": "juxing1",
+      "unicode": "e67e",
+      "unicode_decimal": 59006
+    },
+    {
       "icon_id": "11799014",
       "name": "移动端",
       "font_class": "yidongduan",
@@ -46,13 +53,6 @@
       "font_class": "padding",
       "unicode": "e91b",
       "unicode_decimal": 59675
-    },
-    {
-      "icon_id": "11982148",
-      "name": "tabs",
-      "font_class": "tabs",
-      "unicode": "e9a8",
-      "unicode_decimal": 59816
     },
     {
       "icon_id": "658039",
@@ -123,6 +123,13 @@
       "font_class": "xuanfuanniu",
       "unicode": "e8e6",
       "unicode_decimal": 59622
+    },
+    {
+      "icon_id": "15196968",
+      "name": "44.tabs",
+      "font_class": "tabs",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
     },
     {
       "icon_id": "23570269",
