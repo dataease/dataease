@@ -313,4 +313,8 @@ export default {
     height: 0px!important;
   }
 
+  ::v-deep .el-tabs__nav{
+   z-index: 0;
+  }
+
 </style>
