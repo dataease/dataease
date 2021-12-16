@@ -245,19 +245,29 @@ public class ChartViewService {
 
         // 过滤来自仪表板的条件
         List<ChartExtFilterRequest> extFilterList = new ArrayList<>();
-
         //组件过滤条件
         if (ObjectUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest request : requestList.getFilter()) {
-                DatasetTableField datasetTableField = dataSetTableFieldsService.get(request.getFieldId());
-                request.setDatasetTableField(datasetTableField);
-                if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
-                    if (CollectionUtils.isNotEmpty(request.getViewIds())) {
-                        if (request.getViewIds().contains(view.getId())) {
-                            extFilterList.add(request);
+                // 解析多个fieldId,fieldId是一个逗号分隔的字符串
+                String fieldId = request.getFieldId();
+                if (StringUtils.isNotEmpty(fieldId)) {
+                    String[] fieldIds = fieldId.split(",");
+                    for (String fId : fieldIds) {
+                        ChartExtFilterRequest filterRequest = new ChartExtFilterRequest();
+                        BeanUtils.copyBean(filterRequest, request);
+                        filterRequest.setFieldId(fId);
+
+                        DatasetTableField datasetTableField = dataSetTableFieldsService.get(fId);
+                        filterRequest.setDatasetTableField(datasetTableField);
+                        if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
+                            if (CollectionUtils.isNotEmpty(filterRequest.getViewIds())) {
+                                if (filterRequest.getViewIds().contains(view.getId())) {
+                                    extFilterList.add(filterRequest);
+                                }
+                            } else {
+                                extFilterList.add(filterRequest);
+                            }
                         }
-                    } else {
-                        extFilterList.add(request);
                     }
                 }
             }
