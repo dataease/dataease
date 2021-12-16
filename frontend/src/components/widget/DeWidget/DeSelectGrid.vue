@@ -2,7 +2,7 @@
 
   <div v-if="element.options!== null && element.options.attrs!==null && show" class="de-select-grid-class">
     <div class="de-select-grid-search">
-      <el-input v-model="keyWord" :placeholder="$t('deinputsearch.placeholder')" size="mini" prefix-icon="el-icon-search" clearable />
+      <el-input v-model="keyWord" :placeholder="$t('deinputsearch.placeholder')" :size="size" prefix-icon="el-icon-search" clearable />
     </div>
     <div class="list">
 
@@ -43,7 +43,8 @@ export default {
       type: Boolean,
       required: false,
       default: true
-    }
+    },
+    size: String
   },
   data() {
     return {
