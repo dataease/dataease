@@ -5,7 +5,8 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <edit-bar v-if="editBarShow" :element="config" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
+    <close-bar v-if="previewVisible" @closePreview="closePreview" />
     <de-out-widget
       v-if="config.type==='custom'"
       :id="'component' + config.id"
@@ -14,6 +15,7 @@
       :out-style="config.style"
       :element="config"
       :in-screen="inScreen"
+      :h="config.style.height"
     />
     <component
       :is="config.component"
@@ -23,6 +25,7 @@
       :style="getComponentStyleDefault(config.style)"
       :prop-value="config.propValue"
       :is-edit="false"
+      :active="componentActiveFlag"
       :element="config"
       :search-count="searchCount"
       :h="config.style.height"
@@ -39,9 +42,10 @@ import { mapState } from 'vuex'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
+import CloseBar from '@/components/canvas/components/Editor/CloseBar'
 
 export default {
-  components: { MobileCheckBar, DeOutWidget, EditBar },
+  components: { CloseBar, MobileCheckBar, DeOutWidget, EditBar },
   mixins: [mixins],
   props: {
     config: {
@@ -63,11 +67,20 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    terminal: {
+      type: String,
+      default: 'pc'
+    }
+  },
+  data() {
+    return {
+      previewVisible: false
     }
   },
   computed: {
-    editBarShow() {
-      return this.curComponent && this.config === this.curComponent
+    componentActiveFlag() {
+      return (this.curComponent && this.config === this.curComponent) && !this.previewVisible
     },
     curGap() {
       return this.config.auxiliaryMatrix ? this.componentGap : 0
@@ -155,7 +168,14 @@ export default {
       this.$store.commit('setCurComponent', { component: this.config, index: this.index })
     },
     showViewDetails() {
-      this.$refs.wrapperChild.openChartDetailsDialog()
+      if (this.terminal === 'pc') {
+        this.$refs.wrapperChild.openChartDetailsDialog()
+      } else {
+        this.previewVisible = true
+      }
+    },
+    closePreview() {
+      this.previewVisible = false
     }
   }
 }

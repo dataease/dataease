@@ -992,7 +992,9 @@ export default {
     day_mom: '日環比',
     data_sub: '對比差值',
     data_percent: '差值百分比',
-    compare_calc_expression: '計算公式'
+    compare_calc_expression: '計算公式',
+    and: '與',
+    or: '或'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
@@ -1173,6 +1175,16 @@ export default {
     confirm_sync_field_tips: '同步字段可能會導致已編輯字段發生變更，請確認',
     sync_success: '同步成功',
     sync_success_1: '同步成功，請對當前數據集重新執行數據同步操作',
+    row_permission: {
+      type: '類型',
+      name: '名稱',
+      condition: '條件',
+      value: '值',
+      add: '添加行權限',
+      edit: '編輯行權限',
+      please_select_field: '請選擇字段'
+    },
+    row_permissions: '行權限',
     union_data: '關聯數據集',
     add_union_table: '添加關聯數據集',
     edit_union: '編輯關聯數據集',
@@ -1450,7 +1462,8 @@ export default {
     panel_view_result_tips: '選擇儀表板會覆蓋視圖的結果展示數量，取值範圍1~10000',
     timeout_refresh: '请求超时，稍后刷新...',
     mobile_layout: '移动端布局',
-    component_hidden: '隐藏的组件'
+    component_hidden: '隐藏的组件',
+    public_link_tips: '当前是公共链接模式，目标仪表板未设置公共链接，无法跳转'
   },
   plugin: {
     local_install: '本地安裝',

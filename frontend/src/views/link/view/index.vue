@@ -9,7 +9,7 @@ import { loadResource } from '@/api/link'
 import { uuid } from 'vue-uuid'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
-import { queryPanelJumpInfo } from '@/api/panel/linkJump'
+import { queryPanelJumpInfo, queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
 
 export default {
   name: 'LinkView',
@@ -32,6 +32,10 @@ export default {
   methods: {
     setPanelInfo() {
       loadResource(this.resourceId).then(res => {
+        this.$store.dispatch('panel/setPanelInfo', {
+          id: res.data.id,
+          name: res.data.name
+        })
         // 刷新联动信息
         getPanelAllLinkageInfo(this.resourceId).then(rsp => {
           this.$store.commit('setNowPanelTrackInfo', rsp.data)
@@ -43,7 +47,27 @@ export default {
         queryPanelJumpInfo(this.resourceId).then(rsp => {
           this.$store.commit('setNowPanelJumpInfo', rsp.data)
         })
-        this.show = true
+        // 如果含有跳转参数 进行触发
+        const tempParam = localStorage.getItem('jumpInfoParam')
+        if (tempParam) {
+          localStorage.removeItem('jumpInfoParam')
+          const jumpParam = JSON.parse(tempParam)
+          const jumpRequestParam = {
+            sourcePanelId: jumpParam.sourcePanelId,
+            sourceViewId: jumpParam.sourceViewId,
+            sourceFieldId: jumpParam.sourceFieldId,
+            targetPanelId: this.resourceId
+          }
+          this.show = false
+          // 刷新跳转目标仪表板联动信息
+          queryTargetPanelJumpInfo(jumpRequestParam).then(rsp => {
+            this.show = true
+            this.$store.commit('setNowTargetPanelJumpInfo', rsp.data)
+            this.$store.commit('addViewTrackFilter', jumpParam)
+          })
+        } else {
+          this.show = true
+        }
       })
     },
     resetID(data) {

@@ -76,7 +76,7 @@ import FieldEdit from './FieldEdit'
 
 export default {
   name: 'ViewTable',
-  components: { FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview },
+  components: {FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview },
   props: {
     param: {
       type: Object,

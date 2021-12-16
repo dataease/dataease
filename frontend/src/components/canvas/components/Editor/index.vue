@@ -80,6 +80,7 @@
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
+        :h="getShapeStyleIntDeDrag(item.style,'height')"
       />
       <component
         :is="item.component"
@@ -1565,13 +1566,6 @@ export default {
 
 .gap_class{
    padding:3px;
-}
-
-// 拖拽组件样式
-
-.de-drag-active{
-  outline: 1px solid #70c0ff;
-  user-select: none;
 }
 
 .ref-line {

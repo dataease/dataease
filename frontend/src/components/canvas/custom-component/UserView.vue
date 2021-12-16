@@ -8,6 +8,7 @@
       'rect-shape'
     ]"
   >
+    <EditBarView v-if="editBarViewShowFlag" :is-edit="isEdit" :view-id="element.propValue.viewId" @showViewDetails="openChartDetailsDialog" />
     <div v-if="requestStatus==='error'" class="chart-error-class">
       <div class="chart-error-message-class">
         {{ message }},{{ $t('chart.chart_show_error') }}
@@ -67,10 +68,11 @@ import { getToken, getLinkToken } from '@/utils/auth'
 import DrillPath from '@/views/chart/view/DrillPath'
 import { areaMapping } from '@/api/map/map'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
+import EditBarView from '@/components/canvas/components/Editor/EditBarView'
 
 export default {
   name: 'UserView',
-  components: { ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
+  components: { EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
   props: {
     element: {
       type: Object,
@@ -93,10 +95,19 @@ export default {
       required: false,
       default: false
     },
-    // eslint-disable-next-line vue/require-default-prop
     componentIndex: {
       type: Number,
       required: false
+    },
+    inTab: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    isEdit: {
+      type: Boolean,
+      require: false,
+      default: true
     }
   },
   data() {
@@ -120,6 +131,9 @@ export default {
     }
   },
   computed: {
+    editBarViewShowFlag() {
+      return this.active && this.inTab
+    },
     charViewShowFlag() {
       return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.renderComponent() === 'echarts'
     },
@@ -194,7 +208,8 @@ export default {
     ...mapState([
       'canvasStyleData',
       'nowPanelTrackInfo',
-      'nowPanelJumpInfo'
+      'nowPanelJumpInfo',
+      'publicLinkStatus'
     ])
   },
 
@@ -385,9 +400,23 @@ export default {
         // 内部仪表板跳转
         if (jumpInfo.linkType === 'inner') {
           if (jumpInfo.targetPanelId) {
-            const url = '#/preview/' + jumpInfo.targetPanelId
             localStorage.setItem('jumpInfoParam', JSON.stringify(param))
-            window.open(url, jumpInfo.jumpType)
+            if (this.publicLinkStatus) {
+              // 判断是否有公共链接ID
+              if (jumpInfo.publicJumpId) {
+                const url = '/link/' + jumpInfo.publicJumpId
+                window.open(url, jumpInfo.jumpType)
+              } else {
+                this.$message({
+                  type: 'warn',
+                  message: this.$t('panel.public_link_tips'),
+                  showClose: true
+                })
+              }
+            } else {
+              const url = '#/preview/' + jumpInfo.targetPanelId
+              window.open(url, jumpInfo.jumpType)
+            }
           } else {
             this.$message({
               type: 'warn',
@@ -566,31 +595,31 @@ export default {
     display: block !important;
   }
 
-  .rect-shape > i {
-    right: 5px;
-    color: gray;
-    position: absolute;
-  }
+  /*.rect-shape > i {*/
+  /*  right: 5px;*/
+  /*  color: gray;*/
+  /*  position: absolute;*/
+  /*}*/
 
-  .rect-shape > > > i:hover {
-    color: red;
-  }
+  /*.rect-shape > > > i:hover {*/
+  /*  color: red;*/
+  /*}*/
 
-  .rect-shape:hover > > > .icon-fangda {
-    z-index: 2;
-    display: block;
-  }
+  /*.rect-shape:hover > > > .icon-fangda {*/
+  /*  z-index: 2;*/
+  /*  display: block;*/
+  /*}*/
 
-  .rect-shape > > > .icon-fangda {
-    display: none
-  }
+  /*.rect-shape > > > .icon-fangda {*/
+  /*  display: none*/
+  /*}*/
 
-  .rect-shape:hover > > > .icon-shezhi {
-    z-index: 2;
-    display: block;
-  }
+  /*.rect-shape:hover > > > .icon-shezhi {*/
+  /*  z-index: 2;*/
+  /*  display: block;*/
+  /*}*/
 
-  .rect-shape > > > .icon-shezhi {
-    display: none
-  }
+  /*.rect-shape > > > .icon-shezhi {*/
+  /*  display: none*/
+  /*}*/
 </style>

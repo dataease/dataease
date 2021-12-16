@@ -11,6 +11,7 @@
       :style="getComponentStyleDefault(config.style)"
       :out-style="outStyle"
       :element="config"
+      :in-screen="true"
     />
     <component
       :is="config.component"
@@ -30,10 +31,11 @@
 import { mapState } from 'vuex'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 import { getStyle } from '@/components/canvas/utils/style'
+import DeOutWidget from '@/components/dataease/DeOutWidget'
 
 export default {
   name: 'ComponentWaitItem',
-  components: { MobileCheckBar },
+  components: { DeOutWidget, MobileCheckBar },
   props: {
     config: {
       type: Object,
@@ -87,6 +89,7 @@ export default {
 
 <style scoped>
   .component-custom {
+    position: relative!important;
     outline: none;
     width: 100% !important;
     height: 100%;

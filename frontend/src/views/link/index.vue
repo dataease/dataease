@@ -32,6 +32,7 @@ export default {
   methods: {
 
     loadInit() {
+      this.$store.commit('setPublicLinkStatus', true)
       debugger
       // this.link = getQueryVariable(this.PARAMKEY)
       this.link = this.$route.query.link

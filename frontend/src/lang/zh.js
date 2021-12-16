@@ -995,7 +995,9 @@ export default {
     day_mom: '日环比',
     data_sub: '对比差值',
     data_percent: '差值百分比',
-    compare_calc_expression: '计算公式'
+    compare_calc_expression: '计算公式',
+    and: '与',
+    or: '或'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1176,6 +1178,16 @@ export default {
     confirm_sync_field_tips: '同步字段可能会导致已编辑字段发生变更，请确认',
     sync_success: '同步成功',
     sync_success_1: '同步成功，请对当前数据集重新执行数据同步操作',
+    row_permission: {
+      type: '类型',
+      name: '名称',
+      condition: '条件',
+      value: '值',
+      add: '添加行权限',
+      edit: '编辑行权限',
+      please_select_field: '请选择字段'
+    },
+    row_permissions: '行权限',
     union_data: '关联数据集',
     add_union_table: '添加关联数据集',
     edit_union: '编辑关联数据集',
@@ -1459,7 +1471,8 @@ export default {
     panel_view_result_tips: '选择仪表板会覆盖视图的结果展示数量，取值范围1~10000',
     timeout_refresh: '请求超时，稍后刷新...',
     mobile_layout: '移动端布局',
-    component_hidden: '隐藏的组件'
+    component_hidden: '隐藏的组件',
+    public_link_tips: '当前是公共链接模式，目标仪表板未设置公共链接，无法跳转'
   },
   plugin: {
     local_install: '本地安装',

@@ -992,7 +992,9 @@ export default {
     day_mom: 'Day mom',
     data_sub: 'Sub',
     data_percent: 'Percent',
-    compare_calc_expression: 'Expression'
+    compare_calc_expression: 'Expression',
+    and: 'And',
+    or: 'Or'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1173,6 +1175,16 @@ export default {
     confirm_sync_field_tips: 'Sync field maybe change edit field，please confirm',
     sync_success: 'Success',
     sync_success_1: 'Success，please sync data again',
+    row_permission: {
+      type: 'Type',
+      name: 'Name',
+      condition: 'Conditions',
+      value: 'Value',
+      add: 'Add row permissions',
+      edit: 'Edit row permissions',
+      please_select_field: 'Please select a field'
+    },
+    row_permissions: 'Row Permissions',
     union_data: 'Union Dataset',
     add_union_table: 'Add Union Dataset',
     edit_union: 'Edit Union Dataset',
@@ -1448,7 +1460,8 @@ export default {
     panel_view_result_tips: 'Chose "Panel" Will Overwrite View`s Result,Range 1~10000',
     timeout_refresh: 'Timeout，Will Refresh...',
     mobile_layout: 'Mobile Layout',
-    component_hidden: 'Component Hidden'
+    component_hidden: 'Component Hidden',
+    public_link_tips: 'New Is Public Link,The Target Panel Have Not Set Public Link,Can Not Jump'
   },
   plugin: {
     local_install: 'Local installation',

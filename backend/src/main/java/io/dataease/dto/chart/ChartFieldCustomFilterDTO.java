@@ -1,5 +1,6 @@
 package io.dataease.dto.chart;
 
+import io.dataease.base.domain.DatasetTableField;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,8 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class ChartFieldCustomFilterDTO implements Serializable {
+public class ChartFieldCustomFilterDTO extends ChartViewFieldBaseDTO implements Serializable {
     private List<ChartCustomFilterItemDTO> filter;
+
+    private DatasetTableField field;
 }

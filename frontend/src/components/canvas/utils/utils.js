@@ -51,7 +51,7 @@ export function mobile2MainCanvas(mainSource, mobileSource) {
     top: mobileSource.style.top
   }
   mainSource.mobileStyle.x = mobileSource.x
-  mainSource.mobileStyle.y = mobileSource.x
+  mainSource.mobileStyle.y = mobileSource.y
   mainSource.mobileStyle.sizex = mobileSource.sizex
   mainSource.mobileStyle.sizey = mobileSource.sizey
 }

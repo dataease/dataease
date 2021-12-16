@@ -18,7 +18,7 @@ FROM
     <table.tableName>   <table.tableAlias>
 <if(filters)>
 WHERE
-    <filters:{filter|<if(filter)><filter.whereField> <filter.whereTermAndValue><endif>}; separator="\nAND ">
+    <filters:{filter|<if(filter)><filter><endif>}; separator="\nAND ">
 <endif>
 <if(groups)>
 GROUP BY
@@ -31,9 +31,12 @@ ORDER BY
 >>
 
 
-previewSql(groups, aggregators, filters, orders, table, isGroup)
+previewSql(limitFiled, groups, aggregators, filters, orders, table, isGroup)
 ::=<<
 SELECT
+<if(limitFiled)>
+   <limitFiled.limitFiled>
+<endif>
 <if(!groups && !aggregators)>
     *
 <endif>
@@ -48,7 +51,7 @@ FROM
     <table.tableName>   <table.tableAlias>
 <if(filters)>
 WHERE
-    <filters:{filter|<if(filter)><filter.whereField> <filter.whereTermAndValue><endif>}; separator="\nAND ">
+    <filters:{filter|<if(filter)><filter><endif>}; separator="\nAND ">
 <endif>
 <if(isGroup && groups)>
 GROUP BY

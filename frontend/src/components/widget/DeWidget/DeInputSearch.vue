@@ -8,6 +8,7 @@
     @input="valueChange"
     @keypress.enter.native="search"
     @dblclick="setEdit"
+    :size="size"
   >
 
     <el-button slot="append" icon="el-icon-search" @click="search" />
@@ -26,7 +27,8 @@ export default {
     inDraw: {
       type: Boolean,
       default: true
-    }
+    },
+    size: String
   },
   data() {
     return {

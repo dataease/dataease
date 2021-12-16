@@ -82,7 +82,7 @@
                 <el-row v-for="(targetViewInfo,index) in linkJumpInfo.targetViewInfoList" :key="index">
                   <el-col :span="11">
                     <div class="select-filed">
-                      <el-select v-model="targetViewInfo.targetViewId" style="width: 100%" size="mini" :placeholder="$t('panel.please_select')" @change="viewInfoOnChange(targetViewInfo)">
+                      <el-select v-model="targetViewInfo.targetViewId" style="width: 100%" size="mini" :placeholder="$t('fu.search_bar.please_select')" @change="viewInfoOnChange(targetViewInfo)">
                         <el-option
                           v-for="item in currentLinkPanelViewArray"
                           :key="item.id"
@@ -99,7 +99,7 @@
                   </el-col>
                   <el-col :span="11">
                     <div class="select-filed">
-                      <el-select v-model="targetViewInfo.targetFieldId" style="width: 100%" size="mini" :placeholder="$t('panel.please_select')">
+                      <el-select v-model="targetViewInfo.targetFieldId" style="width: 100%" size="mini" :placeholder="$t('fu.search_bar.please_select')">
                         <el-option
                           v-for="viewField in viewIdFieldArrayMap[targetViewInfo.targetViewId]"
                           :key="viewField.id"

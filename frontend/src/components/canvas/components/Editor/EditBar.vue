@@ -1,10 +1,10 @@
 <template>
   <div class="bar-main">
-    <div v-if="linkageSettingStatus&&element!==curLinkageView&&element.type==='view'" style="margin-right: -1px;width: 18px">
+    <div v-if="linkageAreaShow" style="margin-right: -1px;width: 18px">
       <el-checkbox v-model="linkageInfo.linkageActive" />
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
     </div>
-    <div v-else-if="!linkageSettingStatus">
+    <div v-if="normalAreaShow">
       <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet">
         <span slot="icon" :title="$t('panel.setting')">
           <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
@@ -26,7 +26,6 @@
         <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
       </span>
     </div>
-
   </div>
 </template>
 
@@ -54,6 +53,10 @@ export default {
       type: String,
       required: false,
       default: 'preview'
+    },
+    previewVisible: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -70,6 +73,14 @@ export default {
   mounted() {
   },
   computed: {
+    // 联动区域按钮显示
+    linkageAreaShow() {
+      return this.linkageSettingStatus && this.element !== this.curLinkageView && this.element.type === 'view'
+    },
+    // 编辑或预览区域显示
+    normalAreaShow() {
+      return !this.linkageSettingStatus
+    },
     existLinkage() {
       let linkageFiltersCount = 0
       this.componentData.forEach(item => {
@@ -102,6 +113,9 @@ export default {
   beforeDestroy() {
   },
   methods: {
+    closePreview() {
+      this.$emit('closePreview')
+    },
     createTimer() {
       if (!this.timer) {
         this.timer = setInterval(() => {
