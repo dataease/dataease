@@ -9,6 +9,7 @@
     :multiple="options.attrs.multiple"
     :placeholder="$t(options.attrs.placeholder)"
     :popper-append-to-body="inScreen"
+    :size="size"
     @change="changeValue"
     @focus="setOptionWidth"
   >
@@ -42,7 +43,8 @@ export default {
       type: Boolean,
       required: false,
       default: true
-    }
+    },
+    size: String
   },
   data() {
     return {

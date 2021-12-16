@@ -80,6 +80,7 @@
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
+        :h="getShapeStyleIntDeDrag(item.style,'height')"
       />
       <component
         :is="item.component"
@@ -1566,7 +1567,6 @@ export default {
 .gap_class{
    padding:3px;
 }
-
 
 .ref-line {
   position: absolute;

@@ -2,7 +2,7 @@
 
   <div v-if="options!== null && options.attrs!==null" class="de-select-grid-class">
     <div class="de-select-grid-search">
-      <el-input v-model="keyWord" :placeholder="$t('deinputsearch.placeholder')" size="mini" prefix-icon="el-icon-search" clearable />
+      <el-input v-model="keyWord" :placeholder="$t('deinputsearch.placeholder')" size="mini" prefix-icon="el-icon-search" clearable :size="size" />
     </div>
     <div class="list">
       <el-tree
@@ -12,6 +12,7 @@
         :props="defaultProp"
         :indent="0"
         class="de-filter-tree"
+        :size="size"
         default-expand-all
       >
         <span slot-scope="{ node, data }" class="custom-tree-node-list father">
@@ -58,7 +59,8 @@ export default {
       type: Boolean,
       required: false,
       default: true
-    }
+    },
+    size: String
   },
   data() {
     return {

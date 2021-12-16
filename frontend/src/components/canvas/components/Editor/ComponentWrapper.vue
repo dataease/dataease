@@ -6,30 +6,31 @@
     @mousedown="elementMouseDown"
   >
     <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
-      <close-bar v-if="previewVisible" @closePreview="closePreview" />
-      <de-out-widget
-        v-if="config.type==='custom'"
-        :id="'component' + config.id"
-        class="component-custom"
-        :style="getComponentStyleDefault(config.style)"
-        :out-style="config.style"
-        :element="config"
-        :in-screen="inScreen"
-      />
-      <component
-        :is="config.component"
-        v-else
-        ref="wrapperChild"
-        :out-style="config.style"
-        :style="getComponentStyleDefault(config.style)"
-        :prop-value="config.propValue"
-        :is-edit="false"
-        :active="componentActiveFlag"
-        :element="config"
-        :search-count="searchCount"
-        :h="config.style.height"
-        :edit-mode="'preview'"
-      />
+    <close-bar v-if="previewVisible" @closePreview="closePreview" />
+    <de-out-widget
+      v-if="config.type==='custom'"
+      :id="'component' + config.id"
+      class="component-custom"
+      :style="getComponentStyleDefault(config.style)"
+      :out-style="config.style"
+      :element="config"
+      :in-screen="inScreen"
+      :h="config.style.height"
+    />
+    <component
+      :is="config.component"
+      v-else
+      ref="wrapperChild"
+      :out-style="config.style"
+      :style="getComponentStyleDefault(config.style)"
+      :prop-value="config.propValue"
+      :is-edit="false"
+      :active="componentActiveFlag"
+      :element="config"
+      :search-count="searchCount"
+      :h="config.style.height"
+      :edit-mode="'preview'"
+    />
   </div>
 </template>
 

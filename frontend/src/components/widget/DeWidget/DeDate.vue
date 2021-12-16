@@ -9,8 +9,8 @@
     :end-placeholder="$t(options.attrs.endPlaceholder)"
     :placeholder="$t(options.attrs.placeholder)"
     :append-to-body="inScreen"
-    style="min-height: 36px;"
     value-format="timestamp"
+    :size="size"
     @change="dateChange"
   />
 </template>
@@ -32,7 +32,8 @@ export default {
       type: Boolean,
       required: false,
       default: true
-    }
+    },
+    size: String
   },
   data() {
     return {

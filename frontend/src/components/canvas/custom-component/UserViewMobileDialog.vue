@@ -1,6 +1,6 @@
 <template>
   <de-container>
-    <de-main-container v-if="!chart.type.includes('table')" :style="customStyle">
+    <de-main-container v-if="!chart.type.includes('table')" :style="customStyle" class="full-div">
       <chart-component v-if="!chart.type.includes('text') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
       <chart-component-g2 v-if="!chart.type.includes('text') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
       <label-normal v-if="chart.type.includes('text')" :chart="chart" class="table-class" />
@@ -16,14 +16,14 @@
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '@/views/chart/components/normal/LabelNormal'
-import DeMainContainer from '@/components/dataease/DeMainContainer'
-import DeContainer from '@/components/dataease/DeContainer'
 import { mapState } from 'vuex'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
+import DeMainContainer from '@/components/dataease/DeMainContainer'
+import DeContainer from '@/components/dataease/DeContainer'
 
 export default {
   name: 'UserViewMobileDialog',
-  components: { ChartComponentG2, DeMainContainer, DeContainer, ChartComponent, TableNormal, LabelNormal },
+  components: { DeContainer, DeMainContainer, ChartComponentG2, ChartComponent, TableNormal, LabelNormal },
   props: {
     chart: {
       type: Object,
@@ -78,16 +78,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .ms-aside-container {
-    height: 50vh;
-    min-width: 400px;
-    max-width: 400px;
-    padding: 0 0;
-  }
   .ms-main-container {
-    height: 100vh;
-    border: 1px solid #E6E6E6;
-    border-left: 0 solid;
+    border: 0px;
   }
   .chart-class{
     height: 100%;
