@@ -6,7 +6,6 @@
     @mousedown="elementMouseDown"
   >
     <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
-    <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="previewVisible">
       <close-bar v-if="previewVisible" @closePreview="closePreview" />
       <de-out-widget
         v-if="config.type==='custom'"
@@ -31,8 +30,6 @@
         :h="config.style.height"
         :edit-mode="'preview'"
       />
-    </fullscreen>
-
   </div>
 </template>
 
