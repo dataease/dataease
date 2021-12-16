@@ -1,13 +1,13 @@
 <template>
 
-  <el-form v-if="options!== null && options.attrs!==null" ref="form" :model="form" :rules="rules">
+  <el-form v-if="options!== null && options.attrs!==null" ref="form" style="max-height:34px" :model="form" :rules="rules">
     <div class="de-number-range-container">
       <el-form-item prop="min">
-        <el-input v-model="form.min" :placeholder="$t(options.attrs.placeholder_min)" @change="handleMinChange" />
+        <el-input v-model="form.min" :placeholder="$t(options.attrs.placeholder_min)" :size="size" @change="handleMinChange" />
       </el-form-item>
       <span>{{ $t('denumberrange.split_placeholder') }}</span>
       <el-form-item prop="max">
-        <el-input v-model="form.max" :placeholder="$t(options.attrs.placeholder_max)" @change="handleMaxChange" />
+        <el-input v-model="form.max" :placeholder="$t(options.attrs.placeholder_max)" :size="size" @change="handleMaxChange" />
       </el-form-item>
     </div>
   </el-form>
@@ -27,7 +27,8 @@ export default {
     inDraw: {
       type: Boolean,
       default: true
-    }
+    },
+    size: String
   },
 
   data() {
@@ -186,6 +187,7 @@ export default {
 <style lang="scss" scoped>
 .de-number-range-container {
   display: inline;
+  max-height: 40px;
   >>>div.el-form-item {
     width: calc(50% - 10px) !important;
     display: inline-block;
