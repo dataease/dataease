@@ -1,13 +1,13 @@
 <template>
   <el-date-picker
-    v-if="options!== null && options.attrs!==null"
+    v-if="element.options!== null && element.options.attrs!==null"
     ref="dateRef"
     v-model="values"
-    :type="options.attrs.type"
-    :range-separator="$t(options.attrs.rangeSeparator)"
-    :start-placeholder="$t(options.attrs.startPlaceholder)"
-    :end-placeholder="$t(options.attrs.endPlaceholder)"
-    :placeholder="$t(options.attrs.placeholder)"
+    :type="element.options.attrs.type"
+    :range-separator="$t(element.options.attrs.rangeSeparator)"
+    :start-placeholder="$t(element.options.attrs.startPlaceholder)"
+    :end-placeholder="$t(element.options.attrs.endPlaceholder)"
+    :placeholder="$t(element.options.attrs.placeholder)"
     :append-to-body="inScreen"
     style="min-height: 36px;"
     value-format="timestamp"
@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { ApplicationContext } from '@/utils/ApplicationContext'
 import { timeSection } from '@/utils'
 export default {
 
@@ -36,20 +37,53 @@ export default {
   },
   data() {
     return {
-      options: null,
       operator: 'between',
       values: null
     }
   },
-  created() {
-    this.options = this.element.options
-
-    if (this.options.value) {
-      if (this.options.attrs.type !== 'daterange') {
-        this.values = Array.isArray(this.options.value) ? this.options.value[0] : this.options.value
-      } else {
-        this.values = this.options.value
+  computed: {
+    defaultoptions() {
+      if (!this.element || !this.element.options || !this.element.options.attrs.default) return ''
+      return JSON.stringify(this.element.options.attrs.default)
+    }
+  },
+  watch: {
+    'element.options.value': function(value, old) {
+      if (this.element.serviceName === 'timeDateWidget' && this.element.options.attrs.default.isDynamic) {
+        // 如果设置了动态时间 不做任何操作
+        return
       }
+      if (value === old) return
+      this.values = this.fillValueDerfault()
+      this.dateChange(value)
+    },
+    'defaultoptions': function(val, old) {
+      // console.log('default chaneg')
+      if (this.element.serviceName !== 'timeDateWidget') {
+        if (!this.element.options.attrs.default.isDynamic) {
+          this.values = this.fillValueDerfault()
+          this.dateChange(this.values)
+          return
+        }
+      }
+      if (val === old) return
+      const widget = ApplicationContext.getService(this.element.serviceName)
+      this.values = widget.dynamicDateFormNow(this.element)
+      this.dateChange(this.values)
+    }
+  },
+  created() {
+    if (this.element.serviceName === 'timeDateWidget' && this.element.options.attrs.default.isDynamic) {
+      if (this.element.options.attrs.default) {
+        const widget = ApplicationContext.getService(this.element.serviceName)
+        this.values = widget.dynamicDateFormNow(this.element)
+        this.dateChange(this.values)
+      }
+      return
+    }
+    if (this.element.options.value) {
+      this.values = this.fillValueDerfault()
+      this.dateChange(this.values)
     }
   },
   methods: {
@@ -57,32 +91,35 @@ export default {
       this.setCondition()
     },
     setCondition() {
-      if (this.values) {
-        if (this.options.attrs.type !== 'daterange') {
-          this.options.value = Array.isArray(this.values) ? this.values[0] : this.values
-        } else {
-          this.options.value = this.values
-        }
-      } else {
-        this.options.value = []
-      }
       const param = {
         component: this.element,
-        value: Array.isArray(this.options.value) ? this.options.value : [this.options.value],
+        value: this.formatFilterValue(),
         operator: this.operator
       }
       param.value = this.formatValues(param.value)
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
     dateChange(value) {
+      if (!this.inDraw) {
+        if (value === null) {
+          this.element.options.value = ''
+        } else {
+          this.element.options.value = Array.isArray(value) ? value.join() : value.toString()
+        }
+      }
       this.setCondition()
       this.styleChange()
+    },
+    formatFilterValue() {
+      if (this.values === null) return []
+      if (Array.isArray(this.values)) return this.values
+      return [this.values]
     },
     formatValues(values) {
       if (!values || values.length === 0) {
         return []
       }
-      if (this.options.attrs.type === 'daterange') {
+      if (this.element.options.attrs.type === 'daterange') {
         if (values.length !== 2) {
           return null
         }
@@ -94,11 +131,21 @@ export default {
         return results
       } else {
         const value = values[0]
-        return timeSection(value, this.options.attrs.type)
+        return timeSection(parseFloat(value), this.element.options.attrs.type)
       }
     },
     styleChange() {
       this.$store.commit('recordStyleChange')
+    },
+    fillValueDerfault() {
+      const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      if (this.element.options.attrs.type === 'daterange') {
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '') return []
+        return defaultV.split(',').map(item => parseFloat(item))
+      } else {
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '') return null
+        return parseFloat(defaultV.split(',')[0])
+      }
     }
   }
 }

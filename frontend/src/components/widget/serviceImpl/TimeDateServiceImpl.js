@@ -11,7 +11,16 @@ const dialogPanel = {
     attrs: {
       type: 'date',
       placeholder: 'dedate.placeholder',
-      viewIds: []
+      viewIds: [],
+      fieldId: '',
+      dragItems: [],
+      default: {
+        isDynamic: false,
+        dkey: 0,
+        dynamicPrefix: 1,
+        dynamicInfill: 'day',
+        dynamicSuffix: 'before'
+      }
     },
     value: ''
   },
@@ -61,6 +70,69 @@ class TimeDateServiceImpl extends WidgetService {
     return fields.filter(field => {
       return field['deType'] === 1
     })
+  }
+  dynamicDateFormNow(element) {
+    if (element.options.attrs.default === null || typeof element.options.attrs.default === 'undefined' || !element.options.attrs.default.isDynamic) return null
+
+    if (element.options.attrs.default.dkey === 0) {
+      return Date.now()
+    }
+
+    if (element.options.attrs.default.dkey === 1) {
+      const oneday = 24 * 3600 * 1000
+      return Date.now() - oneday
+    }
+
+    if (element.options.attrs.default.dkey === 2) {
+      const now = new Date()
+      const nowMonth = now.getMonth()
+      var nowYear = now.getFullYear()
+      return new Date(nowYear, nowMonth, 1).getTime()
+    }
+
+    if (element.options.attrs.default.dkey === 3) {
+      const dynamicPrefix = element.options.attrs.default.dynamicPrefix
+      const dynamicInfill = element.options.attrs.default.dynamicInfill
+      const dynamicSuffix = element.options.attrs.default.dynamicSuffix
+
+      if (dynamicInfill === 'day') {
+        const oneday = 24 * 3600 * 1000
+        const step = oneday * dynamicPrefix
+        return dynamicSuffix === 'before' ? (Date.now() - step) : (Date.now() + step)
+      }
+      if (dynamicInfill === 'week') {
+        const oneday = 24 * 3600 * 1000
+        const step = oneday * dynamicPrefix * 7
+        return dynamicSuffix === 'before' ? (Date.now() - step) : (Date.now() + step)
+      }
+      if (dynamicInfill === 'month') {
+        const now = new Date()
+        const nowMonth = now.getMonth()
+        const nowYear = now.getFullYear()
+        const nowDate = now.getDate()
+
+        const tarYear = nowYear
+        if (dynamicSuffix === 'before') {
+          const deffMonth = nowMonth - dynamicPrefix
+          let diffYear = deffMonth / 12
+          if (deffMonth < 0) {
+            diffYear -= 1
+          }
+          return new Date(tarYear + diffYear, nowMonth - dynamicPrefix % 12, nowDate).getTime()
+        } else {
+          const deffMonth = nowMonth + dynamicPrefix
+          const diffYear = deffMonth / 12
+          return new Date(tarYear + diffYear, deffMonth % 12, nowDate).getTime()
+        }
+      }
+      if (dynamicInfill === 'year') {
+        const now = new Date()
+        const nowMonth = now.getMonth()
+        const nowYear = now.getFullYear()
+        const nowDate = now.getDate()
+        return new Date(nowYear - 1, nowMonth, nowDate).getTime()
+      }
+    }
   }
 }
 const timeDateServiceImpl = new TimeDateServiceImpl({ name: 'timeDateWidget' })

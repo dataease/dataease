@@ -138,6 +138,15 @@ export function fieldValues(fieldId) {
   })
 }
 
+export function multFieldValues(data) {
+  return request({
+    url: '/dataset/field/multFieldValues',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function isKettleRunning(showLoading = true) {
   return request({
     url: '/dataset/group/isKettleRunning',

@@ -13,7 +13,9 @@ const dialogPanel = {
       rangeSeparator: 'dedaterange.split_placeholder',
       startPlaceholder: 'dedaterange.from_placeholder',
       endPlaceholder: 'dedaterange.to_placeholder',
-      viewIds: []
+      viewIds: [],
+      fieldId: '',
+      dragItems: []
     },
     value: ''
   },

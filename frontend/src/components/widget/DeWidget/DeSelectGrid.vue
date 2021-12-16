@@ -1,39 +1,24 @@
 <template>
 
-  <div v-if="options!== null && options.attrs!==null" class="de-select-grid-class">
+  <div v-if="element.options!== null && element.options.attrs!==null && show" class="de-select-grid-class">
     <div class="de-select-grid-search">
       <el-input v-model="keyWord" :placeholder="$t('deinputsearch.placeholder')" size="mini" prefix-icon="el-icon-search" clearable />
     </div>
     <div class="list">
-      <el-tree
-        v-if="options!== null && options.attrs!==null"
-        ref="deSelectGrid"
-        :data="(options.attrs.multiple ? [allNode, ...options.attrs.datas] : options.attrs.datas).filter(node => node.text.includes(keyWord))"
-        :props="defaultProp"
-        :indent="0"
-        class="de-filter-tree"
-        default-expand-all
-      >
-        <span slot-scope="{ node, data }" class="custom-tree-node-list father">
-          <span style="display: flex;flex: 1;width: 0;">
-            <el-radio v-if="!options.attrs.multiple" v-model="options.value" :label="data.id" @change="changeRadioBox"><span> {{ node.label }} </span></el-radio>
-            <el-checkbox v-if="options.attrs.multiple && data.id !== allNode.id" v-model="data.checked" :label="data.id" @change="changeCheckBox(data)"><span> {{ node.label }} </span></el-checkbox>
-            <el-checkbox v-if="options.attrs.multiple && data.id === allNode.id" v-model="data.checked" :indeterminate="data.indeterminate" :label="data.id" @change="allCheckChange(data)"><span> {{ node.label }} </span></el-checkbox>
-          </span>
-          <span v-if="!options.attrs.multiple && options.value && options.value === data.id" class="child">
-            <span style="margin-left: 12px;" @click.stop>
-              <span class="el-dropdown-link">
-                <el-button
-                  icon="el-icon-circle-close"
-                  type="text"
-                  size="small"
-                  @click="cancelRadio(data)"
-                />
-              </span>
-            </span>
-          </span>
-        </span>
-      </el-tree>
+
+      <div v-if="element.options.attrs.multiple" class="checkbox-group-container">
+        <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">{{ $t('commons.all') }}</el-checkbox>
+
+        <el-checkbox-group v-model="value" @change="handleCheckedChange">
+          <el-checkbox v-for="item in datas" :key="item.id" :label="item.id">{{ item.id }}</el-checkbox>
+        </el-checkbox-group>
+      </div>
+
+      <div v-else class="radio-group-container">
+        <el-radio-group v-model="value" @change="changeRadioBox">
+          <el-radio v-for="(item, index) in datas" :key="index" :label="item.id">{{ item.id }}</el-radio>
+        </el-radio-group>
+      </div>
 
     </div>
 
@@ -42,7 +27,7 @@
 </template>
 
 <script>
-import { fieldValues } from '@/api/dataset/dataset'
+import { multFieldValues } from '@/api/dataset/dataset'
 export default {
 
   props: {
@@ -62,8 +47,7 @@ export default {
   },
   data() {
     return {
-      options: null,
-      // value: null,
+      value: null,
       checked: null,
       defaultProp: {
         id: 'id',
@@ -76,157 +60,109 @@ export default {
         text: this.$t('commons.all'),
         checked: false,
         indeterminate: false
-      }
+      },
+      show: true,
+      datas: [],
+      isIndeterminate: false,
+      checkAll: false
     }
   },
   computed: {
     operator() {
-      return this.options.attrs.multiple ? 'in' : 'eq'
+      return this.element.options.attrs.multiple ? 'in' : 'eq'
     }
   },
   watch: {
-    'options.attrs.multiple': function(value) {
-      const datas = JSON.parse(JSON.stringify(this.options.attrs.datas))
-      this.options.attrs.datas = []
-      this.options.attrs.datas = datas
-      const sourceValue = this.options.value
-      const sourceValid = !!sourceValue && Object.keys(sourceValue).length > 0
-      if (value) {
-        !sourceValid && (this.options.value = [])
-        sourceValid && !Array.isArray(sourceValue) && (this.options.value = sourceValue.split(','))
-        !this.inDraw && (this.options.value = [])
-        if (!this.inDraw) {
-          this.options.value = []
-          this.allNode.indeterminate = false
-          this.allNode.checked = false
-        }
-        // this.setMutiBox()
-      } else {
-        !sourceValid && (this.options.value = null)
-        sourceValid && Array.isArray(sourceValue) && (this.options.value = sourceValue[0])
-        !this.inDraw && (this.options.value = null)
+
+    'element.options.value': function(value, old) {
+      if (value === old) return
+      this.value = this.fillValueDerfault()
+      this.changeValue(value)
+
+      if (this.element.options.attrs.multiple) {
+        this.checkAll = this.value.length === this.datas.length
+        this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
       }
+    },
+    'element.options.attrs.fieldId': function(value, old) {
+      if (typeof value === 'undefined' || value === old) return
+      this.datas = []
+      this.element.options.attrs.fieldId &&
+      this.element.options.attrs.fieldId.length > 0 &&
+      multFieldValues(this.element.options.attrs.fieldId.split(',')).then(res => {
+        this.datas = this.optionDatas(res.data)
+      }) || (this.element.options.value = '')
+    },
+    'element.options.attrs.multiple': function(value, old) {
+      if (typeof old === 'undefined' || value === old) return
+      if (!this.inDraw) {
+        this.value = value ? [] : null
+        this.element.options.value = ''
+      }
+
+      this.show = false
+      this.$nextTick(() => {
+        this.show = true
+      })
     }
-    // keyWord(val) {
-    //   console.log(val)
-    //   this.$refs.deSelectGrid.filter(val)
-    // }
   },
   created() {
-    this.options = this.element.options
-    if (this.options.attrs.fieldId) {
-      fieldValues(this.options.attrs.fieldId).then(res => {
-        this.options.attrs.datas = this.optionDatas(res.data)
-        this.setMutiBox()
-        this.setRadioBox()
-      })
-    } else {
-      this.setMutiBox()
-      this.setRadioBox()
-    }
+    this.initLoad()
   },
-  mounted() {
-    // this.$nextTick(() => {
-    //   this.options && this.options.value && this.changeValue(this.options.value)
-    // })
-    this.options && this.options.value && Object.keys(this.options.value).length > 0 && this.initValue(this.options.value)
-  },
+
   methods: {
-    initValue(value) {
-      // this.options.value = [value]
-      this.setCondition()
-    },
-    setMutiBox() {
-      if (this.options && this.options.attrs.multiple) {
-        this.options.attrs.datas.forEach(data => {
-          data.checked = (this.options.value && this.options.value.includes(data.id))
+    initLoad() {
+      this.value = this.element.options.attrs.multiple ? [] : null
+      if (this.element.options.attrs.fieldId) {
+        multFieldValues(this.element.options.attrs.fieldId.split()).then(res => {
+          this.datas = this.optionDatas(res.data)
+          if (this.element.options.attrs.multiple) {
+            this.checkAll = this.value.length === this.datas.length
+            this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
+          }
         })
-        this.setAllNodeStatus()
+      }
+      if (this.element.options.value) {
+        this.value = this.fillValueDerfault()
+        this.changeValue(this.value)
       }
     },
-    setRadioBox() {
-      if (this.options && !this.options.attrs.multiple) {
-        if (Array.isArray(this.options.value) && this.options.value.length > 0) {
-          // this.value = this.options.value.length[0]
+    changeValue(value) {
+      if (!this.inDraw) {
+        if (value === null) {
+          this.element.options.value = ''
+        } else {
+          this.element.options.value = Array.isArray(value) ? value.join() : value
         }
       }
+      this.setCondition()
+      this.styleChange()
     },
 
     setCondition() {
       const param = {
         component: this.element,
-        value: Array.isArray(this.options.value) ? this.options.value : [this.options.value],
+        value: this.formatFilterValue(),
         operator: this.operator
       }
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
-    changeCheckBox(data) {
-      const values = Array.isArray(this.options.value) ? this.options.value : this.options.value ? [this.options.value] : []
-      const index = values.indexOf(data.id)
-      if (index < 0 && data.checked) {
-        values.push(data.id)
-      }
-      if (index >= 0 && !data.checked) {
-        values.splice(index, 1)
-      }
-      const datas = JSON.parse(JSON.stringify(this.options.attrs.datas))
-      this.options.attrs.datas = []
-      datas.forEach(item => {
-        if (item.id === data.id) {
-          item.checked = data.checked
-        }
-      })
-      this.options.attrs.datas = datas
-
-      this.setAllNodeStatus()
-
-      this.options.value = values
-      this.setCondition()
-      this.styleChange()
+    formatFilterValue() {
+      if (this.value === null) return []
+      if (Array.isArray(this.value)) return this.value
+      return this.value.split(',')
     },
-    // 勾选数据项 会影响全选节点的状态
-    setAllNodeStatus() {
-      const nodeSize = this.options.attrs.datas.length
-      const checkedSize = this.options.attrs.datas.filter(item => item.checked).length
-      if (nodeSize === checkedSize) {
-        this.allNode.checked = true
-        this.allNode.indeterminate = false
-      } else if (checkedSize === 0) {
-        this.allNode.checked = false
-        this.allNode.indeterminate = false
+    fillValueDerfault() {
+      const defaultV = this.element.options.value
+      if (this.element.options.attrs.multiple) {
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '') return []
+        return defaultV.split(',')
       } else {
-        this.allNode.checked = false
-        this.allNode.indeterminate = true
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '') return null
+        return defaultV.split(',')[0]
       }
     },
-    allCheckChange(data) {
-      data.indeterminate = false
-      const values = []
-      this.options.value = []
-      const datas = JSON.parse(JSON.stringify(this.options.attrs.datas))
-      this.options.attrs.datas = []
-      datas.forEach(item => {
-        item.checked = data.checked
-        // data.checked && this.options.value.push(item.id)
-        data.checked && values.push(item.id)
-      })
-      this.options.attrs.datas = datas
-      this.options.value = values
-      this.setCondition()
-    },
-    changeRadioBox(value) {
-      // this.options.value = []
-      // if (this.value) this.options.value = [this.value]
-      this.setCondition()
-    },
-    cancelRadio(data) {
-      this.options.value = null
-      this.changeRadioBox()
-    },
-    // filterNode(value, data) {
-    //   if (!value) return true
-    //   return data[this.defaultProp.label].indexOf(value) !== -1
-    // },
+
     styleChange() {
       this.$store.commit('recordStyleChange')
     },
@@ -238,6 +174,20 @@ export default {
           text: item
         }
       })
+    },
+    changeRadioBox(value) {
+      this.changeValue(value)
+    },
+    handleCheckAllChange(val) {
+      this.value = val ? this.datas.map(item => item.id) : []
+      this.isIndeterminate = false
+      this.changeValue(this.value)
+    },
+    handleCheckedChange(values) {
+      const checkedCount = values.length
+      this.checkAll = checkedCount === this.datas.length
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.datas.length
+      this.changeValue(values)
     }
 
   }
@@ -245,28 +195,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.custom-tree-node-list {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding:0 8px;
-  }
-  .father .child {
-    /*display: none;*/
-    visibility: hidden;
-  }
-  .father:hover .child {
-    /*display: inline;*/
-    visibility: visible;
-  }
-.de-filter-tree {
-  >>>span.is-leaf {
-    width: 5px !important;
-    padding: 6px 0 !important;
-  }
-}
+
 .de-select-grid-search {
   >>>input {
     border-radius: 0px;
@@ -281,4 +210,23 @@ export default {
     bottom: 0;
   }
 }
+
+.radio-group-container > .el-radio-group > label {
+    display: block !important;
+    margin: 10px !important;
+}
+
+.checkbox-group-container{
+  label.el-checkbox {
+    display: block !important;
+    margin: 10px !important;
+  }
+
+  .el-checkbox-group > label {
+    display: block !important;
+    margin: 10px !important;
+  }
+
+}
+
 </style>
