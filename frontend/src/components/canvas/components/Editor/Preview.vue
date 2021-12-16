@@ -19,6 +19,7 @@
           :config="item"
           :search-count="searchCount"
           :in-screen="inScreen"
+          :terminal="terminal"
         />
         <!--视图详情-->
         <el-dialog
