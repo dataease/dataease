@@ -4,6 +4,7 @@
     v-model="options.value"
     :placeholder="options.attrs.placeholder"
     :size="size"
+    :editable="false"
   />
 </template>
 

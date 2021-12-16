@@ -11,6 +11,7 @@
     :append-to-body="inScreen"
     value-format="timestamp"
     :size="size"
+    :editable="false"
     @change="dateChange"
   />
 </template>
