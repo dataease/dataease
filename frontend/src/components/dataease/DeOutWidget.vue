@@ -40,7 +40,7 @@ export default {
   props: {
     element: {
       type: Object,
-      default: null
+      default: () => {}
     },
     inDraw: {
       type: Boolean,

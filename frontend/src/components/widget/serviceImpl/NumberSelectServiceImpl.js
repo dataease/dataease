@@ -13,9 +13,12 @@ const dialogPanel = {
       multiple: false,
       placeholder: 'denumberselect.placeholder',
       datas: [],
+      viewIds: [],
       key: 'id',
       label: 'text',
-      value: 'id'
+      value: 'id',
+      fieldId: '',
+      dragItems: []
     },
     value: ''
   },

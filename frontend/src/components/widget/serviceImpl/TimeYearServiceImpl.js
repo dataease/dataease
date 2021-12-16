@@ -11,7 +11,9 @@ const dialogPanel = {
     attrs: {
       type: 'year',
       placeholder: 'deyear.placeholder',
-      viewIds: []
+      viewIds: [],
+      fieldId: '',
+      dragItems: []
     },
     value: ''
   },

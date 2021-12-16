@@ -146,20 +146,18 @@
       custom-class="de-filter-dialog"
       @close="cancelFilter"
     >
-      <filter-dialog v-if="filterVisible && currentWidget" :widget-info="currentWidget" :component-info="currentFilterCom" @re-fresh-component="reFreshComponent">
-        <component
-          :is="currentFilterCom.component"
-          :id="'component' + currentFilterCom.id"
-          class="component"
-          :style="currentFilterCom.style"
-          :element="currentFilterCom"
-          :in-draw="false"
-        />
-      </filter-dialog>
+      <filter-dialog
+        v-if="filterVisible && currentWidget"
+        :ref="'filter-setting-' + currentFilterCom.id"
+        :widget-info="currentWidget"
+        :element="currentFilterCom"
+        @sure-button-status="sureStatusChange"
+        @re-fresh-component="reFreshComponent"
+      />
       <div style="text-align: end !important;margin: 0 15px 10px !important;">
         <span slot="footer">
           <el-button size="mini" @click="cancelFilter">{{ $t('commons.cancel') }}</el-button>
-          <el-button :disabled="!currentFilterCom.options.attrs.fieldId" type="primary" size="mini" @click="sureFilter">{{ $t('commons.confirm') }}</el-button>
+          <el-button :disabled="!enableSureButton" type="primary" size="mini" @click="sureFilter">{{ $t('commons.confirm') }}</el-button>
         </span>
       </div>
     </el-dialog>
@@ -217,9 +215,7 @@ import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
 import { findOne } from '@/api/panel/panel'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
-import PreviewFullScreen from '@/components/canvas/components/Editor/PreviewFullScreen'
 import Preview from '@/components/canvas/components/Editor/Preview'
-import AttrList from '@/components/canvas/components/AttrList'
 import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
@@ -234,9 +230,7 @@ import FilterDialog from '../filter/filterDialog'
 import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
-import RectangleAttr from '@/components/canvas/components/RectangleAttr'
 import TextAttr from '@/components/canvas/components/TextAttr'
-import FilterTextAttr from '@/components/canvas/components/FilterTextAttr'
 import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 import ComponentWait from '@/views/panel/edit/ComponentWait'
 
@@ -253,16 +247,12 @@ export default {
     Toolbar,
     FilterDialog,
     SubjectSetting,
-    PreviewFullScreen,
     Preview,
-    AttrList,
     AttrListExtend,
     AssistComponent,
     PanelTextEditor,
-    RectangleAttr,
     TextAttr,
-    ChartGroup,
-    FilterTextAttr
+    ChartGroup
   },
   data() {
     return {
@@ -295,7 +285,6 @@ export default {
         width: null,
         height: null
       },
-      beforeDialogValue: [],
       styleDialogVisible: false,
       currentDropElement: null,
       adviceGroupId: null,
@@ -312,7 +301,8 @@ export default {
         'rect-shape',
         'de-show-date',
         'de-video'
-      ]
+      ],
+      enableSureButton: false
     }
   },
 
@@ -674,11 +664,9 @@ export default {
       }
     },
     openFilterDialog() {
-      this.beforeDialogValue = []
       this.filterVisible = true
     },
     closeFilter() {
-      this.beforeDialogValue = []
       this.filterVisible = false
       this.currentWidget = null
       this.clearCurrentInfo()
@@ -688,9 +676,10 @@ export default {
       bus.$emit('onRemoveLastItem')
     },
     sureFilter() {
-      this.currentFilterCom.options.value = []
+      this.currentFilterCom = this.$refs['filter-setting-' + this.currentFilterCom.id].getElementInfo()
       this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
+      this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
       this.closeFilter()
     },
     reFreshComponent(component) {
@@ -701,9 +690,9 @@ export default {
       if (this.curComponent && this.curComponent.serviceName) {
         const serviceName = this.curComponent.serviceName
         this.currentWidget = ApplicationContext.getService(serviceName)
+        this.currentFilterCom = this.curComponent
+        this.openFilterDialog()
       }
-      this.currentFilterCom = this.curComponent
-      this.openFilterDialog()
     },
     closeLeftPanel() {
       this.show = false
@@ -880,6 +869,9 @@ export default {
       e.preventDefault()
       e.dataTransfer.dropEffect = 'copy'
       this.$refs.canvasEditor.handleDragOver(e)
+    },
+    sureStatusChange(status) {
+      this.enableSureButton = status
     }
   }
 }

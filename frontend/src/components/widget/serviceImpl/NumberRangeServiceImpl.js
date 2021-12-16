@@ -11,7 +11,9 @@ const dialogPanel = {
     attrs: {
       placeholder_min: 'denumberrange.please_key_min',
       placeholder_max: 'denumberrange.please_key_max',
-      viewIds: []
+      viewIds: [],
+      fieldId: '',
+      dragItems: []
     },
     value: ''
   },
