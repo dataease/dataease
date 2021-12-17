@@ -994,7 +994,11 @@ export default {
     data_percent: 'Percent',
     compare_calc_expression: 'Expression',
     and: 'And',
-    or: 'Or'
+    or: 'Or',
+    logic_exp: 'Logic',
+    enum_exp: 'Enum',
+    pls_slc: 'Please Select',
+    filter_exp: 'Filter Value'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
