@@ -47,10 +47,14 @@ export default {
     defaultoptions() {
       if (!this.element || !this.element.options || !this.element.options.attrs.default) return ''
       return JSON.stringify(this.element.options.attrs.default)
+    },
+    defaultValueStr() {
+      if (!this.element || !this.element.options || !this.element.options.value) return ''
+      return this.element.options.value.toString()
     }
   },
   watch: {
-    'element.options.value': function(value, old) {
+    'defaultValueStr': function(value, old) {
       if (this.element.serviceName === 'timeDateWidget' && this.element.options.attrs.default.isDynamic) {
         // 如果设置了动态时间 不做任何操作
         return
