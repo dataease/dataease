@@ -71,11 +71,15 @@ export default {
   computed: {
     operator() {
       return this.element.options.attrs.multiple ? 'in' : 'eq'
+    },
+    defaultValueStr() {
+      if (!this.element || !this.element.options || !this.element.options.value) return ''
+      return this.element.options.value.toString()
     }
   },
   watch: {
 
-    'element.options.value': function(value, old) {
+    'defaultValueStr': function(value, old) {
       if (value === old) return
       this.value = this.fillValueDerfault()
       this.changeValue(value)
