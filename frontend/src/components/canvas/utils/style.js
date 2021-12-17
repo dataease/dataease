@@ -75,7 +75,7 @@ export function colorRgb(color, opacity) {
       sColor = sColorNew
     }
     // 处理六位的颜色值
-    var sColorChange = []
+    const sColorChange = []
     for (let i = 1; i < 7; i += 2) {
       sColorChange.push(parseInt('0x' + sColor.slice(i, i + 2)))
     }
@@ -88,3 +88,100 @@ export function colorRgb(color, opacity) {
     return sColor
   }
 }
+
+export const customAttrTrans = {
+  'size': [
+    'barWidth',
+    'lineWidth',
+    'lineSymbolSize',
+    'pieInnerRadius',
+    'pieOuterRadius',
+    'funnelWidth', // 漏斗图 最大宽度
+    'tableTitleFontSize',
+    'tableItemFontSize',
+    'tableTitleHeight',
+    'tableItemHeight',
+    'dimensionFontSize',
+    'quotaFontSize',
+    'spaceSplit', // 间隔
+    'scatterSymbolSize', // 气泡大小，散点图
+    'treemapWidth', // 矩形树图
+    'treemapHeight',
+    'radarSize'// 雷达占比
+  ],
+  'label': [
+    'fontSize'
+  ],
+  'tooltip': {
+    'textStyle': ['fontSize']
+  }
+}
+export const customStyleTrans = {
+  'text': ['fontSize'],
+  'legend': {
+    'textStyle': ['fontSize']
+  },
+  'xAxis': {
+    'nameTextStyle': ['fontSize'],
+    'axisLabel': ['fontSize'],
+    'splitLine': {
+      'lineStyle': ['width']
+    }
+  },
+  'yAxis': {
+    'nameTextStyle': ['fontSize'],
+    'axisLabel': ['fontSize'],
+    'splitLine': {
+      'lineStyle': ['width']
+    }
+  },
+  'split': {
+    'name': ['fontSize'],
+    'axisLine': {
+      'lineStyle': ['width']
+    },
+    'axisTick': {
+      'lineStyle': ['width']
+    },
+    'axisLabel': ['margin', 'fontSize'],
+    'splitLine': {
+      'lineStyle': ['width']
+    }
+  }
+}
+
+export function getScaleValue(propValue, scale) {
+  const propValueTemp = Math.round(propValue * scale)
+  return propValueTemp > 1 ? propValueTemp : 1
+}
+
+export function recursionTransObj(template, infoObj, scale) {
+  // console.log('recursionObj++')
+  for (const templateKey in template) {
+    // 如果是数组 进行赋值计算
+    if (template[templateKey] instanceof Array) {
+      template[templateKey].forEach(templateProp => {
+        if (infoObj[templateKey] && infoObj[templateKey][templateProp]) {
+          const afterValue = getScaleValue(infoObj[templateKey][templateProp], scale)
+          console.log(templateKey + '.' + templateProp + '=' + infoObj[templateKey][templateProp] + ';scale:' + scale + ',after:' + afterValue)
+          infoObj[templateKey][templateProp] = afterValue
+        }
+      })
+    } else {
+      // 如果是对象 继续进行递归
+      if (infoObj[templateKey]) {
+        recursionTransObj(template[templateKey], infoObj[templateKey], scale)
+      }
+    }
+  }
+}
+
+export function componentScalePublic(chartInfo, heightScale, widthScale) {
+  const scale = Math.min(heightScale, widthScale)
+  // attr 缩放转换
+  recursionTransObj(this.customAttrTrans, chartInfo.customAttr, scale)
+  // style 缩放转换
+  recursionTransObj(this.customStyleTrans, chartInfo.customStyle, scale)
+  return chartInfo
+}
+
