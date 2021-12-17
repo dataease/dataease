@@ -735,62 +735,74 @@ public class MysqlQueryProvider extends QueryProvider {
         for (ChartFieldCustomFilterDTO request : requestList) {
             List<SQLObj> list = new ArrayList<>();
             DatasetTableField field = request.getField();
-            List<ChartCustomFilterItemDTO> filter = request.getFilter();
-            for (ChartCustomFilterItemDTO filterItemDTO : filter) {
-                if (ObjectUtils.isEmpty(field)) {
-                    continue;
+
+            if (ObjectUtils.isEmpty(field)) {
+                continue;
+            }
+            String whereName = "";
+            String originName;
+            if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
+                // 解析origin name中有关联的字段生成sql表达式
+                originName = calcFieldRegex(field.getOriginName(), tableObj);
+            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
+                originName = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            } else {
+                originName = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            }
+            if (field.getDeType() == 1) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(MySQLConstants.STR_TO_DATE, originName, MySQLConstants.DEFAULT_DATE_FORMAT);
                 }
-                String value = filterItemDTO.getValue();
-                String whereName = "";
-                String whereTerm = transMysqlFilterTerm(filterItemDTO.getTerm());
-                String whereValue = "";
-                String originName;
-                if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
-                    // 解析origin name中有关联的字段生成sql表达式
-                    originName = calcFieldRegex(field.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                    originName = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-                } else {
-                    originName = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    String cast = String.format(MySQLConstants.CAST, originName, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
+                    whereName = String.format(MySQLConstants.FROM_UNIXTIME, cast, MySQLConstants.DEFAULT_DATE_FORMAT);
                 }
-                if (field.getDeType() == 1) {
-                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        whereName = String.format(MySQLConstants.STR_TO_DATE, originName, MySQLConstants.DEFAULT_DATE_FORMAT);
-                    }
-                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        String cast = String.format(MySQLConstants.CAST, originName, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
-                        whereName = String.format(MySQLConstants.FROM_UNIXTIME, cast, MySQLConstants.DEFAULT_DATE_FORMAT);
-                    }
-                    if (field.getDeExtractType() == 1) {
-                        whereName = originName;
-                    }
-                } else {
+                if (field.getDeExtractType() == 1) {
                     whereName = originName;
                 }
-                if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "null")) {
-                    whereValue = "";
-                } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_null")) {
-                    whereValue = "";
-                } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "empty")) {
-                    whereValue = "''";
-                } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_empty")) {
-                    whereValue = "''";
-                } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in")) {
-                    whereValue = "('" + StringUtils.join(value, "','") + "')";
-                } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
-                    whereValue = "'%" + value + "%'";
-                } else {
-                    whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, value);
-                }
-                list.add(SQLObj.builder()
-                        .whereField(whereName)
-                        .whereTermAndValue(whereTerm + whereValue)
-                        .build());
+            } else {
+                whereName = originName;
             }
-            List<String> strList = new ArrayList<>();
-            list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
-            if (CollectionUtils.isNotEmpty(list)) {
-                res.add("(" + String.join(" " + getLogic(request.getLogic()) + " ", strList) + ")");
+
+            if (StringUtils.equalsIgnoreCase(request.getFilterType(), "enum")) {
+                if (CollectionUtils.isNotEmpty(request.getEnumCheckField())) {
+                    res.add("(" + whereName + " IN ('" + String.join("','", request.getEnumCheckField()) + "'))");
+                }
+            } else {
+                List<ChartCustomFilterItemDTO> filter = request.getFilter();
+                for (ChartCustomFilterItemDTO filterItemDTO : filter) {
+                    if (ObjectUtils.isEmpty(field)) {
+                        continue;
+                    }
+                    String value = filterItemDTO.getValue();
+                    String whereTerm = transMysqlFilterTerm(filterItemDTO.getTerm());
+                    String whereValue = "";
+
+                    if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "null")) {
+                        whereValue = "";
+                    } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_null")) {
+                        whereValue = "";
+                    } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "empty")) {
+                        whereValue = "''";
+                    } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_empty")) {
+                        whereValue = "''";
+                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in")) {
+                        whereValue = "('" + StringUtils.join(value, "','") + "')";
+                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
+                        whereValue = "'%" + value + "%'";
+                    } else {
+                        whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, value);
+                    }
+                    list.add(SQLObj.builder()
+                            .whereField(whereName)
+                            .whereTermAndValue(whereTerm + whereValue)
+                            .build());
+                }
+                List<String> strList = new ArrayList<>();
+                list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
+                if (CollectionUtils.isNotEmpty(list)) {
+                    res.add("(" + String.join(" " + getLogic(request.getLogic()) + " ", strList) + ")");
+                }
             }
         }
         return CollectionUtils.isNotEmpty(res) ? "(" + String.join(" AND ", res) + ")" : null;

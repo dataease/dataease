@@ -1656,25 +1656,39 @@ export default {
       if (!this.filterItem.logic) {
         this.filterItem.logic = 'and'
       }
+      if (!this.filterItem.filterType) {
+        this.filterItem.filterType = 'logic'
+      }
+      if (!this.filterItem.enumCheckField) {
+        this.filterItem.enumCheckField = []
+      }
       this.resultFilterEdit = true
     },
     closeResultFilter() {
       this.resultFilterEdit = false
     },
     saveResultFilter() {
-      for (let i = 0; i < this.filterItem.filter.length; i++) {
-        const f = this.filterItem.filter[i]
-        if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
-          this.$message({
-            message: this.$t('chart.filter_value_can_null'),
-            type: 'error',
-            showClose: true
-          })
-          return
+      if (((this.filterItem.deType === 0 || this.filterItem.deType === 5) && this.filterItem.filterType !== 'enum') ||
+          this.filterItem.deType === 1 ||
+          this.filterItem.deType === 2 ||
+          this.filterItem.deType === 3) {
+        for (let i = 0; i < this.filterItem.filter.length; i++) {
+          const f = this.filterItem.filter[i]
+          if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
+            this.$message({
+              message: this.$t('chart.filter_value_can_null'),
+              type: 'error',
+              showClose: true
+            })
+            return
+          }
         }
       }
+
       this.view.customFilter[this.filterItem.index].filter = this.filterItem.filter
       this.view.customFilter[this.filterItem.index].logic = this.filterItem.logic
+      this.view.customFilter[this.filterItem.index].filterType = this.filterItem.filterType
+      this.view.customFilter[this.filterItem.index].enumCheckField = this.filterItem.enumCheckField
       this.calcData(true)
       this.closeResultFilter()
     },
