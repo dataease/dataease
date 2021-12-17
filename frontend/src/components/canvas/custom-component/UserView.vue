@@ -69,6 +69,7 @@ import DrillPath from '@/views/chart/view/DrillPath'
 import { areaMapping } from '@/api/map/map'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import EditBarView from '@/components/canvas/components/Editor/EditBarView'
+import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/components/canvas/utils/style'
 
 export default {
   name: 'UserView',
@@ -108,6 +109,10 @@ export default {
       type: Boolean,
       require: false,
       default: true
+    },
+    terminal: {
+      type: String,
+      default: 'pc'
     }
   },
   data() {
@@ -125,12 +130,23 @@ export default {
         msg: ''
       },
       timeMachine: null,
+      scaleTimeMachine: null,
       changeIndex: 0,
+      changeScaleIndex: 0,
       pre: null,
-      preCanvasPanel: null
+      preCanvasPanel: null,
+      sourceCustomAttrStr: null,
+      sourceCustomStyleStr: null
     }
   },
   computed: {
+    scaleCoefficient() {
+      if (this.terminal === 'pc') {
+        return 1.1
+      } else {
+        return 4
+      }
+    },
     editBarViewShowFlag() {
       return this.active && this.inTab
     },
@@ -209,7 +225,8 @@ export default {
       'canvasStyleData',
       'nowPanelTrackInfo',
       'nowPanelJumpInfo',
-      'publicLinkStatus'
+      'publicLinkStatus',
+      'previewCanvasScale'
     ])
   },
 
@@ -268,6 +285,16 @@ export default {
       if (newVal === 'map' && newVal !== oldVal) {
         this.initAreas()
       }
+    },
+    // 监控缩放比例
+    previewCanvasScale: {
+      handler(newVal, oldVal) {
+        console.log('previewCanvasScale:' + JSON.stringify(this.previewCanvasScale))
+        this.destroyScaleTimeMachine()
+        this.changeScaleIndex++
+        this.chartScale(this.changeScaleIndex)
+      },
+      deep: true
     }
   },
   created() {
@@ -277,6 +304,24 @@ export default {
     }
   },
   methods: {
+    // 根据仪表板的缩放比例，修改视图内部参数
+    mergeScale() {
+      const scale = Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient
+      const customAttrChart = JSON.parse(this.sourceCustomAttrStr)
+      const customStyleChart = JSON.parse(this.sourceCustomStyleStr)
+      recursionTransObj(customAttrTrans, customAttrChart, scale)
+      recursionTransObj(customStyleTrans, customStyleChart, scale)
+      this.chart = {
+        ...this.chart,
+        customAttr: JSON.stringify(customAttrChart),
+        customStyle: JSON.stringify(customStyleChart)
+      }
+      // console.log('customAttrChartSource:' + JSON.stringify(JSON.parse(this.sourceCustomAttrStr)))
+      // console.log('customAttrChart:' + JSON.stringify(customAttrChart))
+      // console.log('customStyleChartSource:' + JSON.stringify(JSON.parse(this.sourceCustomStyleStr)))
+      // console.log('customStyleChart:' + JSON.stringify(customStyleChart))
+      this.mergeStyle()
+    },
     mergeStyle() {
       if ((this.requestStatus === 'success' || this.requestStatus === 'merging') && this.chart.stylePriority === 'panel' && this.canvasStyleData.chart) {
         const customAttrChart = JSON.parse(this.chart.customAttr)
@@ -318,6 +363,8 @@ export default {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
+            this.sourceCustomAttrStr = this.chart.customAttr
+            this.sourceCustomStyleStr = this.chart.customStyle
             this.chart.drillFields = this.chart.drillFields ? JSON.parse(this.chart.drillFields) : []
             if (!response.data.drill) {
               this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
@@ -326,7 +373,7 @@ export default {
             this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
             this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
             this.requestStatus = 'merging'
-            this.mergeStyle()
+            this.mergeScale()
             this.requestStatus = 'success'
             this.httpRequest.status = true
           } else {
@@ -533,6 +580,10 @@ export default {
       this.timeMachine && clearTimeout(this.timeMachine)
       this.timeMachine = null
     },
+    destroyScaleTimeMachine() {
+      this.scaleTimeMachine && clearTimeout(this.scaleTimeMachine)
+      this.scaleTimeMachine = null
+    },
 
     // 边框变化
     chartResize(index) {
@@ -543,6 +594,18 @@ export default {
           }
           this.destroyTimeMachine()
         }, 50)
+      }
+    },
+
+    // 边框变化 修改视图内部参数
+    chartScale(index) {
+      if (this.$refs[this.element.propValue.id]) {
+        this.scaleTimeMachine = setTimeout(() => {
+          if (index === this.changeScaleIndex) {
+            this.mergeScale()
+          }
+          this.destroyScaleTimeMachine()
+        }, 100)
       }
     },
 

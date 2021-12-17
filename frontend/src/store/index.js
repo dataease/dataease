@@ -57,6 +57,11 @@ const data = {
     curComponent: null,
     curCanvasScale: null,
     curComponentIndex: null,
+    // 预览仪表板缩放信息
+    previewCanvasScale: {
+      scalePointWidth: 1,
+      scalePointHeight: 1
+    },
     // 点击画布时是否点中组件，主要用于取消选中组件用。
     // 如果没点中组件，并且在画布空白处弹起鼠标，则取消当前组件的选中状态
     isClickComponent: false,
@@ -135,7 +140,14 @@ const data = {
     setCurCanvasScale(state, curCanvasScale) {
       state.curCanvasScale = curCanvasScale
     },
-
+    setPreviewCanvasScale(state, scaleWidth, scaleHeight) {
+      if (scaleWidth) {
+        state.previewCanvasScale.scalePointWidth = scaleWidth
+      }
+      if (scaleHeight) {
+        state.previewCanvasScale.scalePointHeight = scaleHeight
+      }
+    },
     setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
       if (top || top === 0) curComponent.style.top = (top / curCanvasScale.scalePointHeight) + 0.0000001
       if (left || left === 0) curComponent.style.left = (left / curCanvasScale.scalePointWidth) + 0.0000001

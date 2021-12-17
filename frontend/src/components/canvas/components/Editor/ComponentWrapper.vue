@@ -30,6 +30,7 @@
       :search-count="searchCount"
       :h="config.style.height"
       :edit-mode="'preview'"
+      :terminal="terminal"
     />
   </div>
 </template>

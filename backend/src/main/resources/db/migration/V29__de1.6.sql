@@ -9,3 +9,6 @@ CREATE TABLE `dataset_row_permissions` (
    `update_time` bigint(13) NULL DEFAULT NULL,
    PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+ALTER TABLE `panel_group`
+ADD COLUMN `mobile_layout` tinyint(1) NULL DEFAULT 0 COMMENT '启用移动端布局' AFTER `remark`;
