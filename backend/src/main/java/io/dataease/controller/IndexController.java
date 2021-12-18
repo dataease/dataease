@@ -19,6 +19,7 @@ import java.io.IOException;
 @RequestMapping
 public class IndexController {
 
+    private static final int FOR_EVER = 3600 * 24 * 30 * 12 * 10; // 10 years in second
     @Resource
     private DefaultLicenseService defaultLicenseService;
 
@@ -34,7 +35,6 @@ public class IndexController {
     public String login() {
         return "index.html";
     }
-
 
     @GetMapping("/deApi")
     public String deApi() {
@@ -59,5 +59,20 @@ public class IndexController {
         }
     }
 
+    @GetMapping("/tempMobileLink/{id}/{token}")
+    public void tempMobileLink(@PathVariable("id") String id, @PathVariable("token") String token) {
+        String url = "http://localhost:8081/#preview/" + id;
+        HttpServletResponse response = ServletUtils.response();
+        Cookie cookie = new Cookie("Authorization", token);
+        cookie.setPath("/");
+        cookie.setMaxAge(FOR_EVER);
+        response.addCookie(cookie);
+        try {
+            response.sendRedirect(url);
+        } catch (IOException e) {
+            LogUtil.error(e.getMessage());
+            DEException.throwException(e);
+        }
+    }
 
 }
