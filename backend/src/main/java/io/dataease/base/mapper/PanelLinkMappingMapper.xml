@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="io.dataease.base.domain.PanelLinkMapping">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="resource_id" jdbcType="VARCHAR" property="resourceId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -64,7 +65,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, resource_id
+    id, resource_id, user_id
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.PanelLinkMappingExample" resultMap="BaseResultMap">
     select
@@ -97,8 +98,10 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.PanelLinkMapping">
-    insert into panel_link_mapping (id, resource_id)
-    values (#{id,jdbcType=BIGINT}, #{resourceId,jdbcType=VARCHAR})
+    insert into panel_link_mapping (id, resource_id, user_id
+      )
+    values (#{id,jdbcType=BIGINT}, #{resourceId,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelLinkMapping">
     insert into panel_link_mapping
@@ -109,6 +112,9 @@
       <if test="resourceId != null">
         resource_id,
       </if>
+      <if test="userId != null">
+        user_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -116,6 +122,9 @@
       </if>
       <if test="resourceId != null">
         #{resourceId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>
@@ -134,6 +143,9 @@
       <if test="record.resourceId != null">
         resource_id = #{record.resourceId,jdbcType=VARCHAR},
       </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=BIGINT},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -142,7 +154,8 @@
   <update id="updateByExample" parameterType="map">
     update panel_link_mapping
     set id = #{record.id,jdbcType=BIGINT},
-      resource_id = #{record.resourceId,jdbcType=VARCHAR}
+      resource_id = #{record.resourceId,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=BIGINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -153,12 +166,16 @@
       <if test="resourceId != null">
         resource_id = #{resourceId,jdbcType=VARCHAR},
       </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.PanelLinkMapping">
     update panel_link_mapping
-    set resource_id = #{resourceId,jdbcType=VARCHAR}
+    set resource_id = #{resourceId,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

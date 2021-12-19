@@ -2,7 +2,6 @@ package io.dataease.controller.panel.api;
 
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.panel.link.*;
 import io.dataease.dto.panel.link.GenerateDto;
@@ -48,7 +47,7 @@ public interface LinkApi {
     boolean validatePwd(PasswordRequest request) throws Exception;
 
     @ApiOperation("资源详息")
-    @PostMapping("/resourceDetail/{resourceId}")
+    @GetMapping("/resourceDetail/{resourceId}")
     Object resourceDetail(@PathVariable String resourceId);
 
     @ApiOperation("视图详息")

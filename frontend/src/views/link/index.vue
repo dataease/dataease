@@ -1,9 +1,9 @@
 <template>
   <div style="height: 100%;">
     <link-error v-if="showIndex===0" :resource-id="resourceId" />
-    <link-pwd v-if="showIndex===1" :resource-id="resourceId" @fresh-token="refreshToken" />
-    <link-view v-if="showIndex===2" :resource-id="resourceId" />
-    <link-expire v-if="showIndex===3" :resource-id="resourceId" />
+    <link-pwd v-if="showIndex===1" :resource-id="resourceId" :user="user" @fresh-token="refreshToken" />
+    <link-view v-if="showIndex===2" :resource-id="resourceId" :user="user"/>
+    <link-expire v-if="showIndex===3" :resource-id="resourceId" :user="user"/>
   </div>
 </template>
 <script>
@@ -23,6 +23,7 @@ export default {
       resourceId: null,
       PARAMKEY: 'link',
       link: null,
+      user: null,
       showIndex: -1
     }
   },
@@ -33,17 +34,20 @@ export default {
 
     loadInit() {
       this.$store.commit('setPublicLinkStatus', true)
-      debugger
-      // this.link = getQueryVariable(this.PARAMKEY)
       this.link = this.$route.query.link
+      this.user = this.$route.query.user
       if (!this.link) {
         this.link = getQueryVariable(this.PARAMKEY)
+      }
+      if (!this.user) {
+        this.user = getQueryVariable('user')
       }
       if (!this.link) {
         this.showError()
         return
       }
-      validate({ link: encodeURIComponent(this.link) }).then(res => {
+      let params = this.user ? { link: encodeURIComponent(this.link), user: this.user} : { link: encodeURIComponent(this.link)};
+      validate(params).then(res => {
         const { resourceId, valid, enablePwd, passPwd, expire } = res.data
         this.resourceId = resourceId
         // 如果链接无效 直接显示无效页面

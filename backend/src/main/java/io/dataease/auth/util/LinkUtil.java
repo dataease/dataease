@@ -16,7 +16,7 @@ public class LinkUtil {
         LinkUtil.panelLinkService = panelLinkService;
     }
 
-    public static PanelLink queryLink(String resourceId) {
-        return panelLinkService.findOne(resourceId);
+    public static PanelLink queryLink(String resourceId, Long user) {
+        return panelLinkService.findOne(resourceId, user);
     }
 }

@@ -34,4 +34,7 @@ public class ChartExtRequest {
 
     @ApiModelProperty("使用缓存:默认使用")
     private boolean cache = true;
+
+    @ApiModelProperty("用户ID")
+    private Long user = null;
 }

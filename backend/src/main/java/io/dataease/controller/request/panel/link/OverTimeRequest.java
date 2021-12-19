@@ -13,6 +13,9 @@ public class OverTimeRequest {
     @ApiModelProperty("资源ID")
     private String resourceId;
 
+    @ApiModelProperty("用户ID")
+    private Long userId;
+
     @ApiModelProperty("过期时间")
     private Long overTime;
     

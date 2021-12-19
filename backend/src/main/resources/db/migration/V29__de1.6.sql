@@ -10,5 +10,13 @@ CREATE TABLE `dataset_row_permissions` (
    PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
+
+ALTER TABLE `panel_link` ADD COLUMN `user_id` BIGINT(20) NULL DEFAULT NULL ;
+
+ALTER TABLE `panel_link_mapping` ADD COLUMN `user_id` BIGINT(20) NULL DEFAULT NULL ;
+
+ALTER TABLE `panel_link`CHANGE COLUMN `user_id` `user_id` BIGINT(20) NOT NULL ,DROP PRIMARY KEY;
+
 ALTER TABLE `panel_group`
 ADD COLUMN `mobile_layout` tinyint(1) NULL DEFAULT 0 COMMENT '启用移动端布局' AFTER `remark`;
+

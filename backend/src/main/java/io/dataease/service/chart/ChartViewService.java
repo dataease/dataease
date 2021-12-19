@@ -212,7 +212,7 @@ public class ChartViewService {
         DatasetTableField datasetTableFieldObj = DatasetTableField.builder().tableId(view.getTableId()).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableFieldObj);
         DatasetTable datasetTable = dataSetTableService.get(view.getTableId());
-        List<ChartFieldCustomFilterDTO> permissionFields = dataSetTableService.getCustomFilters(fields, datasetTable);
+        List<ChartFieldCustomFilterDTO> permissionFields = dataSetTableService.getCustomFilters(fields, datasetTable, requestList.getUser());
         fieldCustomFilter.addAll(permissionFields);
 
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {

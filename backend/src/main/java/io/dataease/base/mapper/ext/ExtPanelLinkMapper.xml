@@ -8,7 +8,7 @@
 
 
     <update id="updateOverTime"  >
-       update panel_link set over_time = #{request.overTime} where resource_id = #{request.resourceId}
+       update panel_link set over_time = #{request.overTime} where resource_id = #{request.resourceId} and user_id = #{request.userId}
     </update>
 
 

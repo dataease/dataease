@@ -126,16 +126,24 @@ public class JWTUtils {
         }
     }
 
-    public static String signLink(String resourceId, String secret) {
+    public static String signLink(String resourceId, Long userId, String secret) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
-        return JWT.create().withClaim("resourceId", resourceId).sign(algorithm);
+        if(userId == null){
+            return JWT.create().withClaim("resourceId", resourceId).sign(algorithm);
+        }else {
+            return JWT.create().withClaim("resourceId", resourceId).withClaim("userId", userId).sign(algorithm);
+        }
     }
 
-    public static boolean verifyLink(String token, String resourceId, String secret) {
+    public static boolean verifyLink(String token, String resourceId, Long userId,  String secret) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
-        JWTVerifier verifier = JWT.require(algorithm)
-                .withClaim("resourceId", resourceId)
-                .build();
+        JWTVerifier verifier;
+        if(userId == null){
+            verifier = JWT.require(algorithm).withClaim("resourceId", resourceId).build();
+        }else {
+            verifier = JWT.require(algorithm).withClaim("resourceId", resourceId).withClaim("userId", userId).build();
+        }
+
         try {
             verifier.verify(token);
             return true;

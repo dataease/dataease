@@ -58,7 +58,7 @@ public class DirectFieldService implements DataSetFieldService {
 
         DatasetTableField datasetTableField = DatasetTableField.builder().tableId(tableId).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
-        List<ChartFieldCustomFilterDTO> customFilter = dataSetTableService.getCustomFilters(fields, datasetTable);
+        List<ChartFieldCustomFilterDTO> customFilter = dataSetTableService.getCustomFilters(fields, datasetTable, null);
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceProvider datasourceProvider = null;
