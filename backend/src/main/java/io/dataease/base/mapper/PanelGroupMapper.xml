@@ -14,6 +14,7 @@
     <result column="extend1" jdbcType="VARCHAR" property="extend1" />
     <result column="extend2" jdbcType="VARCHAR" property="extend2" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="mobile_layout" jdbcType="BIT" property="mobileLayout" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.PanelGroupWithBLOBs">
     <result column="panel_style" jdbcType="LONGVARCHAR" property="panelStyle" />
@@ -79,7 +80,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, `name`, pid, `level`, node_type, create_by, create_time, panel_type, `source`, 
-    extend1, extend2, remark
+    extend1, extend2, remark, mobile_layout
   </sql>
   <sql id="Blob_Column_List">
     panel_style, panel_data
@@ -137,12 +138,14 @@
       `level`, node_type, create_by, 
       create_time, panel_type, `source`, 
       extend1, extend2, remark, 
-      panel_style, panel_data)
+      mobile_layout, panel_style, panel_data
+      )
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR}, 
       #{level,jdbcType=INTEGER}, #{nodeType,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=BIGINT}, #{panelType,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR}, 
       #{extend1,jdbcType=VARCHAR}, #{extend2,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
-      #{panelStyle,jdbcType=LONGVARCHAR}, #{panelData,jdbcType=LONGVARCHAR})
+      #{mobileLayout,jdbcType=BIT}, #{panelStyle,jdbcType=LONGVARCHAR}, #{panelData,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelGroupWithBLOBs">
     insert into panel_group
@@ -182,6 +185,9 @@
       </if>
       <if test="remark != null">
         remark,
+      </if>
+      <if test="mobileLayout != null">
+        mobile_layout,
       </if>
       <if test="panelStyle != null">
         panel_style,
@@ -226,6 +232,9 @@
       </if>
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileLayout != null">
+        #{mobileLayout,jdbcType=BIT},
       </if>
       <if test="panelStyle != null">
         #{panelStyle,jdbcType=LONGVARCHAR},
@@ -280,6 +289,9 @@
       <if test="record.remark != null">
         remark = #{record.remark,jdbcType=VARCHAR},
       </if>
+      <if test="record.mobileLayout != null">
+        mobile_layout = #{record.mobileLayout,jdbcType=BIT},
+      </if>
       <if test="record.panelStyle != null">
         panel_style = #{record.panelStyle,jdbcType=LONGVARCHAR},
       </if>
@@ -305,6 +317,7 @@
       extend1 = #{record.extend1,jdbcType=VARCHAR},
       extend2 = #{record.extend2,jdbcType=VARCHAR},
       remark = #{record.remark,jdbcType=VARCHAR},
+      mobile_layout = #{record.mobileLayout,jdbcType=BIT},
       panel_style = #{record.panelStyle,jdbcType=LONGVARCHAR},
       panel_data = #{record.panelData,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
@@ -324,7 +337,8 @@
       `source` = #{record.source,jdbcType=VARCHAR},
       extend1 = #{record.extend1,jdbcType=VARCHAR},
       extend2 = #{record.extend2,jdbcType=VARCHAR},
-      remark = #{record.remark,jdbcType=VARCHAR}
+      remark = #{record.remark,jdbcType=VARCHAR},
+      mobile_layout = #{record.mobileLayout,jdbcType=BIT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -365,6 +379,9 @@
       <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
       </if>
+      <if test="mobileLayout != null">
+        mobile_layout = #{mobileLayout,jdbcType=BIT},
+      </if>
       <if test="panelStyle != null">
         panel_style = #{panelStyle,jdbcType=LONGVARCHAR},
       </if>
@@ -387,6 +404,7 @@
       extend1 = #{extend1,jdbcType=VARCHAR},
       extend2 = #{extend2,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},
+      mobile_layout = #{mobileLayout,jdbcType=BIT},
       panel_style = #{panelStyle,jdbcType=LONGVARCHAR},
       panel_data = #{panelData,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
@@ -403,7 +421,8 @@
       `source` = #{source,jdbcType=VARCHAR},
       extend1 = #{extend1,jdbcType=VARCHAR},
       extend2 = #{extend2,jdbcType=VARCHAR},
-      remark = #{remark,jdbcType=VARCHAR}
+      remark = #{remark,jdbcType=VARCHAR},
+      mobile_layout = #{mobileLayout,jdbcType=BIT}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

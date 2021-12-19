@@ -73,7 +73,8 @@ public class PanelViewService {
     }
 
     @Transactional(propagation=Propagation.REQUIRES_NEW)
-    public void syncPanelViews(PanelGroupWithBLOBs panelGroup){
+    public Boolean syncPanelViews(PanelGroupWithBLOBs panelGroup){
+        Boolean mobileLayout = false;
         String panelId = panelGroup.getId();
         Assert.notNull(panelId, "panelId cannot be null");
         String panelData = panelGroup.getPanelData();
@@ -85,12 +86,16 @@ public class PanelViewService {
                 if("view".equals(jsonObject.getString("type"))){
                     panelViewInsertDTOList.add(new PanelViewInsertDTO(jsonObject.getJSONObject("propValue").getString("viewId"),panelId));
                 }
+                if(jsonObject.getBoolean("mobileSelected")!=null&&jsonObject.getBoolean("mobileSelected")){
+                    mobileLayout = true;
+                }
             }
             extPanelViewMapper.deleteWithPanelId(panelId);
             if(CollectionUtils.isNotEmpty(panelViewInsertDTOList)){
                 extPanelViewMapper.savePanelView(panelViewInsertDTOList);
             }
         }
+        return mobileLayout;
     }
 
     public List<PanelViewTableDTO> detailList(String panelId){

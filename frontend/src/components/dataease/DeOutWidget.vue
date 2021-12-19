@@ -23,6 +23,7 @@
                 :element="element"
                 :in-draw="inDraw"
                 :in-screen="inScreen"
+                :size="sizeInfo"
               />
             </div>
           </div>
@@ -39,7 +40,7 @@ export default {
   props: {
     element: {
       type: Object,
-      default: null
+      default: () => {}
     },
     inDraw: {
       type: Boolean,
@@ -49,16 +50,37 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    h: {
+      type: Number,
+      default: 50
     }
   },
   data() {
     return {
+      inputMaxSize: 46,
+      inputLargeSize: 42,
+      inputSmallSize: 38,
+      inputMiniSize: 34,
       options: null,
       showNumber: false,
       mainClass: ''
     }
   },
-
+  computed: {
+    sizeInfo() {
+      let size
+      if (this.h > this.inputMaxSize) {
+      } else if (this.h > this.inputLargeSize) {
+        size = 'medium'
+      } else if (this.h > this.inputSmallSize) {
+        size = 'small'
+      } else {
+        size = 'mini'
+      }
+      return size
+    }
+  },
   mounted() {
     this.watchSize()
   },

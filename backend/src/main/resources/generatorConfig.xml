@@ -62,7 +62,6 @@
         <!--要生成的数据库表 -->
         <table tableName="panel_link_mapping">
         </table>
-
-
+        <table tableName="panel_group"/>
     </context>
 </generatorConfiguration>

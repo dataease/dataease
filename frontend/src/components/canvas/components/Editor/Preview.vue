@@ -19,6 +19,7 @@
           :config="item"
           :search-count="searchCount"
           :in-screen="inScreen"
+          :terminal="terminal"
         />
         <!--视图详情-->
         <el-dialog
@@ -36,6 +37,17 @@
           </span>
           <UserViewDialog ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
         </el-dialog>
+
+        <!--手机视图详情-->
+        <el-dialog
+          :title="'['+showChartInfo.name+']'+$t('chart.chart_details')"
+          :visible.sync="mobileChartDetailsVisible"
+          :fullscreen="true"
+          class="mobile-dialog-css"
+          :destroy-on-close="true"
+        >
+          <UserViewMobileDialog :chart="showChartInfo" :chart-table="showChartTableInfo" />
+        </el-dialog>
       </div>
     </div>
   </div>
@@ -52,9 +64,10 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
+import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
 
 export default {
-  components: { ComponentWrapper, UserViewDialog, CanvasOptBar },
+  components: { UserViewMobileDialog, ComponentWrapper, UserViewDialog, CanvasOptBar },
   model: {
     prop: 'show',
     event: 'change'
@@ -102,6 +115,7 @@ export default {
       mainHeight: '100%',
       searchCount: 0,
       chartDetailsVisible: false,
+      mobileChartDetailsVisible: false,
       showChartInfo: {},
       showChartTableInfo: {},
       // 布局展示 1.pc pc端布局 2.mobile 移动端布局
@@ -215,6 +229,7 @@ export default {
       const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
       this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
       this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
+      this.$store.commit('setPreviewCanvasScale', (this.scaleWidth / 100), (this.scaleHeight / 100))
       this.handleScaleChange()
     },
     resetID(data) {
@@ -248,7 +263,11 @@ export default {
     openChartDetailsDialog(chartInfo) {
       this.showChartInfo = chartInfo.chart
       this.showChartTableInfo = chartInfo.tableChart
-      this.chartDetailsVisible = true
+      if (this.terminal === 'pc') {
+        this.chartDetailsVisible = true
+      } else {
+        this.mobileChartDetailsVisible
+      }
     },
     exportExcel() {
       this.$refs['userViewDialog'].exportExcel()
@@ -308,9 +327,16 @@ export default {
     padding: 10px 20px 20px;
   }
 
+  .mobile-dialog-css > > > .el-dialog__body {
+    padding: 0px;
+  }
   ::-webkit-scrollbar {
     width: 0px!important;
     height: 0px!important;
+  }
+
+  ::v-deep .el-tabs__nav{
+   z-index: 0;
   }
 
 </style>

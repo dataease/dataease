@@ -78,7 +78,8 @@ public class PanelGroupService {
     @Transactional
     public PanelGroup saveOrUpdate(PanelGroupRequest request) {
         try {
-            panelViewService.syncPanelViews(request);
+            Boolean mobileLayout = panelViewService.syncPanelViews(request);
+            request.setMobileLayout(mobileLayout);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("更新panelView出错panelId：{}", request.getId());

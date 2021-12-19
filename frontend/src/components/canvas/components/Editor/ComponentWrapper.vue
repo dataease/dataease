@@ -6,6 +6,7 @@
     @mousedown="elementMouseDown"
   >
     <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
+    <close-bar v-if="previewVisible" @closePreview="closePreview" />
     <de-out-widget
       v-if="config.type==='custom'"
       :id="'component' + config.id"
@@ -14,6 +15,7 @@
       :out-style="config.style"
       :element="config"
       :in-screen="inScreen"
+      :h="config.style.height"
     />
     <component
       :is="config.component"
@@ -28,6 +30,7 @@
       :search-count="searchCount"
       :h="config.style.height"
       :edit-mode="'preview'"
+      :terminal="terminal"
     />
   </div>
 </template>
@@ -40,9 +43,10 @@ import { mapState } from 'vuex'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
+import CloseBar from '@/components/canvas/components/Editor/CloseBar'
 
 export default {
-  components: { MobileCheckBar, DeOutWidget, EditBar },
+  components: { CloseBar, MobileCheckBar, DeOutWidget, EditBar },
   mixins: [mixins],
   props: {
     config: {
@@ -64,11 +68,20 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    terminal: {
+      type: String,
+      default: 'pc'
+    }
+  },
+  data() {
+    return {
+      previewVisible: false
     }
   },
   computed: {
     componentActiveFlag() {
-      return this.curComponent && this.config === this.curComponent
+      return (this.curComponent && this.config === this.curComponent) && !this.previewVisible
     },
     curGap() {
       return this.config.auxiliaryMatrix ? this.componentGap : 0
@@ -156,7 +169,14 @@ export default {
       this.$store.commit('setCurComponent', { component: this.config, index: this.index })
     },
     showViewDetails() {
-      this.$refs.wrapperChild.openChartDetailsDialog()
+      if (this.terminal === 'pc') {
+        this.$refs.wrapperChild.openChartDetailsDialog()
+      } else {
+        this.previewVisible = true
+      }
+    },
+    closePreview() {
+      this.previewVisible = false
     }
   }
 }

@@ -17,4 +17,6 @@ public class ChartFieldCustomFilterDTO extends ChartViewFieldBaseDTO implements 
     private List<ChartCustomFilterItemDTO> filter;
 
     private DatasetTableField field;
+
+    private List<String> enumCheckField;
 }

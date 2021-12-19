@@ -48,4 +48,6 @@ public class ChartViewFieldBaseDTO implements Serializable {
     private ChartFieldCompareDTO compareCalc;
 
     private String logic;
+
+    private String filterType;
 }

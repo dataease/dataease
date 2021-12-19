@@ -1,12 +1,14 @@
 <template>
 
   <el-input
-    v-if="options!== null && options.attrs!==null"
+    v-if="element.options!== null && element.options.attrs!==null"
     v-model="value"
     resize="vertical"
-    :placeholder="$t(options.attrs.placeholder)"
+    :placeholder="$t(element.options.attrs.placeholder)"
+    @input="valueChange"
     @keypress.enter.native="search"
     @dblclick="setEdit"
+    :size="size"
   >
 
     <el-button slot="append" icon="el-icon-search" @click="search" />
@@ -25,42 +27,51 @@ export default {
     inDraw: {
       type: Boolean,
       default: true
-    }
+    },
+    size: String
   },
   data() {
     return {
-      options: null,
       operator: 'like',
       value: null,
       canEdit: false
     }
   },
+  watch: {
+    'element.options.value': function(value, old) {
+      if (value === old) return
+      this.value = value
+      this.search()
+    }
+  },
   created() {
-    this.options = this.element.options
-    if (this.inDraw && this.options.value && this.options.value.length > 0) {
-      this.value = this.options.value[0]
+    if (this.element.options.value) {
+      this.value = this.element.options.value
+      this.search()
     }
   },
   methods: {
     search() {
-    //   this.options.value && this.setCondition()
-      this.options.value = []
-      if (this.inDraw && this.value) {
-        this.options.value = [this.value]
+      if (!this.inDraw) {
+        this.element.options.value = this.value
       }
-
       this.setCondition()
     },
     setCondition() {
       const param = {
         component: this.element,
-        value: !this.options.value ? [] : Array.isArray(this.options.value) ? this.options.value : [this.options.value],
+        value: !this.value ? [] : [this.value],
         operator: this.operator
       }
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
     setEdit() {
       this.canEdit = true
+    },
+    valueChange(val) {
+      if (!this.inDraw) {
+        this.element.options.value = val
+      }
     }
   }
 }

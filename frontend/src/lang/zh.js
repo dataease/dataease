@@ -997,7 +997,11 @@ export default {
     data_percent: '差值百分比',
     compare_calc_expression: '计算公式',
     and: '与',
-    or: '或'
+    or: '或',
+    logic_exp: '逻辑条件',
+    enum_exp: '枚举条件',
+    pls_slc: '请选择',
+    filter_exp: '过滤条件'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
