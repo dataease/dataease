@@ -9,3 +9,10 @@ CREATE TABLE `dataset_row_permissions` (
    `update_time` bigint(13) NULL DEFAULT NULL,
    PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+ALTER TABLE `panel_link` ADD COLUMN `user_id` BIGINT(20) NULL DEFAULT NULL ;
+
+ALTER TABLE `panel_link_mapping` ADD COLUMN `user_id` BIGINT(20) NULL DEFAULT NULL ;
+
+ALTER TABLE `panel_link`CHANGE COLUMN `user_id` `user_id` BIGINT(20) NOT NULL ,DROP PRIMARY KEY;
+

@@ -60,8 +60,7 @@
         </javaClientGenerator>
 
         <!--要生成的数据库表 -->
-        <table tableName="dataset_row_permissions">
-            <columnOverride column="filter" javaType="java.lang.String" jdbcType="VARCHAR" />
+        <table tableName="panel_link_mapping">
         </table>
 
 

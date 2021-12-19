@@ -30,13 +30,16 @@
     return (false)
   }
   const link = getQueryVariable('link')
+  const user = getQueryVariable('user')
   const terminal = getQueryVariable('terminal')
   let url = "/#/delink?link=" + encodeURIComponent(link)
   if (terminal) {
     url += '&terminal=' + terminal
   }
+  if (user) {
+    url += '&user=' + user
+  }
   window.location.href = url
-
 </script>
 
 </html>

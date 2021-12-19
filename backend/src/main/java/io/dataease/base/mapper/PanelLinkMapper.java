@@ -10,21 +10,13 @@ public interface PanelLinkMapper {
 
     int deleteByExample(PanelLinkExample example);
 
-    int deleteByPrimaryKey(String resourceId);
-
     int insert(PanelLink record);
 
     int insertSelective(PanelLink record);
 
     List<PanelLink> selectByExample(PanelLinkExample example);
 
-    PanelLink selectByPrimaryKey(String resourceId);
-
     int updateByExampleSelective(@Param("record") PanelLink record, @Param("example") PanelLinkExample example);
 
     int updateByExample(@Param("record") PanelLink record, @Param("example") PanelLinkExample example);
-
-    int updateByPrimaryKeySelective(PanelLink record);
-
-    int updateByPrimaryKey(PanelLink record);
 }

@@ -18,6 +18,10 @@ export default {
     resourceId: {
       type: String,
       default: null
+    },
+    user: {
+      type: String,
+      default: null
     }
   },
   data() {

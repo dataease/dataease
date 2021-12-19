@@ -269,15 +269,16 @@ export function formatQuickCondition(param, quickField) {
 }
 
 export function getQueryVariable(variable) {
-  debugger
   let query = window.location.search.substring(1)
   if (!query) {
     query = Cookies.get(variable)
   }
-  const vars = query.split('&')
-  for (var i = 0; i < vars.length; i++) {
-    const pair = vars[i].split('=')
-    if (pair[0] === variable) { return pair[1] }
+  if (query !== undefined){
+    const vars = query.split('&')
+    for (var i = 0; i < vars.length; i++) {
+      const pair = vars[i].split('=')
+      if (pair[0] === variable) { return pair[1] }
+    }
   }
   return (false)
 }

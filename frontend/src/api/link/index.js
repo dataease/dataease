@@ -60,7 +60,7 @@ export function loadGenerate(resourceId) {
 export function loadResource(resourceId) {
   return request({
     url: 'api/link/resourceDetail/' + resourceId,
-    method: 'post'
+    method: 'get'
   })
 }
 

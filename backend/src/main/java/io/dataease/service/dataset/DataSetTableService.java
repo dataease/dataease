@@ -442,7 +442,7 @@ public class DataSetTableService {
         return map;
     }
 
-    private List<DatasetRowPermissions> rowPermissions(String datasetId) {
+    private List<DatasetRowPermissions> rowPermissions(String datasetId, Long userId) {
         List<DatasetRowPermissions> datasetRowPermissions = new ArrayList<>();
         Map<String, RowPermissionService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((RowPermissionService.class));
         if (beansOfType.keySet().size() == 0) {
@@ -450,11 +450,10 @@ public class DataSetTableService {
         }
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
         CurrentUserDto user = AuthUtils.getUser();
-        if (user != null) {
-            datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(user.getUserId()), "user"));
-            datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList()), "role"));
-            datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(user.getDeptId()), "dept"));
-        }
+        userId = user != null? user.getUserId() : userId;
+        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(user.getUserId()), "user"));
+        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList()), "role"));
+        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(user.getDeptId()), "dept"));
         return datasetRowPermissions;
     }
 
@@ -468,9 +467,9 @@ public class DataSetTableService {
         return field;
     }
 
-    public List<ChartFieldCustomFilterDTO> getCustomFilters(List<DatasetTableField> fields, DatasetTable datasetTable) {
+    public List<ChartFieldCustomFilterDTO> getCustomFilters(List<DatasetTableField> fields, DatasetTable datasetTable, Long user) {
         List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
-        rowPermissions(datasetTable.getId()).forEach(datasetRowPermissions -> {
+        rowPermissions(datasetTable.getId(), user).forEach(datasetRowPermissions -> {
             List<ChartCustomFilterItemDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartCustomFilterItemDTO.class);
             ChartFieldCustomFilterDTO dto = new ChartFieldCustomFilterDTO();
             DatasetTableField field = getFieldById(fields, datasetRowPermissions.getDatasetFieldId());
@@ -499,7 +498,7 @@ public class DataSetTableService {
             return map;
         }
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(dataSetTableRequest.getId());
-        List<ChartFieldCustomFilterDTO> customFilter = getCustomFilters(fields, datasetTable);
+        List<ChartFieldCustomFilterDTO> customFilter = getCustomFilters(fields, datasetTable, null);
         String[] fieldArray = fields.stream().map(DatasetTableField::getDataeaseName).toArray(String[]::new);
 
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
