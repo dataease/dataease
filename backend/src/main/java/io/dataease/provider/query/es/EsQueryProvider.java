@@ -767,63 +767,71 @@ public class EsQueryProvider extends QueryProvider {
         for (ChartFieldCustomFilterDTO request : requestList) {
             List<SQLObj> list = new ArrayList<>();
             DatasetTableField field = request.getField();
-            List<ChartCustomFilterItemDTO> filter = request.getFilter();
-            for (ChartCustomFilterItemDTO filterItemDTO : filter) {
-                if (ObjectUtils.isEmpty(field)) {
-                    continue;
+
+            if (ObjectUtils.isEmpty(field)) {
+                continue;
+            }
+            String whereName = "";
+            String originName;
+            if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
+                // 解析origin name中有关联的字段生成sql表达式
+                originName = calcFieldRegex(field.getOriginName(), tableObj);
+            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
+                originName = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            } else {
+                originName = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            }
+            if (field.getDeType() == DeTypeConstants.DE_TIME) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(EsSqlLConstants.CAST, originName, "timestamp");
                 }
-                String value = filterItemDTO.getValue();
-                String whereName = "";
-                String whereTerm = transMysqlFilterTerm(filterItemDTO.getTerm());
-                String whereValue = "";
-                String originName;
-                if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
-                    // 解析origin name中有关联的字段生成sql表达式
-                    originName = calcFieldRegex(field.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                    originName = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
-                } else {
-                    originName = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == DeTypeConstants.DE_BOOL) {
+                    String cast = String.format(EsSqlLConstants.CAST, originName, "timestamp");
+                    whereName = String.format(EsSqlLConstants.DATETIME_FORMAT, cast, EsSqlLConstants.DEFAULT_DATE_FORMAT);
                 }
-                if (field.getDeType() == DeTypeConstants.DE_TIME) {
-                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        whereName = String.format(EsSqlLConstants.CAST, originName, "timestamp");
-                    }
-                    if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == DeTypeConstants.DE_BOOL) {
-                        String cast = String.format(EsSqlLConstants.CAST, originName, "timestamp");
-                        whereName = String.format(EsSqlLConstants.DATETIME_FORMAT, cast, EsSqlLConstants.DEFAULT_DATE_FORMAT);
-                    }
-                    if (field.getDeExtractType() == 1) {
-                        whereName = originName;
-                    }
-                } else {
+                if (field.getDeExtractType() == 1) {
                     whereName = originName;
                 }
-                if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "null")) {
-                    whereValue = "";
-                } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_null")) {
-                    whereValue = "";
-                } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "empty")) {
-                    whereValue = "''";
-                } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_empty")) {
-                    whereValue = "''";
-                } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in")) {
-                    whereValue = "('" + StringUtils.join(value, "','") + "')";
-                } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
-                    whereValue = "'%" + value + "%'";
-                } else {
-                    whereValue = String.format(EsSqlLConstants.WHERE_VALUE_VALUE, value);
-                }
-                list.add(SQLObj.builder()
-                        .whereField(whereName)
-                        .whereTermAndValue(whereTerm + whereValue)
-                        .build());
+            } else {
+                whereName = originName;
             }
 
-            List<String> strList = new ArrayList<>();
-            list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
-            if (CollectionUtils.isNotEmpty(list)) {
-                res.add("(" + String.join(" " + getLogic(request.getLogic()) + " ", strList) + ")");
+            if (StringUtils.equalsIgnoreCase(request.getFilterType(), "enum")) {
+                if (CollectionUtils.isNotEmpty(request.getEnumCheckField())) {
+                    res.add("(" + whereName + " IN ('" + String.join("','", request.getEnumCheckField()) + "'))");
+                }
+            } else {
+                List<ChartCustomFilterItemDTO> filter = request.getFilter();
+                for (ChartCustomFilterItemDTO filterItemDTO : filter) {
+                    String value = filterItemDTO.getValue();
+                    String whereTerm = transMysqlFilterTerm(filterItemDTO.getTerm());
+                    String whereValue = "";
+
+                    if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "null")) {
+                        whereValue = "";
+                    } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_null")) {
+                        whereValue = "";
+                    } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "empty")) {
+                        whereValue = "''";
+                    } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_empty")) {
+                        whereValue = "''";
+                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in")) {
+                        whereValue = "('" + StringUtils.join(value, "','") + "')";
+                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
+                        whereValue = "'%" + value + "%'";
+                    } else {
+                        whereValue = String.format(EsSqlLConstants.WHERE_VALUE_VALUE, value);
+                    }
+                    list.add(SQLObj.builder()
+                            .whereField(whereName)
+                            .whereTermAndValue(whereTerm + whereValue)
+                            .build());
+                }
+                List<String> strList = new ArrayList<>();
+                list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
+                if (CollectionUtils.isNotEmpty(list)) {
+                    res.add("(" + String.join(" " + getLogic(request.getLogic()) + " ", strList) + ")");
+                }
             }
         }
         return CollectionUtils.isNotEmpty(res) ? "(" + String.join(" AND ", res) + ")" : null;

@@ -407,6 +407,17 @@
                                         <include name="*.html"/>
                                     </fileset>
                                 </move>
+
+                                <move todir="src/main/resources/static/de-app">
+                                    <fileset dir="../../dataease-app/dist/build/h5">
+                                        <exclude name="*.html"/>
+                                    </fileset>
+                                </move>
+
+                                
+                                <move file="../../dataease-app/dist/build/h5/index.html" tofile="src/main/resources/templates/app.html" />
+                                    
+                                
                             </target>
                         </configuration>
                         <goals>

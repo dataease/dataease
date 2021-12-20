@@ -60,6 +60,10 @@ export default {
       type: Number,
       required: false,
       default: 0
+    },
+    terminalType: {
+      type: String,
+      default: 'pc'
     }
   },
   data() {
@@ -154,7 +158,7 @@ export default {
       } else if (chart.type === 'gauge') {
         chart_option = baseGaugeOption(JSON.parse(JSON.stringify(BASE_GAUGE)), chart)
       } else if (chart.type === 'scatter') {
-        chart_option = baseScatterOption(JSON.parse(JSON.stringify(BASE_SCATTER)), chart)
+        chart_option = baseScatterOption(JSON.parse(JSON.stringify(BASE_SCATTER)), chart, this.terminalType)
       } else if (chart.type === 'treemap') {
         chart_option = baseTreemapOption(JSON.parse(JSON.stringify(BASE_TREEMAP)), chart)
       } else if (chart.type === 'chart-mix') {

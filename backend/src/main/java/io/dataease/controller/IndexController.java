@@ -61,7 +61,7 @@ public class IndexController {
 
     @GetMapping("/tempMobileLink/{id}/{token}")
     public void tempMobileLink(@PathVariable("id") String id, @PathVariable("token") String token) {
-        String url = "http://localhost:8081/#preview/" + id;
+        String url = "/#preview/" + id;
         HttpServletResponse response = ServletUtils.response();
         Cookie cookie = new Cookie("Authorization", token);
         cookie.setPath("/");

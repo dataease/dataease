@@ -16,6 +16,7 @@
       <div style="display: inline-block;">
         <el-button icon="el-icon-plus" circle size="mini" style="margin-bottom: 10px;" @click="addFilter" />
         <el-radio-group
+          v-show="item.filter && item.filter.length > 1"
           v-model="logic"
           size="mini"
           style="margin-left: 10px;"
@@ -61,6 +62,7 @@
       <el-select
         v-model="enumCheckField"
         filterable
+        collapse-tags
         multiple
         :placeholder="$t('chart.pls_slc')"
         size="mini"
@@ -215,6 +217,7 @@ export default {
   mounted() {
     this.initOptions()
     this.init()
+    this.initEnumOptions()
   },
   methods: {
     initOptions() {
@@ -232,10 +235,14 @@ export default {
       this.logic = this.item.logic
       this.filterType = this.item.filterType
       this.enumCheckField = this.item.enumCheckField
-      // 查找枚举的
-      multFieldValues([this.item.id]).then(res => {
-        this.fieldOptions = this.optionDatas(res.data)
-      })
+    },
+    initEnumOptions() {
+      // 查找枚举值
+      if (this.item.deType === 0 || this.item.deType === 5) {
+        multFieldValues([this.item.id]).then(res => {
+          this.fieldOptions = this.optionDatas(res.data)
+        })
+      }
     },
     optionDatas(datas) {
       if (!datas) return null
