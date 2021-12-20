@@ -23,6 +23,7 @@
       :chart="chart"
       :track-menu="trackMenu"
       :search-count="searchCount"
+      :terminal-type="scaleCoefficientType"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -141,10 +142,17 @@ export default {
   },
   computed: {
     scaleCoefficient() {
-      if (this.terminal === 'pc') {
+      if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
         return 1.1
       } else {
-        return 4
+        return 4.5
+      }
+    },
+    scaleCoefficientType() {
+      if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
+        return 'pc'
+      } else {
+        return 'mobile'
       }
     },
     editBarViewShowFlag() {
@@ -227,7 +235,8 @@ export default {
       'nowPanelTrackInfo',
       'nowPanelJumpInfo',
       'publicLinkStatus',
-      'previewCanvasScale'
+      'previewCanvasScale',
+      'mobileLayoutStatus'
     ])
   },
 
@@ -310,17 +319,18 @@ export default {
       const scale = Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient
       const customAttrChart = JSON.parse(this.sourceCustomAttrStr)
       const customStyleChart = JSON.parse(this.sourceCustomStyleStr)
-      recursionTransObj(customAttrTrans, customAttrChart, scale)
-      recursionTransObj(customStyleTrans, customStyleChart, scale)
+      recursionTransObj(customAttrTrans, customAttrChart, scale, this.scaleCoefficientType)
+      recursionTransObj(customStyleTrans, customStyleChart, scale, this.scaleCoefficientType)
+
+      // 移动端地图标签不显示
+      if (this.chart.type === 'map' && this.scaleCoefficientType === 'mobile') {
+        customAttrChart.label.show = false
+      }
       this.chart = {
         ...this.chart,
         customAttr: JSON.stringify(customAttrChart),
         customStyle: JSON.stringify(customStyleChart)
       }
-      // console.log('customAttrChartSource:' + JSON.stringify(JSON.parse(this.sourceCustomAttrStr)))
-      // console.log('customAttrChart:' + JSON.stringify(customAttrChart))
-      // console.log('customStyleChartSource:' + JSON.stringify(JSON.parse(this.sourceCustomStyleStr)))
-      // console.log('customStyleChart:' + JSON.stringify(customStyleChart))
       this.mergeStyle()
     },
     mergeStyle() {

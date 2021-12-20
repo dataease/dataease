@@ -266,7 +266,7 @@ export default {
       if (this.terminal === 'pc') {
         this.chartDetailsVisible = true
       } else {
-        this.mobileChartDetailsVisible
+        this.mobileChartDetailsVisible = true
       }
     },
     exportExcel() {

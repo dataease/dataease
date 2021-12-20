@@ -150,27 +150,36 @@ export const customStyleTrans = {
   }
 }
 
+// 移动端特殊属性
+export const mobileSpecialProps = {
+  'lineWidth': 3, // 线宽固定值
+  'lineSymbolSize': 5// 折点固定值
+}
+
 export function getScaleValue(propValue, scale) {
   const propValueTemp = Math.round(propValue * scale)
   return propValueTemp > 1 ? propValueTemp : 1
 }
 
-export function recursionTransObj(template, infoObj, scale) {
-  // console.log('recursionObj++')
+export function recursionTransObj(template, infoObj, scale, terminal) {
   for (const templateKey in template) {
     // 如果是数组 进行赋值计算
     if (template[templateKey] instanceof Array) {
       template[templateKey].forEach(templateProp => {
         if (infoObj[templateKey] && infoObj[templateKey][templateProp]) {
-          const afterValue = getScaleValue(infoObj[templateKey][templateProp], scale)
-          console.log(templateKey + '.' + templateProp + '=' + infoObj[templateKey][templateProp] + ';scale:' + scale + ',after:' + afterValue)
-          infoObj[templateKey][templateProp] = afterValue
+          // 移动端特殊属性值设置
+          if (terminal === 'mobile' && mobileSpecialProps[templateProp] !== undefined) {
+            // console.log('mobile:' + templateProp + mobileSpecialProps[templateProp])
+            infoObj[templateKey][templateProp] = mobileSpecialProps[templateProp]
+          } else {
+            infoObj[templateKey][templateProp] = getScaleValue(infoObj[templateKey][templateProp], scale)
+          }
         }
       })
     } else {
       // 如果是对象 继续进行递归
       if (infoObj[templateKey]) {
-        recursionTransObj(template[templateKey], infoObj[templateKey], scale)
+        recursionTransObj(template[templateKey], infoObj[templateKey], scale, terminal)
       }
     }
   }

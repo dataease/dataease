@@ -169,11 +169,7 @@ export default {
       this.$store.commit('setCurComponent', { component: this.config, index: this.index })
     },
     showViewDetails() {
-      if (this.terminal === 'pc') {
-        this.$refs.wrapperChild.openChartDetailsDialog()
-      } else {
-        this.previewVisible = true
-      }
+      this.$refs.wrapperChild.openChartDetailsDialog()
     },
     closePreview() {
       this.previewVisible = false
