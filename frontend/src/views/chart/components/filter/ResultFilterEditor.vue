@@ -61,6 +61,7 @@
       <el-select
         v-model="enumCheckField"
         filterable
+        collapse-tags
         multiple
         :placeholder="$t('chart.pls_slc')"
         size="mini"
