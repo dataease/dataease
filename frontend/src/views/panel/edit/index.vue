@@ -112,7 +112,7 @@
         <el-row v-if="mobileLayoutStatus" class="mobile_canvas_main">
           <el-col :span="8" class="this_mobile_canvas_cell">
             <div
-              v-proportion="2.5"
+              v-proportion="2.1"
               :style="customCanvasMobileStyle"
               class="this_mobile_canvas"
               @drop="handleDrop"
@@ -955,10 +955,10 @@ export default {
 
 .this_mobile_canvas{
   border-radius:30px;
-  min-width: 280px;
-  max-width: 300px;
-  min-height: 700px;
-  max-height: 750px;
+  min-width: 300px;
+  max-width: 350px;
+  min-height: 600px;
+  max-height: 700px;
   overflow: hidden;
   background-color: #000000;
   background-size:100% 100% !important;
