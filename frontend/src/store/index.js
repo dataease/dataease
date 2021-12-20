@@ -140,12 +140,12 @@ const data = {
     setCurCanvasScale(state, curCanvasScale) {
       state.curCanvasScale = curCanvasScale
     },
-    setPreviewCanvasScale(state, scaleWidth, scaleHeight) {
-      if (scaleWidth) {
-        state.previewCanvasScale.scalePointWidth = scaleWidth
+    setPreviewCanvasScale(state, scale) {
+      if (scale.scaleWidth) {
+        state.previewCanvasScale.scalePointWidth = scale.scaleWidth
       }
-      if (scaleHeight) {
-        state.previewCanvasScale.scalePointHeight = scaleHeight
+      if (scale.scaleHeight) {
+        state.previewCanvasScale.scalePointHeight = scale.scaleHeight
       }
     },
     setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {

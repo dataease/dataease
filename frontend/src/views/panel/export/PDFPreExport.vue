@@ -4,11 +4,11 @@
     style="height: 100%;width: 100%;"
     :element-loading-text="$t('panel.export_loading')"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.8)"
+    element-loading-background="rgba(0, 0, 0, 1)"
   >
     <el-row class="export_body_class">
-      <div id="exportPdf" ref="exportPdf">
-        <div class="export_body_inner_class" v-html="templateContentChange" />
+      <div id="exportPdf" ref="exportPdf" :style="mainCanvasStyle">
+        <div class="export_body_inner_class" :style="templateHtmlStyle" v-html="templateContentChange" />
       </div>
     </el-row>
     <el-row class="root_class">
@@ -26,6 +26,7 @@ import { pdfTemplateReplaceAll } from '@/utils/StringUtils.js'
 
 export default {
   name: 'PDFPreExport',
+  components: { },
   props: {
     // eslint-disable-next-line vue/require-default-prop
     panelName: {
@@ -43,6 +44,7 @@ export default {
   },
   data() {
     return {
+      toExport: false,
       exportLoading: false,
       activeName: '',
       templateContentChange: '',
@@ -60,7 +62,26 @@ export default {
     }
   },
   computed: {
-
+    mainCanvasStyle() {
+      if (this.toExport) {
+        return {
+          width: '4096px'
+        }
+      } else {
+        return {
+          width: '100%'
+        }
+      }
+    },
+    templateHtmlStyle() {
+      if (this.toExport) {
+        return {
+          fontSize: '48px!important'
+        }
+      } else {
+        return {}
+      }
+    }
   },
   watch: {
     templateContent(newVal, oldVla) {
@@ -92,19 +113,22 @@ export default {
       const _this = this
       _this.exportLoading = true
       setTimeout(() => {
-        html2canvas(document.getElementById('exportPdf')).then(function(canvas) {
-          _this.exportLoading = false
-          const contentWidth = canvas.width
-          const contentHeight = canvas.height
-          const pageData = canvas.toDataURL('image/jpeg', 1.0)
-          const lp = contentWidth > contentHeight ? 'l' : 'p'
-          const PDF = new JsPDF(lp, 'pt', [contentWidth, contentHeight])
-          PDF.addImage(pageData, 'JPEG', 0, 0, contentWidth, contentHeight)
-          PDF.save(_this.panelName + '.pdf')
-          _this.$emit('closePreExport')
-        }
-        )
-      }, 50)
+        _this.toExport = true
+        setTimeout(() => {
+          html2canvas(document.getElementById('exportPdf')).then(function(canvas) {
+            _this.exportLoading = false
+            const contentWidth = canvas.width
+            const contentHeight = canvas.height
+            const pageData = canvas.toDataURL('image/jpeg', 1.0)
+            const lp = contentWidth > contentHeight ? 'l' : 'p'
+            const PDF = new JsPDF(lp, 'pt', [contentWidth, contentHeight])
+            PDF.addImage(pageData, 'JPEG', 0, 0, contentWidth, contentHeight)
+            PDF.save(_this.panelName + '.pdf')
+            _this.$emit('closePreExport')
+          }
+          )
+        }, 1500)
+      }, 500)
     }
 
   }

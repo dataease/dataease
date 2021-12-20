@@ -1195,7 +1195,7 @@ export default {
             matrixStyleOriginWidth: this.matrixStyle.originWidth,
             matrixStyleOriginHeight: this.matrixStyle.originHeight
           })
-        this.$store.commit('setPreviewCanvasScale', this.scalePointWidth, this.scalePointHeight)
+        this.$store.commit('setPreviewCanvasScale', { scaleWidth: this.scalePointWidth, scaleHeight: this.scalePointHeight })
       }
     },
     getShapeStyleIntDeDrag(style, prop) {
