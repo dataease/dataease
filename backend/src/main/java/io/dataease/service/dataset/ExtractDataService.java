@@ -188,8 +188,34 @@ public class ExtractDataService {
                     saveSuccessLog(datasetTableTaskLog);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                     if(ops.equalsIgnoreCase("替换")){
-                        dataSetTableFieldsService.deleteByTableId(datasetTable.getId());
-                        datasetTableFields.forEach(datasetTableField -> dataSetTableFieldsService.save(datasetTableField));
+                        List<DatasetTableField> oldFileds = getDatasetTableFields(datasetTable.getId());
+                        List<DatasetTableField> toAdd = new ArrayList<>();
+                        List<DatasetTableField> toDelete = new ArrayList<>();
+                        for (DatasetTableField oldFiled : oldFileds) {
+                            boolean delete = true;
+                            for (DatasetTableField datasetTableField : datasetTableFields) {
+                                if(oldFiled.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldFiled.getDeExtractType().equals(datasetTableField.getDeExtractType())){
+                                    delete = false;
+                                }
+                            }
+                            if(delete){
+                                toDelete.add(oldFiled);
+                            }
+                        }
+
+                        for (DatasetTableField datasetTableField : datasetTableFields) {
+                            boolean add = true;
+                            for (DatasetTableField oldFiled : oldFileds) {
+                                if(oldFiled.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldFiled.getDeExtractType().equals(datasetTableField.getDeExtractType())){
+                                    add = false;
+                                }
+                            }
+                            if(add){
+                                toAdd.add(datasetTableField);
+                            }
+                        }
+                        toAdd.forEach(datasetTableField -> dataSetTableFieldsService.save(datasetTableField));
+                        toDelete.forEach(datasetTableField -> dataSetTableFieldsService.delete(datasetTableField.getId()));
                     }
                 } catch (Exception e) {
                     saveErrorLog(datasetTableId, null, e);
@@ -231,6 +257,21 @@ public class ExtractDataService {
         }
     }
 
+    private List<DatasetTableField> getDatasetTableFields(String datasetTableId){
+        List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTableId).build());
+        datasetTableFields = datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
+        datasetTableFields.sort((o1, o2) -> {
+            if (o1.getColumnIndex() == null) {
+                return -1;
+            }
+            if (o2.getColumnIndex() == null) {
+                return 1;
+            }
+            return o1.getColumnIndex().compareTo(o2.getColumnIndex());
+        });
+        return datasetTableFields;
+    }
+
     public void extractData(String datasetTableId, String taskId, String type, JobExecutionContext context) {
         DatasetTable datasetTable = getDatasetTable(datasetTableId);
         if (datasetTable == null) {
@@ -264,17 +305,7 @@ public class ExtractDataService {
         } else {
             datasource.setType(datasetTable.getType());
         }
-        List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTable.getId()).build());
-        datasetTableFields = datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
-        datasetTableFields.sort((o1, o2) -> {
-            if (o1.getColumnIndex() == null) {
-                return -1;
-            }
-            if (o2.getColumnIndex() == null) {
-                return 1;
-            }
-            return o1.getColumnIndex().compareTo(o2.getColumnIndex());
-        });
+        List<DatasetTableField> datasetTableFields = getDatasetTableFields(datasetTable.getId());
         String dorisTableColumnSql = createDorisTableColumnSql(datasetTableFields);
 
         boolean msg = false;
