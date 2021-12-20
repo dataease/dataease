@@ -752,68 +752,76 @@ public class DorisQueryProvider extends QueryProvider {
         for (ChartFieldCustomFilterDTO request : requestList) {
             List<SQLObj> list = new ArrayList<>();
             DatasetTableField field = request.getField();
-            List<ChartCustomFilterItemDTO> filter = request.getFilter();
-            for (ChartCustomFilterItemDTO filterItemDTO : filter) {
-                if (ObjectUtils.isEmpty(field)) {
-                    continue;
-                }
-                String value = filterItemDTO.getValue();
-                String whereName = "";
-                String whereTerm = transMysqlFilterTerm(filterItemDTO.getTerm());
-                String whereValue = "";
 
-                String originName;
-                if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
-                    // 解析origin name中有关联的字段生成sql表达式
-                    originName = calcFieldRegex(field.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                    originName = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDataeaseName());
-                } else {
-                    originName = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDataeaseName());
-                }
-
-                if (field.getDeType() == 1) {
-                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
-                        whereName = String.format(DorisConstants.STR_TO_DATE, originName, DorisConstants.DEFAULT_DATE_FORMAT);
-                    }
-                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        String cast = String.format(DorisConstants.CAST, originName, DorisConstants.DEFAULT_INT_FORMAT) + "/1000";
-                        whereName = String.format(DorisConstants.FROM_UNIXTIME, cast, DorisConstants.DEFAULT_DATE_FORMAT);
-                    }
-                } else if (field.getDeType() == 0) {
-                    whereName = String.format(DorisConstants.CAST, originName, DorisConstants.VARCHAR);
-                } else {
-                    whereName = originName;
-                }
-                if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "null")) {
-                    whereValue = "";
-                } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_null")) {
-                    whereValue = "";
-                } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "empty")) {
-                    whereValue = "''";
-                } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_empty")) {
-                    whereValue = "''";
-                } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in")) {
-                    whereValue = "('" + StringUtils.join(value, "','") + "')";
-                } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
-                    whereValue = "'%" + value + "%'";
-                } else {
-                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        whereValue = String.format(DorisConstants.WHERE_NUMBER_VALUE, value);
-                    } else {
-                        whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value);
-                    }
-                }
-                list.add(SQLObj.builder()
-                        .whereField(whereName)
-                        .whereTermAndValue(whereTerm + whereValue)
-                        .build());
+            if (ObjectUtils.isEmpty(field)) {
+                continue;
+            }
+            String whereName = "";
+            String originName;
+            if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
+                // 解析origin name中有关联的字段生成sql表达式
+                originName = calcFieldRegex(field.getOriginName(), tableObj);
+            } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
+                originName = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDataeaseName());
+            } else {
+                originName = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDataeaseName());
             }
 
-            List<String> strList = new ArrayList<>();
-            list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
-            if (CollectionUtils.isNotEmpty(list)) {
-                res.add("(" + String.join(" " + getLogic(request.getLogic()) + " ", strList) + ")");
+            if (field.getDeType() == 1) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
+                    whereName = String.format(DorisConstants.STR_TO_DATE, originName, DorisConstants.DEFAULT_DATE_FORMAT);
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    String cast = String.format(DorisConstants.CAST, originName, DorisConstants.DEFAULT_INT_FORMAT) + "/1000";
+                    whereName = String.format(DorisConstants.FROM_UNIXTIME, cast, DorisConstants.DEFAULT_DATE_FORMAT);
+                }
+            } else if (field.getDeType() == 0) {
+                whereName = String.format(DorisConstants.CAST, originName, DorisConstants.VARCHAR);
+            } else {
+                whereName = originName;
+            }
+
+            if (StringUtils.equalsIgnoreCase(request.getFilterType(), "enum")) {
+                if (CollectionUtils.isNotEmpty(request.getEnumCheckField())) {
+                    res.add("(" + whereName + " IN ('" + String.join("','", request.getEnumCheckField()) + "'))");
+                }
+            } else {
+                List<ChartCustomFilterItemDTO> filter = request.getFilter();
+                for (ChartCustomFilterItemDTO filterItemDTO : filter) {
+                    String value = filterItemDTO.getValue();
+                    String whereTerm = transMysqlFilterTerm(filterItemDTO.getTerm());
+                    String whereValue = "";
+
+                    if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "null")) {
+                        whereValue = "";
+                    } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_null")) {
+                        whereValue = "";
+                    } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "empty")) {
+                        whereValue = "''";
+                    } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_empty")) {
+                        whereValue = "''";
+                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in")) {
+                        whereValue = "('" + StringUtils.join(value, "','") + "')";
+                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
+                        whereValue = "'%" + value + "%'";
+                    } else {
+                        if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                            whereValue = String.format(DorisConstants.WHERE_NUMBER_VALUE, value);
+                        } else {
+                            whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value);
+                        }
+                    }
+                    list.add(SQLObj.builder()
+                            .whereField(whereName)
+                            .whereTermAndValue(whereTerm + whereValue)
+                            .build());
+                }
+
+                List<String> strList = new ArrayList<>();
+                list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
+                if (CollectionUtils.isNotEmpty(list)) {
+                    res.add("(" + String.join(" " + getLogic(request.getLogic()) + " ", strList) + ")");
+                }
             }
         }
         return CollectionUtils.isNotEmpty(res) ? "(" + String.join(" AND ", res) + ")" : null;

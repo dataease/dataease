@@ -771,9 +771,6 @@ public class MysqlQueryProvider extends QueryProvider {
             } else {
                 List<ChartCustomFilterItemDTO> filter = request.getFilter();
                 for (ChartCustomFilterItemDTO filterItemDTO : filter) {
-                    if (ObjectUtils.isEmpty(field)) {
-                        continue;
-                    }
                     String value = filterItemDTO.getValue();
                     String whereTerm = transMysqlFilterTerm(filterItemDTO.getTerm());
                     String whereValue = "";
