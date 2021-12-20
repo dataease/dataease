@@ -509,7 +509,7 @@ public class ChartViewService {
                             if (StringUtils.equalsIgnoreCase(resultData, "sub")) {
                                 item[dataIndex] = new BigDecimal(cValue).subtract(new BigDecimal(lastValue)).toString();
                             } else if (StringUtils.equalsIgnoreCase(resultData, "percent")) {
-                                if (Integer.parseInt(lastValue) == 0) {
+                                if (new BigDecimal(lastValue).compareTo(BigDecimal.ZERO) == 0) {
                                     item[dataIndex] = null;
                                 } else {
                                     item[dataIndex] = new BigDecimal(cValue)
