@@ -134,10 +134,14 @@ export default {
       tabList: []
     }
   },
+  computed: {
+    ...mapState([
+      'curComponent'
+    ])
+  },
   watch: {
     curComponent: {
       handler(newVal, oldVla) {
-        console.log(newVal)
       },
       deep: true
     }
@@ -146,11 +150,6 @@ export default {
     bus.$on('add-new-tab', this.addNewTab)
     this.tabList = this.element.options && this.element.options.tabList
     this.activeTabName = this.tabList[0].name
-  },
-  computed: {
-    ...mapState([
-      'curComponent'
-    ])
   },
   methods: {
     beforeHandleCommond(item, param) {
@@ -244,7 +243,8 @@ export default {
       this.styleChange()
     },
 
-    addNewTab() {
+    addNewTab(componentId) {
+      if (!componentId || componentId !== this.element.id) return
       const curName = uuid.v1()
       const tab = {
         title: 'NewTab',
