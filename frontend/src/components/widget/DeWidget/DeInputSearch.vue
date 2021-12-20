@@ -5,10 +5,10 @@
     v-model="value"
     resize="vertical"
     :placeholder="$t(element.options.attrs.placeholder)"
+    :size="size"
     @input="valueChange"
     @keypress.enter.native="search"
     @dblclick="setEdit"
-    :size="size"
   >
 
     <el-button slot="append" icon="el-icon-search" @click="search" />
@@ -37,7 +37,17 @@ export default {
       canEdit: false
     }
   },
+  computed: {
+    viewIds() {
+      if (!this.element || !this.element.options || !this.element.options.attrs.viewIds) return ''
+      return this.element.options.attrs.viewIds.toString()
+    }
+  },
   watch: {
+    'viewIds': function(value, old) {
+      if (typeof value === 'undefined' || value === old) return
+      this.setCondition()
+    },
     'element.options.value': function(value, old) {
       if (value === old) return
       this.value = value

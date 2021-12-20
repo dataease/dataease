@@ -75,10 +75,17 @@ export default {
     defaultValueStr() {
       if (!this.element || !this.element.options || !this.element.options.value) return ''
       return this.element.options.value.toString()
+    },
+    viewIds() {
+      if (!this.element || !this.element.options || !this.element.options.attrs.viewIds) return ''
+      return this.element.options.attrs.viewIds.toString()
     }
   },
   watch: {
-
+    'viewIds': function(value, old) {
+      if (typeof value === 'undefined' || value === old) return
+      this.setCondition()
+    },
     'defaultValueStr': function(value, old) {
       if (value === old) return
       this.value = this.fillValueDerfault()
