@@ -316,6 +316,7 @@ export default {
     // 根据仪表板的缩放比例，修改视图内部参数
     mergeScale() {
       const scale = Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient
+      console.log('scale：' + scale + ';this.previewCanvasScale:' + JSON.stringify(this.previewCanvasScale))
       const customAttrChart = JSON.parse(this.sourceCustomAttrStr)
       const customStyleChart = JSON.parse(this.sourceCustomStyleStr)
       recursionTransObj(customAttrTrans, customAttrChart, scale, this.scaleCoefficientType)

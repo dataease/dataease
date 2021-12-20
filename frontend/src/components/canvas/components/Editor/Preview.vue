@@ -229,7 +229,7 @@ export default {
       const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
       this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
       this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
-      this.$store.commit('setPreviewCanvasScale', (this.scaleWidth / 100), (this.scaleHeight / 100))
+      this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
       this.handleScaleChange()
     },
     resetID(data) {
