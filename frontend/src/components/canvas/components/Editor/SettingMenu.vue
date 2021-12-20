@@ -142,7 +142,7 @@ export default {
       })
     },
     addTab() {
-      bus.$emit('add-new-tab')
+      bus.$emit('add-new-tab', this.curComponent.id)
     },
     // 跳转设置
     linkJumpSet() {
