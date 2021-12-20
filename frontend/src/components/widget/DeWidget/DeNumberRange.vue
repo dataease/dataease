@@ -3,11 +3,11 @@
   <el-form v-if="element.options!== null && element.options.attrs!==null" ref="form" :model="form" :rules="rules">
     <div class="de-number-range-container">
       <el-form-item prop="min">
-        <el-input v-model="form.min" :placeholder="$t(element.options.attrs.placeholder_min)" @input="inputChange" @change="handleMinChange" :size="size"/>
+        <el-input v-model="form.min" :placeholder="$t(element.options.attrs.placeholder_min)" :size="size" @input="inputChange" @change="handleMinChange" />
       </el-form-item>
       <span>{{ $t('denumberrange.split_placeholder') }}</span>
       <el-form-item prop="max">
-        <el-input v-model="form.max" :placeholder="$t(element.options.attrs.placeholder_max)" @input="inputChange" @change="handleMaxChange" :size="size"/>
+        <el-input v-model="form.max" :placeholder="$t(element.options.attrs.placeholder_max)" :size="size" @input="inputChange" @change="handleMaxChange" />
       </el-form-item>
     </div>
   </el-form>
@@ -60,9 +60,17 @@ export default {
         return JSON.stringify([])
       }
       return JSON.stringify(this.element.options.value)
+    },
+    viewIds() {
+      if (!this.element || !this.element.options || !this.element.options.attrs.viewIds) return ''
+      return this.element.options.attrs.viewIds.toString()
     }
   },
   watch: {
+    'viewIds': function(value, old) {
+      if (typeof value === 'undefined' || value === old) return
+      this.setCondition()
+    },
     'defaultvalues': function(value, old) {
       if (value === old) return
       const values = this.element.options.value
