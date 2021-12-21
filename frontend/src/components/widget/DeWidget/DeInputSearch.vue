@@ -38,6 +38,10 @@ export default {
     }
   },
   computed: {
+    defaultValueStr() {
+      if (!this.element || !this.element.options || !this.element.options.value) return ''
+      return this.element.options.value.toString()
+    },
     viewIds() {
       if (!this.element || !this.element.options || !this.element.options.attrs.viewIds) return ''
       return this.element.options.attrs.viewIds.toString()
@@ -48,9 +52,9 @@ export default {
       if (typeof value === 'undefined' || value === old) return
       this.setCondition()
     },
-    'element.options.value': function(value, old) {
+    'defaultValueStr': function(value, old) {
       if (value === old) return
-      this.value = value
+      this.value = this.fillValueDerfault()
       this.search()
     }
   },
@@ -82,6 +86,11 @@ export default {
       if (!this.inDraw) {
         this.element.options.value = val
       }
+    },
+    fillValueDerfault() {
+      const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return null
+      return defaultV.split(',')[0]
     }
   }
 }
