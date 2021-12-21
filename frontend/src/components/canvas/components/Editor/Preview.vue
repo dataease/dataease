@@ -1,6 +1,6 @@
 <template>
   <div class="bg" :style="customStyle">
-    <div id="canvasInfoMain" ref="canvasInfoMain" style="width: 100%;height: 100%">
+    <div id="canvasInfoMain" ref="canvasInfoMain" :style="canvasInfoMainStyle">
       <div
         id="canvasInfoTemp"
         ref="canvasInfoTemp"
@@ -73,6 +73,11 @@ export default {
     event: 'change'
   },
   props: {
+    // 后端截图
+    backScreenShot: {
+      type: Boolean,
+      default: false
+    },
     screenShot: {
       type: Boolean,
       default: false
@@ -125,6 +130,19 @@ export default {
   created() {
   },
   computed: {
+    canvasInfoMainStyle() {
+      if (this.backScreenShot) {
+        return {
+          width: '100%',
+          height: this.mainHeight
+        }
+      } else {
+        return {
+          width: '100%',
+          height: '100%'
+        }
+      }
+    },
     customStyle() {
       let style = {
         width: '100%'
@@ -141,6 +159,11 @@ export default {
             ...style
           }
         }
+      }
+      if (this.backScreenShot) {
+        style.height = this.mainHeight
+      } else {
+        style.padding = '5px'
       }
       return style
     },
@@ -189,6 +212,7 @@ export default {
       _this.$nextTick(() => {
         // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
         _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
+        this.$emit('mainHeightChange', _this.mainHeight)
       })
     })
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
@@ -231,7 +255,12 @@ export default {
       const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
       const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
       this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
-      this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
+      // 如果是后端截图方式使用 的高度伸缩比例和宽度比例相同
+      if (this.backScreenShot) {
+        this.scaleHeight = this.scaleWidth
+      } else {
+        this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
+      }
       this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
       this.handleScaleChange()
     },
@@ -281,7 +310,7 @@ export default {
       }
     },
     handleMouseDown() {
-      this.$store.commit('setClickComponentStatus', false)
+      this.$store.commit('setClickComponentStatus', fals)
     },
     initMobileCanvas() {
       this.$store.commit('openMobileLayout')
@@ -292,7 +321,6 @@ export default {
 
 <style lang="scss" scoped>
   .bg {
-    padding: 5px;
     min-width: 200px;
     min-height: 300px;
     width: 100%;

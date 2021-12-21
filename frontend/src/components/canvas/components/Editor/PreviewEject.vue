@@ -1,6 +1,6 @@
 <template>
-  <div v-loading="dataLoading" class="bg">
-    <Preview v-if="!dataLoading" />
+  <div v-loading="dataLoading" class="bg" :style="bgStyle">
+    <Preview v-if="!dataLoading" :back-screen-shot="backScreenShot" @mainHeightChange="mainHeightChange" />
   </div>
 </template>
 <script>
@@ -14,16 +14,33 @@ export default {
   components: { Preview },
   data() {
     return {
-      dataLoading: false
+      dataLoading: false,
+      backScreenShot: false,
+      mainHeight: '100vh!important'
+    }
+  },
+  computed: {
+    bgStyle() {
+      if (this.backScreenShot) {
+        return { height: this.mainHeight }
+      } else {
+        return { height: '100vh!important' }
+      }
     }
   },
   mounted() {
     this.restore()
   },
   methods: {
+    mainHeightChange(mainHeight) {
+      this.mainHeight = mainHeight
+    },
     restore() {
       this.dataLoading = true
-      this.panelId = this.$route.path.split('/')[2]
+      this.panelId = this.$route.params.reportId
+      if (this.$route.params.backScreenShot !== undefined) {
+        this.backScreenShot = this.$route.params.backScreenShot
+      }
       // 加载视图数据
       findOne(this.panelId).then(response => {
         this.dataLoading = false
