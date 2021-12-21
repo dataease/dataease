@@ -998,7 +998,8 @@ export default {
     logic_exp: 'Logic',
     enum_exp: 'Enum',
     pls_slc: 'Please Select',
-    filter_exp: 'Filter Value'
+    filter_exp: 'Filter Value',
+    filter_type: 'Filter Type'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
