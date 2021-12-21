@@ -34,7 +34,7 @@ public class XEmailTaskServer {
 
     @PostMapping("/queryTasks/{goPage}/{pageSize}")
     public Pager<List<XpackTaskGridDTO>> queryTask(@PathVariable int goPage, @PathVariable int pageSize,
-            @RequestBody XpackGridRequest request) {
+                                                   @RequestBody XpackGridRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<XpackTaskGridDTO> tasks = emailXpackService.taskGrid(request);
@@ -80,7 +80,7 @@ public class XEmailTaskServer {
         String panelId = request.getPanelId();
         String content = request.getContent();
 
-        String url = ServletUtils.domain() + "/#/preview/" + panelId;
+        String url = ServletUtils.domain() + "/#/previewScreenShot/" + panelId + "/true";
 
         String token = ServletUtils.getToken();
         String fileId = null;
@@ -116,7 +116,7 @@ public class XEmailTaskServer {
 
     @PostMapping("/queryInstancies/{goPage}/{pageSize}")
     public Pager<List<XpackTaskInstanceDTO>> instancesGrid(@PathVariable int goPage, @PathVariable int pageSize,
-            @RequestBody XpackGridRequest request) {
+                                                           @RequestBody XpackGridRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<XpackTaskInstanceDTO> instances = emailXpackService.taskInstanceGrid(request);
