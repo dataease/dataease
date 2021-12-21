@@ -65,7 +65,7 @@ export default {
       this.timer = setInterval(this.canvass, 500)
     },
     canvass() {
-      const timeFormat = this.element.formatInfo.timeFormat || 'hh:mm:ss'
+      const timeFormat = this.element.formatInfo.timeFormat
       const dateFormat = this.element.formatInfo.dateFormat || 'yyyy-MM-dd'
       const showWeek = this.element.formatInfo.showWeek
       const showDate = this.element.formatInfo.showDate
@@ -110,8 +110,10 @@ export default {
       } else {
         englishWeek = 'Saturday'
       }
-
-      const simpleTime = time.format(timeFormat)
+      let simpleTime = ''
+      if (timeFormat) {
+        simpleTime = time.format(timeFormat)
+      }
       let nowDate = ''
       if (showDate && dateFormat) {
         nowDate = time.format(dateFormat)
