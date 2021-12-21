@@ -87,7 +87,7 @@ export default {
     }
   },
   created() {
-    if (this.element.serviceName === 'timeDateWidget' && this.element.options.attrs.default.isDynamic) {
+    if (this.element.serviceName === 'timeDateWidget' && this.element.options.attrs.default && this.element.options.attrs.default.isDynamic) {
       if (this.element.options.attrs.default) {
         const widget = ApplicationContext.getService(this.element.serviceName)
         this.values = widget.dynamicDateFormNow(this.element)
@@ -154,10 +154,10 @@ export default {
     fillValueDerfault() {
       const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
       if (this.element.options.attrs.type === 'daterange') {
-        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '') return []
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
         return defaultV.split(',').map(item => parseFloat(item))
       } else {
-        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '') return null
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return null
         return parseFloat(defaultV.split(',')[0])
       }
     }
