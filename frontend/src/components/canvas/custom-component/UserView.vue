@@ -299,7 +299,6 @@ export default {
     // 监控缩放比例
     previewCanvasScale: {
       handler(newVal, oldVal) {
-        console.log('previewCanvasScale:' + JSON.stringify(this.previewCanvasScale))
         this.destroyScaleTimeMachine()
         this.changeScaleIndex++
         this.chartScale(this.changeScaleIndex)

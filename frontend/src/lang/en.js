@@ -998,7 +998,8 @@ export default {
     logic_exp: 'Logic',
     enum_exp: 'Enum',
     pls_slc: 'Please Select',
-    filter_exp: 'Filter Value'
+    filter_exp: 'Filter Value',
+    filter_type: 'Filter Type'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1720,7 +1721,7 @@ export default {
     once_a_week: 'Once a week',
     once_a_month: 'Once a month',
     complex_repeat: 'Complex repeat',
-    pixel_tip: 'Please select'
+    pixel_tip: 'Please code custom pixel(such as 2560 * 1600) or select'
 
   }
 }

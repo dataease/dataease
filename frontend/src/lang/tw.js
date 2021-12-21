@@ -996,9 +996,10 @@ export default {
     and: '與',
     or: '或',
     logic_exp: '邏輯條件',
-    enum_exp: '枚舉條件',
+    enum_exp: '字段枚舉值',
     pls_slc: '請選擇',
-    filter_exp: '過濾條件'
+    filter_exp: '過濾值',
+    filter_type: '過濾方式'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
@@ -1732,7 +1733,7 @@ export default {
     once_a_week: '每周一次',
     once_a_month: '每月一次',
     complex_repeat: '複雜重複',
-    pixel_tip: '可直接輸入分辨率或者選擇'
+    pixel_tip: '可直接輸入分辨率(例如:2560 * 1600)或者選擇'
 
   }
 }

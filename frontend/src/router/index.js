@@ -82,7 +82,11 @@ export const constantRoutes = [
     component: () => import('@/components/canvas/components/Editor/PreviewEject'),
     hidden: true
   },
-
+  {
+    path: '/previewScreenShot/:reportId/:backScreenShot',
+    component: () => import('@/components/canvas/components/Editor/PreviewEject'),
+    hidden: true
+  },
   {
     path: '/previewFullScreen',
     component: () => import('@/components/canvas/components/Editor/PreviewFullScreen'),

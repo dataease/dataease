@@ -51,9 +51,17 @@ export default {
     defaultValueStr() {
       if (!this.element || !this.element.options || !this.element.options.value) return ''
       return this.element.options.value.toString()
+    },
+    viewIds() {
+      if (!this.element || !this.element.options || !this.element.options.attrs.viewIds) return ''
+      return this.element.options.attrs.viewIds.toString()
     }
   },
   watch: {
+    'viewIds': function(value, old) {
+      if (typeof value === 'undefined' || value === old) return
+      this.setCondition()
+    },
     'defaultValueStr': function(value, old) {
       if (this.element.serviceName === 'timeDateWidget' && this.element.options.attrs.default.isDynamic) {
         // 如果设置了动态时间 不做任何操作
@@ -79,7 +87,7 @@ export default {
     }
   },
   created() {
-    if (this.element.serviceName === 'timeDateWidget' && this.element.options.attrs.default.isDynamic) {
+    if (this.element.serviceName === 'timeDateWidget' && this.element.options.attrs.default && this.element.options.attrs.default.isDynamic) {
       if (this.element.options.attrs.default) {
         const widget = ApplicationContext.getService(this.element.serviceName)
         this.values = widget.dynamicDateFormNow(this.element)
@@ -146,10 +154,10 @@ export default {
     fillValueDerfault() {
       const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
       if (this.element.options.attrs.type === 'daterange') {
-        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '') return []
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
         return defaultV.split(',').map(item => parseFloat(item))
       } else {
-        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '') return null
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return null
         return parseFloat(defaultV.split(',')[0])
       }
     }

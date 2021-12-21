@@ -75,10 +75,17 @@ export default {
     defaultValueStr() {
       if (!this.element || !this.element.options || !this.element.options.value) return ''
       return this.element.options.value.toString()
+    },
+    viewIds() {
+      if (!this.element || !this.element.options || !this.element.options.attrs.viewIds) return ''
+      return this.element.options.attrs.viewIds.toString()
     }
   },
   watch: {
-
+    'viewIds': function(value, old) {
+      if (typeof value === 'undefined' || value === old) return
+      this.setCondition()
+    },
     'defaultValueStr': function(value, old) {
       if (value === old) return
       this.value = this.fillValueDerfault()
@@ -119,7 +126,7 @@ export default {
     initLoad() {
       this.value = this.element.options.attrs.multiple ? [] : null
       if (this.element.options.attrs.fieldId) {
-        multFieldValues(this.element.options.attrs.fieldId.split()).then(res => {
+        multFieldValues(this.element.options.attrs.fieldId.split(',')).then(res => {
           this.datas = this.optionDatas(res.data)
           if (this.element.options.attrs.multiple) {
             this.checkAll = this.value.length === this.datas.length
@@ -158,12 +165,12 @@ export default {
       return this.value.split(',')
     },
     fillValueDerfault() {
-      const defaultV = this.element.options.value
+      const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
       if (this.element.options.attrs.multiple) {
-        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '') return []
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
         return defaultV.split(',')
       } else {
-        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '') return null
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return null
         return defaultV.split(',')[0]
       }
     },

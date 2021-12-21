@@ -94,8 +94,6 @@ export const customAttrTrans = {
     'barWidth',
     'lineWidth',
     'lineSymbolSize',
-    'pieInnerRadius',
-    'pieOuterRadius',
     'funnelWidth', // 漏斗图 最大宽度
     'tableTitleFontSize',
     'tableItemFontSize',
