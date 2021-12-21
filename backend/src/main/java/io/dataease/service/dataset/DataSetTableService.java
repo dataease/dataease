@@ -470,19 +470,24 @@ public class DataSetTableService {
     public List<ChartFieldCustomFilterDTO> getCustomFilters(List<DatasetTableField> fields, DatasetTable datasetTable, Long user) {
         List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
         rowPermissions(datasetTable.getId(), user).forEach(datasetRowPermissions -> {
-            List<ChartCustomFilterItemDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartCustomFilterItemDTO.class);
             ChartFieldCustomFilterDTO dto = new ChartFieldCustomFilterDTO();
             DatasetTableField field = getFieldById(fields, datasetRowPermissions.getDatasetFieldId());
-            lists.forEach(chartCustomFilterDTO -> {
-                chartCustomFilterDTO.setFieldId(field.getId());
-            });
-            if (field != null) {
-                dto.setFilter(lists);
-                dto.setField(field);
-                dto.setId(field.getId());
-                dto.setLogic(datasetRowPermissions.getLogic());
+            dto.setField(field);
+            dto.setId(field.getId());
+            dto.setFilterType(datasetRowPermissions.getFilterType());
+            if(datasetRowPermissions.getFilterType().equalsIgnoreCase("logic")){
+                List<ChartCustomFilterItemDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartCustomFilterItemDTO.class);
+                lists.forEach(chartCustomFilterDTO -> { chartCustomFilterDTO.setFieldId(field.getId()); });
+                if (field != null) {
+                    dto.setFilter(lists);
+                    dto.setLogic(datasetRowPermissions.getLogic());
+                    customFilter.add(dto);
+                }
+            }else {
+                dto.setEnumCheckField(Arrays.asList(datasetRowPermissions.getEnumCheckField().split(",").clone()));
                 customFilter.add(dto);
             }
+
         });
         return customFilter;
     }

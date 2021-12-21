@@ -22,7 +22,7 @@ public class RowPermissionsController {
         rowPermissionService.save(datasetRowPermissions);
     }
 
-    @ApiOperation("分页查询")
+    @ApiOperation("查询")
     @PostMapping("/list")
     public List<DataSetRowPermissionsDTO> rowPermissions(@RequestBody XpackSysAuthDetailDTO request) {
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
