@@ -123,10 +123,6 @@ export default {
     }
   },
   created() {
-    const terminalInfo = this.$route.query.terminal
-    if (terminalInfo) {
-      this.terminal = terminalInfo
-    }
   },
   computed: {
     customStyle() {
@@ -178,6 +174,7 @@ export default {
     }
   },
   mounted() {
+    this._isMobile()
     const _this = this
     const erd = elementResizeDetectorMaker()
     // 监听主div变动事件
@@ -206,6 +203,11 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+    _isMobile() {
+      console.log('navigator.userAgent:' + navigator.userAgent)
+      const flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
+      this.terminal = flag ? 'mobile' : 'pc'
+    },
     canvasStyleDataInit() {
       // 数据刷新计时器
       this.searchCount = 0
