@@ -1732,7 +1732,7 @@ export default {
     once_a_week: '每周一次',
     once_a_month: '每月一次',
     complex_repeat: '複雜重複',
-    pixel_tip: '可直接輸入分辨率或者選擇'
+    pixel_tip: '可直接輸入分辨率(例如:2560 * 1600)或者選擇'
 
   }
 }
