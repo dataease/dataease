@@ -126,7 +126,7 @@ export default {
     initLoad() {
       this.value = this.element.options.attrs.multiple ? [] : null
       if (this.element.options.attrs.fieldId) {
-        multFieldValues(this.element.options.attrs.fieldId.split()).then(res => {
+        multFieldValues(this.element.options.attrs.fieldId.split(',')).then(res => {
           this.datas = this.optionDatas(res.data)
           if (this.element.options.attrs.multiple) {
             this.checkAll = this.value.length === this.datas.length
