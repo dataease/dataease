@@ -122,12 +122,24 @@
               @scroll="canvasScroll"
             >
               <el-row class="this_mobile_canvas_top" />
+              <el-row class="this_mobile_canvas_inner_top">
+                {{ panelInfo.name }}
+              </el-row>
               <el-row
                 id="canvasInfoMobile"
                 class="this_mobile_canvas_main"
                 :style="mobileCanvasStyle"
               >
-                <Editor ref="editorMobile" :matrix-count="mobileMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
+                <Editor v-if="mobileEditorShow" ref="editorMobile" :matrix-count="mobileMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
+              </el-row>
+              <el-row class="this_mobile_canvas_inner_bottom">
+                <el-col :span="12">
+                  <i v-if="!hasStar" class="el-icon-star-off" size="mini" @click="star" />
+                  <i v-if="hasStar" class="el-icon-star-on" style="color: #0a7be0;font-size: 18px" size="mini" @click="unstar" />
+                </el-col>
+                <el-col :span="12" style="float: right">
+                  <i class="el-icon-refresh-right" size="mini" @click="mobileRefresh" />
+                </el-col>
               </el-row>
               <el-row class="this_mobile_canvas_bottom" />
             </div>
@@ -233,6 +245,7 @@ import generateID from '@/components/canvas/utils/generateID'
 import TextAttr from '@/components/canvas/components/TextAttr'
 import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 import ComponentWait from '@/views/panel/edit/ComponentWait'
+import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
 
 export default {
   name: 'PanelEdit',
@@ -256,6 +269,8 @@ export default {
   },
   data() {
     return {
+      mobileEditorShow: true,
+      hasStar: false,
       drawerSize: '300px',
       visible: false,
       show: false,
@@ -453,6 +468,7 @@ export default {
   },
   methods: {
     init(panelId) {
+      this.initHasStar()
       // 如果临时画布有数据 则使用临时画布数据（视图编辑的时候 会保存临时画布数据）
       const componentDataTemp = this.$store.state.panel.componentDataTemp
       const canvasStyleDataTemp = this.$store.state.panel.canvasStyleDataTemp
@@ -511,6 +527,27 @@ export default {
           })
         })
       }
+    },
+    star() {
+      this.panelInfo && saveEnshrine(this.panelInfo.id, false).then(res => {
+        this.hasStar = true
+      })
+    },
+    unstar() {
+      this.panelInfo && deleteEnshrine(this.panelInfo.id, false).then(res => {
+        this.hasStar = false
+      })
+    },
+    initHasStar() {
+      starStatus(this.panelInfo.id, false).then(res => {
+        this.hasStar = res.data
+      })
+    },
+    mobileRefresh() {
+      this.mobileEditorShow = false
+      this.$nextTick(() => {
+        this.mobileEditorShow = true
+      })
     },
     save() {
 
@@ -964,7 +1001,26 @@ export default {
   background-size:100% 100% !important;
 }
 
+.this_mobile_canvas_inner_top{
+  vertical-align: middle;
+  text-align: center;
+  background-color: #f7f8fa;
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
+  width: 100%;
+}
+
 .this_mobile_canvas_top{
+  height: 30px;
+  width: 100%;
+}
+
+.this_mobile_canvas_inner_bottom{
+  background-color: #f7f8fa;
+  line-height: 30px;
+  vertical-align: middle;
+  color: gray;
   height: 30px;
   width: 100%;
 }
@@ -977,7 +1033,7 @@ export default {
 .this_mobile_canvas_main{
   overflow-x: hidden;
   overflow-y: auto;
-  height:  calc(100% - 60px);;
+  height:  calc(100% - 120px);;
   background-color: #d7d9e3;
   background-size:100% 100% !important;
 }
