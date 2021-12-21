@@ -74,7 +74,7 @@ export default {
     setCondition() {
       const param = {
         component: this.element,
-        value: !this.value ? [] : [this.value],
+        value: !this.value ? [] : Array.isArray(this.value) ? this.value : [this.value],
         operator: this.operator
       }
       this.inDraw && this.$store.commit('addViewFilter', param)
