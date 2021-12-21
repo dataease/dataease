@@ -104,7 +104,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
     @Async
     public void sendReport(GlobalTaskInstance taskInstance, XpackEmailTemplateDTO emailTemplateDTO,
-            SysUserEntity user) {
+                           SysUserEntity user) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         try {
             byte[] bytes = emailXpackService.printData(panelUrl(emailTemplateDTO.getPanelId()), tokenByUser(user),
@@ -153,7 +153,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
     private String panelUrl(String panelId) {
         String domain = ServletUtils.domain();
-        return domain + "/#/preview/" + panelId;
+        return domain + "/#/previewScreenShot/" + panelId + "/true";
     }
 
 }
