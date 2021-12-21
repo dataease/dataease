@@ -80,8 +80,8 @@ export default {
   .bg {
     width: 100%;
     height: 100vh!important;
-    min-width: 800px;
-    min-height: 600px;
+    min-width: 200px;
+    min-height: 300px;
     background-color: #f7f8fa;
   }
 </style>

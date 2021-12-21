@@ -207,6 +207,7 @@ export default {
       console.log('navigator.userAgent:' + navigator.userAgent)
       const flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
       this.terminal = flag ? 'mobile' : 'pc'
+      // this.terminal = 'mobile'
     },
     canvasStyleDataInit() {
       // 数据刷新计时器
