@@ -1,7 +1,7 @@
 <template>
   <div id="clock" :style="{'--varBg': varBg}">
     <p class="date">{{ date }}</p>
-    <p class="time" :style="{'fontSize': (parseInt(element.style.fontSize) * 3) + 'px'}">{{ time }}</p>
+    <p v-if="time" class="time" :style="{'fontSize': (parseInt(element.style.fontSize) * 3) + 'px'}">{{ time }}</p>
   </div>
 </template>
 
@@ -66,7 +66,7 @@ export default {
     },
     updateTime() {
       var cd = new Date()
-      const timeFormat = this.element.formatInfo.timeFormat || 'hh:mm:ss'
+      const timeFormat = this.element.formatInfo.timeFormat
       const showWeek = this.element.formatInfo.showWeek
       const showDate = this.element.formatInfo.showDate
       const dateFormat = this.element.formatInfo.dateFormat || 'yyyy-MM-dd'
@@ -75,8 +75,12 @@ export default {
         nowDate = cd.format(dateFormat)
       }
       const nowWeek = this.week[cd.getDay()]
+      if (timeFormat) {
+        this.time = cd.format(timeFormat)
+      } else {
+        this.time = null
+      }
 
-      this.time = cd.format(timeFormat)
       this.date = showWeek ? (nowDate + ' ' + nowWeek) : nowDate
     }
   }
