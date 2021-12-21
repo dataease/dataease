@@ -7,10 +7,11 @@
             s.panel_group_id as id,
             g.name as title,
             s.create_time as `time`
-        from panel_store s
+        from( SELECT GET_V_AUTH_MODEL_ID_P_USE_MOBILE ( #{userId}, 'panel' ) cids ) t, panel_store s
         inner join panel_group g
             on s.panel_group_id = g.id
         where s.user_id = #{userId}
+                and FIND_IN_SET( g.id, cids  )
         order by s.create_time desc
     </select>
 

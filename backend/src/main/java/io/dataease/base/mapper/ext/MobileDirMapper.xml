@@ -3,23 +3,30 @@
 <mapper namespace="io.dataease.base.mapper.ext.MobileDirMapper">
 
     <select id="query" resultType="io.dataease.mobile.entity.PanelEntity">
-       select
-       id,
-       name as text,
-       pid,
-       node_type as `type`
-       from panel_group g
-       where pid = #{pid} and g.mobile_layout = 1
+       SELECT
+            id,
+            NAME AS text,
+            pid,
+            node_type AS `type`
+        FROM
+            panel_group g,
+            ( SELECT GET_V_AUTH_MODEL_ID_P_USE_MOBILE ( #{userId}, 'panel' ) cids ) t
+        WHERE
+            g.pid =  #{pid}
+            AND FIND_IN_SET( g.id, cids  )
     </select>
 
     <select id="queryWithName" resultType="io.dataease.mobile.entity.PanelEntity">
-       select
-       id,
-       name as text,
-       pid,
-       node_type as `type`
-       from panel_group g
-       where  g.mobile_layout = 1
+        SELECT
+        id,
+        NAME AS text,
+        pid,
+        node_type AS `type`
+        FROM
+        panel_group g,
+        ( SELECT GET_V_AUTH_MODEL_ID_P_USE_MOBILE ( #{userId}, 'panel' ) cids ) t
+        WHERE
+         FIND_IN_SET( g.id, cids  )
        <if test="name != null">
            and name like CONCAT('%', #{name, jdbcType=VARCHAR}, '%')
        </if>

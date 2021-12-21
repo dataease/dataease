@@ -6,9 +6,9 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface MobileDirMapper {
-    List<PanelEntity> query(String pid);
+    List<PanelEntity> query(@Param("pid") String pid,@Param("userId") String userId);
 
-    List<PanelEntity> queryWithName(String name);
+    List<PanelEntity> queryWithName(@Param("name") String name,@Param("userId") String userId);
 
     List<String> idsWithUser(String userId);
 
