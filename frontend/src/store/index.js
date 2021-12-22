@@ -149,11 +149,13 @@ const data = {
       }
     },
     setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
-      if (top || top === 0) curComponent.style.top = (top / curCanvasScale.scalePointHeight) + 0.0000001
-      if (left || left === 0) curComponent.style.left = (left / curCanvasScale.scalePointWidth) + 0.0000001
-      if (width || width === 0) curComponent.style.width = (width / curCanvasScale.scalePointWidth + 0.0000001)
-      if (height || height === 0) curComponent.style.height = (height / curCanvasScale.scalePointHeight) + 0.0000001
-      if (rotate || rotate === 0) curComponent.style.rotate = rotate
+      if (curComponent) {
+        if (top || top === 0) curComponent.style.top = (top / curCanvasScale.scalePointHeight) + 0.0000001
+        if (left || left === 0) curComponent.style.left = (left / curCanvasScale.scalePointWidth) + 0.0000001
+        if (width || width === 0) curComponent.style.width = (width / curCanvasScale.scalePointWidth + 0.0000001)
+        if (height || height === 0) curComponent.style.height = (height / curCanvasScale.scalePointHeight) + 0.0000001
+        if (rotate || rotate === 0) curComponent.style.rotate = rotate
+      }
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {
