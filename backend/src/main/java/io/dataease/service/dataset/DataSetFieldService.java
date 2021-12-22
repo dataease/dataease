@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface DataSetFieldService {
 
-    List<Object> fieldValues(String fieldId);
+    List<Object> fieldValues(String fieldId) throws Exception;
 }

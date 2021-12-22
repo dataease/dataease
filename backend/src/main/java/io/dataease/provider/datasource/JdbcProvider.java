@@ -79,9 +79,9 @@ public class JdbcProvider extends DatasourceProvider {
             }
 
         } catch (SQLException e) {
-            DataEaseException.throwException(e);
+            DataEaseException.throwException(Translator.get("i18n_sql_error") + e.getMessage());
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
         }
         return list;
     }

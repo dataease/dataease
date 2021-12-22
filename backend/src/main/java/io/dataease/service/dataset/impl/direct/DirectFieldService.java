@@ -5,8 +5,8 @@ import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.Datasource;
 import io.dataease.commons.utils.CommonBeanFactory;
-import io.dataease.dto.chart.ChartCustomFilterDTO;
 import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
+import io.dataease.i18n.Translator;
 import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.controller.request.datasource.DatasourceRequest;
@@ -42,7 +42,7 @@ public class DirectFieldService implements DataSetFieldService {
     private DataSetTableUnionService dataSetTableUnionService;
 
     @Override
-    public List<Object> fieldValues(String fieldId) {
+    public List<Object> fieldValues(String fieldId) throws Exception{
         List<DatasetTableField> list = dataSetTableFieldsService.getListByIds(new ArrayList<String>() {{
             add(fieldId);
         }});
@@ -65,6 +65,9 @@ public class DirectFieldService implements DataSetFieldService {
         if (datasetTable.getMode() == 0) {// 直连
             if (StringUtils.isEmpty(datasetTable.getDataSourceId())) return null;
             Datasource ds = datasourceService.get(datasetTable.getDataSourceId());
+            if(ds.getStatus().equalsIgnoreCase("Error")){
+                throw new Exception(Translator.get("i18n_invalid_ds"));
+            }
             datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
@@ -97,13 +100,8 @@ public class DirectFieldService implements DataSetFieldService {
             datasourceRequest.setQuery(qp.createQuerySQL(tableName, Collections.singletonList(field), true, null, customFilter));
         }
 
-        try {
-            List<String[]> rows = datasourceProvider.getData(datasourceRequest);
-            List<Object> results = rows.stream().map(row -> row[0]).distinct().collect(Collectors.toList());
-            return results;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        List<String[]> rows = datasourceProvider.getData(datasourceRequest);
+        List<Object> results = rows.stream().map(row -> row[0]).distinct().collect(Collectors.toList());
+        return results;
     }
 }
