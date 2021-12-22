@@ -71,7 +71,7 @@ export default {
       return {
         padding: '5px',
         display: 'inline-block',
-        width: '33.3333%'
+        width: '33%'
       }
     },
     ...mapState([
