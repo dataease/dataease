@@ -100,7 +100,7 @@ public class SystemParameterController {
     }
 
     @PostMapping(value = "/checkCustomDs")
-    public boolean checkCustomDs() throws IOException {
+    public boolean checkCustomDs() {
         try {
             Object cache = CacheUtils.get(DatasetCheckListener.CACHE_NAME, DatasetCheckListener.CACHE_KEY);
             return cache != null && (boolean) cache;
