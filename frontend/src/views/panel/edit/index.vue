@@ -649,6 +649,7 @@ export default {
         }
         this.currentFilterCom.id = newComponentId
         this.currentFilterCom.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
+        this.currentFilterCom.mobileStyle = BASE_MOBILE_STYLE
 
         if (this.currentWidget.filterDialog) {
           this.show = false
