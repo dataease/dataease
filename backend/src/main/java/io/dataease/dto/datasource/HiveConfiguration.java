@@ -18,7 +18,7 @@ public class HiveConfiguration extends JdbcConfiguration {
                     .replace("PORT", getPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         }else {
-            return "jdbc:hive2://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
+            return "jdbc:hive2://HOSTNAME:PORT/DATABASE;EXTRA_PARAMS"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())
