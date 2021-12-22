@@ -21,11 +21,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>ru.yandex.qatools.ashot</groupId>
-            <artifactId>ashot</artifactId>
-            <version>1.5.4</version>
-        </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
