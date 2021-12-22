@@ -434,7 +434,7 @@
         <repository>
             <id>pentaho-public</id>
             <name>Pentaho Public</name>
-            <url>http://nexus.pentaho.org/content/groups/omni</url>
+            <url>https://nexus.pentaho.org/content/groups/omni</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
