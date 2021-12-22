@@ -168,6 +168,7 @@ export default {
       predefineColors: COLOR_PANEL,
       showMain: true,
       innerOpacity: 0,
+      mainWidthOffset: 600,
       textAlignOptions: [
         {
           icon: 'iconfont icon-juzuo',
@@ -318,11 +319,7 @@ export default {
       return this.$store.state.curComponent.style
     },
     canvasWidth() {
-      let scaleWidth = 1
-      if (this.canvasStyleData.selfAdaption) {
-        scaleWidth = this.curCanvasScale.scaleWidth / 100
-      }
-      return this.canvasStyleData.width * scaleWidth
+      return this.canvasStyleData.width * this.curCanvasScale.scalePointWidth
     },
     ...mapState([
       'curComponent',
@@ -355,11 +352,12 @@ export default {
       if (this.styleInfo['opacity']) {
         this.innerOpacity = this.styleInfo['opacity'] * 100
       }
-      this.mainWidthOffset = document.getElementById('main-attr').offsetWidth - 50
       if (this.curComponent.type === 'v-text') {
         this.mainWidthOffset = 600
       } else if (this.curComponent.type === 'de-show-date') {
         this.mainWidthOffset = 600
+      } else {
+        this.mainWidthOffset = document.getElementById('main-attr').offsetWidth - 50
       }
       // console.log('mainWidthOffset:' + this.mainWidthOffset)
     },
@@ -378,14 +376,9 @@ export default {
     },
     getPositionX(x) {
       let ps = 0
-      if (this.canvasStyleData.selfAdaption) {
-        ps = (x * this.curCanvasScale.scaleWidth / 100) + 60
-      } else {
-        ps = x + 60
-      }
+      ps = (x * this.curCanvasScale.scalePointWidth) + 60
       // 防止toolbar超出边界
       const xGap = ps + this.mainWidthOffset - this.canvasWidth
-      // console.log('canvasWidth:' + this.canvasWidth + ';xGap:' + xGap)
       if (xGap > 0) {
         return ps - xGap
       } else {
@@ -393,11 +386,7 @@ export default {
       }
     },
     getPositionY(y) {
-      if (this.canvasStyleData.selfAdaption) {
-        return y * this.curCanvasScale.scaleHeight / 100
-      } else {
-        return y
-      }
+      return y * this.curCanvasScale.scalePointHeight
     },
     styleChange() {
       this.$store.commit('recordStyleChange')
