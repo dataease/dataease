@@ -38,11 +38,11 @@ export default {
         this.element.style.width = 1600
         this.element.style.height = 300
         this.element.style.left = 0
-        this.element.style.top = 0
+        this.element.style.top = 6000
         this.element.sizex = 6
         this.element.sizey = 4
         this.element.x = 1
-        this.element.y = 1
+        this.element.y = 200
         this.element.auxiliaryMatrix = true
         this.$store.commit('addComponent', { component: this.element })
       } else {

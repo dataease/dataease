@@ -28,6 +28,8 @@ export default {
       }
 
       const data = state.copyData.data
+      // 仪表板复制的组件默认不在移动端部署中mobileSelected = false
+      data.mobileSelected = false
       if (!state.curComponent.auxiliaryMatrix) {
         data.style.top += 20
         data.style.left += 20
