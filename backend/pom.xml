@@ -255,6 +255,7 @@
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -408,14 +409,14 @@
                                     </fileset>
                                 </move>
 
-                                <move todir="src/main/resources/static/de-app">
+                                <copy todir="src/main/resources/static/de-app">
                                     <fileset dir="../../dataease-app/dist/build/h5">
                                         <exclude name="*.html"/>
                                     </fileset>
-                                </move>
+                                </copy>
 
                                 
-                                <move file="../../dataease-app/dist/build/h5/index.html" tofile="src/main/resources/templates/app.html" />
+                                <copy file="../../dataease-app/dist/build/h5/index.html" tofile="src/main/resources/templates/app.html" />
                                     
                                 
                             </target>
@@ -433,7 +434,7 @@
         <repository>
             <id>pentaho-public</id>
             <name>Pentaho Public</name>
-            <url>http://nexus.pentaho.org/content/groups/omni</url>
+            <url>https://nexus.pentaho.org/content/groups/omni</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>

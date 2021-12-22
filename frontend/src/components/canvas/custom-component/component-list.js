@@ -3,7 +3,9 @@ export const BASE_MOBILE_STYLE = {
   style: {
     width: 1600,
     height: 300,
-    borderRadius: 5
+    left: 0,
+    top: 0,
+    borderRadius: 3
   },
   x: 1,
   y: 1,

@@ -91,7 +91,7 @@
                               <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
                               {{ $t('dataset.excel_data') }}
                             </el-dropdown-item>
-                            <el-dropdown-item :command="beforeClickAddData('custom',data)">
+                            <el-dropdown-item v-show="!hideCustomDs" :command="beforeClickAddData('custom',data)">
                               <svg-icon icon-class="ds-custom" class="ds-icon-custom" />
                               {{ $t('dataset.custom_data') }}
                             </el-dropdown-item>
@@ -309,6 +309,9 @@ export default {
     }
   },
   computed: {
+    hideCustomDs: function() {
+      return this.$store.getters.hideCustomDs
+    }
   },
   watch: {
     saveStatus() {

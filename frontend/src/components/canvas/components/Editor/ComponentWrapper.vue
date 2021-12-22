@@ -148,7 +148,11 @@ export default {
           height: '100%'
         }
       } else {
-        return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+        if (this.terminal === 'pc') {
+          return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+        } else {
+          return getStyle(style, ['top', 'left', 'width', 'height', 'rotate', 'fontSize'])
+        }
       }
     },
 
