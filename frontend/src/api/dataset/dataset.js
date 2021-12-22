@@ -182,4 +182,12 @@ export function datasetRowPermissionsList(datasetId, page, size, data, loading) 
   })
 }
 
-export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree }
+export function checkCustomDs() {
+  return request({
+    url: '/system/checkCustomDs',
+    method: 'post',
+    loading: true
+  })
+}
+
+export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs }

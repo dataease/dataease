@@ -56,7 +56,7 @@
       <el-tab-pane :label="$t('dataset.field_manage')" name="fieldEdit">
         <field-edit :param="param" :table="table" />
       </el-tab-pane>
-      <el-tab-pane v-if="table.type !== 'union' && table.type !== 'custom' && !(table.type === 'sql' && table.mode === 0)" :label="$t('dataset.join_view')" name="joinView">
+      <el-tab-pane v-if="!hideCustomDs && table.type !== 'union' && table.type !== 'custom' && !(table.type === 'sql' && table.mode === 0)" :label="$t('dataset.join_view')" name="joinView">
         <union-view :param="param" :table="table" />
       </el-tab-pane>
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'excel' || table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
@@ -76,7 +76,7 @@ import FieldEdit from './FieldEdit'
 
 export default {
   name: 'ViewTable',
-  components: {FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview },
+  components: { FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview },
   props: {
     param: {
       type: Object,
@@ -103,10 +103,9 @@ export default {
     }
   },
   computed: {
-    // tableRefresh() {
-    //   this.initTable(this.param)
-    //   return this.$store.state.dataset.table
-    // }
+    hideCustomDs: function() {
+      return this.$store.getters.hideCustomDs
+    }
   },
   watch: {
     'param': function() {
