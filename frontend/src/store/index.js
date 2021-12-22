@@ -351,7 +351,11 @@ const data = {
       // 移动端布局转换
       state.componentData.forEach(item => {
         if (item.mobileSelected) {
-          item.style = item.mobileStyle.style
+          item.style.width = item.mobileStyle.style.width
+          item.style.height = item.mobileStyle.style.height
+          item.style.top = item.mobileStyle.style.top
+          item.style.left = item.mobileStyle.style.left
+          item.style.borderRadius = 3
           item.x = item.mobileStyle.x
           item.y = item.mobileStyle.y
           item.sizex = item.mobileStyle.sizex
