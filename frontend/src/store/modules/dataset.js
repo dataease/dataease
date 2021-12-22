@@ -2,7 +2,8 @@
 const getDefaultState = () => {
   return {
     sceneData: {},
-    table: {}
+    table: {},
+    hideCustomDs: false
   }
 }
 
@@ -14,6 +15,9 @@ const mutations = {
   },
   setTable: (state, table) => {
     state.table = table
+  },
+  setHideCustomDs: (state, hideCustomDs) => {
+    state.hideCustomDs = hideCustomDs
   }
 }
 
@@ -23,6 +27,9 @@ const actions = {
   },
   setTable({ commit }, table) {
     commit('setTable', table)
+  },
+  setHideCustomDs({ commit }, hideCustomDs) {
+    commit('setHideCustomDs', hideCustomDs)
   }
 }
 
