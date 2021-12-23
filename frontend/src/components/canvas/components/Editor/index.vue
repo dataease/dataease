@@ -105,6 +105,7 @@
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
+        :edit-mode="'edit'"
         :h="getShapeStyleIntDeDrag(item.style,'height')"
       />
     </de-drag>

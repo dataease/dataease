@@ -1,3 +1,5 @@
+import { BASE_MOBILE_STYLE, HYPERLINKS } from '@/components/canvas/custom-component/component-list'
+
 export function deepCopy(target) {
   if (typeof target === 'object') {
     const result = Array.isArray(target) ? [] : {}
@@ -54,4 +56,21 @@ export function mobile2MainCanvas(mainSource, mobileSource) {
   mainSource.mobileStyle.y = mobileSource.y
   mainSource.mobileStyle.sizex = mobileSource.sizex
   mainSource.mobileStyle.sizey = mobileSource.sizey
+}
+
+export function panelInit(componentDatas) {
+  componentDatas.forEach(item => {
+    item.filters = (item.filters || [])
+    item.linkageFilters = (item.linkageFilters || [])
+    item.auxiliaryMatrix = (item.auxiliaryMatrix || false)
+    item.x = (item.x || 1)
+    item.y = (item.y || 1)
+    item.sizex = (item.sizex || 5)
+    item.sizey = (item.sizey || 5)
+    item.mobileSelected = (item.mobileSelected || false)
+    item.mobileStyle = (item.mobileStyle || deepCopy(BASE_MOBILE_STYLE))
+    if (item.type === 'picture-add') {
+      item.hyperlinks = (item.hyperlinks || HYPERLINKS)
+    }
+  })
 }

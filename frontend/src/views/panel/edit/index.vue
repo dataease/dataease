@@ -220,8 +220,8 @@ import ViewSelect from '../ViewSelect'
 import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
-import { deepCopy } from '@/components/canvas/utils/utils'
-import componentList, { BASE_MOBILE_STYLE } from '@/components/canvas/custom-component/component-list' // 左侧列表数据
+import {deepCopy, panelInit} from '@/components/canvas/utils/utils'
+import componentList, { BASE_MOBILE_STYLE ,HYPERLINKS} from '@/components/canvas/custom-component/component-list' // 左侧列表数据
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
@@ -474,15 +474,7 @@ export default {
       const canvasStyleDataTemp = this.$store.state.panel.canvasStyleDataTemp
       if (componentDataTemp && canvasStyleDataTemp) {
         const componentDatas = JSON.parse(componentDataTemp)
-        componentDatas.forEach(item => {
-          item.filters = (item.filters || [])
-          item.linkageFilters = (item.linkageFilters || [])
-          item.auxiliaryMatrix = (item.auxiliaryMatrix || false)
-          item.x = (item.x || 1)
-          item.y = (item.y || 1)
-          item.sizex = (item.sizex || 5)
-          item.sizey = (item.sizey || 5)
-        })
+        panelInit(componentDatas)
         this.$store.commit('setComponentData', this.resetID(componentDatas))
         const temp = JSON.parse(canvasStyleDataTemp)
         temp.refreshTime = (temp.refreshTime || 5)
@@ -496,25 +488,12 @@ export default {
       } else if (panelId) {
         findOne(panelId).then(response => {
           const componentDatas = JSON.parse(response.data.panelData)
-          const mobileComponentData = response.data.panelDataMobile ? JSON.parse(response.data.panelDataMobile) : []
-          componentDatas.forEach(item => {
-            item.filters = (item.filters || [])
-            item.linkageFilters = (item.linkageFilters || [])
-            item.auxiliaryMatrix = (item.auxiliaryMatrix || false)
-            item.x = (item.x || 1)
-            item.y = (item.y || 1)
-            item.sizex = (item.sizex || 5)
-            item.sizey = (item.sizey || 5)
-            item.mobileSelected = (item.mobileSelected || false)
-            item.mobileStyle = (item.mobileStyle || deepCopy(BASE_MOBILE_STYLE))
-          })
+          panelInit(componentDatas)
           this.$store.commit('setComponentData', this.resetID(componentDatas))
-          this.$store.commit('setMobileComponentData', this.resetID(mobileComponentData))
           const panelStyle = JSON.parse(response.data.panelStyle)
           panelStyle.refreshTime = (panelStyle.refreshTime || 5)
           panelStyle.refreshViewLoading = (panelStyle.refreshViewLoading || false)
           panelStyle.refreshUnit = (panelStyle.refreshUnit || 'minute')
-
           this.$store.commit('setCanvasStyle', panelStyle)
           this.$store.commit('recordSnapshot', 'init')// 记录快照
           // 刷新联动信息
@@ -784,31 +763,20 @@ export default {
             type: 'picture-add',
             label: '图片',
             icon: '',
+            hyperlinks: HYPERLINKS,
             propValue: fileResult,
             style: {
               ...commonStyle
             }
           }
-          component.auxiliaryMatrix = _this.canvasStyleData.auxiliaryMatrix
-          if (_this.canvasStyleData.auxiliaryMatrix) {
-            component.x = _this.dropComponentInfo.x
-            component.y = _this.dropComponentInfo.y
-            component.sizex = _this.dropComponentInfo.sizex
-            component.sizey = _this.dropComponentInfo.sizey
-            component.style.left = (_this.dropComponentInfo.x - 1) * _this.curCanvasScale.matrixStyleOriginWidth
-            component.style.top = (_this.dropComponentInfo.y - 1) * _this.curCanvasScale.matrixStyleOriginHeight
-            component.style.width = _this.dropComponentInfo.sizex * _this.curCanvasScale.matrixStyleOriginWidth
-            component.style.height = _this.dropComponentInfo.sizey * _this.curCanvasScale.matrixStyleOriginHeight
-          } else {
-            component.style.top = _this.dropComponentInfo.shadowStyle.y
-            component.style.left = _this.dropComponentInfo.shadowStyle.x
-            component.style.width = _this.dropComponentInfo.shadowStyle.width
-            component.style.height = _this.dropComponentInfo.shadowStyle.height
-          }
+          component.auxiliaryMatrix = false
+          component.style.top = _this.dropComponentInfo.shadowStyle.y
+          component.style.left = _this.dropComponentInfo.shadowStyle.x
+          component.style.width = _this.dropComponentInfo.shadowStyle.width
+          component.style.height = _this.dropComponentInfo.shadowStyle.height
           this.$store.commit('addComponent', {
             component: component
           })
-
           this.$store.commit('recordSnapshot', 'handleFileChange')
         }
 

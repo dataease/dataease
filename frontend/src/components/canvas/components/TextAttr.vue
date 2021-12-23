@@ -224,7 +224,8 @@ export default {
         'borderWidth',
         'borderRadius',
         'opacity',
-        'borderColor'
+        'borderColor',
+        'hyperlinks'
       ],
       // 过滤组件显示的属性
       'custom': [
