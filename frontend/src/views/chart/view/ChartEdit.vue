@@ -22,7 +22,7 @@
       </span>
     </el-row>
     <el-row class="view-panel">
-      <el-tabs type="card" :stretch="true" class="tab-header">
+      <el-tabs :stretch="true" class="tab-header">
         <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 360px">
           <el-row class="view-panel">
             <el-col class="theme-border-class" style="width: 180px;border-right: 1px solid #E6E6E6;">
@@ -116,6 +116,7 @@
 
             <el-col
               style="height: 100%;width: 180px;border-right: 1px solid #E6E6E6;"
+              class="theme-border-class"
             >
               <div style="height: 60px;overflow:auto" class="padding-lr theme-border-class">
                 <span class="theme-border-class">
@@ -2158,12 +2159,10 @@ export default {
   }
 
   .blackTheme .item-quota {
-
     border: solid 1px;
     border-color: var(--TableBorderColor);
     color: var(--TextPrimary);
     background-color: var(--MainBG);
-
   }
 
   .item-quota + .item-quota {
@@ -2189,23 +2188,18 @@ export default {
     font-size: 12px;
   }
 
+  .tab-header > > > .el-tabs__header {
+    border-top: solid 1px #eee;
+    border-right: solid 1px #eee;
+  }
+
   .tab-header > > > .el-tabs__item {
     font-size: 12px;
-    background-color: #E8EAED;
+    padding: 0 60px!important;
   }
 
   .blackTheme .tab-header > > > .el-tabs__item {
     background-color: var(--MainBG);
-  }
-
-  .tab-header > > > .is-active {
-    background-color: #f7f8fa;
-    border-bottom-color: #f7f8fa !important;
-  }
-
-  .blackTheme .tab-header > > > .is-active {
-    background-color: var(--ContentBG);
-    border-bottom-color: var(--ContentBG) !important;
   }
 
   .tab-header > > > .el-tabs__nav-scroll {
@@ -2244,7 +2238,6 @@ export default {
   }
 
   .blackTheme .attr-style {
-    border-color: var(--TableBorderColor) !important;
     color: var(--TextPrimary);
   }
 
@@ -2370,7 +2363,6 @@ export default {
   }
 
   .blackTheme .theme-border-class {
-    border-color: var(--TableBorderColor) !important;
     color: var(--TextPrimary) !important;
     background-color: var(--ContentBG);
   }
