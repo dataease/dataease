@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="editControlButton" class="toolbar">
+    <div v-show="editControlButton" class="toolbar">
       <span style="float: right;">
         <el-button size="mini" @click="editSave">
           {{ $t('commons.confirm') }}
@@ -10,7 +10,7 @@
         </el-button>
       </span>
     </div>
-    <div v-else class="toolbar">
+    <div v-show="!editControlButton" class="toolbar">
       <el-tooltip :content="$t('panel.mobile_layout')">
         <el-button class="icon iconfont-tb icon-yidongduan" size="mini" circle @click="openMobileLayout" />
       </el-tooltip>
@@ -36,7 +36,7 @@
         <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
       </el-tooltip>
       <span style="float: right;margin-left: 10px">
-        <el-button size="mini" :disabled="changeTimes===0||snapshotIndex===lastSaveSnapshotIndex" @click="save(false)">
+        <el-button size="mini" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
         </el-button>
         <el-button size="mini" @click="closePanelEdit">
@@ -105,6 +105,9 @@ export default {
     }
   },
   computed: {
+    saveButtonDisabled() {
+      return this.changeTimes === 0 || this.snapshotIndex === this.lastSaveSnapshotIndex
+    },
     editControlButton() {
       return this.linkageSettingStatus || this.mobileLayoutStatus
     },
