@@ -235,6 +235,7 @@ import {
 } from '@/views/panel/panel'
 import TreeSelector from '@/components/TreeSelector'
 import { queryAuthModel } from '@/api/authModel/authModel'
+import { panelInit } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'PanelList',
@@ -647,15 +648,7 @@ export default {
         // 加载视图数据
         findOne(data.id).then(response => {
           const componentDatas = JSON.parse(response.data.panelData)
-          componentDatas.forEach(item => {
-            item.filters = (item.filters || [])
-            item.linkageFilters = (item.linkageFilters || [])
-            item.auxiliaryMatrix = (item.auxiliaryMatrix || false)
-            item.x = (item.x || 1)
-            item.y = (item.y || 1)
-            item.sizex = (item.sizex || 5)
-            item.sizey = (item.sizey || 5)
-          })
+          panelInit(componentDatas)
           this.$store.commit('setComponentData', this.resetID(componentDatas))
           const temp = JSON.parse(response.data.panelStyle)
           temp.refreshTime = (temp.refreshTime || 5)
