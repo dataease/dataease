@@ -28,6 +28,7 @@ import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
 import bus from '@/utils/bus'
+import { BASE_MOBILE_STYLE } from '@/components/canvas/custom-component/component-list'
 
 Vue.use(Vuex)
 
@@ -352,6 +353,7 @@ const data = {
       const mainComponentData = []
       // 移动端布局转换
       state.componentData.forEach(item => {
+        item.mobileStyle = (item.mobileStyle || BASE_MOBILE_STYLE)
         if (item.mobileSelected) {
           item.style.width = item.mobileStyle.style.width
           item.style.height = item.mobileStyle.style.height

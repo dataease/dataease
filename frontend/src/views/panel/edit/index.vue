@@ -220,8 +220,8 @@ import ViewSelect from '../ViewSelect'
 import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
-import {deepCopy, panelInit} from '@/components/canvas/utils/utils'
-import componentList, { BASE_MOBILE_STYLE ,HYPERLINKS} from '@/components/canvas/custom-component/component-list' // 左侧列表数据
+import { deepCopy, panelInit } from '@/components/canvas/utils/utils'
+import componentList, { BASE_MOBILE_STYLE, HYPERLINKS } from '@/components/canvas/custom-component/component-list' // 左侧列表数据
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
@@ -764,6 +764,7 @@ export default {
             label: '图片',
             icon: '',
             hyperlinks: HYPERLINKS,
+            mobileStyle: BASE_MOBILE_STYLE,
             propValue: fileResult,
             style: {
               ...commonStyle
