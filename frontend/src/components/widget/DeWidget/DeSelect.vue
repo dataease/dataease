@@ -12,6 +12,7 @@
     :size="size"
     @change="changeValue"
     @focus="setOptionWidth"
+    @blur="onBlur"
   >
     <el-option
       v-for="item in datas"
@@ -28,6 +29,7 @@
 
 <script>
 import { multFieldValues } from '@/api/dataset/dataset'
+import bus from '@/utils/bus'
 export default {
 
   props: {
@@ -52,7 +54,8 @@ export default {
       selectOptionWidth: 0,
       show: true,
       value: null,
-      datas: []
+      datas: [],
+      onFocus: false
     }
   },
   computed: {
@@ -105,8 +108,18 @@ export default {
   created() {
     this.initLoad()
   },
+  mounted() {
+    bus.$on('onScroll', () => {
+      if (this.onFocus) {
+        this.$refs.deSelect.blur()
+      }
+    })
+  },
 
   methods: {
+    onBlur() {
+      this.onFocus = false
+    },
     initLoad() {
       this.value = this.fillValueDerfault()
       this.datas = []
@@ -181,7 +194,8 @@ export default {
       })
     },
     setOptionWidth(event) {
-    // 下拉框弹出时，设置弹框的宽度
+      this.onFocus = true
+      // 下拉框弹出时，设置弹框的宽度
       this.$nextTick(() => {
         this.selectOptionWidth = event.srcElement.offsetWidth + 'px'
       })

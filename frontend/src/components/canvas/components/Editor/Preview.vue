@@ -1,5 +1,5 @@
 <template>
-  <div class="bg" :style="customStyle">
+  <div class="bg" :style="customStyle" @scroll="canvasScroll">
     <div id="canvasInfoMain" ref="canvasInfoMain" :style="canvasInfoMainStyle">
       <div
         id="canvasInfoTemp"
@@ -65,6 +65,7 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
+import bus from '@/utils/bus'
 
 export default {
   components: { UserViewMobileDialog, ComponentWrapper, UserViewDialog, CanvasOptBar },
@@ -314,6 +315,9 @@ export default {
     },
     initMobileCanvas() {
       this.$store.commit('openMobileLayout')
+    },
+    canvasScroll() {
+      bus.$emit('onScroll')
     }
   }
 }

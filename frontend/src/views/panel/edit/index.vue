@@ -887,6 +887,7 @@ export default {
     canvasScroll(event) {
       this.scrollLeft = event.target.scrollLeft
       this.scrollTop = event.target.scrollTop
+      bus.$emit('onScroll')
     },
     destroyTimeMachine() {
       this.timeMachine && clearTimeout(this.timeMachine)
