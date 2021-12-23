@@ -13,12 +13,15 @@
     :size="size"
     :editable="false"
     @change="dateChange"
+    @focus="toFocus"
+    @blur="onBlur"
   />
 </template>
 
 <script>
 import { ApplicationContext } from '@/utils/ApplicationContext'
 import { timeSection } from '@/utils'
+import bus from "@/utils/bus";
 export default {
 
   props: {
@@ -40,7 +43,9 @@ export default {
   data() {
     return {
       operator: 'between',
-      values: null
+      values: null,
+      onFocus: false
+
     }
   },
   computed: {
@@ -100,7 +105,20 @@ export default {
       this.dateChange(this.values)
     }
   },
+  mounted() {
+    bus.$on('onScroll', () => {
+      if (this.onFocus) {
+        this.$refs.dateRef.hidePicker()
+      }
+    })
+  },
   methods: {
+    onBlur() {
+      this.onFocus = false
+    },
+    toFocus() {
+      this.onFocus = true
+    },
     search() {
       this.setCondition()
     },
