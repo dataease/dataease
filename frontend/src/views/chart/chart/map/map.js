@@ -18,7 +18,7 @@ export function baseMapOption(chart_option, chart) {
         const a = params.seriesName
         const b = params.name
         const c = params.value ? params.value : ''
-        return text.replace('\{a}\g', a).replace('\{b}\g', b).replace('\{c}\g', c)
+        return text.replace(new RegExp('{a}', 'g'), a).replace(new RegExp('{b}', 'g'), b).replace(new RegExp('{c}', 'g'), c)
       }
       chart_option.tooltip = tooltip
     }
