@@ -106,10 +106,19 @@ export default {
           if (height < min) {
             // console.log(titleWidth)
             this.mainClass = 'condition-main-line'
-            deContentContainer && (deContentContainer.style.inset = '0 0 0 ' + (titleWidth + 15) + 'px')
+            /* deContentContainer && (deContentContainer.style.inset = '0 0 0 ' + (titleWidth + 15) + 'px') */
+
+            if (deContentContainer) {
+              deContentContainer.style.top = '0px'
+              deContentContainer.style.marginLeft = (titleWidth + 15) + 'px'
+            }
           } else {
             this.mainClass = ''
-            deContentContainer && (deContentContainer.style.inset = '33px 0px 0px')
+            /* deContentContainer && (deContentContainer.style.inset = '33px 0px 0px') */
+            if (deContentContainer) {
+              deContentContainer.style.top = '33px'
+              deContentContainer.style.marginLeft = '0px'
+            }
           }
         })
       })
@@ -122,15 +131,27 @@ export default {
   .my-container {
     position: absolute;
     overflow: auto;
-    inset: 0px;
+    /* inset: 0px; */
+    top:0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
   }
   .ccondition-main {
     position: absolute;
     overflow: auto;
-    inset: 0px;
+    /* inset: 0px; */
+    top:0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
   }
   .condition-title {
-    inset: 0;
+    /* inset: 0; */
+    top:0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
     position: absolute;
     height: 35px;
     cursor: -webkit-grab;
@@ -145,7 +166,9 @@ export default {
   }
 
   .condition-title-absolute {
-    inset: 0px 0px;
+    /* inset: 0px 0px; */
+    right: 0px;
+    bottom: 0px;
     position: absolute;
     top: 15px;
     left: 4px;
@@ -159,7 +182,11 @@ export default {
 
   .condition-content {
     overflow: auto hidden;
-    inset: 33px 0px 0px;
+    /* inset: 33px 0px 0px; */
+    top: 33px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
     position: absolute;
     letter-spacing: 0px!important;
   }

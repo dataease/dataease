@@ -3,6 +3,7 @@
     <div style="display: inline-block;">
       <el-button icon="el-icon-plus" circle size="mini" style="margin-bottom: 10px;" @click="addFilter" />
       <el-radio-group
+        v-show="item.filter && item.filter.length > 1"
         v-model="logic"
         size="mini"
         style="margin-left: 10px;"
