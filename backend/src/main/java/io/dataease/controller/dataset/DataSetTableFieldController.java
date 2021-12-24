@@ -7,12 +7,15 @@ import io.dataease.service.dataset.DataSetFieldService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -74,18 +77,27 @@ public class DataSetTableFieldController {
 
     @ApiOperation("值枚举")
     @PostMapping("fieldValues/{fieldId}")
-    public List<Object> fieldValues(@PathVariable String fieldId) throws Exception{
+    public List<Object> fieldValues(@PathVariable String fieldId) throws Exception {
         return dataSetFieldService.fieldValues(fieldId);
     }
 
     @ApiOperation("多字段值枚举")
     @PostMapping("multFieldValues")
-    public List<Object> multFieldValues(@RequestBody List<String> fieldIds) throws Exception{
+    public List<Object> multFieldValues(@RequestBody List<String> fieldIds) throws Exception {
         List<Object> results = new ArrayList<>();
         for (String fieldId : fieldIds) {
             results.addAll(dataSetFieldService.fieldValues(fieldId));
         }
-        results.stream().distinct().collect(Collectors.toList());
-        return results;
+        ArrayList<Object> list = results.stream().collect(
+                Collectors.collectingAndThen(
+                        Collectors.toCollection(
+                                () -> new TreeSet<>(Comparator.comparing(t -> {
+                                    if (ObjectUtils.isEmpty(t)) return "";
+                                    return t.toString();
+                                }))
+                        ), ArrayList::new
+                )
+        );
+        return list;
     }
 }
