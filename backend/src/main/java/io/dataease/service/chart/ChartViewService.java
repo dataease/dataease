@@ -498,7 +498,7 @@ public class ChartViewService {
                         String cValue = item[dataIndex];
 
                         // 获取计算后的时间，并且与所有维度拼接
-                        String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle());
+                        String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle(), timeField.getDatePattern());
                         String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
                         dimension[timeIndex] = lastTime;
 
@@ -599,7 +599,7 @@ public class ChartViewService {
         return false;
     }
 
-    private String calcLastTime(String cTime, String type, String dateStyle) throws Exception {
+    private String calcLastTime(String cTime, String type, String dateStyle, String datePattern) {
         try {
             String lastTime = null;
             Calendar calendar = Calendar.getInstance();
@@ -610,7 +610,12 @@ public class ChartViewService {
                 calendar.add(Calendar.YEAR, -1);
                 lastTime = simpleDateFormat.format(calendar.getTime());
             } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.MONTH_MOM)) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+                SimpleDateFormat simpleDateFormat = null;
+                if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                    simpleDateFormat = new SimpleDateFormat("yyyy/MM");
+                } else {
+                    simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+                }
                 Date date = simpleDateFormat.parse(cTime);
                 calendar.setTime(date);
                 calendar.add(Calendar.MONTH, -1);
@@ -618,16 +623,29 @@ public class ChartViewService {
             } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.YEAR_YOY)) {
                 SimpleDateFormat simpleDateFormat = null;
                 if (StringUtils.equalsIgnoreCase(dateStyle, "y_M")) {
-                    simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+                    if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/MM");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+                    }
                 } else if (StringUtils.equalsIgnoreCase(dateStyle, "y_M_d")) {
-                    simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    }
                 }
                 Date date = simpleDateFormat.parse(cTime);
                 calendar.setTime(date);
                 calendar.add(Calendar.YEAR, -1);
                 lastTime = simpleDateFormat.format(calendar.getTime());
             } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.DAY_MOM)) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat simpleDateFormat = null;
+                if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                    simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                } else {
+                    simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                }
                 Date date = simpleDateFormat.parse(cTime);
                 calendar.setTime(date);
                 calendar.add(Calendar.DAY_OF_MONTH, -1);
@@ -635,9 +653,17 @@ public class ChartViewService {
             } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.MONTH_YOY)) {
                 SimpleDateFormat simpleDateFormat = null;
                 if (StringUtils.equalsIgnoreCase(dateStyle, "y_M")) {
-                    simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+                    if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/MM");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+                    }
                 } else if (StringUtils.equalsIgnoreCase(dateStyle, "y_M_d")) {
-                    simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    }
                 }
                 Date date = simpleDateFormat.parse(cTime);
                 calendar.setTime(date);
