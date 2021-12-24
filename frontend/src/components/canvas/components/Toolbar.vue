@@ -75,7 +75,6 @@ import { deepCopy, mobile2MainCanvas } from '@/components/canvas/utils/utils'
 import { panelSave } from '@/api/panel/panel'
 import { saveLinkage, getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import bus from '@/utils/bus'
-
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
@@ -266,6 +265,12 @@ export default {
         panelStyle: JSON.stringify(this.canvasStyleData),
         panelData: JSON.stringify(this.componentData)
       }
+      const components = deepCopy(this.componentData)
+      components.forEach(view => {
+        if (view.filters && view.filters.length > 0) { view.filters = [] }
+      })
+      // 无需保存条件
+      requestInfo.panelData = JSON.stringify(components)
       panelSave(requestInfo).then(response => {
         this.$store.commit('refreshSaveStatus')
         this.$message({

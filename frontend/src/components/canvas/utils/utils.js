@@ -60,7 +60,8 @@ export function mobile2MainCanvas(mainSource, mobileSource) {
 
 export function panelInit(componentDatas) {
   componentDatas.forEach(item => {
-    item.filters = (item.filters || [])
+    /* item.filters = (item.filters || []) */
+    item.filters = []
     item.linkageFilters = (item.linkageFilters || [])
     item.auxiliaryMatrix = (item.auxiliaryMatrix || false)
     item.x = (item.x || 1)
