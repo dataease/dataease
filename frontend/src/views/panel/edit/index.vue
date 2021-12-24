@@ -37,35 +37,31 @@
             </div>
             <!-- 视图图表 end -->
             <!-- 过滤组件 start -->
-            <div tabindex="-1" style="position: relative; margin: 16px auto">
-              <div style="height: 60px; position: relative">
-                <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
-                  <el-button circle :class="show&&showIndex===1? 'button-show':'button-closed'" class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
-                </div>
-                <div class="button-text" style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
-                  <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                    {{ $t('panel.module') }}
-                  </div>
-                </div>
+
+            <div class="button-div-class" style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; ">
+              <el-button circle :class="show&&showIndex===1? 'button-show':'button-closed'" class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
+            </div>
+            <div class="button-text" style=" position: relative; margin: 18px auto 16px;">
+              <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+                {{ $t('panel.module') }}
               </div>
             </div>
+
             <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
               <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
             </div>
             <!-- 过滤组件 end -->
             <!-- 其他组件 start -->
-            <div tabindex="-1" style="position: relative; margin: 16px auto">
-              <div style="height: 60px; position: relative">
-                <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
-                  <el-button circle :class="show&&showIndex===3? 'button-show':'button-closed'" class="el-icon-brush" size="mini" @click="showPanel(3)" />
-                </div>
-                <div class="button-text" style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
-                  <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                    {{ $t('panel.other_module') }}
-                  </div>
-                </div>
+
+            <div class="button-div-class" style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; ">
+              <el-button circle :class="show&&showIndex===3? 'button-show':'button-closed'" class="el-icon-brush" size="mini" @click="showPanel(3)" />
+            </div>
+            <div class="button-text" style=" position: relative; margin: 18px auto 16px;">
+              <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+                {{ $t('panel.other_module') }}
               </div>
             </div>
+
             <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
               <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
             </div>

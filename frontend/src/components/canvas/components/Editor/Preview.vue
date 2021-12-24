@@ -311,7 +311,7 @@ export default {
       }
     },
     handleMouseDown() {
-      this.$store.commit('setClickComponentStatus', fals)
+      this.$store.commit('setClickComponentStatus', false)
     },
     initMobileCanvas() {
       this.$store.commit('openMobileLayout')
