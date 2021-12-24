@@ -98,6 +98,10 @@ export default {
     },
 
     dynamicPrefixChange(value) {
+      if (value < 1) {
+        value = 1
+        this.element.options.attrs.default.dynamicPrefix = 1
+      }
       this.setDval()
     },
     dynamicInfillChange(value) {
