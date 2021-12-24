@@ -376,6 +376,7 @@ export default {
         mobileDataObj[item.id] = item
       })
       const sourceComponentData = JSON.parse(this.componentDataCache)
+      this.$store.commit('setComponentDataCache', null)
       sourceComponentData.forEach(item => {
         if (mobileDataObj[item.id]) {
           mobile2MainCanvas(item, mobileDataObj[item.id])
