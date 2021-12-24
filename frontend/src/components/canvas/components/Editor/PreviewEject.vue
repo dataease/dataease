@@ -9,6 +9,7 @@ import { uuid } from 'vue-uuid'
 import { findOne } from '@/api/panel/panel'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import { queryPanelJumpInfo, queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
+import { panelInit } from '@/components/canvas/utils/utils'
 
 export default {
   components: { Preview },
@@ -43,8 +44,10 @@ export default {
       }
       // 加载视图数据
       findOne(this.panelId).then(response => {
+        const componentDatas = JSON.parse(response.data.panelData)
+        panelInit(componentDatas)
         this.dataLoading = false
-        this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
+        this.$store.commit('setComponentData', this.resetID(componentDatas))
         this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
         const data = {
           id: response.data.id,
