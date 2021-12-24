@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.auth.service.AuthUserService;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
@@ -103,6 +104,8 @@ public class DataSetTableService {
     private ExtDataSetGroupMapper extDataSetGroupMapper;
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;
+    @Resource
+    private AuthUserService authUserService;
 
     private static final String lastUpdateTime = "${__last_update_time__}";
     private static final String currentUpdateTime = "${__current_update_time__}";
@@ -450,10 +453,19 @@ public class DataSetTableService {
         }
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
         CurrentUserDto user = AuthUtils.getUser();
-        userId = user != null? user.getUserId() : userId;
-        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(user.getUserId()), "user"));
-        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList()), "role"));
-        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(user.getDeptId()), "dept"));
+        userId = user != null ? user.getUserId() : userId;
+        List<Long> roleIds ;
+        Long deptId ;
+        if(user != null){
+            deptId = user.getDeptId();
+            roleIds = user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList());
+        }else {
+            deptId = authUserService.getUserById(userId).getDeptId();
+            roleIds = authUserService.roles(userId).stream().map(r -> Long.valueOf(r)).collect(Collectors.toList());
+        }
+        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(userId), "user"));
+        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, roleIds, "role"));
+        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(deptId), "dept"));
         return datasetRowPermissions;
     }
 
