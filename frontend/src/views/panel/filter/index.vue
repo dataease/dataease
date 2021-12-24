@@ -272,7 +272,8 @@ export default {
     white-space: pre;
     text-overflow: ellipsis;
     position: absolute;
-    inset: 0px 0px 0px 40px;
+    /* inset: 0px 0px 0px 40px; */
+    margin-left: 40px;
     box-sizing: border-box;
     overflow: hidden;
     overflow-x: hidden;
