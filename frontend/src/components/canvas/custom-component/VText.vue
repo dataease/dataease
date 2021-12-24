@@ -15,7 +15,16 @@
       @input="handleInput"
       v-html="element.propValue"
     />
-    <div v-if="!canEdit" :style="{ verticalAlign: element.style.verticalAlign }" @dblclick="setEdit" v-html="element.propValue" />
+    <div
+      v-if="!canEdit"
+      :style="{ verticalAlign: element.style.verticalAlign }"
+      @dblclick="setEdit"
+      @paste="clearStyle"
+      @mousedown="handleMousedown"
+      @blur="handleBlur"
+      @input="handleInput"
+      v-html="element.propValue"
+    />
   </div>
   <div v-else class="v-text">
     <div :style="{ verticalAlign: element.style.verticalAlign }" v-html="textInfo" />
@@ -75,6 +84,7 @@ export default {
   },
   methods: {
     handleInput(e) {
+      this.$store.state.styleChangeTimes++
       this.$emit('input', this.element, e.target.innerHTML)
       this.$store.commit('recordStyleChange')
     },
