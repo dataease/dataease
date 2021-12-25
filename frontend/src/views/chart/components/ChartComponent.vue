@@ -9,11 +9,11 @@
     />
     <div :id="chartId" style="width: 100%;height: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius}" />
     <div v-if="chart.type === 'map'" class="map-zoom-box">
-      <div style="margin-bottom: 20px;">
+      <div style="margin-bottom: 0.5em;">
         <el-button size="mini" icon="el-icon-plus" circle @click="roamMap(true)" />
       </div>
 
-      <div style="margin-bottom: 20px;">
+      <div style="margin-bottom: 0.5em;">
         <el-button size="mini" icon="el-icon-refresh" circle @click="resetZoom()" />
       </div>
 
@@ -364,8 +364,8 @@ export default {
   .map-zoom-box {
     position: absolute;
     z-index: 999;
-    right: 2%;
-    top: 5%;
+    left: 2%;
+    bottom: 3%;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     text-align: center;
     padding: 5px;
