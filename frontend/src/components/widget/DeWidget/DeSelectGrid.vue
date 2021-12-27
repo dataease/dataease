@@ -220,6 +220,7 @@ export default {
     position: absolute;
     top: 30px;
     bottom: 0;
+    text-align: left;
   }
 }
 
