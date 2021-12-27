@@ -178,7 +178,7 @@ import draggable from 'vuedraggable'
 import FilterHead from './filterMain/FilterHead'
 import FilterControl from './filterMain/FilterControl'
 import FilterFoot from './filterMain/FilterFoot'
-
+import bus from '@/utils/bus'
 import {
   mapState
 } from 'vuex'
@@ -318,6 +318,11 @@ export default {
     }
     this.initWithField()
     this.loadViews()
+  },
+  mounted() {
+    bus.$on('valid-values-change', valid => {
+      this.validateFilterValue(valid)
+    })
   },
 
   methods: {
@@ -550,12 +555,23 @@ export default {
     },
 
     enableSureButton() {
-      const enable = this.currentElement.options.attrs.dragItems && this.currentElement.options.attrs.dragItems.length > 0
-      this.$emit('sure-button-status', enable)
+      let valid = true
+      const enable = this.currentElement.options.attrs.dragItems && this.currentElement.options.attrs.dragItems
+        .length > 0
+      if (this.widget.validDynamicValue) {
+        valid = this.widget.validDynamicValue(this.currentElement)
+      }
+      this.$emit('sure-button-status', enable && valid)
     },
 
     getElementInfo() {
       return this.currentElement
+    },
+
+    validateFilterValue(valid) {
+      const enable = this.currentElement.options.attrs.dragItems && this.currentElement.options.attrs.dragItems
+        .length > 0
+      this.$emit('sure-button-status', enable && valid)
     }
 
   }

@@ -1723,5 +1723,28 @@ export default {
     complex_repeat: 'Complex repeat',
     pixel_tip: 'Please code custom pixel(such as 2560 * 1600) or select'
 
+  },
+  dynamic_time: {
+    set_default: 'Set Default',
+    fix: 'Fixed Time',
+    dynamic: 'Dynamic Time',
+    relative: 'Relative Current',
+    today: 'Today',
+    yesterday: 'Yesterday',
+    firstOfMonth: 'Month Beginning',
+    custom: 'Custom',
+    date: 'date',
+    week: 'week',
+    month: 'Month',
+    year: 'Year',
+    before: 'Before',
+    after: 'After',
+    preview: 'Preview',
+    set: 'Set',
+
+    cweek: 'This Week',
+    cmonth: 'This Month',
+    cquarter: 'This Quarter',
+    cyear: 'This Year'
   }
 }

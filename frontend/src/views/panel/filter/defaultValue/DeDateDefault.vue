@@ -2,20 +2,20 @@
   <div v-if="element">
     <el-form ref="form" :model="element.options.attrs.default" label-width="100px">
 
-      <el-form-item label="设定默认值">
+      <el-form-item :label="$t('dynamic_time.set_default')">
         <el-radio-group v-model="element.options.attrs.default.isDynamic" @change="dynamicChange">
-          <el-radio :label="false">固定时间</el-radio>
-          <el-radio :label="true">动态时间</el-radio>
+          <el-radio :label="false">{{ $t('dynamic_time.fix') }}</el-radio>
+          <el-radio :label="true">{{ $t('dynamic_time.dynamic') }}</el-radio>
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item v-if="element.options.attrs.default.isDynamic" label="相对当前时间">
+      <el-form-item v-if="element.options.attrs.default.isDynamic" :label="$t('dynamic_time.relative')">
 
         <el-select v-model="element.options.attrs.default.dkey" placeholder="" class="relative-time" @change="dkeyChange">
-          <el-option label="今天" :value="0" />
-          <el-option label="昨天" :value="1" />
-          <el-option label="本月首日" :value="2" />
-          <el-option label="自定义" :value="3" />
+          <el-option :label="$t('dynamic_time.today')" :value="0" />
+          <el-option :label="$t('dynamic_time.yesterday')" :value="1" />
+          <el-option :label="$t('dynamic_time.firstOfMonth')" :value="2" />
+          <el-option :label="$t('dynamic_time.custom')" :value="3" />
         </el-select>
 
       </el-form-item>
@@ -28,24 +28,24 @@
 
         <el-form-item v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3" label="" class="no-label-item">
           <el-select v-model="element.options.attrs.default.dynamicInfill" size="mini" placeholder="" @change="dynamicInfillChange">
-            <el-option label="天" value="day" />
-            <el-option label="周" value="week" />
-            <el-option label="月" value="month" />
-            <el-option label="年" value="year" />
+            <el-option :label="$t('dynamic_time.date')" value="day" />
+            <el-option :label="$t('dynamic_time.week')" value="week" />
+            <el-option :label="$t('dynamic_time.month')" value="month" />
+            <el-option :label="$t('dynamic_time.year')" value="year" />
           </el-select>
         </el-form-item>
 
         <el-form-item v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3" label="" class="no-label-item">
 
           <el-select v-model="element.options.attrs.default.dynamicSuffix" size="mini" placeholder="" @change="dynamicSuffixChange">
-            <el-option label="前" value="before" />
-            <el-option label="后" value="after" />
+            <el-option :label="$t('dynamic_time.before')" value="before" />
+            <el-option :label="$t('dynamic_time.after')" value="after" />
           </el-select>
         </el-form-item>
 
       </div>
 
-      <el-form-item v-if="element.options.attrs.default.isDynamic" label="预览">
+      <el-form-item v-if="element.options.attrs.default.isDynamic" :label="$t('dynamic_time.preview')">
         <el-date-picker
           v-model="dval"
           type="date"
@@ -55,7 +55,7 @@
         />
       </el-form-item>
 
-      <el-form-item v-else label="设置">
+      <el-form-item v-else :label="$t('dynamic_time.set')">
         <component
           :is="element.component"
           :id="'component' + element.id"
