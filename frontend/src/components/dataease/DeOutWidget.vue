@@ -114,7 +114,6 @@ export default {
         }
         const titleWidth = this.$refs.deTitle.offsetWidth
         this.duHeight = height - titleWidth
-        console.log('titleWidth:' + titleWidth + ';deContentContainer=' + deContentContainer + ';duHeight:' + this.duHeight)
         this.$nextTick(() => {
           let min = 75
           if (this.element.component === 'de-number-range') {
