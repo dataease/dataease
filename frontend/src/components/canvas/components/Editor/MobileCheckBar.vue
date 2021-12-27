@@ -75,6 +75,7 @@ export default {
     padding-left: 1px;
     padding-right: 1px;
     cursor:pointer!important;
+    text-align: center;
     background-color: #0a7be0;
   }
   .bar-main i{
