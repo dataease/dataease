@@ -1187,7 +1187,13 @@ export default {
       value: 'Value',
       add: 'Add row permissions',
       edit: 'Edit row permissions',
-      please_select_field: 'Please select a field'
+      please_select_field: 'Please select a field',
+      please_select_auth_type: 'Please select the authorization type',
+      please_select_auth_id: 'Please select authorization target',
+      row_permission_not_empty: 'Row permission cannot be empty',
+      search_by_filed_name: 'Search by field name',
+      auth_type: 'Authorization type',
+      auth_obj: 'Authorized object'
     },
     row_permissions: 'Row Permissions',
     union_data: 'Union Dataset',

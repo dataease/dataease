@@ -1,6 +1,6 @@
 <template>
   <div>
-    <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @plugin-call-back="pluginCallBack" />
+    <async-component v-if="showAsync" :url="url" :obj="obj" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @plugin-call-back="pluginCallBack" />
     <div v-else>
       <h1>未知组件无法展示</h1>
     </div>
@@ -21,6 +21,10 @@ export default {
     componentName: {
       type: String,
       default: null
+    },
+    obj: {
+      type: Object,
+      default: {}
     }
   },
   data() {

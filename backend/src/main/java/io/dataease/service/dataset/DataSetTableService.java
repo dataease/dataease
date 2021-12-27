@@ -33,7 +33,9 @@ import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.loader.ClassloaderResponsity;
+import io.dataease.plugins.xpack.auth.dto.request.DataSetRowPermissionsDTO;
 import io.dataease.plugins.xpack.auth.dto.request.DatasetRowPermissions;
+import io.dataease.plugins.xpack.auth.dto.response.XpackSysAuthDetailDTO;
 import io.dataease.plugins.xpack.auth.service.RowPermissionService;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.datasource.DatasourceProvider;
@@ -463,9 +465,17 @@ public class DataSetTableService {
             deptId = authUserService.getUserById(userId).getDeptId();
             roleIds = authUserService.roles(userId).stream().map(r -> Long.valueOf(r)).collect(Collectors.toList());
         }
-        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(userId), "user"));
-        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, roleIds, "role"));
-        datasetRowPermissions.addAll(rowPermissionService.listDatasetRowPermissions(datasetId, Collections.singletonList(deptId), "dept"));
+        DataSetRowPermissionsDTO dataSetRowPermissionsDTO = new DataSetRowPermissionsDTO();
+        dataSetRowPermissionsDTO.setDatasetId(datasetId);
+        dataSetRowPermissionsDTO.setAuthTargetIds(Collections.singletonList(userId));
+        dataSetRowPermissionsDTO.setAuthTargetType("user");
+        datasetRowPermissions.addAll(rowPermissionService.searchRowPermissions(dataSetRowPermissionsDTO));
+        dataSetRowPermissionsDTO.setAuthTargetIds(roleIds);
+        dataSetRowPermissionsDTO.setAuthTargetType("role");
+        datasetRowPermissions.addAll(rowPermissionService.searchRowPermissions(dataSetRowPermissionsDTO));
+        dataSetRowPermissionsDTO.setAuthTargetIds(Collections.singletonList(deptId));
+        dataSetRowPermissionsDTO.setAuthTargetType("dept");
+        datasetRowPermissions.addAll(rowPermissionService.searchRowPermissions(dataSetRowPermissionsDTO));
         return datasetRowPermissions;
     }
 
@@ -481,26 +491,24 @@ public class DataSetTableService {
 
     public List<ChartFieldCustomFilterDTO> getCustomFilters(List<DatasetTableField> fields, DatasetTable datasetTable, Long user) {
         List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
-        rowPermissions(datasetTable.getId(), user).forEach(datasetRowPermissions -> {
+        for (DatasetRowPermissions datasetRowPermissions : rowPermissions(datasetTable.getId(), user)){
             ChartFieldCustomFilterDTO dto = new ChartFieldCustomFilterDTO();
             DatasetTableField field = getFieldById(fields, datasetRowPermissions.getDatasetFieldId());
+            if(field == null){continue;}
             dto.setField(field);
             dto.setId(field.getId());
             dto.setFilterType(datasetRowPermissions.getFilterType());
             if(datasetRowPermissions.getFilterType().equalsIgnoreCase("logic")){
                 List<ChartCustomFilterItemDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartCustomFilterItemDTO.class);
                 lists.forEach(chartCustomFilterDTO -> { chartCustomFilterDTO.setFieldId(field.getId()); });
-                if (field != null) {
-                    dto.setFilter(lists);
-                    dto.setLogic(datasetRowPermissions.getLogic());
-                    customFilter.add(dto);
-                }
+                dto.setFilter(lists);
+                dto.setLogic(datasetRowPermissions.getLogic());
+                customFilter.add(dto);
             }else {
                 dto.setEnumCheckField(Arrays.asList(datasetRowPermissions.getEnumCheckField().split(",").clone()));
                 customFilter.add(dto);
             }
-
-        });
+        }
         return customFilter;
     }
 

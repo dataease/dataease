@@ -2,12 +2,19 @@
 
   <div v-if="element.options!== null && element.options.attrs!==null && show" class="de-select-grid-class">
     <div class="de-select-grid-search">
-      <el-input v-model="keyWord" :placeholder="$t('deinputsearch.placeholder')" :size="size" prefix-icon="el-icon-search" clearable />
+      <el-input
+        v-model="keyWord"
+        :placeholder="$t('deinputsearch.placeholder')"
+        :size="size"
+        prefix-icon="el-icon-search"
+        clearable
+      />
     </div>
     <div class="list">
 
       <div v-if="element.options.attrs.multiple" class="checkbox-group-container">
-        <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">{{ $t('commons.all') }}</el-checkbox>
+        <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
+          {{ $t('commons.all') }}</el-checkbox>
 
         <el-checkbox-group v-model="value" @change="handleCheckedChange">
           <el-checkbox v-for="item in datas" :key="item.id" :label="item.id">{{ item.id }}</el-checkbox>
@@ -27,7 +34,9 @@
 </template>
 
 <script>
-import { multFieldValues } from '@/api/dataset/dataset'
+import {
+  multFieldValues
+} from '@/api/dataset/dataset'
 export default {
 
   props: {
@@ -100,10 +109,10 @@ export default {
       if (typeof value === 'undefined' || value === old) return
       this.datas = []
       this.element.options.attrs.fieldId &&
-      this.element.options.attrs.fieldId.length > 0 &&
-      multFieldValues(this.element.options.attrs.fieldId.split(',')).then(res => {
-        this.datas = this.optionDatas(res.data)
-      }) || (this.element.options.value = '')
+          this.element.options.attrs.fieldId.length > 0 &&
+          multFieldValues(this.element.options.attrs.fieldId.split(',')).then(res => {
+            this.datas = this.optionDatas(res.data)
+          }) || (this.element.options.value = '')
     },
     'element.options.attrs.multiple': function(value, old) {
       if (typeof old === 'undefined' || value === old) return
@@ -167,10 +176,10 @@ export default {
     fillValueDerfault() {
       const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
       if (this.element.options.attrs.multiple) {
-        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') { return [] }
         return defaultV.split(',')
       } else {
-        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return null
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') { return null }
         return defaultV.split(',')[0]
       }
     },
@@ -204,42 +213,49 @@ export default {
 
   }
 }
+
 </script>
 
 <style lang="scss" scoped>
+  .de-select-grid-search {
+    >>>input {
+      border-radius: 0px;
 
-.de-select-grid-search {
-  >>>input {
-    border-radius: 0px;
-  }
-}
-.de-select-grid-class {
-  .list {
-    overflow-y: auto;
-    width: 100%;
-    position: absolute;
-    top: 30px;
-    bottom: 0;
-    text-align: left;
-  }
-}
+    }
 
-.radio-group-container > .el-radio-group > label {
-    display: block !important;
-    margin: 10px !important;
-}
-
-.checkbox-group-container{
-  label.el-checkbox {
-    display: block !important;
-    margin: 10px !important;
+    .el-input {
+      display: block !important;
+    }
   }
 
-  .el-checkbox-group > label {
+  .de-select-grid-class {
+    height: 100%;
+
+    .list {
+      overflow-y: auto;
+      width: 100%;
+      position: relative;
+      bottom: 0;
+      height: calc(100% - 40px);
+    }
+  }
+
+  .radio-group-container>.el-radio-group>label {
     display: block !important;
     margin: 10px !important;
   }
 
-}
+  .checkbox-group-container {
+    label.el-checkbox {
+      display: block !important;
+      margin: 10px !important;
+    }
+
+    .el-checkbox-group>label {
+      display: block !important;
+      margin: 10px !important;
+    }
+
+  }
 
 </style>

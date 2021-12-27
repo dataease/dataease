@@ -62,6 +62,9 @@
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'excel' || table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
         <update-info v-if="tabActive=='updateInfo'" :param="param" :table="table" />
       </el-tab-pane>
+      <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('dataset.row_permissions')" name="second">
+        <plugin-com v-if="isPluginLoaded" ref="RowPermissions" component-name="RowPermissions" :obj="table"/>
+      </el-tab-pane>
     </el-tabs>
   </el-row>
 </template>
@@ -73,10 +76,12 @@ import UpdateInfo from './UpdateInfo'
 import DatasetChartDetail from '../common/DatasetChartDetail'
 import UnionView from './UnionView'
 import FieldEdit from './FieldEdit'
+import { pluginLoaded } from '@/api/user'
+import PluginCom from '@/views/system/plugin/PluginCom'
 
 export default {
   name: 'ViewTable',
-  components: { FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview },
+  components: {FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview, PluginCom },
   props: {
     param: {
       type: Object,
@@ -99,8 +104,14 @@ export default {
       tableViewRowForm: {
         row: 1000
       },
-      tabStatus: false
+      tabStatus: false,
+      isPluginLoaded: false
     }
+  },
+  beforeCreate() {
+    pluginLoaded().then(res => {
+      this.isPluginLoaded = res.success && res.data
+    })
   },
   computed: {
     hideCustomDs: function() {

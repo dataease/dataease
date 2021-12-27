@@ -1190,7 +1190,13 @@ export default {
       value: '值',
       add: '添加行权限',
       edit: '编辑行权限',
-      please_select_field: '请选择字段'
+      please_select_field: '请选择字段',
+      please_select_auth_type: '请选择授权类型',
+      please_select_auth_id: '请选择授权目标',
+      row_permission_not_empty: '行权限不能为空',
+      search_by_filed_name: '根据字段名称搜索',
+      auth_type: '授权类型',
+      auth_obj: '授权对象'
     },
     row_permissions: '行权限',
     union_data: '关联数据集',
