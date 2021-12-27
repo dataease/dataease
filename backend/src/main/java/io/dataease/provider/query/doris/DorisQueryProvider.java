@@ -805,11 +805,13 @@ public class DorisQueryProvider extends QueryProvider {
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                         whereValue = "'%" + value + "%'";
                     } else {
-                        if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                        // Doris field type test
+                        /*if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                             whereValue = String.format(DorisConstants.WHERE_NUMBER_VALUE, value);
                         } else {
                             whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value);
-                        }
+                        }*/
+                        whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value);
                     }
                     list.add(SQLObj.builder()
                             .whereField(whereName)
@@ -881,11 +883,13 @@ public class DorisQueryProvider extends QueryProvider {
                     whereValue = String.format(DorisConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                // doris field type test
+                /*if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     whereValue = String.format(DorisConstants.WHERE_NUMBER_VALUE, value.get(0));
                 } else {
                     whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value.get(0));
-                }
+                }*/
+                whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value.get(0));
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
