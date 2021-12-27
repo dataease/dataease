@@ -67,6 +67,8 @@
 </template>
 
 <script>
+import {mapState} from "vuex";
+
 export default {
   name: 'FilterControl',
   props: {
@@ -116,7 +118,7 @@ export default {
     showTitleChange(value) {
       if (!value) {
         this.attrs.title = ''
-        // this.componentInfo.style.backgroundColor = ''
+        this.element.style.backgroundColor = ''
       }
       this.fillAttrs2Filter()
     },

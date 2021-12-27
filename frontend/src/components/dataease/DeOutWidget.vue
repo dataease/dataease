@@ -104,14 +104,15 @@ export default {
     watchSize() {
       const erd = elementResizeDetectorMaker()
       erd.listenTo(this.$refs.myContainer, ele => {
+        const deContentContainer = this.$refs.deContentContainer
         const height = ele.offsetHeight
         this.mainHeight = height
         if (!this.element.options.attrs.title) {
           this.duHeight = this.mainHeight
+          deContentContainer.style.marginLeft = '0px'
           return
         }
         const titleWidth = this.$refs.deTitle.offsetWidth
-        const deContentContainer = this.$refs.deContentContainer
         this.duHeight = height - titleWidth
         console.log('titleWidth:' + titleWidth + ';deContentContainer=' + deContentContainer + ';duHeight:' + this.duHeight)
         this.$nextTick(() => {
