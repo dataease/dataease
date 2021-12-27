@@ -70,7 +70,7 @@ export default {
     componentItemStyle() {
       return {
         padding: '5px',
-        display: 'inline-block',
+        float: 'left',
         width: '33%'
       }
     },

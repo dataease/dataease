@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex;">
+  <div style="display: flex;position:relative">
     <view-track-bar
       ref="viewTrack"
       :track-menu="trackMenu"
@@ -368,7 +368,7 @@ export default {
     position: absolute;
     z-index: 999;
     left: 2%;
-    bottom: 3%;
+    bottom: 5%;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     text-align: center;
     padding: 5px;
