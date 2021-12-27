@@ -15,6 +15,7 @@
       :out-style="config.style"
       :element="config"
       :in-screen="inScreen"
+      :edit-mode="'preview'"
       :h="config.style.height"
     />
     <component
