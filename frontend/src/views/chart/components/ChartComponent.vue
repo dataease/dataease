@@ -224,7 +224,10 @@ export default {
 
       if (chart.type === 'map') {
         const customAttr = JSON.parse(chart.customAttr)
-        if (!customAttr.areaCode) return
+        if (!customAttr.areaCode) {
+          this.myChart.clear()
+          return
+        }
         const cCode = this.dynamicAreaCode || customAttr.areaCode
         if (this.$store.getters.geoMap[cCode]) {
           const json = this.$store.getters.geoMap[cCode]
