@@ -156,7 +156,7 @@ export default {
       }
     },
     editBarViewShowFlag() {
-      return this.active && this.inTab
+      return this.active && this.inTab && !this.mobileLayoutStatus
     },
     charViewShowFlag() {
       return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.renderComponent() === 'echarts'
