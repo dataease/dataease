@@ -81,6 +81,7 @@ export default {
   .component-wait-main {
     width: 100%;
     height: calc(100% - 30px);
+    text-align: left;
     overflow-y: auto;
   }
   .component-custom {
