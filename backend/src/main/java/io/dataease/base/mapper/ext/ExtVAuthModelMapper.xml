@@ -98,9 +98,6 @@
 				#{item}
 			</foreach>
 		</if>
-		<if test='record.modelType != null and record.modelType == "dataset"'>
-			or (v_auth_model.`model_inner_type` = 'group' and v_auth_model.model_type = 'dataset')
-		</if>
 		ORDER BY v_auth_model.node_type desc, CONVERT(v_auth_model.label using gbk) asc
   </select>
 
