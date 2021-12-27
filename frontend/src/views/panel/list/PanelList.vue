@@ -645,6 +645,8 @@ export default {
       this.lastActiveNodeData = data
       this.activeTree = data.panelType
       if (data.nodeType === 'panel') {
+        // 清理pc布局缓存
+        this.$store.commit('setComponentDataCache', null)
         // 加载视图数据
         findOne(data.id).then(response => {
           const componentDatas = JSON.parse(response.data.panelData)

@@ -10,7 +10,7 @@
         <span slot="label">
           <span>{{ item.title }}</span>
 
-          <el-dropdown v-if="isEdit" slot="label" class="de-tab-drop" trigger="click" @command="handleCommand">
+          <el-dropdown v-if="dropdownShow" slot="label" class="de-tab-drop" trigger="click" @command="handleCommand">
             <span class="el-dropdown-link">
 
               <!-- <span>{{ item.title }}</span> -->
@@ -135,8 +135,12 @@ export default {
     }
   },
   computed: {
+    dropdownShow() {
+      return this.isEdit && !this.mobileLayoutStatus
+    },
     ...mapState([
-      'curComponent'
+      'curComponent',
+      'mobileLayoutStatus'
     ])
   },
   watch: {

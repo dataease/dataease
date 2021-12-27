@@ -18,7 +18,7 @@ export function baseMapOption(chart_option, chart) {
         const a = params.seriesName
         const b = params.name
         const c = params.value ? params.value : ''
-        return text.replaceAll('{a}', a).replaceAll('{b}', b).replaceAll('{c}', c)
+        return text.replace(new RegExp('{a}', 'g'), a).replace(new RegExp('{b}', 'g'), b).replace(new RegExp('{c}', 'g'), c)
       }
       chart_option.tooltip = tooltip
     }
@@ -36,7 +36,7 @@ export function baseMapOption(chart_option, chart) {
           const a = params.seriesName
           const b = params.name
           const c = params.value ? params.value : ''
-          return text.replaceAll('{a}', a).replaceAll('{b}', b).replaceAll('{c}', c)
+          return text.replace(new RegExp('{a}', 'g'), a).replace(new RegExp('{b}', 'g'), b).replace(new RegExp('{c}', 'g'), c)
         }
         chart_option.series[0].labelLine = customAttr.label.labelLine
       }

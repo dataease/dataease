@@ -91,7 +91,7 @@ class TimeDateServiceImpl extends WidgetService {
     }
 
     if (element.options.attrs.default.dkey === 3) {
-      const dynamicPrefix = element.options.attrs.default.dynamicPrefix
+      const dynamicPrefix = parseInt(element.options.attrs.default.dynamicPrefix)
       const dynamicInfill = element.options.attrs.default.dynamicInfill
       const dynamicSuffix = element.options.attrs.default.dynamicSuffix
 
@@ -130,7 +130,8 @@ class TimeDateServiceImpl extends WidgetService {
         const nowMonth = now.getMonth()
         const nowYear = now.getFullYear()
         const nowDate = now.getDate()
-        return new Date(nowYear - 1, nowMonth, nowDate).getTime()
+
+        return new Date(dynamicSuffix === 'before' ? (nowYear - dynamicPrefix) : (nowYear + dynamicPrefix), nowMonth, nowDate).getTime()
       }
     }
   }

@@ -130,13 +130,11 @@ import { starStatus, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
-import JsPDF from 'jspdf'
 
 export default {
   name: 'PanelViewShow',
   components: { Preview, SaveToTemplate, PDFPreExport, ShareHead },
   props: {
-    // eslint-disable-next-line vue/require-default-prop
     activeTab: {
       type: String,
       required: false
@@ -208,7 +206,6 @@ export default {
     bus.$on('set-panel-show-type', type => {
       this.showType = type || 0
     })
-
     this.initPdfTemplate()
   },
   methods: {

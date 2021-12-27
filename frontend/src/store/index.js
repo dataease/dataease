@@ -348,6 +348,7 @@ const data = {
     },
     // 启用移动端布局
     openMobileLayout(state) {
+      state.componentDataCache = null
       state.componentDataCache = JSON.stringify(state.componentData)
       state.pcComponentData = state.componentData
       const mainComponentData = []

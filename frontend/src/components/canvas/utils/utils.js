@@ -60,7 +60,20 @@ export function mobile2MainCanvas(mainSource, mobileSource) {
 
 export function panelInit(componentDatas) {
   componentDatas.forEach(item => {
-    item.filters = (item.filters || [])
+    if (item.component && item.component === 'de-date') {
+      if (item.options.attrs && !item.options.attrs.default) {
+        item.options.attrs.default = {
+          isDynamic: false,
+          dkey: 0,
+          dynamicPrefix: 1,
+          dynamicInfill: 'day',
+          dynamicSuffix: 'before'
+        }
+      }
+    }
+    if (item.filters && item.filters.length > 0) {
+      item.filters = []
+    }
     item.linkageFilters = (item.linkageFilters || [])
     item.auxiliaryMatrix = (item.auxiliaryMatrix || false)
     item.x = (item.x || 1)
