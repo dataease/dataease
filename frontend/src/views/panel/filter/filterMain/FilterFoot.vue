@@ -2,7 +2,10 @@
   <el-row>
     <el-col :span="24">
       <div class="filter-content">
-        <el-card v-if="element.serviceName && element.serviceName !== 'timeDateWidget'" class="box-card">
+        <el-card
+          v-if="element.serviceName && element.serviceName !== 'timeDateWidget' && element.serviceName !== 'timeDateRangeWidget'"
+          class="box-card"
+        >
           <div style="margin-bottom: 10px;">
             <span>默认值设置</span>
           </div>
@@ -23,6 +26,13 @@
           <de-date-default v-if="element.serviceName && element.serviceName === 'timeDateWidget'" :element="element" />
         </el-card>
 
+        <el-card v-if="element.serviceName && element.serviceName === 'timeDateRangeWidget'" class="box-card">
+          <de-date-range-default
+            v-if="element.serviceName && element.serviceName === 'timeDateRangeWidget'"
+            :element="element"
+          />
+        </el-card>
+
       </div>
     </el-col>
   </el-row>
@@ -31,10 +41,12 @@
 
 <script>
 import DeDateDefault from '@/views/panel/filter/defaultValue/DeDateDefault'
+import DeDateRangeDefault from '@/views/panel/filter/defaultValue/DeDateRangeDefault'
 export default {
   name: 'FilterFoot',
   components: {
-    DeDateDefault
+    DeDateDefault,
+    DeDateRangeDefault
   },
   props: {
 

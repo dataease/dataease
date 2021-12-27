@@ -1741,5 +1741,28 @@ export default {
     complex_repeat: '複雜重複',
     pixel_tip: '可直接輸入分辨率(例如:2560 * 1600)或者選擇'
 
+  },
+  dynamic_time: {
+    set_default: '設置默認值',
+    fix: '固定時間',
+    dynamic: '動態時間',
+    relative: '相對當前',
+    today: '今天',
+    yesterday: '昨天',
+    firstOfMonth: '月初',
+    custom: '自定義',
+    date: '日',
+    week: '周',
+    month: '月',
+    year: '年',
+    before: '前',
+    after: '後',
+    preview: '預覽',
+    set: '設置',
+
+    cweek: '本周',
+    cmonth: '本月',
+    cquarter: '本季',
+    cyear: '本年'
   }
 }
