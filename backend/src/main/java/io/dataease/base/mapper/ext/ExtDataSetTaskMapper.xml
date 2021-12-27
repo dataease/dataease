@@ -47,7 +47,7 @@
     </select>
 
     <select id="taskList" resultMap="TaskResult" parameterType="io.dataease.base.mapper.ext.query.GridExample">
-        SELECT dataset_table.name as table_name, get_auths(dataset_table_task.table_id,'dataset', #{extendCondition}) as `privileges`,dataset_table_task.* , qrtz_triggers.NEXT_FIRE_TIME
+        SELECT dataset_table.name as table_name, 'grant,manage,use' as `privileges`,dataset_table_task.* , qrtz_triggers.NEXT_FIRE_TIME
         FROM dataset_table_task
         left join dataset_table on dataset_table.id=dataset_table_task.table_id
         left join qrtz_triggers on dataset_table_task.id=qrtz_triggers.TRIGGER_NAME

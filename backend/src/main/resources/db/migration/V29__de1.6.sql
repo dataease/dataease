@@ -93,3 +93,19 @@ delimiter ;
 
 
 
+drop index dataset_table_task_log_index on dataset_table_task_log ;
+drop index dataset_table_task_index on dataset_table_task ;
+drop index dataset_table_index on dataset_table ;
+
+
+CREATE INDEX idx_dataset_table_task_table_id ON dataset_table_task (table_id);
+CREATE INDEX idx_dataset_table_task_name ON dataset_table_task (name);
+
+CREATE INDEX idx_dataset_table_task_log_table_id ON dataset_table_task_log (table_id);
+CREATE INDEX idx_dataset_table_task_log_task_id ON dataset_table_task_log (task_id);
+
+
+
+
+
+
