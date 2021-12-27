@@ -1,4 +1,7 @@
-import { BASE_MOBILE_STYLE, HYPERLINKS } from '@/components/canvas/custom-component/component-list'
+import {
+  BASE_MOBILE_STYLE,
+  HYPERLINKS
+} from '@/components/canvas/custom-component/component-list'
 
 export function deepCopy(target) {
   if (typeof target === 'object') {
@@ -61,13 +64,25 @@ export function mobile2MainCanvas(mainSource, mobileSource) {
 export function panelInit(componentDatas) {
   componentDatas.forEach(item => {
     if (item.component && item.component === 'de-date') {
-      if (item.options.attrs && !item.options.attrs.default) {
+      if (item.serviceName === 'timeDateWidget' && item.options.attrs && !item.options.attrs.default) {
         item.options.attrs.default = {
           isDynamic: false,
           dkey: 0,
           dynamicPrefix: 1,
           dynamicInfill: 'day',
           dynamicSuffix: 'before'
+        }
+      }
+      if (item.serviceName === 'timeDateRangeWidget' && item.options.attrs && !item.options.attrs.default) {
+        item.options.attrs.default = {
+          isDynamic: false,
+          dkey: 0,
+          sDynamicPrefix: 1,
+          sDynamicInfill: 'day',
+          sDynamicSuffix: 'before',
+          eDynamicPrefix: 1,
+          eDynamicInfill: 'day',
+          eDynamicSuffix: 'after'
         }
       }
     }
