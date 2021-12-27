@@ -1,4 +1,6 @@
-import { WidgetService } from '../service/WidgetService'
+import {
+  WidgetService
+} from '../service/WidgetService'
 
 const leftPanel = {
   icon: 'iconfont icon-riqi',
@@ -15,7 +17,17 @@ const dialogPanel = {
       endPlaceholder: 'dedaterange.to_placeholder',
       viewIds: [],
       fieldId: '',
-      dragItems: []
+      dragItems: [],
+      default: {
+        isDynamic: false,
+        dkey: 0,
+        sDynamicPrefix: 1,
+        sDynamicInfill: 'day',
+        sDynamicSuffix: 'before',
+        eDynamicPrefix: 1,
+        eDynamicInfill: 'day',
+        eDynamicSuffix: 'after'
+      }
     },
     value: ''
   },
@@ -40,7 +52,9 @@ const drawPanel = {
 
 class TimeDateRangeServiceImpl extends WidgetService {
   constructor(options = {}) {
-    Object.assign(options, { name: 'timeDateRangeWidget' })
+    Object.assign(options, {
+      name: 'timeDateRangeWidget'
+    })
     super(options)
     this.filterDialog = true
     this.showSwitch = false
@@ -65,6 +79,150 @@ class TimeDateRangeServiceImpl extends WidgetService {
     return fields.filter(field => {
       return field['deType'] === 1
     })
+  }
+  getStartDayOfWeek() {
+    var now = new Date() // 当前日期
+    var nowDayOfWeek = now.getDay()
+    var nowDay = now.getDate() // 当前日
+    var nowMonth = now.getMonth() // 当前月
+    var day = nowDayOfWeek || 7
+    return new Date(now.getFullYear(), nowMonth, nowDay + 1 - day)
+  }
+  getEndDayOfWeek() {
+    var now = new Date() // 当前日期
+    var nowDayOfWeek = now.getDay()
+    var nowDay = now.getDate() // 当前日
+    var nowMonth = now.getMonth() // 当前月
+    var day = nowDayOfWeek || 7
+    return new Date(now.getFullYear(), nowMonth, nowDay + 7 - day)
+  }
+  getStartDayOfMonth() {
+    var now = new Date()
+    var nowMonth = now.getMonth() // 当前月
+    var monthStartDate = new Date(now.getFullYear(), nowMonth, 1)
+    return monthStartDate
+  }
+  getEndDayOfMonth() {
+    var now = new Date()
+    var nowMonth = now.getMonth() // 当前月
+    var monthEndDate = new Date(now.getFullYear(), nowMonth, this.getMonthDays())
+    return monthEndDate
+  }
+  getStartQuarter() {
+    var now = new Date()
+    var nowMonth = now.getMonth()
+    const startMonth = Math.floor((nowMonth / 3)) * 3
+    return new Date(now.getFullYear(), startMonth, 1)
+  }
+  getEndQuarter() {
+    var now = new Date()
+    var nowMonth = now.getMonth()
+    const endMonth = Math.floor((nowMonth / 3)) * 3 + (nowMonth % 3)
+    const days = (endMonth === 5 || endMonth === 8) ? 30 : 31
+    return new Date(now.getFullYear(), endMonth, days)
+  }
+  getStartYear() {
+    var now = new Date()
+    return new Date(now.getFullYear(), 0, 1)
+  }
+  getEndYear() {
+    var now = new Date()
+    return new Date(now.getFullYear(), 11, 31)
+  }
+  /**
+   * 获得本月天数
+   *
+   * @returns
+   */
+  getMonthDays() {
+    var now = new Date()
+    var nowMonth = now.getMonth() // 当前月
+    var monthStartDate = new Date(now.getFullYear(), nowMonth, 1)
+    var monthEndDate = new Date(now.getFullYear(), nowMonth + 1, 1)
+    var days = (monthEndDate - monthStartDate) / (1000 * 60 * 60 * 24)
+    return days
+  }
+  customTime(dynamicPrefix, dynamicInfill, dynamicSuffix) {
+    if (dynamicInfill === 'day') {
+      const oneday = 24 * 3600 * 1000
+      const step = oneday * dynamicPrefix
+      return dynamicSuffix === 'before' ? (Date.now() - step) : (Date.now() + step)
+    }
+    if (dynamicInfill === 'week') {
+      const oneday = 24 * 3600 * 1000
+      const step = oneday * dynamicPrefix * 7
+      return dynamicSuffix === 'before' ? (Date.now() - step) : (Date.now() + step)
+    }
+    if (dynamicInfill === 'month') {
+      const now = new Date()
+      const nowMonth = now.getMonth()
+      const nowYear = now.getFullYear()
+      const nowDate = now.getDate()
+
+      const tarYear = nowYear
+      if (dynamicSuffix === 'before') {
+        const deffMonth = nowMonth - dynamicPrefix
+        let diffYear = deffMonth / 12
+        if (deffMonth < 0) {
+          diffYear -= 1
+        }
+        return new Date(tarYear + diffYear, nowMonth - dynamicPrefix % 12, nowDate).getTime()
+      } else {
+        const deffMonth = nowMonth + dynamicPrefix
+        const diffYear = deffMonth / 12
+        return new Date(tarYear + diffYear, deffMonth % 12, nowDate).getTime()
+      }
+    }
+    if (dynamicInfill === 'year') {
+      const now = new Date()
+      const nowMonth = now.getMonth()
+      const nowYear = now.getFullYear()
+      const nowDate = now.getDate()
+
+      return new Date(dynamicSuffix === 'before' ? (nowYear - dynamicPrefix) : (nowYear + dynamicPrefix), nowMonth, nowDate).getTime()
+    }
+  }
+  dynamicDateFormNow(element) {
+    if (element.options.attrs.default === null || typeof element.options.attrs.default === 'undefined' || !element.options.attrs.default.isDynamic) return null
+
+    if (element.options.attrs.default.dkey === 0) {
+      // 本周
+      return [this.getStartDayOfWeek().getTime(), this.getEndDayOfWeek().getTime()]
+    }
+
+    if (element.options.attrs.default.dkey === 1) {
+      return [this.getStartDayOfMonth().getTime(), this.getEndDayOfMonth().getTime()]
+    }
+
+    if (element.options.attrs.default.dkey === 2) {
+      return [this.getStartQuarter().getTime(), this.getEndQuarter().getTime()]
+    }
+    if (element.options.attrs.default.dkey === 3) {
+      return [this.getStartYear().getTime(), this.getEndYear().getTime()]
+    }
+
+    if (element.options.attrs.default.dkey === 4) {
+      const sDynamicPrefix = parseInt(element.options.attrs.default.sDynamicPrefix)
+      const sDynamicInfill = element.options.attrs.default.sDynamicInfill
+      const sDynamicSuffix = element.options.attrs.default.sDynamicSuffix
+
+      const eDynamicPrefix = parseInt(element.options.attrs.default.eDynamicPrefix)
+      const eDynamicInfill = element.options.attrs.default.eDynamicInfill
+      const eDynamicSuffix = element.options.attrs.default.eDynamicSuffix
+      const startTime = this.customTime(sDynamicPrefix, sDynamicInfill, sDynamicSuffix)
+      const endTime = this.customTime(eDynamicPrefix, eDynamicInfill, eDynamicSuffix)
+      return [startTime, endTime]
+    }
+  }
+  validDynamicValue(element) {
+    if (!element.options.attrs.default.isDynamic) return true
+    if (element.options.attrs.default.dkey !== 4) return true
+    try {
+      const arr = this.dynamicDateFormNow(element)
+      return arr[0] < arr[1]
+    } catch (error) {
+      return false
+    }
   }
 }
 const timeDateRangeServiceImpl = new TimeDateRangeServiceImpl()

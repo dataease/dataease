@@ -456,12 +456,12 @@ public class DataSetTableService {
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
         CurrentUserDto user = AuthUtils.getUser();
         userId = user != null ? user.getUserId() : userId;
-        List<Long> roleIds ;
-        Long deptId ;
-        if(user != null){
+        List<Long> roleIds;
+        Long deptId;
+        if (user != null) {
             deptId = user.getDeptId();
             roleIds = user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList());
-        }else {
+        } else {
             deptId = authUserService.getUserById(userId).getDeptId();
             roleIds = authUserService.roles(userId).stream().map(r -> Long.valueOf(r)).collect(Collectors.toList());
         }
@@ -491,20 +491,24 @@ public class DataSetTableService {
 
     public List<ChartFieldCustomFilterDTO> getCustomFilters(List<DatasetTableField> fields, DatasetTable datasetTable, Long user) {
         List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
-        for (DatasetRowPermissions datasetRowPermissions : rowPermissions(datasetTable.getId(), user)){
+        for (DatasetRowPermissions datasetRowPermissions : rowPermissions(datasetTable.getId(), user)) {
             ChartFieldCustomFilterDTO dto = new ChartFieldCustomFilterDTO();
             DatasetTableField field = getFieldById(fields, datasetRowPermissions.getDatasetFieldId());
-            if(field == null){continue;}
+            if (field == null) {
+                continue;
+            }
             dto.setField(field);
             dto.setId(field.getId());
             dto.setFilterType(datasetRowPermissions.getFilterType());
-            if(datasetRowPermissions.getFilterType().equalsIgnoreCase("logic")){
+            if (datasetRowPermissions.getFilterType().equalsIgnoreCase("logic")) {
                 List<ChartCustomFilterItemDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartCustomFilterItemDTO.class);
-                lists.forEach(chartCustomFilterDTO -> { chartCustomFilterDTO.setFieldId(field.getId()); });
+                lists.forEach(chartCustomFilterDTO -> {
+                    chartCustomFilterDTO.setFieldId(field.getId());
+                });
                 dto.setFilter(lists);
                 dto.setLogic(datasetRowPermissions.getLogic());
                 customFilter.add(dto);
-            }else {
+            } else {
                 dto.setEnumCheckField(Arrays.asList(datasetRowPermissions.getEnumCheckField().split(",").clone()));
                 customFilter.add(dto);
             }
@@ -1308,9 +1312,9 @@ public class DataSetTableService {
                     DatasetTableField parentField = dataSetTableFieldsService.get(unionItemDTO.getParentField().getId());
                     DatasetTableField currentField = dataSetTableFieldsService.get(unionItemDTO.getCurrentField().getId());
 
-                    join.append(String.format(keyword, parentTableName)).append(".").append(parentField.getOriginName())
+                    join.append(String.format(keyword, parentTableName)).append(".").append(String.format(keyword, parentField.getOriginName()))
                             .append(" = ")
-                            .append(String.format(keyword, currentTableName)).append(".").append(currentField.getOriginName());
+                            .append(String.format(keyword, currentTableName)).append(".").append(String.format(keyword, currentField.getOriginName()));
                     if (i < unionParamDTO.getUnionFields().size() - 1) {
                         join.append(" AND ");
                     }
