@@ -1187,7 +1187,13 @@ export default {
       value: '值',
       add: '添加行權限',
       edit: '編輯行權限',
-      please_select_field: '請選擇字段'
+      please_select_field: '請選擇字段',
+      please_select_auth_type: '請選擇授權類型',
+      please_select_auth_id: '請選擇授權目標',
+      row_permission_not_empty: '行權限不能為空',
+      search_by_filed_name: '根據字段名稱搜索',
+      auth_type: '授權類型',
+      auth_obj: '授權對象'
     },
     row_permissions: '行權限',
     union_data: '關聯數據集',
