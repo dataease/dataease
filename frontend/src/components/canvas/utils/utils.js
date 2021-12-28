@@ -21,11 +21,9 @@ export function deepCopy(target) {
 }
 
 export function swap(arr, i, j) {
-  console.log('before:' + i + '-->' + j + JSON.stringify(arr))
   const temp = arr[i]
   arr[i] = arr[j]
   arr[j] = temp
-  console.log('after:' + JSON.stringify(arr))
 }
 
 export function moveUp(arr, i) {

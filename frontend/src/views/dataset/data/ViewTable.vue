@@ -39,12 +39,6 @@
         <el-button v-if="table.type ==='union'" size="mini" @click="editUnion">
           {{ $t('dataset.edit_union') }}
         </el-button>
-        <!--        <el-button size="mini" @click="edit">-->
-        <!--          {{ $t('dataset.edit_field') }}-->
-        <!--        </el-button>-->
-        <!--        <el-button size="mini" type="primary" @click="createChart">-->
-        <!--          {{$t('dataset.create_view')}}-->
-        <!--        </el-button>-->
       </el-row>
     </el-row>
     <el-divider />
@@ -62,8 +56,8 @@
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'excel' || table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
         <update-info v-if="tabActive=='updateInfo'" :param="param" :table="table" />
       </el-tab-pane>
-      <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('dataset.row_permissions')" name="second">
-        <plugin-com v-if="isPluginLoaded" ref="RowPermissions" component-name="RowPermissions" :obj="table"/>
+      <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('dataset.row_permissions')" name="rowPermissions">
+        <plugin-com v-if="isPluginLoaded && tabActive=='rowPermissions'" ref="RowPermissions" component-name="RowPermissions" :obj="table"/>
       </el-tab-pane>
     </el-tabs>
   </el-row>
