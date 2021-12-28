@@ -22,7 +22,7 @@ export default {
     },
     obj: {
       type: Object,
-      default: {}
+      default: () => {}
     }
   },
   data() {
