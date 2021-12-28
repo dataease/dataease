@@ -825,7 +825,7 @@ export default {
   },
   data() {
     return {
-      psDebug: false, // 定位调试模式
+      psDebug: true, // 定位调试模式
       editorX: 0,
       editorY: 0,
       start: { // 选中区域的起点
