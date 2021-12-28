@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
@@ -455,16 +456,26 @@ public class DataSetTableService {
         }
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
         CurrentUserDto user = AuthUtils.getUser();
-        userId = user != null ? user.getUserId() : userId;
         List<Long> roleIds;
         Long deptId;
-        if (user != null) {
+
+        if(user == null){
+            SysUserEntity userEntity = authUserService.getUserById(userId);
+            if(userEntity.getIsAdmin()){
+                return datasetRowPermissions;
+            }
+            deptId = userEntity.getDeptId();
+            roleIds = authUserService.roles(userId).stream().map(r -> Long.valueOf(r)).collect(Collectors.toList());
+        }else {
+            if(user.getIsAdmin()){
+                return datasetRowPermissions;
+            }
+            userId = user.getUserId();
             deptId = user.getDeptId();
             roleIds = user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList());
-        } else {
-            deptId = authUserService.getUserById(userId).getDeptId();
-            roleIds = authUserService.roles(userId).stream().map(r -> Long.valueOf(r)).collect(Collectors.toList());
         }
+        userId = user != null ? user.getUserId() : userId;
+
         DataSetRowPermissionsDTO dataSetRowPermissionsDTO = new DataSetRowPermissionsDTO();
         dataSetRowPermissionsDTO.setDatasetId(datasetId);
         dataSetRowPermissionsDTO.setAuthTargetIds(Collections.singletonList(userId));
