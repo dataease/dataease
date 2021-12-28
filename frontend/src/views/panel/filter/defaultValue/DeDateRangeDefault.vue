@@ -37,7 +37,7 @@
             v-model="element.options.attrs.default.sDynamicPrefix"
             type="number"
             size="mini"
-            :min="1"
+            :min="0"
             :max="10"
             @input="sDynamicPrefixChange"
           />
@@ -90,7 +90,7 @@
             v-model="element.options.attrs.default.eDynamicPrefix"
             type="number"
             size="mini"
-            :min="1"
+            :min="0"
             :max="10"
             @input="eDynamicPrefixChange"
           />
@@ -189,16 +189,16 @@ export default {
     },
 
     sDynamicPrefixChange(value) {
-      if (value < 1) {
-        value = 1
-        this.element.options.attrs.default.sDynamicPrefix = 1
+      if (value < 0) {
+        value = 0
+        this.element.options.attrs.default.sDynamicPrefix = 0
       }
       this.setDval()
     },
     eDynamicPrefixChange(value) {
-      if (value < 1) {
-        value = 1
-        this.element.options.attrs.default.eDynamicPrefix = 1
+      if (value < 0) {
+        value = 0
+        this.element.options.attrs.default.eDynamicPrefix = 0
       }
       this.setDval()
     },
