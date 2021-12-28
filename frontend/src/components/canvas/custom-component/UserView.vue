@@ -543,7 +543,7 @@ export default {
         const nextNode = currentNode.children.find(item => item.name === name)
         this.currentAcreaNode = nextNode
         const current = this.$refs[this.element.propValue.id]
-        current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
+        nextNode && current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
       }
     },
 
