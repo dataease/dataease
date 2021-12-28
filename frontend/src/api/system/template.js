@@ -4,14 +4,12 @@ export function save(data) {
   return request({
     url: '/template/save',
     data: data,
-    timeout: 60000,
     method: 'post'
   })
 }
 export function templateDelete(id) {
   return request({
     url: '/template/delete/' + id,
-    timeout: 60000,
     method: 'delete'
   })
 }
@@ -19,7 +17,6 @@ export function templateDelete(id) {
 export function showTemplateList(data) {
   return request({
     url: '/template/templateList',
-    timeout: 60000,
     data: data,
     method: 'post'
   })
@@ -28,7 +25,6 @@ export function showTemplateList(data) {
 export function findOne(id) {
   return request({
     url: '/template/findOne/' + id,
-    timeout: 60000,
     method: 'get'
   })
 }
@@ -36,7 +32,6 @@ export function findOne(id) {
 export function find(data) {
   return request({
     url: '/template/find',
-    timeout: 60000,
     data: data,
     method: 'post'
   })
