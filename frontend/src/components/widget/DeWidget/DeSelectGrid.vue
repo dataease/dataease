@@ -17,13 +17,13 @@
           {{ $t('commons.all') }}</el-checkbox>
 
         <el-checkbox-group v-model="value" @change="handleCheckedChange">
-          <el-checkbox v-for="item in datas" :key="item.id" :label="item.id">{{ item.id }}</el-checkbox>
+          <el-checkbox v-for="item in datas.filter(node => node.id && node.id.includes(keyWord))" :key="item.id" :label="item.id">{{ item.id }}</el-checkbox>
         </el-checkbox-group>
       </div>
 
       <div v-else class="radio-group-container">
         <el-radio-group v-model="value" @change="changeRadioBox">
-          <el-radio v-for="(item, index) in datas" :key="index" :label="item.id" @click.native.prevent="testChange(item)">
+          <el-radio v-for="(item, index) in datas.filter(node => node.id && node.id.includes(keyWord))" :key="index" :label="item.id" @click.native.prevent="testChange(item)">
             <span>{{ item.id }}</span>
           </el-radio>
         </el-radio-group>
