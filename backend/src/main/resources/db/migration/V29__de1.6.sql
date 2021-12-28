@@ -104,6 +104,12 @@ CREATE INDEX idx_dataset_table_task_name ON dataset_table_task (name);
 CREATE INDEX idx_dataset_table_task_log_table_id ON dataset_table_task_log (table_id);
 CREATE INDEX idx_dataset_table_task_log_task_id ON dataset_table_task_log (task_id);
 
+update sys_menu set sys_menu.permission=null where sys_menu.menu_id=50;
+
+update sys_menu set sys_menu.permission=null where sys_menu.menu_id=51;
+
+update sys_menu set sys_menu.permission=null where sys_menu.menu_id=52;
+
 
 
 
