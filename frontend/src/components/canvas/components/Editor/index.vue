@@ -1232,7 +1232,6 @@ export default {
       this.timeMachine = setTimeout(() => {
         if (index === this.changeIndex) {
           this.changeScale()
-          console.log('changeScale')
         }
         this.destroyTimeMachine()
       }, 1500)

@@ -33,8 +33,6 @@ export default {
   },
   watch: {
     $route(to, from) {
-      console.log(to)
-      console.log(from)
       // 对路由变化作出响应...
     }
   },

@@ -88,7 +88,6 @@ export default {
     },
 
     cancel() {
-      console.log('user cancel')
     },
     buildRequest(rows) {
       const targetIds = rows.map(row => row.userId)
