@@ -87,7 +87,7 @@ public class PanelGroupService {
         String panelId = request.getId();
         if (StringUtils.isEmpty(panelId)) {
             // 新建
-            checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, null);
+            checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, null,request.getNodeType());
             panelId = UUID.randomUUID().toString();
             request.setId(panelId);
             request.setCreateTime(System.currentTimeMillis());
@@ -105,7 +105,7 @@ public class PanelGroupService {
             newDefaultPanel.setLevel(0);
             newDefaultPanel.setSource(request.getId());
             newDefaultPanel.setCreateBy(AuthUtils.getUser().getUsername());
-            checkPanelName(newDefaultPanel.getName(), newDefaultPanel.getPid(), PanelConstants.OPT_TYPE_INSERT, newDefaultPanel.getId());
+            checkPanelName(newDefaultPanel.getName(), newDefaultPanel.getPid(), PanelConstants.OPT_TYPE_INSERT, newDefaultPanel.getId(),newDefaultPanel.getNodeType());
             panelGroupMapper.insertSelective(newDefaultPanel);
         } else if ("copy".equals(request.getOptType())) {
             panelId = UUID.randomUUID().toString();
@@ -113,7 +113,7 @@ public class PanelGroupService {
             PanelGroupWithBLOBs newPanel = panelGroupMapper.selectByPrimaryKey(request.getId());
             // 插入校验
             if (StringUtils.isNotEmpty(request.getName())) {
-                checkPanelName(request.getName(), newPanel.getPid(), PanelConstants.OPT_TYPE_INSERT, request.getId());
+                checkPanelName(request.getName(), newPanel.getPid(), PanelConstants.OPT_TYPE_INSERT, request.getId(),newPanel.getNodeType());
             }
             newPanel.setName(request.getName());
             newPanel.setId(panelId);
@@ -133,7 +133,7 @@ public class PanelGroupService {
             }
             // 移动校验
             if (StringUtils.isNotEmpty(request.getName())) {
-                checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, request.getId());
+                checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, request.getId(),panelInfo.getNodeType());
             }
             PanelGroupWithBLOBs record = new PanelGroupWithBLOBs();
             record.setName(request.getName());
@@ -144,7 +144,7 @@ public class PanelGroupService {
         } else {
             // 更新
             if (StringUtils.isNotEmpty(request.getName())) {
-                checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_UPDATE, request.getId());
+                checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_UPDATE, request.getId(),request.getNodeType());
             }
             panelGroupMapper.updateByPrimaryKeySelective(request);
         }
@@ -161,12 +161,12 @@ public class PanelGroupService {
     }
 
 
-    private void checkPanelName(String name, String pid, String optType, String id) {
+    private void checkPanelName(String name, String pid, String optType, String id,String nodeType) {
         PanelGroupExample groupExample = new PanelGroupExample();
         if (PanelConstants.OPT_TYPE_INSERT.equalsIgnoreCase(optType)) {
-            groupExample.createCriteria().andPidEqualTo(pid).andNameEqualTo(name);
+            groupExample.createCriteria().andPidEqualTo(pid).andNameEqualTo(name).andNodeTypeEqualTo(nodeType);
         } else if (PanelConstants.OPT_TYPE_UPDATE.equalsIgnoreCase(optType)) {
-            groupExample.createCriteria().andPidEqualTo(pid).andNameEqualTo(name).andIdNotEqualTo(id);
+            groupExample.createCriteria().andPidEqualTo(pid).andNameEqualTo(name).andIdNotEqualTo(id).andNodeTypeEqualTo(nodeType);
         }
 
         List<PanelGroup> checkResult = panelGroupMapper.selectByExample(groupExample);

@@ -448,7 +448,8 @@ export default {
             panelInfo: {
               id: param.data.id,
               pid: param.data.pid,
-              name: param.data.name
+              name: param.data.name,
+              nodeType: param.type
             }
           }
           break
@@ -459,7 +460,8 @@ export default {
             panelInfo: {
               id: param.data.id,
               name: param.data.name,
-              optType: 'toDefaultPanel'
+              optType: 'toDefaultPanel',
+              nodeType: param.type
             }
           }
           break
@@ -471,7 +473,8 @@ export default {
             panelInfo: {
               id: param.data.id,
               name: param.data.name,
-              optType: 'copy'
+              optType: 'copy',
+              nodeType: param.type
             }
           }
           break
