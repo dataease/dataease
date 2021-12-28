@@ -236,7 +236,8 @@ export default {
       'nowPanelJumpInfo',
       'publicLinkStatus',
       'previewCanvasScale',
-      'mobileLayoutStatus'
+      'mobileLayoutStatus',
+      'componentData'
     ])
   },
 
@@ -309,7 +310,8 @@ export default {
   created() {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
-      this.getData(this.element.propValue.viewId, false)
+      const hasFilter = this.componentData.filter(item => item.type === 'custom').some(item => item.options.value)
+      hasFilter || this.getData(this.element.propValue.viewId, false)
     }
   },
   methods: {
