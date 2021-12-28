@@ -313,7 +313,8 @@ export default {
         'de-show-date',
         'de-video'
       ],
-      enableSureButton: false
+      enableSureButton: false,
+      filterFromDrag: false
     }
   },
 
@@ -628,7 +629,7 @@ export default {
 
         if (this.currentWidget.filterDialog) {
           this.show = false
-          this.openFilterDialog()
+          this.openFilterDialog(true)
           return
         }
         component = deepCopy(this.currentFilterCom)
@@ -676,7 +677,8 @@ export default {
         this.$store.commit('hideContextMenu')
       }
     },
-    openFilterDialog() {
+    openFilterDialog(fromDrag = false) {
+      this.filterFromDrag = fromDrag
       this.filterVisible = true
     },
     closeFilter() {
@@ -686,7 +688,9 @@ export default {
     },
     cancelFilter() {
       this.closeFilter()
-      bus.$emit('onRemoveLastItem')
+      if(this.filterFromDrag){
+        bus.$emit('onRemoveLastItem')
+      }
     },
     sureFilter() {
       this.currentFilterCom = this.$refs['filter-setting-' + this.currentFilterCom.id].getElementInfo()
