@@ -68,7 +68,6 @@ export function viewInfo(id, data) {
   return request({
     url: 'api/link/viewDetail/' + id,
     method: 'post',
-    timeout: 30000,
     hideMsg: true,
     data
   })
