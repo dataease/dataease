@@ -69,9 +69,7 @@ export default {
     },
     componentItemStyle() {
       return {
-        padding: '5px',
-        float: 'left',
-        width: '33%'
+        padding: '5px'
       }
     },
     ...mapState([

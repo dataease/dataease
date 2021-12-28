@@ -23,7 +23,9 @@
 
       <div v-else class="radio-group-container">
         <el-radio-group v-model="value" @change="changeRadioBox">
-          <el-radio v-for="(item, index) in datas" :key="index" :label="item.id">{{ item.id }}</el-radio>
+          <el-radio v-for="(item, index) in datas" :key="index" :label="item.id" @click.native.prevent="testChange(item)">
+            <span>{{ item.id }}</span>
+          </el-radio>
         </el-radio-group>
       </div>
 
@@ -209,6 +211,10 @@ export default {
       this.checkAll = checkedCount === this.datas.length
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.datas.length
       this.changeValue(values)
+    },
+    testChange(item) {
+      this.value = this.value === item.id ? null : item.id
+      this.changeRadioBox(this.value)
     }
 
   }
