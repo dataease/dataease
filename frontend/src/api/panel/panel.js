@@ -39,7 +39,6 @@ export function defaultTree(data, loading = true, timeout = 60000) {
     url: '/panel/group/defaultTree',
     method: 'post',
     loading: loading,
-    timeout: timeout,
     data
   })
 }
@@ -49,7 +48,6 @@ export function groupTree(data, loading = true, timeout = 60000) {
     url: '/panel/group/tree',
     method: 'post',
     loading: loading,
-    timeout: timeout,
     data
   })
 }

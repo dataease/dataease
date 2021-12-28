@@ -125,7 +125,6 @@ export function post(url, data, showLoading = true, timeout = 60000) {
     url: url,
     method: 'post',
     loading: showLoading,
-    timeout: timeout,
     data
   })
 }
