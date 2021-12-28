@@ -87,4 +87,7 @@ export default {
   .table-class{
     height: 100%;
   }
+  .full-div{
+    background-size:100% 100% !important;
+  }
 </style>
