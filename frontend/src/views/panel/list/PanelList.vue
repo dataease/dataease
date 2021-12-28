@@ -392,6 +392,7 @@ export default {
       this.editPanel.visible = false
       if (panelInfo) {
         this.defaultTree()
+        this.tree()
         // 默认展开 同时点击 新增的节点
         if (panelInfo && panelInfo.panelType === 'self' && this.lastActiveNodeData.id) {
           if (this.editPanel.optType === 'rename') {
@@ -409,8 +410,6 @@ export default {
             this.lastActiveNode.expanded = true
           }
           this.activeNodeAndClick(panelInfo)
-        } else {
-          this.tree()
         }
       }
     },
