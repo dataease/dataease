@@ -12,6 +12,7 @@ import io.dataease.plugins.xpack.auth.dto.request.DataSetRowPermissionsDTO;
 import io.dataease.plugins.xpack.auth.dto.request.DatasetRowPermissions;
 import io.dataease.plugins.xpack.auth.service.RowPermissionService;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,12 +27,14 @@ public class RowPermissionsController {
     @PostMapping("save")
     public void save(@RequestBody DatasetRowPermissions datasetRowPermissions) throws Exception {
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
-        DataSetRowPermissionsDTO request = new DataSetRowPermissionsDTO();
-        request.setAuthTargetType(datasetRowPermissions.getAuthTargetType());
-        request.setAuthTargetId(datasetRowPermissions.getAuthTargetId());
-        request.setDatasetFieldId(datasetRowPermissions.getDatasetFieldId());
-        if(!CollectionUtils.isEmpty(rowPermissionService.searchRowPermissions(request))){
-            throw new Exception(Translator.get("i18n_rp_exist"));
+        if(StringUtils.isEmpty(datasetRowPermissions.getId())){
+            DataSetRowPermissionsDTO request = new DataSetRowPermissionsDTO();
+            request.setAuthTargetType(datasetRowPermissions.getAuthTargetType());
+            request.setAuthTargetId(datasetRowPermissions.getAuthTargetId());
+            request.setDatasetFieldId(datasetRowPermissions.getDatasetFieldId());
+            if(!CollectionUtils.isEmpty(rowPermissionService.searchRowPermissions(request))){
+                throw new Exception(Translator.get("i18n_rp_exist"));
+            }
         }
         rowPermissionService.save(datasetRowPermissions);
     }
