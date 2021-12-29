@@ -56,7 +56,7 @@
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'excel' || table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
         <update-info v-if="tabActive=='updateInfo'" :param="param" :table="table" />
       </el-tab-pane>
-      <el-tab-pane v-if="isPluginLoaded" :lazy="true" :label="$t('dataset.row_permissions')" name="rowPermissions">
+      <el-tab-pane v-if="isPluginLoaded && hasDataPermission('manage',param.privileges)" :lazy="true" :label="$t('dataset.row_permissions')" name="rowPermissions">
         <plugin-com v-if="isPluginLoaded && tabActive=='rowPermissions'" ref="RowPermissions" component-name="RowPermissions" :obj="table"/>
       </el-tab-pane>
     </el-tabs>

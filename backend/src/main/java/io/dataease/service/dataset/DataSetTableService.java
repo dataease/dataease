@@ -648,7 +648,6 @@ public class DataSetTableService {
                 datasourceRequest.setPreviewData(true);
                 try {
                     datasourceRequest.setPageable(true);
-                    System.out.println(datasourceRequest.getQuery());
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
@@ -1551,11 +1550,8 @@ public class DataSetTableService {
             List<String> originNameList = new ArrayList<>();
             for (int i = 0; i < fields.size(); i++) {
                 TableFiled filed = fields.get(i);
-                System.out.println(new Gson().toJson(filed));
                 originNameList.add(filed.getFieldName());
-
                 DatasetTableField datasetTableField = DatasetTableField.builder().build();
-
                 // 物理字段名设定为唯一，查询当前数据集下是否已存在该字段，存在则update，不存在则insert
                 DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
                 // 字段名一致，认为字段没有改变
