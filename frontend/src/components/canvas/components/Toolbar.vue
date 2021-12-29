@@ -2,6 +2,9 @@
   <div>
     <div v-show="editControlButton" class="toolbar">
       <span style="float: right;">
+        <el-button v-if="mobileLayoutStatus" size="mini" @click="editReset">
+          {{ $t('commons.reset') }}
+        </el-button>
         <el-button size="mini" @click="editSave">
           {{ $t('commons.confirm') }}
         </el-button>
@@ -365,6 +368,10 @@ export default {
       } else {
         this.saveLinkage()
       }
+    },
+    editReset() {
+      this.cancelMobileLayoutStatue(JSON.parse(this.componentDataCache))
+      this.$store.commit('openMobileLayout')
     },
     editCancel() {
       if (this.mobileLayoutStatus) {
