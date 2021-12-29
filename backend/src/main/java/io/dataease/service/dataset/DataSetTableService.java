@@ -648,6 +648,7 @@ public class DataSetTableService {
                 datasourceRequest.setPreviewData(true);
                 try {
                     datasourceRequest.setPageable(true);
+                    System.out.println(datasourceRequest.getQuery());
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
@@ -887,7 +888,9 @@ public class DataSetTableService {
         List<String[]> data = result.get("dataList");
         List<TableFiled> fields = result.get("fieldList");
         String[] fieldArray = fields.stream().map(TableFiled::getFieldName).toArray(String[]::new);
-
+        if (checkIsRepeat(fieldArray)) {
+            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
+        }
         List<Map<String, Object>> jsonArray = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(data)) {
             jsonArray = data.stream().map(ele -> {
