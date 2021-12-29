@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.entity.XpackConditionEntity;
 import io.dataease.plugins.common.entity.XpackGridRequest;
 import io.dataease.plugins.config.SpringContextUtil;
@@ -11,6 +12,7 @@ import io.dataease.plugins.xpack.auth.dto.request.DataSetRowPermissionsDTO;
 import io.dataease.plugins.xpack.auth.dto.request.DatasetRowPermissions;
 import io.dataease.plugins.xpack.auth.service.RowPermissionService;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -24,6 +26,13 @@ public class RowPermissionsController {
     @PostMapping("save")
     public void save(@RequestBody DatasetRowPermissions datasetRowPermissions) throws Exception {
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
+        DataSetRowPermissionsDTO request = new DataSetRowPermissionsDTO();
+        request.setAuthTargetType(datasetRowPermissions.getAuthTargetType());
+        request.setAuthTargetId(datasetRowPermissions.getAuthTargetId());
+        request.setDatasetFieldId(datasetRowPermissions.getDatasetFieldId());
+        if(!CollectionUtils.isEmpty(rowPermissionService.searchRowPermissions(request))){
+            throw new Exception(Translator.get("i18n_rp_exist"));
+        }
         rowPermissionService.save(datasetRowPermissions);
     }
 
