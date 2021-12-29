@@ -678,8 +678,12 @@ public class Db2QueryProvider extends QueryProvider {
             stringBuilder.append("\"").append(f.getOriginName()).append("\" AS ").append(f.getDataeaseName());
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        Db2Configuration db2Configuration = new Gson().fromJson(ds.getConfiguration(), Db2Configuration.class);
-        return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), db2Configuration.getSchema() + ".\"" + table + "\"");
+        if(ds!= null){
+            Db2Configuration db2Configuration = new Gson().fromJson(ds.getConfiguration(), Db2Configuration.class);
+            return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), db2Configuration.getSchema() + ".\"" + table + "\"");
+        }else {
+            return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), table);
+        }
     }
 
     @Override
