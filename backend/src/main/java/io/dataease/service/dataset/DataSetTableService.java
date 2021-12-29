@@ -504,6 +504,9 @@ public class DataSetTableService {
         List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
         for (DatasetRowPermissions datasetRowPermissions : rowPermissions(datasetTable.getId(), user)) {
             ChartFieldCustomFilterDTO dto = new ChartFieldCustomFilterDTO();
+            if(StringUtils.isEmpty(datasetRowPermissions.getDatasetFieldId())){
+                continue;
+            }
             DatasetTableField field = getFieldById(fields, datasetRowPermissions.getDatasetFieldId());
             if (field == null) {
                 continue;
@@ -512,6 +515,9 @@ public class DataSetTableService {
             dto.setId(field.getId());
             dto.setFilterType(datasetRowPermissions.getFilterType());
             if (datasetRowPermissions.getFilterType().equalsIgnoreCase("logic")) {
+                if(StringUtils.isEmpty(datasetRowPermissions.getFilter())){
+                    continue;
+                }
                 List<ChartCustomFilterItemDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartCustomFilterItemDTO.class);
                 lists.forEach(chartCustomFilterDTO -> {
                     chartCustomFilterDTO.setFieldId(field.getId());
@@ -520,6 +526,9 @@ public class DataSetTableService {
                 dto.setLogic(datasetRowPermissions.getLogic());
                 customFilter.add(dto);
             } else {
+                if(StringUtils.isEmpty(datasetRowPermissions.getEnumCheckField())){
+                    continue;
+                }
                 dto.setEnumCheckField(Arrays.asList(datasetRowPermissions.getEnumCheckField().split(",").clone()));
                 customFilter.add(dto);
             }
