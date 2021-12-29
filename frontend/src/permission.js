@@ -3,19 +3,34 @@ import store from './store'
 // import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
+import {
+  getToken
+} from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
-import { buildMenus } from '@/api/system/menu'
-import { filterAsyncRouter } from '@/store/modules/permission'
+import {
+  buildMenus
+} from '@/api/system/menu'
+import {
+  filterAsyncRouter
+} from '@/store/modules/permission'
+import {
+  isMobile
+} from '@/utils/index'
 // import bus from './utils/bus'
 
-NProgress.configure({ showSpinner: false }) // NProgress Configuration
+NProgress.configure({
+  showSpinner: false
+}) // NProgress Configuration
 
 const whiteList = ['/login', '/401', '/404', '/delink', '/nolic'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
+  if (isMobile()) {
+    window.location.href = window.origin + '/app.html'
+    NProgress.done()
+  }
 
   // set page title
   document.title = getPageTitle(to.meta.title)
@@ -25,7 +40,9 @@ router.beforeEach(async(to, from, next) => {
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
-      next({ path: '/' })
+      next({
+        path: '/'
+      })
       NProgress.done()
     } else {
       const hasGetUserInfo = store.getters.name
@@ -77,11 +94,18 @@ export const loadMenus = (next, to) => {
     const datas = res.data
     const filterDatas = filterRouter(datas)
     const asyncRouter = filterAsyncRouter(filterDatas)
-    asyncRouter.push({ path: '*', redirect: '/404', hidden: true })
+    asyncRouter.push({
+      path: '*',
+      redirect: '/404',
+      hidden: true
+    })
     store.dispatch('permission/GenerateRoutes', asyncRouter).then(() => { // 存储路由
       router.addRoutes(asyncRouter)
       if (pathValid(to.path, asyncRouter)) {
-        next({ ...to, replace: true })
+        next({
+          ...to,
+          replace: true
+        })
       } else {
         next('/')
       }

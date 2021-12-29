@@ -131,6 +131,7 @@ export default {
   },
   watch: {
     chart: function() {
+      this.resetPage()
       this.init()
     }
   },
