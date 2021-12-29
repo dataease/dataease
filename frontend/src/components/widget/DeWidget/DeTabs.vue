@@ -273,6 +273,7 @@ export default {
 <style lang="scss" scoped>
   .de-tabs-div {
     height: 100%;
+    overflow: hidden;
   }
   .de-tabs {
     height: 100%;
