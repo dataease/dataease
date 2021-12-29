@@ -310,7 +310,7 @@ export default {
   created() {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
-      const hasFilter = this.componentData.filter(item => item.type === 'custom').some(item => item.options.value)
+      const hasFilter = this.componentData.filter(item => item.type === 'custom').some(item => item.options.value || (item.options.attrs && item.options.attrs.default && item.options.attrs.default.isDynamic))
       hasFilter || this.getData(this.element.propValue.viewId, false)
     }
   },
