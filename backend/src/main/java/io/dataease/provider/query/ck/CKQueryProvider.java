@@ -795,6 +795,16 @@ public class CKQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 1) {
                     whereName = originName;
                 }
+            } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(CKConstants.toFloat64, originName);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = String.format(CKConstants.toInt32, String.format(CKConstants.toDateTime, originName)) + "*1000";
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    whereName = originName;
+                }
             } else {
                 whereName = originName;
             }
@@ -890,6 +900,16 @@ public class CKQueryProvider extends QueryProvider {
                     whereName = String.format(CKConstants.toDateTime, cast);
                 }
                 if (field.getDeExtractType() == 1) {
+                    whereName = originName;
+                }
+            } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(CKConstants.toFloat64, originName);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = String.format(CKConstants.toInt32, String.format(CKConstants.toDateTime, originName)) + "*1000";
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     whereName = originName;
                 }
             } else {
