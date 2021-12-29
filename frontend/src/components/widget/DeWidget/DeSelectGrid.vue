@@ -243,6 +243,7 @@ export default {
       position: relative;
       bottom: 0;
       height: calc(100% - 40px);
+      text-align: left;
     }
   }
 
