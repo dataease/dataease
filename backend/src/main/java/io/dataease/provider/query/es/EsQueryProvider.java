@@ -792,6 +792,16 @@ public class EsQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 1) {
                     whereName = originName;
                 }
+            } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(EsSqlLConstants.CAST, originName, "double");
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = String.format(EsSqlLConstants.CAST, originName, "bigint");
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    whereName = originName;
+                }
             } else {
                 whereName = originName;
             }
@@ -871,6 +881,16 @@ public class EsQueryProvider extends QueryProvider {
                     whereName = String.format(EsSqlLConstants.DATETIME_FORMAT, cast, EsSqlLConstants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == 1) {
+                    whereName = originName;
+                }
+            } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(EsSqlLConstants.CAST, originName, "double");
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = String.format(EsSqlLConstants.CAST, originName, "bigint");
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     whereName = originName;
                 }
             } else {

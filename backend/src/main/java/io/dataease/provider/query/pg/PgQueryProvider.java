@@ -15,6 +15,7 @@ import io.dataease.dto.datasource.JdbcConfiguration;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.query.QueryProvider;
 import io.dataease.provider.query.SQLConstants;
+import io.dataease.provider.query.oracle.OracleConstants;
 import io.dataease.provider.query.sqlserver.SqlServerSQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -787,6 +788,16 @@ public class PgQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 1) {
                     whereName = originName;
                 }
+            } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(PgConstants.CAST, originName, PgConstants.DEFAULT_FLOAT_FORMAT);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = String.format(PgConstants.UNIX_TIMESTAMP, originName);
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    whereName = originName;
+                }
             } else {
                 whereName = originName;
             }
@@ -867,6 +878,16 @@ public class PgQueryProvider extends QueryProvider {
                     whereName = String.format(PgConstants.FROM_UNIXTIME, cast);
                 }
                 if (field.getDeExtractType() == 1) {
+                    whereName = originName;
+                }
+            } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(PgConstants.CAST, originName, PgConstants.DEFAULT_FLOAT_FORMAT);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = String.format(PgConstants.UNIX_TIMESTAMP, originName);
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     whereName = originName;
                 }
             } else {

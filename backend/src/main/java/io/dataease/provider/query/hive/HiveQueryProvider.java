@@ -756,6 +756,16 @@ public class HiveQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
                     whereName = originName;
                 }
+            } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(HiveConstants.CAST, originName, HiveConstants.DEFAULT_FLOAT_FORMAT);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = String.format(HiveConstants.UNIX_TIMESTAMP, originName) + "*1000";
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    whereName = originName;
+                }
             } else {
                 whereName = originName;
             }
@@ -836,6 +846,16 @@ public class HiveQueryProvider extends QueryProvider {
                     whereName = String.format(HiveConstants.FROM_UNIXTIME, cast, HiveConstants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
+                    whereName = originName;
+                }
+            } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(HiveConstants.CAST, originName, HiveConstants.DEFAULT_FLOAT_FORMAT);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = String.format(HiveConstants.UNIX_TIMESTAMP, originName) + "*1000";
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     whereName = originName;
                 }
             } else {
