@@ -775,6 +775,16 @@ public class DorisQueryProvider extends QueryProvider {
                     String cast = String.format(DorisConstants.CAST, originName, DorisConstants.DEFAULT_INT_FORMAT) + "/1000";
                     whereName = String.format(DorisConstants.FROM_UNIXTIME, cast, DorisConstants.DEFAULT_DATE_FORMAT);
                 }
+            } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(DorisConstants.CAST, originName, DorisConstants.DEFAULT_FLOAT_FORMAT);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = String.format(DorisConstants.UNIX_TIMESTAMP, originName) + "*1000";
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    whereName = originName;
+                }
             } else if (field.getDeType() == 0) {
                 whereName = String.format(DorisConstants.CAST, originName, DorisConstants.VARCHAR);
             } else {
@@ -864,6 +874,16 @@ public class DorisQueryProvider extends QueryProvider {
                 }
             } else if (field.getDeType() == 0) {
                 whereName = String.format(DorisConstants.CAST, originName, DorisConstants.VARCHAR);
+            } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                    whereName = String.format(DorisConstants.CAST, originName, DorisConstants.DEFAULT_FLOAT_FORMAT);
+                }
+                if (field.getDeExtractType() == 1) {
+                    whereName = String.format(DorisConstants.UNIX_TIMESTAMP, originName) + "*1000";
+                }
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    whereName = originName;
+                }
             } else {
                 whereName = originName;
             }

@@ -191,6 +191,7 @@
             <el-form-item :label="$t('chart.belong_group')">
               <treeselect
                 v-model="currGroup.id"
+                :clearable="false"
                 :options="chartGroupTreeAvailable"
                 :normalizer="normalizer"
                 :placeholder="$t('chart.select_group')"
@@ -425,7 +426,7 @@ export default {
         all: this.$t('commons.all'),
         folder: this.$t('commons.folder')
       },
-      currentNodeData: {},
+      currentViewNodeData: {},
       currentKey: null
     }
   },
@@ -671,8 +672,8 @@ export default {
     },
 
     nodeClick(data, node) {
-      this.currentNodeData = data
       if (data.modelInnerType !== 'group') {
+        this.currentViewNodeData = data
         this.$emit('switchComponent', { name: 'ChartEdit', param: data })
       }
     },
@@ -933,8 +934,8 @@ export default {
       this.searchType = searchTypeInfo
     },
     nodeTypeChange(newType) {
-      if (this.currentNodeData) {
-        this.currentNodeData.modelInnerType = newType
+      if (this.currentViewNodeData) {
+        this.currentViewNodeData.modelInnerType = newType
       }
     }
   }
