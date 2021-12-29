@@ -191,6 +191,7 @@
             <el-form-item :label="$t('chart.belong_group')">
               <treeselect
                 v-model="currGroup.id"
+                :clearable="false"
                 :options="chartGroupTreeAvailable"
                 :normalizer="normalizer"
                 :placeholder="$t('chart.select_group')"
