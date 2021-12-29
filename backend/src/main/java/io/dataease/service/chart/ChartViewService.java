@@ -304,7 +304,7 @@ public class ChartViewService {
                     if (StringUtils.equalsIgnoreCase(dto.getId(), chartViewFieldDTO.getId())) {
                         isDrill = true;
                         DatasetTableField datasetTableField = dataSetTableFieldsService.get(dto.getId());
-                        if (ObjectUtils.isNotEmpty(datasetTableField)) {
+                        if (ObjectUtils.isEmpty(datasetTableField)) {
                             DEException.throwException(Translator.get("i18n_drill_field_not_exist"));
                         }
                         ChartViewFieldDTO d = new ChartViewFieldDTO();
