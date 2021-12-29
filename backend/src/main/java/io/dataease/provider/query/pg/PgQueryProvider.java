@@ -15,7 +15,6 @@ import io.dataease.dto.datasource.JdbcConfiguration;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.provider.query.QueryProvider;
 import io.dataease.provider.query.SQLConstants;
-import io.dataease.provider.query.oracle.OracleConstants;
 import io.dataease.provider.query.sqlserver.SqlServerSQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
