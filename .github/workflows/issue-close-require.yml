@@ -13,15 +13,7 @@ jobs:
         with:
           actions: 'close-issues'
           labels: '状态:待反馈'
-          inactive-day: 7
+          inactive-day: 30
           body: |
-            由于该 issue 被标记为 状态:待反馈，却 7 天未收到回应。现关闭 issue，若有任何问题，可评论回复。
-      - name: needs more info
-        uses: actions-cool/issues-helper@v2
-        with:
-          actions: 'close-issues'
-          labels: 'needs-more-info'
-          inactive-day: 7
-          body: |
-            Since the issue was labeled with `needs-more-info`, but no response in 7 days. This issue will be closed. If you have any questions, you can comment and reply.
-
+            您超过 30 天未反馈信息，我们将关闭该 issue，如有需求您可以重新打开或者提交新的 issue。
+      
