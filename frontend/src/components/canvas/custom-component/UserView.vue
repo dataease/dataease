@@ -213,7 +213,9 @@ export default {
           jumpCount++
         }
       })
-      jumpCount && trackMenuInfo.push('jump')
+      if (this.scaleCoefficientType === 'pc') {
+        jumpCount && trackMenuInfo.push('jump')
+      }
       linkageCount && trackMenuInfo.push('linkage')
       this.drillFields.length && trackMenuInfo.push('drill')
       return trackMenuInfo
