@@ -35,18 +35,7 @@
         </el-col>
         <el-col :span="16" class="preview-show">
           <el-row v-if="linkJumpInfo">
-            <el-row style="margin-top: 10px">
-              <el-col :span="4" style="margin-left: 20px">
-                {{ $t('panel.open_model') }}：
-              </el-col>
-              <el-col :span="10">
-                <el-radio-group v-model="linkJumpInfo.jumpType" size="mini">
-                  <el-radio label="_self">{{ $t('panel.now_window') }}</el-radio>
-                  <el-radio label="_blank">{{ $t('panel.new_window') }}</el-radio>
-                </el-radio-group>
-              </el-col>
-            </el-row>
-            <el-row style="margin-top: 10px">
+            <el-row style="margin-top: 10px;height: 30px;">
               <el-col :span="4" style="margin-left: 20px">
                 {{ $t('panel.link_type') }}：
               </el-col>
@@ -67,6 +56,17 @@
                   @select="panelNodeClick"
                   @input="inputVal"
                 />
+              </el-col>
+            </el-row>
+            <el-row style="margin-top: 10px;height: 30px">
+              <el-col :span="4" style="margin-left: 20px">
+                {{ $t('panel.open_model') }}：
+              </el-col>
+              <el-col :span="10">
+                <el-radio-group v-model="linkJumpInfo.jumpType" size="mini">
+                  <el-radio label="_self">{{ $t('panel.now_window') }}</el-radio>
+                  <el-radio label="_blank">{{ $t('panel.new_window') }}</el-radio>
+                </el-radio-group>
               </el-col>
             </el-row>
             <el-row v-if="linkJumpInfo.linkType==='inner'" style="margin-top: 5px;" class="top_border">
