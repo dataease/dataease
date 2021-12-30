@@ -118,6 +118,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         } catch (Exception e) {
             error(taskInstance, e);
             LogUtil.error(e.getMessage(), e);
+            e.printStackTrace();
         }
     }
 
