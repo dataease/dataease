@@ -40,6 +40,7 @@
 
         <!--手机视图详情-->
         <el-dialog
+          :title="'['+showChartInfo.name+']'+$t('chart.chart_details')"
           :visible.sync="mobileChartDetailsVisible"
           :fullscreen="true"
           class="mobile-dialog-css"
@@ -162,7 +163,7 @@ export default {
       }
       if (this.backScreenShot) {
         style.height = this.mainHeight
-      } else if (this.terminal === 'pc') {
+      } else {
         style.padding = '5px'
       }
       return style
@@ -294,7 +295,6 @@ export default {
     openChartDetailsDialog(chartInfo) {
       this.showChartInfo = chartInfo.chart
       this.showChartTableInfo = chartInfo.tableChart
-      // this.mobileChartDetailsVisible = true
       if (this.terminal === 'pc') {
         this.chartDetailsVisible = true
       } else {
@@ -371,9 +371,6 @@ export default {
 
   ::v-deep .el-tabs__nav{
    z-index: 0;
-  }
-  .mobile-dialog-css ::v-deep .el-dialog__headerbtn{
-    top: 5px;
   }
 
 </style>

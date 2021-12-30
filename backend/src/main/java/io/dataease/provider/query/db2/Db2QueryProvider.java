@@ -76,7 +76,7 @@ public class Db2QueryProvider extends QueryProvider {
 
     @Override
     public String createSQLPreview(String sql, String orderBy) {
-        return sqlFix(sql) + " fetch first 1000 rows only;";
+        return "SELECT * FROM (" + sqlFix(sql) + ") DE_TMP " + " fetch first 1000 rows only;";
     }
 
     @Override
@@ -140,6 +140,12 @@ public class Db2QueryProvider extends QueryProvider {
         st_sql.add("isGroup", isGroup);
         if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
+
+        String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
+        List<String> wheres = new ArrayList<>();
+        if (customWheres != null) wheres.add(customWheres);
+        if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
+
         return st_sql.render();
     }
 

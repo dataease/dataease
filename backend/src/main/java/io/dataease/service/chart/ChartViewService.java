@@ -8,7 +8,6 @@ import io.dataease.base.mapper.ext.ExtChartGroupMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
 import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.JdbcConstants;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
@@ -304,9 +303,6 @@ public class ChartViewService {
                     if (StringUtils.equalsIgnoreCase(dto.getId(), chartViewFieldDTO.getId())) {
                         isDrill = true;
                         DatasetTableField datasetTableField = dataSetTableFieldsService.get(dto.getId());
-                        if (ObjectUtils.isEmpty(datasetTableField)) {
-                            DEException.throwException(Translator.get("i18n_drill_field_not_exist"));
-                        }
                         ChartViewFieldDTO d = new ChartViewFieldDTO();
                         BeanUtils.copyBean(d, datasetTableField);
 

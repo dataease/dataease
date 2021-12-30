@@ -887,7 +887,9 @@ public class DataSetTableService {
         List<String[]> data = result.get("dataList");
         List<TableFiled> fields = result.get("fieldList");
         String[] fieldArray = fields.stream().map(TableFiled::getFieldName).toArray(String[]::new);
-
+        if (checkIsRepeat(fieldArray)) {
+            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
+        }
         List<Map<String, Object>> jsonArray = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(data)) {
             jsonArray = data.stream().map(ele -> {
@@ -1548,11 +1550,8 @@ public class DataSetTableService {
             List<String> originNameList = new ArrayList<>();
             for (int i = 0; i < fields.size(); i++) {
                 TableFiled filed = fields.get(i);
-                System.out.println(new Gson().toJson(filed));
                 originNameList.add(filed.getFieldName());
-
                 DatasetTableField datasetTableField = DatasetTableField.builder().build();
-
                 // 物理字段名设定为唯一，查询当前数据集下是否已存在该字段，存在则update，不存在则insert
                 DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
                 // 字段名一致，认为字段没有改变
