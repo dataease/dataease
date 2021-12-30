@@ -20,7 +20,6 @@ import io.dataease.service.system.EmailService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -67,13 +66,10 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
         XpackEmailTemplateDTO emailTemplate = (XpackEmailTemplateDTO) jobDataMap.get("emailTemplate");
         SysUserEntity creator = (SysUserEntity) jobDataMap.get("creator");
-        proxy().sendReport(taskInstance, emailTemplate, creator);
+        sendReport(taskInstance, emailTemplate, creator);
 
     }
 
-    public EmailTaskHandler proxy() {
-        return CommonBeanFactory.getBean(EmailTaskHandler.class);
-    }
 
     public Long saveInstance(GlobalTaskInstance taskInstance) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
@@ -102,7 +98,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         emailXpackService.saveInstance(taskInstance);
     }
 
-    @Async
+
     public void sendReport(GlobalTaskInstance taskInstance, XpackEmailTemplateDTO emailTemplateDTO,
                            SysUserEntity user) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
@@ -122,6 +118,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         } catch (Exception e) {
             error(taskInstance, e);
             LogUtil.error(e.getMessage(), e);
+            e.printStackTrace();
         }
     }
 

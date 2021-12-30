@@ -261,6 +261,10 @@ export default {
         if (!this.preCanvasPanel || this.preCanvasPanel.resultCount !== newVal.panel.resultCount || this.preCanvasPanel.resultMode !== newVal.panel.resultMode) {
           this.getData(this.element.propValue.viewId, false)
         }
+        // 如果gap有变化刷新
+        if (this.preCanvasPanel && this.preCanvasPanel.gap !== newVal.panel.gap) {
+          this.$refs[this.element.propValue.id].chartResize()
+        }
         this.preCanvasPanel = deepCopy(newVal.panel)
       },
       deep: true

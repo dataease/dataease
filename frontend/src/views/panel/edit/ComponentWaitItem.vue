@@ -22,7 +22,7 @@
       :style="getComponentStyleDefault(config.style)"
       :is-edit="false"
       :element="config"
-      :h="itemHeight"
+      :h="outItemHeight"
     />
   </div>
 </template>
@@ -53,6 +53,9 @@ export default {
     }
   },
   computed: {
+    outItemHeight() {
+      return this.itemHeight - (4 * this.componentGap)
+    },
     // 移动端编辑组件选择按钮显示
     mobileCheckBarShow() {
       // 显示条件：1.当前是移动端画布编辑状态
@@ -74,7 +77,8 @@ export default {
     },
     ...mapState([
       'mobileLayoutStatus',
-      'componentData'
+      'componentData',
+      'componentGap'
     ])
   },
   methods: {
