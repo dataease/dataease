@@ -32,12 +32,6 @@ public class DataSetTableFieldsService {
     }
 
     public DatasetTableField save(DatasetTableField datasetTableField) {
-        DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
-        datasetTableFieldExample.createCriteria().andNameEqualTo(datasetTableField.getName()).andTableIdEqualTo(datasetTableField.getTableId());
-        List<DatasetTableField> datasetTableFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
-        if (CollectionUtils.isNotEmpty(datasetTableFields)) {
-            DEException.throwException(Translator.get("i18n_field_name_repeat"));
-        }
         if (StringUtils.isEmpty(datasetTableField.getId())) {
             datasetTableField.setId(UUID.randomUUID().toString());
             // 若dataeasename为空，则用MD5(id)作为dataeasename
@@ -52,6 +46,21 @@ public class DataSetTableFieldsService {
             datasetTableFieldMapper.updateByPrimaryKeySelective(datasetTableField);
         }
         return datasetTableField;
+    }
+
+    public void checkFieldName(DatasetTableField datasetTableField) {
+        if (StringUtils.isNotEmpty(datasetTableField.getName()) && StringUtils.isNotEmpty(datasetTableField.getTableId())) {
+            DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+            DatasetTableFieldExample.Criteria criteria = datasetTableFieldExample.createCriteria();
+            criteria.andNameEqualTo(datasetTableField.getName()).andTableIdEqualTo(datasetTableField.getTableId());
+            if (StringUtils.isNotEmpty(datasetTableField.getId())) {
+                criteria.andIdNotEqualTo(datasetTableField.getId());
+            }
+            List<DatasetTableField> datasetTableFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
+            if (CollectionUtils.isNotEmpty(datasetTableFields)) {
+                DEException.throwException(Translator.get("i18n_field_name_repeat"));
+            }
+        }
     }
 
     public List<DatasetTableField> list(DatasetTableField datasetTableField) {

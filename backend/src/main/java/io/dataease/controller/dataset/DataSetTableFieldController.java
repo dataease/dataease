@@ -5,13 +5,19 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.filter.F2CLinkFilter;
 import io.dataease.base.domain.DatasetTableField;
+import io.dataease.base.domain.DatasetTableFieldExample;
+import io.dataease.base.mapper.DatasetTableFieldMapper;
+import io.dataease.commons.exception.DEException;
 import io.dataease.controller.request.dataset.MultFieldValuesRequest;
 import io.dataease.controller.response.DatasetTableField4Type;
+import io.dataease.i18n.Translator;
 import io.dataease.service.dataset.DataSetFieldService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -73,6 +79,7 @@ public class DataSetTableFieldController {
     @ApiOperation("保存")
     @PostMapping("save")
     public DatasetTableField save(@RequestBody DatasetTableField datasetTableField) {
+        dataSetTableFieldsService.checkFieldName(datasetTableField);
         return dataSetTableFieldsService.save(datasetTableField);
     }
 
@@ -85,7 +92,7 @@ public class DataSetTableFieldController {
     @ApiOperation("多字段值枚举")
     @PostMapping("linkMultFieldValues")
     public List<Object> linkMultFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
-        HttpServletRequest request =((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String linkToken = request.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
         DecodedJWT jwt = JWT.decode(linkToken);
         Long userId = jwt.getClaim("userId").asLong();
