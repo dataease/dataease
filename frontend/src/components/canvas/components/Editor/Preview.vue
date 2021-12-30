@@ -4,7 +4,7 @@
       <div
         id="canvasInfoTemp"
         ref="canvasInfoTemp"
-        :style="[{height:mainHeight},screenShotStyle]"
+        :style="[canvasInfoTempStyle,screenShotStyle]"
         class="main-class"
         @mouseup="deselectCurComponent"
         @mousedown="handleMouseDown"
@@ -133,6 +133,19 @@ export default {
   computed: {
     canvasInfoMainStyle() {
       if (this.backScreenShot) {
+        return {
+          width: '100%',
+          height: this.mainHeight
+        }
+      } else {
+        return {
+          width: '100%',
+          height: '100%'
+        }
+      }
+    },
+    canvasInfoTempStyle() {
+      if (this.screenShot) {
         return {
           width: '100%',
           height: this.mainHeight
