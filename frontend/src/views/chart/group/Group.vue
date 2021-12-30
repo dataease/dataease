@@ -195,6 +195,9 @@
                 :options="chartGroupTreeAvailable"
                 :normalizer="normalizer"
                 :placeholder="$t('chart.select_group')"
+                :noChildrenText="$t('commons.treeselect.no_children_text')"
+                :noOptionsText="$t('commons.treeselect.no_options_text')"
+                :noResultsText="$t('commons.treeselect.no_results_text')"
               />
             </el-form-item>
           </el-col>
