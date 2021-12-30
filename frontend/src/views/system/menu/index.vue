@@ -96,6 +96,9 @@
             :load-options="loadMenus"
             style="width: 450px;"
             :placeholder="$t('menu.parent_category')"
+            :noChildrenText="$t('commons.treeselect.no_children_text')"
+            :noOptionsText="$t('commons.treeselect.no_options_text')"
+            :noResultsText="$t('commons.treeselect.no_results_text')"
           />
         </el-form-item>
       </el-form>

@@ -344,7 +344,12 @@ export default {
     },
     ukey_title: 'API Keys',
     thumbnail: '缩略图',
-    confirm_delete: '确认删除'
+    confirm_delete: '确认删除',
+    treeselect: {
+      no_children_text: '没有子节点',
+      no_options_text: '没有可用选项',
+      no_results_text: '没有匹配的结果'
+    }
   },
   documentation: {
     documentation: '文档',
@@ -1449,7 +1454,7 @@ export default {
     open_mode: '打开方式',
     new_window: '新开页面',
     now_window: '当前页面',
-    hyperLinks: '超链接',
+    hyperLinks: '目标地址',
     link_open_tips: '仪表板非编辑状态可打开链接',
     data_loading: '数据准备中...',
     export_loading: '导出中...',
