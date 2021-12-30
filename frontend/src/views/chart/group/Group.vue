@@ -145,6 +145,7 @@
           :model="groupForm"
           :rules="groupFormRules"
           @keypress.enter.native="saveGroup(groupForm)"
+          @submit.native.prevent
         >
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="groupForm.name" />
@@ -159,7 +160,7 @@
 
     <!--rename chart-->
     <el-dialog v-dialogDrag :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
-      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keypress.enter.native="saveTable(tableForm)">
+      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @submit.native.prevent @keypress.enter.native="saveTable(tableForm)">
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="tableForm.name" />
         </el-form-item>
