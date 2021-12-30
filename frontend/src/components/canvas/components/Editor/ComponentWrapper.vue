@@ -85,7 +85,7 @@ export default {
       return (this.curComponent && this.config === this.curComponent) && !this.previewVisible
     },
     curGap() {
-      return this.config.auxiliaryMatrix ? this.componentGap : 0
+      return (this.canvasStyleData.panel.gap === 'yes' && this.config.auxiliaryMatrix) ? this.componentGap : 0
     },
     ...mapState([
       'mobileLayoutStatus',
