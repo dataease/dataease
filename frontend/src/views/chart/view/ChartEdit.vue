@@ -232,6 +232,9 @@
                         :normalizer="normalizer"
                         @input="calcData"
                         @deselect="calcData"
+                        :noChildrenText="$t('commons.treeselect.no_children_text')"
+                        :noOptionsText="$t('commons.treeselect.no_options_text')"
+                        :noResultsText="$t('commons.treeselect.no_results_text')"
                       />
                     </span>
                   </el-row>

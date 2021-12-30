@@ -40,6 +40,9 @@
           :load-options="loadDepts"
           :auto-load-root-options="false"
           :placeholder="$t('user.choose_org')"
+          :noChildrenText="$t('commons.treeselect.no_children_text')"
+          :noOptionsText="$t('commons.treeselect.no_options_text')"
+          :noResultsText="$t('commons.treeselect.no_results_text')"
           @open="filterData"
         />
       </el-form-item>

@@ -343,7 +343,12 @@ export default {
     },
     ukey_title: 'API Keys',
     thumbnail: 'thumbnail',
-    confirm_delete: 'Confirm delete'
+    confirm_delete: 'Confirm delete',
+    treeselect: {
+      no_children_text: 'No sub-options.',
+      no_options_text: 'No options available.',
+      no_results_text: 'No results found...'
+    }
   },
   documentation: {
     documentation: 'Documentation',
@@ -1437,7 +1442,7 @@ export default {
     open_mode: 'Open Model',
     new_window: 'New Window',
     now_window: 'Now Window',
-    hyperLinks: 'hyperlinks',
+    hyperLinks: 'target address',
     link_open_tips: 'Open When Panel Not In Edit Status',
     data_loading: 'Data Loading...',
     export_loading: 'Export Loading...',

@@ -107,6 +107,9 @@
             :load-options="loadDepts"
             style="width: 430px"
             :placeholder="$t('user.choose_org')"
+            :noChildrenText="$t('commons.treeselect.no_children_text')"
+            :noOptionsText="$t('commons.treeselect.no_options_text')"
+            :noResultsText="$t('commons.treeselect.no_results_text')"
           />
         </el-form-item>
         <el-form-item style="margin-bottom: 0;" :label="$t('commons.role')" prop="roleIds">
