@@ -66,6 +66,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
         XpackEmailTemplateDTO emailTemplate = (XpackEmailTemplateDTO) jobDataMap.get("emailTemplate");
         SysUserEntity creator = (SysUserEntity) jobDataMap.get("creator");
+        LogUtil.info("start execute send panel report task...");
         sendReport(taskInstance, emailTemplate, creator);
 
     }
@@ -103,8 +104,14 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                            SysUserEntity user) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         try {
-            byte[] bytes = emailXpackService.printData(panelUrl(emailTemplateDTO.getPanelId()), tokenByUser(user),
-                    buildPixel(emailTemplateDTO));
+            String panelId = emailTemplateDTO.getPanelId();
+            String url = panelUrl(panelId);
+            String token = tokenByUser(user);
+            XpackPixelEntity xpackPixelEntity = buildPixel(emailTemplateDTO);
+            LogUtil.info("url is " + url);
+            LogUtil.info("token is " + token);
+            byte[] bytes = emailXpackService.printData(url, token, xpackPixelEntity);
+            LogUtil.info("picture of " + url + " is finished");
             // 下面继续执行发送邮件的
             String recipients = emailTemplateDTO.getRecipients();
             byte[] content = emailTemplateDTO.getContent();
@@ -118,7 +125,6 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         } catch (Exception e) {
             error(taskInstance, e);
             LogUtil.error(e.getMessage(), e);
-            e.printStackTrace();
         }
     }
 
