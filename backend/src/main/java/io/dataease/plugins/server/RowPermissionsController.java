@@ -27,12 +27,18 @@ public class RowPermissionsController {
     @PostMapping("save")
     public void save(@RequestBody DatasetRowPermissions datasetRowPermissions) throws Exception {
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
+
+        DataSetRowPermissionsDTO request = new DataSetRowPermissionsDTO();
+        request.setAuthTargetType(datasetRowPermissions.getAuthTargetType());
+        request.setAuthTargetId(datasetRowPermissions.getAuthTargetId());
+        request.setDatasetFieldId(datasetRowPermissions.getDatasetFieldId());
+        List<DataSetRowPermissionsDTO> rowPermissionsDTOS = rowPermissionService.searchRowPermissions(request);
         if(StringUtils.isEmpty(datasetRowPermissions.getId())){
-            DataSetRowPermissionsDTO request = new DataSetRowPermissionsDTO();
-            request.setAuthTargetType(datasetRowPermissions.getAuthTargetType());
-            request.setAuthTargetId(datasetRowPermissions.getAuthTargetId());
-            request.setDatasetFieldId(datasetRowPermissions.getDatasetFieldId());
-            if(!CollectionUtils.isEmpty(rowPermissionService.searchRowPermissions(request))){
+            if(!CollectionUtils.isEmpty(rowPermissionsDTOS)){
+                throw new Exception(Translator.get("i18n_rp_exist"));
+            }
+        }else {
+            if(!CollectionUtils.isEmpty(rowPermissionsDTOS) && rowPermissionsDTOS.size() > 1){
                 throw new Exception(Translator.get("i18n_rp_exist"));
             }
         }
