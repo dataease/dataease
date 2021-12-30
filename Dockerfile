@@ -5,8 +5,8 @@ RUN echo -e 'http://mirrors.aliyun.com/alpine/edge/main/\nhttp://mirrors.aliyun.
 RUN apk add chromium chromium-chromedriver fontconfig --no-cache --allow-untrusted
 
 RUN mkdir -p /usr/local/sbin/ \
-    cp /usr/bin/chromedriver /usr/local/sbin/ \
-    chmod a+x chromedriver
+    && cp /usr/bin/chromedriver /usr/local/sbin/ \
+    && chmod a+x chromedriver
 
 ADD simsun.ttc /usr/share/fonts/
 
