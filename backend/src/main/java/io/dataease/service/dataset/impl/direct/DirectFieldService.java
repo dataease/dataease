@@ -42,7 +42,7 @@ public class DirectFieldService implements DataSetFieldService {
     private DataSetTableUnionService dataSetTableUnionService;
 
     @Override
-    public List<Object> fieldValues(String fieldId) throws Exception{
+    public List<Object> fieldValues(String fieldId, Long userId) throws Exception{
         List<DatasetTableField> list = dataSetTableFieldsService.getListByIds(new ArrayList<String>() {{
             add(fieldId);
         }});
@@ -58,7 +58,7 @@ public class DirectFieldService implements DataSetFieldService {
 
         DatasetTableField datasetTableField = DatasetTableField.builder().tableId(tableId).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
-        List<ChartFieldCustomFilterDTO> customFilter = dataSetTableService.getCustomFilters(fields, datasetTable, null);
+        List<ChartFieldCustomFilterDTO> customFilter = dataSetTableService.getCustomFilters(fields, datasetTable, userId);
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceProvider datasourceProvider = null;

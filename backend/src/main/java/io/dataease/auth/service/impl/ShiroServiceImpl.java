@@ -50,7 +50,6 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/api/link/validate**", ANON);
         filterChainDefinitionMap.put("/api/map/areaEntitys/**", ANON);
         filterChainDefinitionMap.put("/dataset/field/fieldValues/**", ANON);
-        filterChainDefinitionMap.put("/dataset/field/multFieldValues", ANON);
         filterChainDefinitionMap.put("/linkJump/queryPanelJumpInfo/**", ANON);
 
         filterChainDefinitionMap.put("/tempMobileLink/**", ANON);
@@ -84,6 +83,7 @@ public class ShiroServiceImpl implements ShiroService {
 
         filterChainDefinitionMap.put("/api/link/resourceDetail/**", "link");
         filterChainDefinitionMap.put("/api/link/viewDetail/**", "link");
+        filterChainDefinitionMap.put("/dataset/field/linkMultFieldValues", ANON);
 
         filterChainDefinitionMap.put("/**", "authc");
 

@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class F2CLinkFilter extends AnonymousFilter {
 
-    private static final String LINK_TOKEN_KEY = "LINK-PWD-TOKEN";
+    public static final String LINK_TOKEN_KEY = "LINK-PWD-TOKEN";
 
     @Override
     protected boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) {

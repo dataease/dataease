@@ -1,6 +1,9 @@
 package io.dataease.controller.panel.server;
 
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import io.dataease.auth.filter.F2CLinkFilter;
 import io.dataease.base.domain.PanelLink;
 import io.dataease.controller.panel.api.LinkApi;
 import io.dataease.controller.request.chart.ChartExtRequest;
@@ -14,8 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.util.Map;
 
@@ -91,6 +97,11 @@ public class LinkServer implements LinkApi {
 
     @Override
     public Object viewDetail(String viewId, ChartExtRequest requestList) throws Exception {
+        HttpServletRequest request =((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String linkToken = request.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
+        DecodedJWT jwt = JWT.decode(linkToken);
+        Long userId = jwt.getClaim("userId").asLong();
+        requestList.setUser(userId);
         return chartViewService.getData(viewId, requestList);
     }
 

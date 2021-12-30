@@ -146,6 +146,15 @@ export function multFieldValues(data) {
   })
 }
 
+export function linkMultFieldValues(data) {
+  return request({
+    url: '/dataset/field/linkMultFieldValues',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function isKettleRunning(showLoading = true) {
   return request({
     url: '/dataset/group/isKettleRunning',

@@ -456,17 +456,18 @@ public class DataSetTableService {
         }
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
         CurrentUserDto user = AuthUtils.getUser();
-        List<Long> roleIds;
-        Long deptId;
+        List<Long> roleIds = new ArrayList<>();
+        Long deptId = null;
 
-        if(user == null){
-            SysUserEntity userEntity = authUserService.getUserById(userId);
-            if(userEntity.getIsAdmin()){
-                return datasetRowPermissions;
-            }
-            deptId = userEntity.getDeptId();
-            roleIds = authUserService.roles(userId).stream().map(r -> Long.valueOf(r)).collect(Collectors.toList());
-        }else {
+        if(user == null && userId == null ){
+            return datasetRowPermissions;
+        }
+
+        if(user != null && userId != null ){
+            return datasetRowPermissions;
+        }
+
+        if(user != null){
             if(user.getIsAdmin()){
                 return datasetRowPermissions;
             }
@@ -474,7 +475,16 @@ public class DataSetTableService {
             deptId = user.getDeptId();
             roleIds = user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList());
         }
-        userId = user != null ? user.getUserId() : userId;
+
+        if(userId != null){
+            SysUserEntity userEntity = authUserService.getUserById(userId);
+            if(userEntity.getIsAdmin()){
+                return datasetRowPermissions;
+            }
+            deptId = userEntity.getDeptId();
+            roleIds = authUserService.roles(userId).stream().map(r -> Long.valueOf(r)).collect(Collectors.toList());
+        }
+
 
         DataSetRowPermissionsDTO dataSetRowPermissionsDTO = new DataSetRowPermissionsDTO();
         dataSetRowPermissionsDTO.setDatasetId(datasetId);

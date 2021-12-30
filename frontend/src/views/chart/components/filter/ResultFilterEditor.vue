@@ -239,7 +239,7 @@ export default {
     initEnumOptions() {
       // 查找枚举值
       if (this.item.deType === 0 || this.item.deType === 5) {
-        multFieldValues([this.item.id]).then(res => {
+        multFieldValues({fieldIds: [this.item.id]}).then(res => {
           this.fieldOptions = this.optionDatas(res.data)
         })
       }
