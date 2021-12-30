@@ -6,7 +6,7 @@ RUN apk add chromium chromium-chromedriver fontconfig --no-cache --allow-untrust
 
 RUN mkdir -p /usr/local/sbin/ \
     && cp /usr/bin/chromedriver /usr/local/sbin/ \
-    && chmod a+x chromedriver
+    && chmod a+x /usr/local/sbin/chromedriver
 
 ADD simsun.ttc /usr/share/fonts/
 
