@@ -580,6 +580,7 @@ export default {
             showClose: true
           })
           this.treeNode()
+          this.$emit('switchComponent', { name: '' })
         })
       }).catch(() => {
       })

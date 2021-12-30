@@ -457,6 +457,7 @@ export default {
             showClose: true
           })
           this.treeNode()
+          this.$emit('switchComponent', { name: '' })
         })
       }).catch(() => {
       })
@@ -475,6 +476,7 @@ export default {
             showClose: true
           })
           this.treeNode()
+          this.$emit('switchComponent', { name: '' })
           this.$store.dispatch('dataset/setTable', new Date().getTime())
         })
       }).catch(() => {
