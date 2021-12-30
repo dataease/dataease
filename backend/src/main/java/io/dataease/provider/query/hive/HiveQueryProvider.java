@@ -106,7 +106,7 @@ public class HiveQueryProvider extends QueryProvider {
                     } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
                         fieldName = String.format(HiveConstants.CAST, originField, HiveConstants.DEFAULT_FLOAT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                        fieldName = String.format(HiveConstants.DATE_FORMAT, originField, HiveConstants.DEFAULT_DATE_FORMAT);
+                        fieldName = String.format(HiveConstants.STR_TO_DATE, originField, HiveConstants.DEFAULT_DATE_FORMAT);
                     } else {
                         fieldName = originField;
                     }
