@@ -51,7 +51,7 @@
       </el-tooltip>
 
       <div v-if="attrShow('fontSize')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.fontSize" type="number" size="mini" min="12" max="128" @change="styleChange" />
+        <el-input v-model="initFontSize" type="number" size="mini" :min="miniFontSize" :max="maxFontSize" @change="styleChange" />
       </div>
 
       <el-tooltip v-if="attrShow('fontWeight')" :content="$t('panel.fontWeight')">
@@ -169,6 +169,9 @@ export default {
       showMain: true,
       innerOpacity: 0,
       mainWidthOffset: 600,
+      initFontSize: 12,
+      miniFontSize: 12,
+      maxFontSize: 128,
       textAlignOptions: [
         {
           icon: 'iconfont icon-juzuo',
@@ -285,7 +288,6 @@ export default {
       ]
     }
   },
-
   computed: {
     boardDivColor() {
       const style = {
@@ -335,6 +337,17 @@ export default {
         this.styleInfo['opacity'] = this.innerOpacity / 100
       }
     },
+    initFontSize: {
+      handler(newVal) {
+        if (newVal < this.miniFontSize) {
+          this.styleInfo.fontSize = this.miniFontSize
+        } else if (newVal > this.maxFontSize) {
+          this.styleInfo.fontSize = this.maxFontSize
+        } else {
+          this.styleInfo.fontSize = newVal
+        }
+      }
+    },
     curComponent: {
       handler(oldVal, newVal) {
         this.$nextTick(() => {
@@ -346,6 +359,9 @@ export default {
   },
   mounted() {
     this.init()
+    if (this.attrShow('fontSize')) {
+      this.initFontSize = this.styleInfo.fontSize
+    }
   },
 
   methods: {
@@ -389,7 +405,12 @@ export default {
     getPositionY(y) {
       return y * this.curCanvasScale.scalePointHeight
     },
+    fontSizeChange(val) {
+      this.styleInfo.fontSize = val
+      this.styleChange()
+    },
     styleChange() {
+      console.log('styleChange')
       this.$store.commit('recordStyleChange')
     }
   }
