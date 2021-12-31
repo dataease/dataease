@@ -51,7 +51,7 @@
       </el-tooltip>
 
       <div v-if="attrShow('fontSize')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.fontSize" type="number" size="mini" min="12" max="128" @change="styleChange" />
+        <el-input v-model="initFontSize" type="number" size="mini" :min="miniFontSize" :max="maxFontSize" @change="styleChange" />
       </div>
 
       <el-tooltip v-if="attrShow('fontWeight')" :content="$t('panel.fontWeight')">
@@ -150,6 +150,7 @@ import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
 import VideoLinks from '@/components/canvas/components/Editor/VideoLinks'
 import DateFormat from '@/components/canvas/components/Editor/DateFormat'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
+import { chartTransStr2Object } from '@/views/panel/panel'
 
 export default {
   components: { Hyperlinks, DateFormat, VideoLinks },
@@ -169,6 +170,9 @@ export default {
       showMain: true,
       innerOpacity: 0,
       mainWidthOffset: 600,
+      initFontSize: 12,
+      miniFontSize: 12,
+      maxFontSize: 128,
       textAlignOptions: [
         {
           icon: 'iconfont icon-juzuo',
@@ -285,7 +289,6 @@ export default {
       ]
     }
   },
-
   computed: {
     boardDivColor() {
       const style = {
@@ -330,9 +333,28 @@ export default {
 
   },
   watch: {
+    styleInfo: {
+      handler(newVal, oldVla) {
+        if (newVal.fontSize) {
+          this.initFontSize = newVal.fontSize
+        }
+      },
+      deep: true
+    },
     innerOpacity: {
       handler(oldVal, newVal) {
         this.styleInfo['opacity'] = this.innerOpacity / 100
+      }
+    },
+    initFontSize: {
+      handler(newVal) {
+        if (newVal < this.miniFontSize) {
+          this.styleInfo.fontSize = this.miniFontSize
+        } else if (newVal > this.maxFontSize) {
+          this.styleInfo.fontSize = this.maxFontSize
+        } else {
+          this.styleInfo.fontSize = newVal
+        }
       }
     },
     curComponent: {
@@ -346,6 +368,9 @@ export default {
   },
   mounted() {
     this.init()
+    if (this.attrShow('fontSize')) {
+      this.initFontSize = this.styleInfo.fontSize
+    }
   },
 
   methods: {
