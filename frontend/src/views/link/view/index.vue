@@ -79,6 +79,7 @@ export default {
         data.forEach(item => {
           item.type !== 'custom' && (item.id = uuid.v1())
           item.user = this.user
+          item.fromSource = 'link'
         })
       }
       return data
