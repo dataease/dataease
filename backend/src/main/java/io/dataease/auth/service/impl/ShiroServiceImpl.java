@@ -51,6 +51,7 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/api/map/areaEntitys/**", ANON);
         filterChainDefinitionMap.put("/dataset/field/fieldValues/**", ANON);
         filterChainDefinitionMap.put("/linkJump/queryPanelJumpInfo/**", ANON);
+        filterChainDefinitionMap.put("/linkJump/queryTargetPanelJumpInfo", ANON);
 
         filterChainDefinitionMap.put("/tempMobileLink/**", ANON);
         filterChainDefinitionMap.put("/de-app/**", ANON);
