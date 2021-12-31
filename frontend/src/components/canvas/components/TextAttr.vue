@@ -150,6 +150,7 @@ import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
 import VideoLinks from '@/components/canvas/components/Editor/VideoLinks'
 import DateFormat from '@/components/canvas/components/Editor/DateFormat'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
+import { chartTransStr2Object } from '@/views/panel/panel'
 
 export default {
   components: { Hyperlinks, DateFormat, VideoLinks },
@@ -332,6 +333,14 @@ export default {
 
   },
   watch: {
+    styleInfo: {
+      handler(newVal, oldVla) {
+        if (newVal.fontSize) {
+          this.initFontSize = newVal.fontSize
+        }
+      },
+      deep: true
+    },
     innerOpacity: {
       handler(oldVal, newVal) {
         this.styleInfo['opacity'] = this.innerOpacity / 100
@@ -405,12 +414,7 @@ export default {
     getPositionY(y) {
       return y * this.curCanvasScale.scalePointHeight
     },
-    fontSizeChange(val) {
-      this.styleInfo.fontSize = val
-      this.styleChange()
-    },
     styleChange() {
-      console.log('styleChange')
       this.$store.commit('recordStyleChange')
     }
   }
