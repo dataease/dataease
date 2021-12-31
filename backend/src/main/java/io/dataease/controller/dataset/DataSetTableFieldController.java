@@ -73,6 +73,7 @@ public class DataSetTableFieldController {
     @ApiOperation("保存")
     @PostMapping("save")
     public DatasetTableField save(@RequestBody DatasetTableField datasetTableField) {
+        dataSetTableFieldsService.checkFieldName(datasetTableField);
         return dataSetTableFieldsService.save(datasetTableField);
     }
 
@@ -85,7 +86,7 @@ public class DataSetTableFieldController {
     @ApiOperation("多字段值枚举")
     @PostMapping("linkMultFieldValues")
     public List<Object> linkMultFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
-        HttpServletRequest request =((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String linkToken = request.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
         DecodedJWT jwt = JWT.decode(linkToken);
         Long userId = jwt.getClaim("userId").asLong();

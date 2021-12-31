@@ -41,6 +41,9 @@ public class RowPermissionsController {
             if(!CollectionUtils.isEmpty(rowPermissionsDTOS) && rowPermissionsDTOS.size() > 1){
                 throw new Exception(Translator.get("i18n_rp_exist"));
             }
+            if(rowPermissionsDTOS.size() == 1 && !rowPermissionsDTOS.get(0).getId().equalsIgnoreCase(datasetRowPermissions.getId())){
+                throw new Exception(Translator.get("i18n_rp_exist"));
+            }
         }
         rowPermissionService.save(datasetRowPermissions);
     }

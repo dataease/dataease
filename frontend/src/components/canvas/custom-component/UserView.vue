@@ -315,7 +315,7 @@ export default {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
       const hasFilter = this.componentData.filter(item => item.type === 'custom').some(item => item.options.value && !(item.options.value instanceof Object) || (item.options.attrs && item.options.attrs.default && item.options.attrs.default.isDynamic))
-      hasFilter || this.getData(this.element.propValue.viewId, false)
+      if (!hasFilter || this.filters.length > 0) { this.getData(this.element.propValue.viewId, false) }
     }
   },
   methods: {
