@@ -87,8 +87,7 @@ export default {
   computed: {
     sizeInfo() {
       let size
-      if (this.duHeight > this.inputMaxSize) {
-      } else if (this.duHeight > this.inputLargeSize) {
+      if (this.duHeight > this.inputLargeSize) {
         size = 'medium'
       } else if (this.duHeight > this.inputSmallSize) {
         size = 'small'
@@ -100,6 +99,14 @@ export default {
     ...mapState([
       'curCanvasScale'
     ])
+  },
+  watch: {
+    element: {
+      handler() {
+        this.watchSize()
+      },
+      deep: true
+    }
   },
   mounted() {
     this.watchSize()
@@ -121,13 +128,15 @@ export default {
           return
         }
         const titleWidth = this.$refs.deTitle.offsetWidth
-        this.duHeight = height - titleWidth
         this.$nextTick(() => {
-          let min = this.element.style.fontSize * 2 + 50
+          let numRange = 0
+          let min = this.element.style.fontSize * 2 + 30
           if (this.element.component === 'de-number-range') {
-            min = this.element.style.fontSize * 2 + 80
+            min = this.element.style.fontSize * 2 + 55
+            numRange = 25
           }
           if (height < min) {
+            this.duHeight = height - numRange
             this.mainClass = 'condition-main-line'
 
             if (deContentContainer) {
@@ -135,6 +144,7 @@ export default {
               deContentContainer.style.marginLeft = (titleWidth + 15) + 'px'
             }
           } else {
+            this.duHeight = height - titleWidth + numRange
             this.mainClass = ''
             if (deContentContainer) {
               deContentContainer.style.top = '2em'

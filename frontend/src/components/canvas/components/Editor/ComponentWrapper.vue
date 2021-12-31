@@ -12,6 +12,7 @@
       :id="'component' + config.id"
       class="component-custom"
       :style="getComponentStyleDefault(config.style)"
+      style="overflow: hidden"
       :out-style="config.style"
       :element="config"
       :in-screen="inScreen"
