@@ -17,13 +17,13 @@
           {{ $t('commons.all') }}</el-checkbox>
 
         <el-checkbox-group v-model="value" @change="handleCheckedChange">
-          <el-checkbox v-for="item in datas.filter(node => node.id && node.id.includes(keyWord))" :key="item.id" :label="item.id">{{ item.id }}</el-checkbox>
+          <el-checkbox v-for="item in datas.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))" :key="item.id" :label="item.id">{{ item.id }}</el-checkbox>
         </el-checkbox-group>
       </div>
 
       <div v-else class="radio-group-container">
         <el-radio-group v-model="value" @change="changeRadioBox">
-          <el-radio v-for="(item, index) in datas.filter(node => node.id && node.id.includes(keyWord))" :key="index" :label="item.id" @click.native.prevent="testChange(item)">
+          <el-radio v-for="(item, index) in datas.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))" :key="index" :label="item.id" @click.native.prevent="testChange(item)">
             <span>{{ item.id }}</span>
           </el-radio>
         </el-radio-group>
@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import {multFieldValues, linkMultFieldValues} from '@/api/dataset/dataset'
-import {getLinkToken, getToken} from "@/utils/auth";
+import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
+import { getLinkToken, getToken } from '@/utils/auth'
 export default {
 
   props: {
@@ -109,7 +109,7 @@ export default {
     'element.options.attrs.fieldId': function(value, old) {
       if (typeof value === 'undefined' || value === old) return
       this.datas = []
-      let method =  multFieldValues
+      let method = multFieldValues
       const token = this.$store.getters.token || getToken()
       const linkToken = this.$store.getters.linkToken || getLinkToken()
       if (!token && linkToken) {
@@ -117,16 +117,16 @@ export default {
       }
       this.element.options.attrs.fieldId &&
           this.element.options.attrs.fieldId.length > 0 &&
-      method({fieldIds: this.element.options.attrs.fieldId.split(',')}).then(res => {
-            this.datas = this.optionDatas(res.data)
-          }) || (this.element.options.value = '')
+      method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
+        this.datas = this.optionDatas(res.data)
+      }) || (this.element.options.value = '')
     },
     'element.options.attrs.multiple': function(value, old) {
       if (typeof old === 'undefined' || value === old) return
-      if (!this.inDraw) {
-        this.value = value ? [] : null
-        this.element.options.value = ''
-      }
+      // if (!this.inDraw) {
+      this.value = value ? [] : null
+      this.element.options.value = ''
+      // }
 
       this.show = false
       this.$nextTick(() => {
@@ -148,7 +148,7 @@ export default {
         if (!token && linkToken) {
           method = linkMultFieldValues
         }
-        method({fieldIds: this.element.options.attrs.fieldId.split(',')}).then(res => {
+        method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
           this.datas = this.optionDatas(res.data)
           if (this.element.options.attrs.multiple) {
             this.checkAll = this.value.length === this.datas.length

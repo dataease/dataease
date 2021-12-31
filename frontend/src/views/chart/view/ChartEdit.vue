@@ -1466,11 +1466,11 @@ export default {
         }).catch(err => {
           this.resetView()
           this.resetDrill()
-          this.httpRequest.status = err.response.data.success
-          this.httpRequest.msg = err.response.data.message
           this.$nextTick(() => {
             this.getChart(id)
           })
+          this.httpRequest.status = err.response.data.success
+          this.httpRequest.msg = err.response.data.message
           return true
         })
       } else {

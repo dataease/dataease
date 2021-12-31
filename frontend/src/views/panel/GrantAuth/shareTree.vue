@@ -3,7 +3,7 @@
     <el-row>
       <span class="header-title">{{ $t('panel.share_in') }}</span>
       <div class="block" style="margin-top:8px;">
-        <el-tree :data="datas" :props="defaultProps" :highlight-current="true" node-key="name" :default-expanded-keys="expandNodes" @node-click="handleNodeClick">
+        <el-tree ref="topTree" :data="datas" :props="defaultProps" :highlight-current="true" node-key="name" :default-expanded-keys="expandNodes" @node-click="handleNodeClick">
           <span slot-scope="{ data }" class="custom-tree-node father">
             <span style="display: flex; flex: 1 1 0%; width: 0px;" :class="!!data.msgNode ? 'msg-node-class': ''">
               <span v-if="!!data.id">
@@ -20,7 +20,7 @@
     <el-row>
       <span class="header-title">{{ $t('panel.share_out') }}</span>
       <div class="block" style="margin-top:8px;">
-        <el-tree :data="outDatas" :props="defaultProps" :highlight-current="true" node-key="name" :default-expand-all="true">
+        <el-tree ref="botTree" :data="outDatas" :props="defaultProps" :highlight-current="true" node-key="name" :default-expand-all="true">
           <span slot-scope="{ data }" class="custom-tree-node father">
             <span style="display: flex; flex: 1 1 0%; width: 0px;" @click="viewMyShare(data)">
               <span v-if="!!data.id">
@@ -110,6 +110,7 @@ export default {
         this.$store.dispatch('panel/setPanelInfo', data)
         bus.$emit('set-panel-show-type', 1)
       })
+      this.$refs['botTree'].setCurrentKey(null)
     },
     viewMyShare(data) {
       get('panel/group/findOne/' + data.id).then(response => {
@@ -119,6 +120,7 @@ export default {
         this.$store.dispatch('panel/setPanelInfo', data)
         bus.$emit('set-panel-show-type', 2)
       })
+      this.$refs['topTree'].setCurrentKey(null)
     },
     resetID(data) {
       if (data) {

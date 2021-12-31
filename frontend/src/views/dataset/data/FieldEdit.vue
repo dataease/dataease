@@ -347,6 +347,8 @@ export default {
 
       post('/dataset/field/save', item).then(response => {
         this.initField()
+      }).catch(res => {
+        this.initField()
       })
     },
 
