@@ -137,6 +137,10 @@ public class JdbcProvider extends DatasourceProvider {
 
     @Override
     public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
+        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")){
+            datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
+            return fetchResultField(datasourceRequest);
+        }
         List<TableFiled> list = new LinkedList<>();
         try (Connection connection = getConnectionFromPool(datasourceRequest)) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();

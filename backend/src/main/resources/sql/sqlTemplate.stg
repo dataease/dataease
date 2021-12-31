@@ -1,4 +1,4 @@
-querySql(limitFiled, groups, aggregators, filters, orders, table)
+querySql(limitFiled, groups, aggregators, filters, orders, table, notUseAs)
 ::=<<
 SELECT
 <if(limitFiled)>
@@ -7,11 +7,17 @@ SELECT
 <if(!groups && !aggregators)>
     *
 <endif>
-<if(groups)>
+<if(groups && notUseAs)>
+    <groups:{group|<if(group)><group.fieldName> <endif>}; separator=",\n">
+<endif>
+<if(groups && !notUseAs)>
     <groups:{group|<if(group)><group.fieldName> AS <group.fieldAlias><endif>}; separator=",\n">
 <endif>
     <if(groups && aggregators)>,<endif>
-<if(aggregators)>
+<if(aggregators && notUseAs)>
+    <aggregators:{agg|<if(agg)><agg.fieldName> <endif>}; separator=",\n">
+<endif>
+<if(aggregators && !notUseAs)>
     <aggregators:{agg|<if(agg)><agg.fieldName> AS <agg.fieldAlias><endif>}; separator=",\n">
 <endif>
 FROM
@@ -31,7 +37,7 @@ ORDER BY
 >>
 
 
-previewSql(limitFiled, groups, aggregators, filters, orders, table, isGroup)
+previewSql(limitFiled, groups, aggregators, filters, orders, table, isGroup, notUseAs)
 ::=<<
 SELECT
 <if(limitFiled)>
@@ -40,11 +46,17 @@ SELECT
 <if(!groups && !aggregators)>
     *
 <endif>
-<if(groups)>
+<if(groups && notUseAs)>
+    <groups:{group|<if(group)><group.fieldName> <endif>}; separator=",\n">
+<endif>
+<if(groups && !notUseAs)>
     <groups:{group|<if(group)><group.fieldName> AS <group.fieldAlias><endif>}; separator=",\n">
 <endif>
     <if(groups && aggregators)>,<endif>
-<if(aggregators)>
+<if(aggregators && notUseAs)>
+    <aggregators:{agg|<if(agg)><agg.fieldName> <endif>}; separator=",\n">
+<endif>
+<if(aggregators && !notUseAs)>
     <aggregators:{agg|<if(agg)><agg.fieldName> AS <agg.fieldAlias><endif>}; separator=",\n">
 <endif>
 FROM

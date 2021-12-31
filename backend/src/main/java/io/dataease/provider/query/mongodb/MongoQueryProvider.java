@@ -114,7 +114,10 @@ public class MongoQueryProvider extends QueryProvider {
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", isGroup);
-        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+        if (CollectionUtils.isNotEmpty(xFields)) {
+            st_sql.add("groups", xFields);
+            st_sql.add("notUseAs", true);
+        }
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         List<String> wheres = new ArrayList<>();
@@ -233,8 +236,14 @@ public class MongoQueryProvider extends QueryProvider {
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("querySql");
-        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
-        if (CollectionUtils.isNotEmpty(yFields)) st_sql.add("aggregators", yFields);
+        if (CollectionUtils.isNotEmpty(xFields)) {
+            st_sql.add("groups", xFields);
+            st_sql.add("notUseAs", true);
+        }
+        if (CollectionUtils.isNotEmpty(yFields)) {
+            st_sql.add("aggregators", yFields);
+            st_sql.add("notUseAs", true);
+        }
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String sql = st_sql.render();
@@ -302,7 +311,10 @@ public class MongoQueryProvider extends QueryProvider {
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", false);
-        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+        if (CollectionUtils.isNotEmpty(xFields)) {
+            st_sql.add("groups", xFields);
+            st_sql.add("notUseAs", true);
+        }
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String sql = st_sql.render();
@@ -417,8 +429,14 @@ public class MongoQueryProvider extends QueryProvider {
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("querySql");
-        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
-        if (CollectionUtils.isNotEmpty(yFields)) st_sql.add("aggregators", yFields);
+        if (CollectionUtils.isNotEmpty(xFields)) {
+            st_sql.add("groups", xFields);
+            st_sql.add("notUseAs", true);
+        }
+        if (CollectionUtils.isNotEmpty(yFields)) {
+            st_sql.add("aggregators", yFields);
+            st_sql.add("notUseAs", true);
+        }
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String sql = st_sql.render();
@@ -527,8 +545,14 @@ public class MongoQueryProvider extends QueryProvider {
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("querySql");
-        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
-        if (CollectionUtils.isNotEmpty(yFields)) st_sql.add("aggregators", yFields);
+        if (CollectionUtils.isNotEmpty(xFields)) {
+            st_sql.add("groups", xFields);
+            st_sql.add("notUseAs", true);
+        }
+        if (CollectionUtils.isNotEmpty(yFields)) {
+            st_sql.add("aggregators", yFields);
+            st_sql.add("notUseAs", true);
+        }
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String sql = st_sql.render();
@@ -610,7 +634,10 @@ public class MongoQueryProvider extends QueryProvider {
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("querySql");
-        if (CollectionUtils.isNotEmpty(yFields)) st_sql.add("aggregators", yFields);
+        if (CollectionUtils.isNotEmpty(yFields)) {
+            st_sql.add("aggregators", yFields);
+            st_sql.add("notUseAs", true);
+        }
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String sql = st_sql.render();
@@ -735,7 +762,7 @@ public class MongoQueryProvider extends QueryProvider {
                 for (ChartCustomFilterItemDTO filterItemDTO : filter) {
                     String value = filterItemDTO.getValue();
                     String whereTerm = transMysqlFilterTerm(filterItemDTO.getTerm());
-                    String whereValue = "";
+                    String whereValue = value;
 
                     if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "null")) {
                         whereValue = "";
@@ -750,7 +777,9 @@ public class MongoQueryProvider extends QueryProvider {
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                         whereValue = "'%" + value + "%'";
                     } else {
-                        whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, value);
+                        if(field.getDeType() == DeTypeConstants.DE_STRING){
+                            whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, value);
+                        }
                     }
                     list.add(SQLObj.builder()
                             .whereField(whereName)
@@ -809,7 +838,11 @@ public class MongoQueryProvider extends QueryProvider {
                     whereValue = String.format(MongoConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, value.get(0));
+                if(field.getDeType() == DeTypeConstants.DE_STRING){
+                    whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, value.get(0));
+                }else {
+                    whereValue = value.get(0);
+                }
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -908,7 +941,11 @@ public class MongoQueryProvider extends QueryProvider {
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
                 } else {
-                    whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, f.getValue());
+                    if(y.getDeType() == DeTypeConstants.DE_STRING){
+                        whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, f.getValue());
+                    }else {
+                        whereValue = f.getValue();
+                    }
                 }
                 list.add(SQLObj.builder()
                         .whereField(fieldAlias)
