@@ -1,0 +1,74 @@
+<template>
+	<view class="uni-flex uni-column dataease-container uni-container">
+
+        <view class="text dataease-head">
+            <slot name="header"></slot>
+        </view>
+        <view class="text dataease-main">
+            <slot></slot>
+        </view>
+        		
+	</view>
+</template>
+<script>
+	// TODO 修复Android v3 加载过慢问题
+	// #ifdef APP-PLUS
+	var domModule = weex.requireModule('dom');
+	domModule.addRule('fontFace', {
+		'fontFamily': "uniicons",
+		'src': "url('/static/uni.ttf')"
+	});
+	// #endif
+	export default {
+		props: {
+			
+		},
+		data() {
+			return {
+				
+			}
+		},
+		onShareAppMessage() {
+			return {
+				title: '欢迎体验dataease-mobile',
+				path: '/pages/tabBar/home/index'
+			}
+		},
+		onNavigationBarButtonTap(e) {
+			uni.navigateTo({
+				url: '/pages/about/about'
+			});
+		},
+		// #ifdef H5
+		watch: {
+			
+		},
+		// #endif
+		methods: {
+			
+		}
+	}
+</script>
+<style>
+.dataease-container {
+    position: relative;
+    height: 100%;
+}
+.dataease-head {
+    width: 100%;
+    height: 45px;
+    left: var(--window-left);
+    right: var(--window-right);
+    padding: 5px 5px 0;
+    border-radius: 6px;
+}
+.dataease-main {
+    position: fixed;
+    left: var(--window-left);
+    right: var(--window-right);
+    top: 45px;
+    padding: 5px;
+    height: calc(100vh - 90px);
+}
+</style>
+
