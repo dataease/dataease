@@ -1,0 +1,300 @@
+<template>
+	<view class="page dataease-main">
+        <uni-list>
+            <uni-list-item class="person-title" :title="banner.title" />
+        </uni-list>
+		
+		<view class="article-content">
+            <view v-if="url">
+                <web-view
+                :webview-styles="webViewStyles"
+                style="height: calc(100vh - 112px);"
+                >
+                </web-view>
+            </view>
+		</view>
+		<!-- #ifdef MP-WEIXIN || MP-QQ -->
+		<ad v-if="htmlNodes.length > 0" unit-id="adunit-01b7a010bf53d74e"></ad>
+		<!-- #endif -->
+
+        <view  class="card-actions">
+            <view v-if="banner.index === 2" class="card-actions-item">
+
+            </view>
+            <view v-else class="card-actions-item" @click="enshrine">
+                <uni-icons v-if="hasStar" type="star-filled" size="18" color="#007AFF"></uni-icons>
+                <uni-icons v-else type="star" size="18" color="#999"></uni-icons>
+            </view>
+            
+            <view class="card-actions-item" @click="refresh">
+                <uni-icons type="reload" size="18" color="#999"></uni-icons>
+            </view>
+        </view>
+	</view>
+</template>
+
+<script>
+    import {addRecent, getToken} from '@/common/utils'
+    import {linkInfo, switchLink, star, unstar, starStatus} from '@/api/panel'
+	const DETAIL_PAGE_PATH = '/pages/tabBar/home/detail'
+
+	// import htmlParser from '@/common/html-parser.js'
+
+	function _handleShareChannels(provider) {
+		let channels = [];
+		for (let i = 0, len = provider.length; i < len; i++) {
+			switch (provider[i]) {
+				case 'weixin':
+					channels.push({
+						text: '分享到微信好友',
+						id: 'weixin',
+						sort: 0
+					});
+					channels.push({
+						text: '分享到微信朋友圈',
+						id: 'weixin',
+						sort: 1
+					});
+					break;
+				default:
+					break;
+			}
+		}
+		channels.sort(function(x, y) {
+			return x.sort - y.sort;
+		});
+		return channels;
+	}
+
+	export default {
+		data() {
+			return {
+				title: '',
+				banner: {},
+				htmlNodes: [],
+                webViewStyles: {
+                    
+                    progress: {
+                        color: '#FF3333'
+                    },
+                    height: '700px'
+                },
+                url: '',
+                hasStar: false,
+                refreshCount: 0
+			}
+		},
+		onLoad(event) {
+			// TODO 后面把参数名替换成 payload
+			const payload = event.detailDate || event.payload;
+			// 目前在某些平台参数会被主动 decode，暂时这样处理。
+			try {
+				this.banner = JSON.parse(decodeURIComponent(payload));
+                uni.showLoading({
+					title: 'loading'
+				});
+                this.loadLinkUrl()
+			} catch (error) {
+				this.banner = JSON.parse(payload);
+			}
+			uni.setNavigationBarTitle({
+				title: this.banner.title
+			});
+			// this.getDetail();
+            this.addRecent()
+            uni.$emit('loadHomeIndex', {
+                index: 1
+            })
+            this.loadStarStatus()
+
+
+		},
+        onBackPress(e) {
+            if (!(this.refreshCount > 0)) {
+                return false
+            }
+            this.refreshCount -= 1
+            uni.navigateBack()
+            
+        },
+		onShareAppMessage() {
+			return {
+				title: this.banner.title,
+				path: DETAIL_PAGE_PATH + '?detailDate=' + JSON.stringify(this.banner)
+			}
+		},
+		onNavigationBarButtonTap(event) {
+			const buttonIndex = event.index;
+			if (buttonIndex === 0) {
+				// 分享 H5 的页面
+				const shareProviders = [];
+				uni.getProvider({
+					service: 'share',
+					success: (result) => {
+						// 目前仅考虑分享到微信
+						if (result.provider && result.provider.length && ~result.provider.indexOf('weixin')) {
+							const channels = _handleShareChannels(result.provider);
+							uni.showActionSheet({
+								itemList: channels.map(channel => {
+									return channel.text;
+								}),
+								success: (result) => {
+									const tapIndex = result.tapIndex;
+									uni.share({
+										provider: 'weixin',
+										type: 0,
+										title: this.banner.title,
+										scene: tapIndex === 0 ? 'WXSceneSession' : 'WXSenceTimeline',
+										href: 'https://uniapp.dcloud.io/h5' + DETAIL_PAGE_PATH + '?detailDate=' + JSON.stringify(this.banner),
+										imageUrl: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/b6304f00-5168-11eb-bd01-97bc1429a9ff.png'
+									});
+								}
+							});
+						} else {
+							uni.showToast({
+								title: '未检测到可用的微信分享服务'
+							});
+						}
+					},
+					fail: (error) => {
+						uni.showToast({
+							title: '获取分享服务失败'
+						});
+					}
+				});
+			}
+		},
+		methods: {
+			getDetail() {
+				uni.request({
+					url: 'https://unidemo.dcloud.net.cn/api/news/36kr/' + this.banner.post_id,
+					success: (data) => {
+						if (data.statusCode == 200) {
+							var htmlString = data.data.content.replace(/\\/g, "").replace(/<img/g, "<img style=\"display:none;\"");
+							//this.htmlNodes = htmlParser(htmlString);
+						}
+					},
+					fail: () => {
+						console.log('fail');
+					}
+				});
+			},
+            addRecent() {
+                const item = {id: this.banner.id, title: this.banner.title, index: this.banner.index}
+                addRecent(item)
+            },
+            enshrine() {
+                const method = this.hasStar ? unstar: star
+                method(this.banner.id).then(res => {
+                    if(!this.hasStar) {
+                        uni.showToast({
+                            icon: 'success',
+                            title: '收藏成功'
+                        })
+                    }
+                    this.loadStarStatus()
+                    uni.$emit('loadHomeIndex', {
+                        index: 0
+                    })
+                    
+                })
+            },
+            refresh() {
+                uni.showLoading({
+					title: 'loading'
+				});
+                
+                this.url = null
+                this.loadLinkUrl()  
+                this.refreshCount += 1 
+            },
+            loadStarStatus() {
+                starStatus(this.banner.id).then(res => {
+                    this.hasStar = res.data
+                })
+            },
+            loadLinkUrl() {
+                this.url = process.env.VUE_APP_BASE_API + 'tempMobileLink/' + this.banner.id + "/" + getToken()
+                const url = this.url
+                setTimeout(() => {
+                    const iframe = document.getElementsByTagName("iframe")[0]
+                    
+                    iframe.src = url
+                    iframe.onload = e => {
+                        uni.hideLoading()
+                    }                                        
+                }, 1000);
+
+            },
+            back() {   
+                // #ifdef H5  
+                let canBack = true  
+                const pages = getCurrentPages()  
+                if (pages.length > 1) {  
+                    uni.navigateBack(1)  
+                    return;  
+                }  
+                let a = this.$router.go(-1)  
+                // router.go失败之后则重定向到首页  
+                if (a == undefined) {  
+                    uni.reLaunch({  
+                        url: "/pages/index/index"  
+                    })  
+                }  
+                return
+                // #endif  
+                uni.navigateBack(1)  
+            }
+		}
+	}
+</script>
+
+<style>
+.dataease-main {
+    
+    position: fixed;
+    left: var(--window-left);
+    right: var(--window-right);
+    padding: 5px;
+    height: calc(100vh - 10px);
+    
+}
+
+.person-title {
+    font-weight: 700;
+    font-size: 15px;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    
+    text-overflow: ellipsis;
+    
+}
+.article-content {
+    height: calc(100vh - 110px);
+    margin: 5px 0;
+    background: #ffffff;
+}
+.card-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    height: 45px;
+    border-top: 1px #eee solid;
+    background: #ffffff;
+}
+.card-actions-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.card-actions-item-text {
+    font-size: 12px;
+    color: #666;
+    margin-left: 5px;
+}
+
+
+
+</style>
