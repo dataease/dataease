@@ -79,7 +79,8 @@ public abstract class TaskHandler implements InitializingBean {
 
     private String getDayOfWeek(Calendar instance) {
         int index = instance.get(Calendar.DAY_OF_WEEK);
-        return week[index];
+         index = (index + 1) % 7;
+        return String.valueOf(index);
     }
 
 
