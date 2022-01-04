@@ -406,8 +406,6 @@ export default {
                 this.$error(res.message)
               }
               this.refreshType(data)
-            }).catch(res => {
-              this.$error(res.message)
             })
           } else {
             validateDs(data).then(res => {
