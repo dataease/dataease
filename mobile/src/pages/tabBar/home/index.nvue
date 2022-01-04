@@ -14,11 +14,28 @@
 					<view v-for="(newsitem,index2) in tab.data" :key="newsitem.id">
 						<media-item :options="newsitem" @close="close(index1,index2)" @click="goDetail(newsitem)"></media-item>
 					</view>
-					<view class="loading-more" v-if="tab.isLoading || tab.data.length > 12">
+					<view class="loading-more" v-if="tab.isLoading">
 						<text class="loading-more-text">{{tab.loadingText}}</text>
 					</view>
 				</scroll-view>
+				
 				<!-- #endif -->
+				<!-- <uni-list>
+				
+				    <uni-list-item 
+				      v-for="(node, i) in tab.data" 
+				      :key="i"
+				      clickable
+				      @click="goDetail(node)"
+				      :title="node.title"   
+				      thumb="../../../static/yibiaobans.png" 
+				      thumb-size="base" 
+				      :rightText="node.rightText" 
+				    />
+				
+				    
+				    
+				</uni-list> -->
             </swiper-item>
         </swiper>
     </view>
@@ -112,6 +129,7 @@
 						}
 						
 					}
+					activeTab.isLoading = false
 			        
 			        uni.stopPullDownRefresh()
 			    })            
@@ -170,10 +188,12 @@
                     }
                 })
             },
-            loadMore(e) {
+            loadMore(index) {
+				let activeTab = this.newsList[index]
+				activeTab.isLoading = true
                 setTimeout(() => {
                     this.getList(this.tabIndex);
-                }, 500)
+                }, 1000)
             },
             ontabtap(e) {
                 let index = e.target.dataset.current || e.currentTarget.dataset.current;

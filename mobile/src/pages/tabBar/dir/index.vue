@@ -1,8 +1,8 @@
 <template>
-	<view class="page">
-		<swiper indicator-dots="true">
+	<view class="page de-main">
+		<!-- <swiper indicator-dots="true">
 			<swiper-item v-for="(img, key) in imgUrls" :key="key"><image :src="img" /></swiper-item>
-		</swiper>
+		</swiper> -->
 		<view class=" ">
 			<view class="uni-title">
 				
@@ -99,5 +99,8 @@ swiper,
 }
 .page-section-title {
 	margin-top: 50rpx;
+}
+.de-main {
+	padding-top: 60rpx;
 }
 </style>
