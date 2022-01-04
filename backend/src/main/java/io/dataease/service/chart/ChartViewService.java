@@ -344,7 +344,7 @@ public class ChartViewService {
             if (ObjectUtils.isEmpty(ds)) {
                 throw new RuntimeException(Translator.get("i18n_datasource_delete"));
             }
-            if(ds.getStatus().equalsIgnoreCase("Error")){
+            if(StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")){
                 throw new Exception(Translator.get("i18n_invalid_ds"));
             }
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());

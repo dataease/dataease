@@ -65,7 +65,7 @@ public class DirectFieldService implements DataSetFieldService {
         if (datasetTable.getMode() == 0) {// 直连
             if (StringUtils.isEmpty(datasetTable.getDataSourceId())) return null;
             Datasource ds = datasourceService.get(datasetTable.getDataSourceId());
-            if(ds.getStatus().equalsIgnoreCase("Error")){
+            if(StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")){
                 throw new Exception(Translator.get("i18n_invalid_ds"));
             }
             datasourceProvider = ProviderFactory.getProvider(ds.getType());
