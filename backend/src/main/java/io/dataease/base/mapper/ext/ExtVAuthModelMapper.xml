@@ -81,7 +81,12 @@
 			and v_auth_model.`level` = #{record.level,jdbcType=BIGINT}
 		</if>
 		<if test="record.mode != null">
-			and v_auth_model.`mode` = #{record.mode,jdbcType=BIGINT}
+	  		<if test="record.mode == 0">
+				and v_auth_model.`mode` = 0
+			</if>
+			<if test='record.mode == 1 and record.modelType != null and record.modelType == "dataset"'>
+				and (v_auth_model.`mode` = 1 or (v_auth_model.`model_inner_type` = 'group' and v_auth_model.model_type = 'dataset'))
+			</if>
 		</if>
 		<if test="record.dataSourceId != null">
 			and v_auth_model.data_source_id = #{record.dataSourceId,jdbcType=VARCHAR}
