@@ -12,6 +12,9 @@
             on s.panel_group_id = g.id
         where s.user_id = #{userId}
                 and FIND_IN_SET( g.id, cids  )
+        <if test="lastTime != null">
+            and #{lastTime} > s.create_time
+        </if>
         order by s.create_time desc
     </select>
 
@@ -33,6 +36,9 @@
                 </foreach>
                 and s.type = 1 )
             )
+        <if test="lastTime != null">
+            and #{lastTime} > s.create_time
+        </if>
         order by s.create_time desc
     </select>
 
