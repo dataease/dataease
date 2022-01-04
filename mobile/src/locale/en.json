@@ -1,0 +1,64 @@
+{
+    "app.name": "DataEase",
+    "navigate.menuHome": "Home",
+    "navigate.menuDir": "Dir",    
+    "navigate.menuMe": "Me",
+
+    "navigate.search": "Search",
+    "navigate.personInfo": "Person Info",
+    "navigate.language": "Language",
+    "navigate.about": "About",
+    "navigate.login": "Login",
+    "searchPlaceholder": "Please Code Panel Name",
+    
+    "commons": {
+        "cancel": "Cancel",
+        "sure": "Sure",
+        "en": "English",
+        "tw": "繁體中文",
+        "zh": "简体中文",
+        "sysLanguage": "Follow System",
+        "tips": "Tips"
+        
+    },
+    "login": {
+        "title": "User Login",
+        "account": "Account:",
+        "accountPlaceholder": "Please Code Account",
+        "password": "Password:",
+        "passwordPlaceholder": "Please Code Password:",
+        "loginbtn": "Login",
+        "pwdFmtError": "Password Must More Than 6 Character",
+        "uOrpwdError": "Invalid Account Or Password"
+    },
+    "home": {
+        "tab1": "My Favorites",
+        "tab2": "Recent",
+        "tab3": "Share With Me"
+    },
+    "dir": {
+        "searchHistory": "Search History",
+        "clearConfirm": "Sure Clean All History ?",
+        "noHistory": "There Are No Any History",
+        "contentPrefix": "The Content You Code Are ",
+        "contentSuffix": "Will Be Marked As History When You Confirm"
+    },
+    "me": {
+        "moreInfo": "More Info",
+        "logout": "Logout",
+        
+        "systemInfo": "System Info",
+        "userManual": "User Manual",
+        "community": "Community",
+        "enterprise": "Enterprise",
+        "standard": "Standard",
+        "organization": "Organization",
+        "email": "Email",
+        "createTime": "CreateTime"
+    },
+    "detail": {
+        "starSuccess": "Star Success"
+    }
+
+
+}

@@ -7,7 +7,7 @@ import java.util.Map;
 public interface HomeMapper {
 
 
-    List<HomeItemDTO> queryStore(Long userId);
+    List<HomeItemDTO> queryStore(Map<String, Object> param);
 
     List<HomeItemDTO> queryHistory();
 
