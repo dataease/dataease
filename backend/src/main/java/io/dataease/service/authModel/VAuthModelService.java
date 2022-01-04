@@ -26,6 +26,10 @@ public class VAuthModelService {
 
     public List<VAuthModelDTO> queryAuthModel(VAuthModelRequest request) {
         request.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        // 定时任务选数据集时，列表需去除空目录
+        if (request.isClearEmptyDir()) {
+            request.setMode(null);
+        }
         List<VAuthModelDTO> result = extVAuthModelMapper.queryAuthModel(request);
         // 定时任务选数据集时，列表需去除空目录
         if (request.isClearEmptyDir()) {
