@@ -344,6 +344,9 @@ public class ChartViewService {
             if (ObjectUtils.isEmpty(ds)) {
                 throw new RuntimeException(Translator.get("i18n_datasource_delete"));
             }
+            if(ds.getStatus().equalsIgnoreCase("Error")){
+                throw new Exception(Translator.get("i18n_invalid_ds"));
+            }
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest.setDatasource(ds);
             DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
