@@ -403,7 +403,11 @@ export default {
               if (res.success) {
                 this.$success(i18n.t('datasource.validate_success'))
               } else {
-                this.$error(res.message)
+                if(res.message.length < 2500){
+                  this.$error(res.message)
+                }else {
+                  this.$error(res.message.substring(0,2500) + '......')
+                }
               }
               this.refreshType(data)
             })
@@ -412,7 +416,11 @@ export default {
               if (res.success) {
                 this.$success(i18n.t('datasource.validate_success'))
               } else {
-                this.$error(res.message)
+                if(res.message.length < 2500){
+                  this.$error(res.message)
+                }else {
+                  this.$error(res.message.substring(0,2500) + '......')
+                }
               }
             }).catch(res => {
               this.$error(res.message)
