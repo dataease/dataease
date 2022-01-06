@@ -183,7 +183,6 @@ export default {
       filter.drill = this.drillClickDimensionList
       filter.resultCount = this.resultCount
       filter.resultMode = this.resultMode
-      filter.user = this.element.user
       filter.queryFrom = 'panel'
       return filter
     },
