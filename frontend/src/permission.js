@@ -27,9 +27,9 @@ const whiteList = ['/login', '/401', '/404', '/delink', '/nolic'] // no redirect
 router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
+  const mobilePreviews = ['/preview', '/delink']
 
-  const mobiePreview = '/preview/'
-  if (isMobile() && !to.path.includes(mobiePreview)) {
+  if (isMobile() && mobilePreviews.indexOf(to.path) === -1) {
     window.location.href = window.origin + '/app.html'
     NProgress.done()
   }
