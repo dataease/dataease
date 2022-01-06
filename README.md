@@ -51,7 +51,7 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 
 ## 在线体验
 
--   环境地址：<https://demo.dataease.io/>
+-   环境地址：<https://dataease.fit2cloud.com/>
 -   用户名：demo
 -   密码：dataease
 
