@@ -208,6 +208,14 @@ export default {
       this.tempDs = {}
     },
     confirmSelectDs() {
+      if (this.tempDs.mode === 0 && this.tempDs.modelInnerType === 'sql') {
+        this.$message({
+          showClose: true,
+          message: this.$t('dataset.sql_ds_union_error'),
+          type: 'error'
+        })
+        return
+      }
       const ds = JSON.parse(JSON.stringify(this.unionItem))
       ds.currentDs = this.tempDs
       this.dataset.push(ds)
