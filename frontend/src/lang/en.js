@@ -1211,7 +1211,8 @@ export default {
     add_union_field: 'Add Union Field',
     union_error: 'Union relation and field can not be empty',
     union_repeat: 'This dataset is already union，do not union repeat',
-    preview_result: 'Preview'
+    preview_result: 'Preview',
+    sql_ds_union_error: 'Direct connect SQL dataset can not be union'
   },
   datasource: {
     datasource: 'Data Source',
