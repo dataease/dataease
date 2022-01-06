@@ -28,8 +28,10 @@ router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
 
-  const mobiePreview = '/preview/'
-  if (isMobile() && !to.path.includes(mobiePreview)) {
+  const mobileIgnores = ['/delink']
+  const mobilePreview = '/preview/'
+
+  if (isMobile() && !to.path.includes(mobilePreview) && mobileIgnores.indexOf(to.path) === -1) {
     window.location.href = window.origin + '/app.html'
     NProgress.done()
   }
