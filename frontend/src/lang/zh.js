@@ -1214,7 +1214,8 @@ export default {
     add_union_field: '添加关联字段',
     union_error: '关联关系与关联字段不能为空',
     union_repeat: '当前数据集已被关联，请勿重复关联',
-    preview_result: '预览结果'
+    preview_result: '预览结果',
+    sql_ds_union_error: '直连模式下SQL数据集，不支持关联'
   },
   datasource: {
     datasource: '数据源',
