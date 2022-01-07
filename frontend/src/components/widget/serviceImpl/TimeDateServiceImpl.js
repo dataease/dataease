@@ -114,10 +114,8 @@ class TimeDateServiceImpl extends WidgetService {
         const tarYear = nowYear
         if (dynamicSuffix === 'before') {
           const deffMonth = nowMonth - dynamicPrefix
-          let diffYear = deffMonth / 12
-          if (deffMonth < 0) {
-            diffYear -= 1
-          }
+          const diffYear = Math.floor(deffMonth / 12)
+
           return new Date(tarYear + diffYear, nowMonth - dynamicPrefix % 12, nowDate).getTime()
         } else {
           const deffMonth = nowMonth + dynamicPrefix
