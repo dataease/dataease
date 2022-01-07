@@ -1,5 +1,5 @@
 <template>
-  <div v-if="element">
+  <div v-if="element" class="default-value-div">
     <el-form ref="form" :model="element.options.attrs.default" label-width="100px">
 
       <el-form-item :label="$t('dynamic_time.set_default')">
@@ -23,7 +23,7 @@
       <div class="inline">
 
         <el-form-item v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3" label="">
-          <el-input v-model="element.options.attrs.default.dynamicPrefix" type="number" size="mini" :min="1" :max="10" @input="dynamicPrefixChange" />
+          <el-input v-model="element.options.attrs.default.dynamicPrefix" type="number" size="mini" :min="1" :max="12" @input="dynamicPrefixChange" />
         </el-form-item>
 
         <el-form-item v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3" label="" class="no-label-item">
@@ -126,6 +126,11 @@ export default {
       min-width: 70px;
   }
 }
+.inline{
+    .el-form-item {
+      margin-bottom: 5px !important;
+    }
+  }
 .relative-time {
     width: 100%;
 }
