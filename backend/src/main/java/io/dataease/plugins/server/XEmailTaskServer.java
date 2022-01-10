@@ -34,7 +34,7 @@ public class XEmailTaskServer {
 
     @PostMapping("/queryTasks/{goPage}/{pageSize}")
     public Pager<List<XpackTaskGridDTO>> queryTask(@PathVariable int goPage, @PathVariable int pageSize,
-                                                   @RequestBody XpackGridRequest request) {
+            @RequestBody XpackGridRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<XpackTaskGridDTO> tasks = emailXpackService.taskGrid(request);
@@ -87,7 +87,7 @@ public class XEmailTaskServer {
         try {
             fileId = emailXpackService.print(url, token, buildPixel(request.getPixel()));
         } catch (Exception e) {
-            LogUtil.error(e);
+            LogUtil.error(e.getMessage(), e);
             DEException.throwException("预览失败，请联系管理员");
         }
         String imageUrl = "/system/ui/image/" + fileId;
@@ -116,7 +116,7 @@ public class XEmailTaskServer {
 
     @PostMapping("/queryInstancies/{goPage}/{pageSize}")
     public Pager<List<XpackTaskInstanceDTO>> instancesGrid(@PathVariable int goPage, @PathVariable int pageSize,
-                                                           @RequestBody XpackGridRequest request) {
+            @RequestBody XpackGridRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<XpackTaskInstanceDTO> instances = emailXpackService.taskInstanceGrid(request);
