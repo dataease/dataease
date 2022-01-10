@@ -230,11 +230,11 @@
                         :options="places"
                         :placeholder="$t('chart.select_map_range')"
                         :normalizer="normalizer"
+                        :no-children-text="$t('commons.treeselect.no_children_text')"
+                        :no-options-text="$t('commons.treeselect.no_options_text')"
+                        :no-results-text="$t('commons.treeselect.no_results_text')"
                         @input="calcData"
                         @deselect="calcData"
-                        :noChildrenText="$t('commons.treeselect.no_children_text')"
-                        :noOptionsText="$t('commons.treeselect.no_options_text')"
-                        :noResultsText="$t('commons.treeselect.no_results_text')"
                       />
                     </span>
                   </el-row>
@@ -1420,6 +1420,7 @@ export default {
       const view = this.buildParam(true, 'chart', false, false)
       if (!view) return
       post('/chart/view/save', view).then(response => {
+        this.getChart(response.data.id)
         this.hasEdit = false
         this.refreshGroup(view)
         this.closeChangeChart()
