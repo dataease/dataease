@@ -11,7 +11,12 @@
 
       <el-form-item v-if="element.options.attrs.default.isDynamic" :label="$t('dynamic_time.relative')">
 
-        <el-select v-model="element.options.attrs.default.dkey" placeholder="" class="relative-time" @change="dkeyChange">
+        <el-select
+          v-model="element.options.attrs.default.dkey"
+          placeholder=""
+          class="relative-time"
+          @change="dkeyChange"
+        >
           <el-option :label="$t('dynamic_time.today')" :value="0" />
           <el-option :label="$t('dynamic_time.yesterday')" :value="1" />
           <el-option :label="$t('dynamic_time.firstOfMonth')" :value="2" />
@@ -22,12 +27,31 @@
 
       <div class="inline">
 
-        <el-form-item v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3" label="">
-          <el-input v-model="element.options.attrs.default.dynamicPrefix" type="number" size="mini" :min="1" :max="12" @input="dynamicPrefixChange" />
+        <el-form-item
+          v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3"
+          label=""
+        >
+          <el-input
+            v-model="element.options.attrs.default.dynamicPrefix"
+            type="number"
+            size="mini"
+            :min="1"
+            :max="12"
+            @input="dynamicPrefixChange"
+          />
         </el-form-item>
 
-        <el-form-item v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3" label="" class="no-label-item">
-          <el-select v-model="element.options.attrs.default.dynamicInfill" size="mini" placeholder="" @change="dynamicInfillChange">
+        <el-form-item
+          v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3"
+          label=""
+          class="no-label-item"
+        >
+          <el-select
+            v-model="element.options.attrs.default.dynamicInfill"
+            size="mini"
+            placeholder=""
+            @change="dynamicInfillChange"
+          >
             <el-option :label="$t('dynamic_time.date')" value="day" />
             <el-option :label="$t('dynamic_time.week')" value="week" />
             <el-option :label="$t('dynamic_time.month')" value="month" />
@@ -35,9 +59,18 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3" label="" class="no-label-item">
+        <el-form-item
+          v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3"
+          label=""
+          class="no-label-item"
+        >
 
-          <el-select v-model="element.options.attrs.default.dynamicSuffix" size="mini" placeholder="" @change="dynamicSuffixChange">
+          <el-select
+            v-model="element.options.attrs.default.dynamicSuffix"
+            size="mini"
+            placeholder=""
+            @change="dynamicSuffixChange"
+          >
             <el-option :label="$t('dynamic_time.before')" value="before" />
             <el-option :label="$t('dynamic_time.after')" value="after" />
           </el-select>
@@ -46,13 +79,7 @@
       </div>
 
       <el-form-item v-if="element.options.attrs.default.isDynamic" :label="$t('dynamic_time.preview')">
-        <el-date-picker
-          v-model="dval"
-          type="date"
-          disabled
-          placeholder=""
-          class="relative-time"
-        />
+        <el-date-picker v-model="dval" type="date" disabled placeholder="" class="relative-time" />
       </el-form-item>
 
       <el-form-item v-else :label="$t('dynamic_time.set')">
@@ -71,7 +98,9 @@
 </template>
 
 <script>
-import { ApplicationContext } from '@/utils/ApplicationContext'
+import {
+  ApplicationContext
+} from '@/utils/ApplicationContext'
 export default {
   name: 'DeDateDefault',
   props: {
@@ -117,22 +146,27 @@ export default {
     }
   }
 }
+
 </script>
 
 <style lang="scss" scoped>
-.inline {
-  display: flex;
-  >>>.el-input--mini {
-      min-width: 70px;
+  .inline {
+    display: flex;
+
   }
-}
-.inline{
+
+  .inline {
     .el-form-item {
       margin-bottom: 5px !important;
+
+      .el-form-item__content>.el-input--mini {
+        min-width: 70px;
+      }
     }
   }
-.relative-time {
-    width: 100%;
-}
+
+  .relative-time {
+    width: 100% !important;
+  }
 
 </style>
