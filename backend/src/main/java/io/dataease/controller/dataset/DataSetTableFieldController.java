@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import cn.hutool.core.collection.CollectionUtil;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -85,8 +87,10 @@ public class DataSetTableFieldController {
 
     @ApiOperation("多字段值枚举")
     @PostMapping("linkMultFieldValues")
-    public List<Object> linkMultFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    public List<Object> linkMultFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest)
+            throws Exception {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest();
         String linkToken = request.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
         DecodedJWT jwt = JWT.decode(linkToken);
         Long userId = jwt.getClaim("userId").asLong();
@@ -99,18 +103,21 @@ public class DataSetTableFieldController {
     public List<Object> multFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
         List<Object> results = new ArrayList<>();
         for (String fieldId : multFieldValuesRequest.getFieldIds()) {
-            results.addAll(dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getUserId()));
+            List<Object> fieldValues = dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getUserId());
+            if (CollectionUtil.isNotEmpty(fieldValues)) {
+                results.addAll(fieldValues);
+            }
+
         }
         ArrayList<Object> list = results.stream().collect(
                 Collectors.collectingAndThen(
                         Collectors.toCollection(
                                 () -> new TreeSet<>(Comparator.comparing(t -> {
-                                    if (ObjectUtils.isEmpty(t)) return "";
+                                    if (ObjectUtils.isEmpty(t))
+                                        return "";
                                     return t.toString();
-                                }))
-                        ), ArrayList::new
-                )
-        );
+                                }))),
+                        ArrayList::new));
         return list;
     }
 }
