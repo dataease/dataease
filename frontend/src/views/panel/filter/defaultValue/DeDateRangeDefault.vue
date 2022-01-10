@@ -223,21 +223,20 @@ export default {
   .inline-first,
   .inline {
     display: flex;
-
-    >>>.el-input--mini {
-      min-width: 70px;
-    }
-
   }
 
   .inline-first {
     .el-form-item {
       margin-bottom: 5px !important;
+
+      .el-form-item__content>.el-input--mini {
+        min-width: 70px;
+      }
     }
   }
 
   .relative-time {
-    width: 100%;
+    width: 100% !important;
   }
 
 </style>

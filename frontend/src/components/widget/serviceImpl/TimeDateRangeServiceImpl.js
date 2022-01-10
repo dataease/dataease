@@ -159,18 +159,10 @@ class TimeDateRangeServiceImpl extends WidgetService {
       const nowYear = now.getFullYear()
       const nowDate = now.getDate()
 
-      const tarYear = nowYear
       if (dynamicSuffix === 'before') {
-        const deffMonth = nowMonth - dynamicPrefix
-        let diffYear = deffMonth / 12
-        if (deffMonth < 0) {
-          diffYear -= 1
-        }
-        return new Date(tarYear + diffYear, nowMonth - dynamicPrefix % 12, nowDate).getTime()
+        return new Date(nowYear, nowMonth - dynamicPrefix, nowDate).getTime()
       } else {
-        const deffMonth = nowMonth + dynamicPrefix
-        const diffYear = deffMonth / 12
-        return new Date(tarYear + diffYear, deffMonth % 12, nowDate).getTime()
+        return new Date(nowYear, nowMonth + dynamicPrefix, nowDate).getTime()
       }
     }
     if (dynamicInfill === 'year') {
