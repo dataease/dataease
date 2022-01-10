@@ -1,4 +1,6 @@
-import { WidgetService } from '../service/WidgetService'
+import {
+  WidgetService
+} from '../service/WidgetService'
 
 const leftPanel = {
   icon: 'iconfont icon-ri',
@@ -45,7 +47,9 @@ const drawPanel = {
 
 class TimeDateServiceImpl extends WidgetService {
   constructor(options = {}) {
-    Object.assign(options, { name: 'timeDateWidget' })
+    Object.assign(options, {
+      name: 'timeDateWidget'
+    })
     super(options)
     this.filterDialog = true
     this.showSwitch = false
@@ -111,16 +115,10 @@ class TimeDateServiceImpl extends WidgetService {
         const nowYear = now.getFullYear()
         const nowDate = now.getDate()
 
-        const tarYear = nowYear
         if (dynamicSuffix === 'before') {
-          const deffMonth = nowMonth - dynamicPrefix
-          const diffYear = Math.floor(deffMonth / 12)
-
-          return new Date(tarYear + diffYear, nowMonth - dynamicPrefix % 12, nowDate).getTime()
+          return new Date(nowYear, nowMonth - dynamicPrefix, nowDate).getTime()
         } else {
-          const deffMonth = nowMonth + dynamicPrefix
-          const diffYear = deffMonth / 12
-          return new Date(tarYear + diffYear, deffMonth % 12, nowDate).getTime()
+          return new Date(nowYear, nowMonth + dynamicPrefix, nowDate).getTime()
         }
       }
       if (dynamicInfill === 'year') {
@@ -134,5 +132,7 @@ class TimeDateServiceImpl extends WidgetService {
     }
   }
 }
-const timeDateServiceImpl = new TimeDateServiceImpl({ name: 'timeDateWidget' })
+const timeDateServiceImpl = new TimeDateServiceImpl({
+  name: 'timeDateWidget'
+})
 export default timeDateServiceImpl
