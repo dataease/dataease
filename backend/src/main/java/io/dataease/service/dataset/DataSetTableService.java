@@ -459,16 +459,16 @@ public class DataSetTableService {
         List<Long> roleIds = new ArrayList<>();
         Long deptId = null;
 
-        if(user == null && userId == null ){
+        if (user == null && userId == null) {
             return datasetRowPermissions;
         }
 
-        if(user != null && userId != null ){
+        if (user != null && userId != null) {
             return datasetRowPermissions;
         }
 
-        if(user != null){
-            if(user.getIsAdmin()){
+        if (user != null) {
+            if (user.getIsAdmin()) {
                 return datasetRowPermissions;
             }
             userId = user.getUserId();
@@ -476,9 +476,9 @@ public class DataSetTableService {
             roleIds = user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList());
         }
 
-        if(userId != null){
+        if (userId != null) {
             SysUserEntity userEntity = authUserService.getUserById(userId);
-            if(userEntity.getIsAdmin()){
+            if (userEntity.getIsAdmin()) {
                 return datasetRowPermissions;
             }
             deptId = userEntity.getDeptId();
@@ -514,7 +514,7 @@ public class DataSetTableService {
         List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
         for (DatasetRowPermissions datasetRowPermissions : rowPermissions(datasetTable.getId(), user)) {
             ChartFieldCustomFilterDTO dto = new ChartFieldCustomFilterDTO();
-            if(StringUtils.isEmpty(datasetRowPermissions.getDatasetFieldId())){
+            if (StringUtils.isEmpty(datasetRowPermissions.getDatasetFieldId())) {
                 continue;
             }
             DatasetTableField field = getFieldById(fields, datasetRowPermissions.getDatasetFieldId());
@@ -525,7 +525,7 @@ public class DataSetTableService {
             dto.setId(field.getId());
             dto.setFilterType(datasetRowPermissions.getFilterType());
             if (datasetRowPermissions.getFilterType().equalsIgnoreCase("logic")) {
-                if(StringUtils.isEmpty(datasetRowPermissions.getFilter())){
+                if (StringUtils.isEmpty(datasetRowPermissions.getFilter())) {
                     continue;
                 }
                 List<ChartCustomFilterItemDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartCustomFilterItemDTO.class);
@@ -536,7 +536,7 @@ public class DataSetTableService {
                 dto.setLogic(datasetRowPermissions.getLogic());
                 customFilter.add(dto);
             } else {
-                if(StringUtils.isEmpty(datasetRowPermissions.getEnumCheckField())){
+                if (StringUtils.isEmpty(datasetRowPermissions.getEnumCheckField())) {
                     continue;
                 }
                 dto.setEnumCheckField(Arrays.asList(datasetRowPermissions.getEnumCheckField().split(",").clone()));
@@ -546,10 +546,13 @@ public class DataSetTableService {
         return customFilter;
     }
 
-    public Map<String, Object> getPreviewData(DataSetTableRequest dataSetTableRequest, Integer page, Integer pageSize) throws Exception {
+    public Map<String, Object> getPreviewData(DataSetTableRequest dataSetTableRequest, Integer page, Integer pageSize, List<DatasetTableField> extFields) throws Exception {
         Map<String, Object> map = new HashMap<>();
         DatasetTableField datasetTableField = DatasetTableField.builder().tableId(dataSetTableRequest.getId()).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+        if (CollectionUtils.isNotEmpty(extFields)) {
+            fields.addAll(extFields);
+        }
         if (CollectionUtils.isEmpty(fields)) {
             map.put("fields", fields);
             map.put("data", new ArrayList<>());
@@ -578,7 +581,7 @@ public class DataSetTableService {
                 if (ObjectUtils.isEmpty(ds)) {
                     throw new RuntimeException(Translator.get("i18n_datasource_delete"));
                 }
-                if(StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")){
+                if (StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")) {
                     throw new Exception(Translator.get("i18n_invalid_ds"));
                 }
                 DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
@@ -646,7 +649,7 @@ public class DataSetTableService {
                 if (ObjectUtils.isEmpty(ds)) {
                     throw new RuntimeException(Translator.get("i18n_datasource_delete"));
                 }
-                if(StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")){
+                if (StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")) {
                     throw new Exception(Translator.get("i18n_invalid_ds"));
                 }
                 DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());

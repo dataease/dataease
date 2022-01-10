@@ -4,14 +4,20 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.filter.F2CLinkFilter;
+import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableField;
+import io.dataease.commons.exception.DEException;
+import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.MultFieldValuesRequest;
 import io.dataease.controller.response.DatasetTableField4Type;
+import io.dataease.i18n.Translator;
 import io.dataease.service.dataset.DataSetFieldService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
+import io.dataease.service.dataset.DataSetTableService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -19,10 +25,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +42,9 @@ public class DataSetTableFieldController {
 
     @Autowired
     private DataSetFieldService dataSetFieldService;
+
+    @Resource
+    private DataSetTableService dataSetTableService;
 
     @ApiOperation("查询表下属字段")
     @PostMapping("list/{tableId}")
@@ -74,6 +80,15 @@ public class DataSetTableFieldController {
     @PostMapping("save")
     public DatasetTableField save(@RequestBody DatasetTableField datasetTableField) {
         dataSetTableFieldsService.checkFieldName(datasetTableField);
+        try {
+            // 执行一次sql，确保数据集中所有字段均能正确执行
+            DatasetTable datasetTable = dataSetTableService.get(datasetTableField.getTableId());
+            DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
+            BeanUtils.copyProperties(datasetTable, dataSetTableRequest);
+            dataSetTableService.getPreviewData(dataSetTableRequest, 1, 1, Collections.singletonList(datasetTableField));
+        } catch (Exception e) {
+            DEException.throwException(Translator.get("i18n_calc_field_error"));
+        }
         return dataSetTableFieldsService.save(datasetTableField);
     }
 

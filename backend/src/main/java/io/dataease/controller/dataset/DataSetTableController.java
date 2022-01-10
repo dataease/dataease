@@ -97,7 +97,7 @@ public class DataSetTableController {
     @ApiOperation("查询预览数据")
     @PostMapping("getPreviewData/{page}/{pageSize}")
     public Map<String, Object> getPreviewData(@RequestBody DataSetTableRequest dataSetTableRequest, @PathVariable Integer page, @PathVariable Integer pageSize) throws Exception {
-        return dataSetTableService.getPreviewData(dataSetTableRequest, page, pageSize);
+        return dataSetTableService.getPreviewData(dataSetTableRequest, page, pageSize, null);
     }
 
     @ApiOperation("根据sql查询预览数据")
