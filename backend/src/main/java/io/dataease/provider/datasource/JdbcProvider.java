@@ -302,12 +302,12 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     @Override
-    public List<String> getTables(DatasourceRequest datasourceRequest) throws Exception {
-        List<String> tables = new ArrayList<>();
+    public List<TableDesc> getTables(DatasourceRequest datasourceRequest) throws Exception {
+        List<TableDesc> tables = new ArrayList<>();
         String queryStr = getTablesSql(datasourceRequest);
         try (Connection con = getConnectionFromPool(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)) {
             while (resultSet.next()) {
-                tables.add(resultSet.getString(1));
+                tables.add(getTableDesc(datasourceRequest, resultSet));
             }
         } catch (Exception e) {
             DataEaseException.throwException(e);
@@ -317,7 +317,7 @@ public class JdbcProvider extends DatasourceProvider {
         if (queryView != null) {
             try (Connection con = getConnectionFromPool(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryView)) {
                 while (resultSet.next()) {
-                    tables.add(resultSet.getString(1));
+                    tables.add(getTableDesc(datasourceRequest, resultSet));
                 }
             } catch (Exception e) {
                 DataEaseException.throwException(e);
@@ -325,6 +325,19 @@ public class JdbcProvider extends DatasourceProvider {
         }
 
         return tables;
+    }
+
+    private TableDesc getTableDesc(DatasourceRequest datasourceRequest, ResultSet resultSet) throws SQLException {
+        TableDesc tableDesc = new TableDesc();
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
+        if (datasourceType == DatasourceTypes.oracle) {
+            tableDesc.setRemark(resultSet.getString(3));
+        }
+        if (datasourceType == DatasourceTypes.mysql) {
+            tableDesc.setRemark(resultSet.getString(2));
+        }
+        tableDesc.setName(resultSet.getString(1));
+        return tableDesc;
     }
 
     @Override
@@ -583,6 +596,8 @@ public class JdbcProvider extends DatasourceProvider {
         switch (datasourceType) {
             case mysql:
             case mariadb:
+                JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
+                return String.format("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = '%s' ;", jdbcConfiguration.getDataBase());
             case de_doris:
             case ds_doris:
             case hive:
@@ -600,7 +615,7 @@ public class JdbcProvider extends DatasourceProvider {
                 if (StringUtils.isEmpty(oracleConfiguration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "select table_name, owner from all_tables where owner='" + oracleConfiguration.getSchema() + "'";
+                return "select table_name, owner, comments from all_tab_comments where owner='" + oracleConfiguration.getSchema() + "' AND table_type = 'TABLE'";
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
                 if (StringUtils.isEmpty(pgConfiguration.getSchema())) {
@@ -649,7 +664,7 @@ public class JdbcProvider extends DatasourceProvider {
                 if (StringUtils.isEmpty(oracleConfiguration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "select VIEW_NAME  from all_views where owner='" + oracleConfiguration.getSchema() + "'";
+                return "select table_name, owner, comments from all_tab_comments where owner='" + oracleConfiguration.getSchema() + "' AND table_type = 'VIEW'";
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
                 if (StringUtils.isEmpty(pgConfiguration.getSchema())) {
