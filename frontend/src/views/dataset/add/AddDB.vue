@@ -58,7 +58,7 @@
             border
             :label="t.name"
             :disabled="!t.enableCheck"
-          />
+          >{{ showTableNameWithComment(t) }}</el-checkbox>
         </el-tooltip>
       </el-checkbox-group>
     </el-col>
@@ -132,6 +132,13 @@ export default {
       isKettleRunning().then(res => {
         this.kettleRunning = res.data
       })
+    },
+    showTableNameWithComment(t) {
+      if (t.remark) {
+        return `${t.name}(${t.remark})`
+      } else {
+        return `${t.name}`
+      }
     },
     save() {
       let ds = {}
