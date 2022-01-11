@@ -17,7 +17,7 @@
           <el-form-item :label="$t('chart.text_color')" class="form-item">
             <el-color-picker v-model="labelForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
           </el-form-item>
-          <el-form-item v-show="chart.type && chart.type !== 'liquid' && chart.type !== 'pie-rose'" :label="$t('chart.label_position')" class="form-item">
+          <el-form-item v-show="chart.type && chart.type !== 'liquid' && chart.type !== 'pie-rose' && !chart.type.includes('line') && chart.type !== 'treemap'" :label="$t('chart.label_position')" class="form-item">
             <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr">
               <el-option v-for="option in labelPosition" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
@@ -62,14 +62,20 @@ export default {
       labelForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
       fontSize: [],
       isSetting: false,
-      labelPosition: [
-        { name: this.$t('chart.inside'), value: 'middle' },
-        { name: this.$t('chart.outside'), value: 'outside' },
-        { name: this.$t('chart.center'), value: 'center' },
-        { name: this.$t('chart.text_pos_top'), value: 'top' },
-        { name: this.$t('chart.text_pos_bottom'), value: 'bottom' },
+      labelPosition: [],
+      labelPositionPie: [
+        { name: this.$t('chart.inside'), value: 'inner' },
+        { name: this.$t('chart.outside'), value: 'outer' }
+      ],
+      labelPositionH: [
         { name: this.$t('chart.text_pos_left'), value: 'left' },
+        { name: this.$t('chart.center'), value: 'middle' },
         { name: this.$t('chart.text_pos_right'), value: 'right' }
+      ],
+      labelPositionV: [
+        { name: this.$t('chart.text_pos_top'), value: 'top' },
+        { name: this.$t('chart.center'), value: 'middle' },
+        { name: this.$t('chart.text_pos_bottom'), value: 'bottom' }
       ],
       predefineColors: COLOR_PANEL
     }
@@ -77,14 +83,14 @@ export default {
   watch: {
     'chart': {
       handler: function() {
-        this.initLabelPosition()
+        this.initOptions()
         this.initData()
       }
     }
   },
   mounted() {
     this.init()
-    this.initLabelPosition()
+    this.initOptions()
     this.initData()
   },
   methods: {
@@ -121,22 +127,16 @@ export default {
       }
       this.$emit('onLabelChange', this.labelForm)
     },
-    initLabelPosition() {
-      if (this.chart && this.chart.type && this.chart.type.includes('pie')) {
-        this.labelPosition = [
-          { name: this.$t('chart.inside'), value: 'inner' },
-          { name: this.$t('chart.outside'), value: 'outer' }
-        ]
-      } else {
-        this.labelPosition = [
-          { name: this.$t('chart.inside'), value: 'middle' },
-          { name: this.$t('chart.outside'), value: 'outside' },
-          { name: this.$t('chart.center'), value: 'center' },
-          { name: this.$t('chart.text_pos_top'), value: 'top' },
-          { name: this.$t('chart.text_pos_bottom'), value: 'bottom' },
-          { name: this.$t('chart.text_pos_left'), value: 'left' },
-          { name: this.$t('chart.text_pos_right'), value: 'right' }
-        ]
+    initOptions() {
+      const type = this.chart.type
+      if (type) {
+        if (type.includes('horizontal')) {
+          this.labelPosition = this.labelPositionH
+        } else if (type.includes('pie')) {
+          this.labelPosition = this.labelPositionPie
+        } else {
+          this.labelPosition = this.labelPositionV
+        }
       }
     }
   }

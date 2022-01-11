@@ -141,7 +141,7 @@
                                 class="render-select"
                                 style="width: 100px"
                                 size="mini"
-                                @change="calcData(true,'chart',true,true)"
+                                @change="changeChartType()"
                               >
                                 <el-option
                                   v-for="item in renderOptions"
@@ -158,7 +158,7 @@
                                 v-model="view.type"
                                 style="width: 100%"
                                 :disabled="!hasDataPermission('manage',param.privileges)"
-                                @change="calcData(true,'chart',true,true)"
+                                @change="changeChartType()"
                               >
                                 <chart-type :chart="view" style="height: 480px" />
                               </el-radio-group>
@@ -2066,6 +2066,36 @@ export default {
 
     reset() {
       this.getData(this.param.id)
+    },
+
+    changeChartType() {
+      this.setChartDefaultOptions()
+      this.calcData(true, 'chart', true, true)
+    },
+
+    setChartDefaultOptions() {
+      const type = this.view.type
+      if (type.includes('pie')) {
+        if (this.view.render === 'echarts') {
+          this.view.customAttr.label.position = 'inside'
+        } else {
+          this.view.customAttr.label.position = 'inner'
+        }
+      } else if (type.includes('line')) {
+        this.view.customAttr.label.position = 'top'
+      } else if (type.includes('treemap')) {
+        if (this.view.render === 'echarts') {
+          this.view.customAttr.label.position = 'inside'
+        } else {
+          this.view.customAttr.label.position = 'middle'
+        }
+      } else {
+        if (this.view.render === 'echarts') {
+          this.view.customAttr.label.position = 'inside'
+        } else {
+          this.view.customAttr.label.position = 'middle'
+        }
+      }
     }
   }
 }
