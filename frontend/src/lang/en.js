@@ -1758,5 +1758,18 @@ export default {
     cmonth: 'This Month',
     cquarter: 'This Quarter',
     cyear: 'This Year'
+  },
+  dynamic_year: {
+    fix: 'Fixed Year',
+    dynamic: 'Dynamic Year',
+    current: 'This Year',
+    last: 'Last Year'
+  },
+  dynamic_month: {
+    fix: 'Fixed Month',
+    dynamic: 'Dynamic Month',
+    current: 'This Month',
+    last: 'Last Month',
+    firstOfYear: 'First month of this year'
   }
 }

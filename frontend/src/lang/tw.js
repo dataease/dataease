@@ -1770,5 +1770,18 @@ export default {
     cmonth: '本月',
     cquarter: '本季',
     cyear: '本年'
+  },
+  dynamic_year: {
+    fix: '固定年份',
+    dynamic: '動態年份',
+    current: '當年',
+    last: '去年'
+  },
+  dynamic_month: {
+    fix: '固定年月',
+    dynamic: '動態年月',
+    current: '本月',
+    last: '上月',
+    firstOfYear: '當年首月'
   }
 }
