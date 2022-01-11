@@ -3,11 +3,11 @@
     <el-col :span="24">
       <div class="filter-content">
         <el-card
-          v-if="element.serviceName && element.serviceName !== 'timeDateWidget' && element.serviceName !== 'timeDateRangeWidget'"
+          v-if="element.component && element.component !== 'de-date'"
           class="box-card"
         >
           <div style="margin-bottom: 10px;">
-            <span>默认值设置</span>
+            <span>{{ $t('dynamic_time.set_default') }}</span>
           </div>
           <div class="custom-component-class">
             <component
@@ -22,13 +22,13 @@
 
         </el-card>
 
-        <el-card v-if="element.serviceName && element.serviceName === 'timeDateWidget'" class="box-card">
-          <de-date-default v-if="element.serviceName && element.serviceName === 'timeDateWidget'" :element="element" />
+        <el-card v-if="element.component && element.component === 'de-date' && element.serviceName && element.serviceName !== 'timeDateRangeWidget'" class="box-card">
+          <de-date-default v-if="element.component === 'de-date' && element.serviceName !== 'timeDateRangeWidget'" :element="element" />
         </el-card>
 
-        <el-card v-if="element.serviceName && element.serviceName === 'timeDateRangeWidget'" class="box-card">
+        <el-card v-if="element.component && element.component === 'de-date' && element.serviceName && element.serviceName === 'timeDateRangeWidget'" class="box-card">
           <de-date-range-default
-            v-if="element.serviceName && element.serviceName === 'timeDateRangeWidget'"
+            v-if="element.component === 'de-date' && element.serviceName === 'timeDateRangeWidget'"
             :element="element"
           />
         </el-card>

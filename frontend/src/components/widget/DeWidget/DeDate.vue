@@ -72,9 +72,7 @@ export default {
       this.setCondition()
     },
     'defaultValueStr': function(value, old) {
-      if ((this.element.serviceName === 'timeDateWidget' || this.element.serviceName === 'timeDateRangeWidget') &&
-          this.element.options.attrs.default.isDynamic) {
-        // 如果设置了动态时间 不做任何操作
+      if (this.element.options.attrs.default.isDynamic) {
         return
       }
       if (value === old) return
@@ -82,13 +80,10 @@ export default {
       this.dateChange(value)
     },
     'defaultoptions': function(val, old) {
-      // console.log('default chaneg')
-      if (this.element.serviceName !== 'timeDateWidget' || this.element.serviceName === 'timeDateRangeWidget') {
-        if (!this.element.options.attrs.default.isDynamic) {
-          this.values = this.fillValueDerfault()
-          this.dateChange(this.values)
-          return
-        }
+      if (!this.element.options.attrs.default.isDynamic) {
+        this.values = this.fillValueDerfault()
+        this.dateChange(this.values)
+        return
       }
       if (val === old) return
       const widget = ApplicationContext.getService(this.element.serviceName)
@@ -97,9 +92,7 @@ export default {
     }
   },
   created() {
-    if ((this.element.serviceName === 'timeDateWidget' || this.element.serviceName === 'timeDateRangeWidget') && this
-      .element.options.attrs.default && this.element.options
-      .attrs.default.isDynamic) {
+    if (this.element.options.attrs.default && this.element.options.attrs.default.isDynamic) {
       if (this.element.options.attrs.default) {
         const widget = ApplicationContext.getService(this.element.serviceName)
         this.values = widget.dynamicDateFormNow(this.element)

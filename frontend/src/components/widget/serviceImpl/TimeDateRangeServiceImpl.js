@@ -80,6 +80,9 @@ class TimeDateRangeServiceImpl extends WidgetService {
       return field['deType'] === 1
     })
   }
+  defaultSetting() {
+    return dialogPanel.options.attrs.default
+  }
   getStartDayOfWeek() {
     var now = new Date() // 当前日期
     var nowDayOfWeek = now.getDay()

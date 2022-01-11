@@ -13,7 +13,27 @@ const dialogPanel = {
       placeholder: 'deyearmonth.placeholder',
       viewIds: [],
       fieldId: '',
-      dragItems: []
+      dragItems: [],
+      default: {
+        isDynamic: false,
+        dkey: 0,
+        dynamicPrefix: 1,
+        dynamicInfill: 'month',
+        dynamicSuffix: 'before',
+        radioOptions: [{ value: false, text: 'dynamic_month.fix' }, { value: true, text: 'dynamic_month.dynamic' }],
+        relativeOptions: [
+          { value: 0, text: 'dynamic_month.current' },
+          { value: 1, text: 'dynamic_month.last' },
+          { value: 2, text: 'dynamic_month.firstOfYear' },
+          { value: 3, text: 'dynamic_time.custom' }
+        ],
+        custom: {
+          unitsOptions: [
+            { value: 'month', text: 'dynamic_time.month' }
+          ],
+          limits: [0, 10]
+        }
+      }
     },
     value: ''
   },
@@ -63,6 +83,39 @@ class TimeMonthServiceImpl extends WidgetService {
     return fields.filter(field => {
       return field['deType'] === 1
     })
+  }
+  defaultSetting() {
+    return dialogPanel.options.attrs.default
+  }
+  dynamicDateFormNow(element) {
+    const now = new Date()
+    const nowMonth = now.getMonth()
+    const nowYear = now.getFullYear()
+    const nowDate = now.getDate()
+    if (element.options.attrs.default === null || typeof element.options.attrs.default === 'undefined' || !element.options.attrs.default.isDynamic) return null
+
+    if (element.options.attrs.default.dkey === 0) {
+      return Date.now()
+    }
+
+    if (element.options.attrs.default.dkey === 1) {
+      return new Date(nowYear, nowMonth - 1, nowDate).getTime()
+    }
+
+    if (element.options.attrs.default.dkey === 2) {
+      return new Date(nowYear, 0, 1).getTime()
+    }
+
+    if (element.options.attrs.default.dkey === 3) {
+      const dynamicPrefix = parseInt(element.options.attrs.default.dynamicPrefix)
+      const dynamicSuffix = element.options.attrs.default.dynamicSuffix
+
+      if (dynamicSuffix === 'before') {
+        return new Date(nowYear, nowMonth - dynamicPrefix, nowDate).getTime()
+      } else {
+        return new Date(nowYear, nowMonth + dynamicPrefix, nowDate).getTime()
+      }
+    }
   }
 }
 const timeMonthServiceImpl = new TimeMonthServiceImpl()
