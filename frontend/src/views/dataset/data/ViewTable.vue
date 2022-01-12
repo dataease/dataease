@@ -1,6 +1,6 @@
 <template>
   <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
-    <!--    <span v-show="false">{{ tableRefresh }}</span>-->
+    <span v-show="false">{{ refreshPage }}</span>
     <el-row style="height: 26px;">
       <span class="title-text" style="line-height: 26px;">
         {{ table.name }}
@@ -57,7 +57,7 @@
         <update-info v-if="tabActive=='updateInfo'" :param="param" :table="table" />
       </el-tab-pane>
       <el-tab-pane v-if="isPluginLoaded && hasDataPermission('manage',param.privileges)" :lazy="true" :label="$t('dataset.row_permissions')" name="rowPermissions">
-        <plugin-com v-if="isPluginLoaded && tabActive=='rowPermissions'" ref="RowPermissions" component-name="RowPermissions" :obj="table"/>
+        <plugin-com v-if="isPluginLoaded && tabActive=='rowPermissions'" ref="RowPermissions" component-name="RowPermissions" :obj="table" />
       </el-tab-pane>
     </el-tabs>
   </el-row>
@@ -75,7 +75,7 @@ import PluginCom from '@/views/system/plugin/PluginCom'
 
 export default {
   name: 'ViewTable',
-  components: {FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview, PluginCom },
+  components: { FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview, PluginCom },
   props: {
     param: {
       type: Object,
@@ -102,14 +102,13 @@ export default {
       isPluginLoaded: false
     }
   },
-  beforeCreate() {
-    pluginLoaded().then(res => {
-      this.isPluginLoaded = res.success && res.data
-    })
-  },
   computed: {
     hideCustomDs: function() {
       return this.$store.getters.hideCustomDs
+    },
+    refreshPage: function() {
+      this.initTable(this.param.id)
+      return this.$store.getters.table
     }
   },
   watch: {
@@ -117,6 +116,11 @@ export default {
       this.tabActive = 'dataPreview'
       this.initTable(this.param.id)
     }
+  },
+  beforeCreate() {
+    pluginLoaded().then(res => {
+      this.isPluginLoaded = res.success && res.data
+    })
   },
   created() {
 

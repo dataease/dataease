@@ -534,14 +534,7 @@ div:focus {
   color: var(--Main) !important;
 }
 
-/* .blackTheme .el-dialog {
-    background: var(--ContentBG) !important;
-    color: var(--TextPrimary) !important;
-}
- */
-.blackTheme .el-dialog__title {
-  color: #ffffff !important;
-}
+
 
 .blackTheme .title-text {
   color: var(--TextPrimary) !important;
@@ -663,9 +656,7 @@ div:focus {
   background: #38393a !important;
 }
 
-.blackTheme .el-message-box__content {
-  color: #F2F6FC;
-}
+
 
 .blackTheme .el-message-box__btns {
   .el-button--default:not(.el-button--primary) {

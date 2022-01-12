@@ -26,7 +26,7 @@ export function baseMapOption(chart_option, chart) {
   // 处理data
   if (chart.data) {
     chart_option.title.text = chart.title
-    if (chart.data.series.length > 0) {
+    if (chart.data.series && chart.data.series.length > 0) {
       chart_option.series[0].name = chart.data.series[0].name
       // label
       if (customAttr.label) {
