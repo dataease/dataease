@@ -131,6 +131,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    apply: 'Apply',
     search: 'Search',
     folder: 'Folder',
     no_target_permission: 'No permission',
@@ -437,7 +438,10 @@ export default {
     background: 'Background color',
     custom: 'Custom color',
     otherSave: 'Theme Save as',
-    info: 'Theme info'
+    info: 'Theme info',
+    add: 'Add Theme',
+    please_input_name: 'Please enter a name',
+    name_repeat: 'Name already exists'
   },
   tagsView: {
     refresh: 'Refresh',
