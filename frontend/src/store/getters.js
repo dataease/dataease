@@ -16,6 +16,7 @@ const getters = {
   errorLogs: state => state.errorLog.logs,
   sceneData: state => state.dataset.sceneData,
   table: state => state.dataset.table,
+  chartTable: state => state.chart.table,
   hideCustomDs: state => state.dataset.hideCustomDs,
   loadingMap: state => state.request.loadingMap,
   currentPath: state => state.permission.currentPath,
