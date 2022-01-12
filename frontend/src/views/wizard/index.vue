@@ -66,16 +66,16 @@ export default {
     text-align: center;
     color: white;
     padding: 10px;
-    margin-top: 20px;
+    margin-top: 25px;
   }
   .hint_head {
-    line-height: 50px;
+    line-height: 40px;
     font-weight: bold;
-    font-size: 30px;
+    font-size: 25px;
   }
   .hint_content {
-    line-height: 50px;
-    font-size: 20px;
+    line-height: 40px;
+    font-size: 15px;
   }
 
   .card_container {

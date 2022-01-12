@@ -50,6 +50,8 @@ export default {
     float: left;
     font-weight: 500;
     color: var(--MenuActiveBG, #409EFF);
+    max-height: 80%;
+    overflow: hidden;
   }
 
   .demo_bottom{

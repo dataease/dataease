@@ -24,10 +24,6 @@
 export default {
   name: 'TeachingVideo',
   props: {
-    headInfo: {
-      type: String,
-      required: false
-    }
   },
   data() {
     return {}
@@ -45,6 +41,8 @@ export default {
     padding-left: 10px;
     float: left;
     font-weight: 400;
+    max-height: 80%;
+    overflow: hidden;
   }
 
   .demo_bottom{

@@ -35,6 +35,8 @@ export default {
     padding-left: 10px;
     float: left;
     font-weight: 400;
+    max-height: 80%;
+    overflow: hidden;
   }
 
   .demo_bottom{
