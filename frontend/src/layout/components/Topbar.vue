@@ -14,10 +14,8 @@
     >
       <div v-for="item in permission_routes" :key="item.path" class="nav-item">
         <app-link :to="resolvePath(item)">
-          <el-menu-item
-            v-if="!item.hidden"
-            :index="item.path"
-          >{{ item.meta ? item.meta.title : item.children[0].meta.title }}</el-menu-item>
+          <el-menu-item v-if="!item.hidden" :index="item.path">
+            {{ item.meta ? item.meta.title : item.children[0].meta.title }}</el-menu-item>
         </app-link>
       </div>
     </el-menu>
@@ -28,13 +26,22 @@
         <notification class="right-menu-item hover-effect" />
         <lang-select class="right-menu-item hover-effect" />
         <div style="height: 100%;padding: 0 8px;" class="right-menu-item hover-effect">
-          <a href="https://dataease.io/docs/" target="_blank" style="display: flex;height: 100%;width: 100%;justify-content: center;align-items: center;">
+          <a
+            href="https://dataease.io/docs/"
+            target="_blank"
+            style="display: flex;height: 100%;width: 100%;justify-content: center;align-items: center;"
+          >
             <svg-icon icon-class="docs" />
           </a>
         </div>
       </template>
 
-      <el-dropdown class="top-dropdown" style="display: flex;align-items: center; width:100px;" trigger="click">
+      <el-dropdown
+        ref="my-drop"
+        class="top-dropdown"
+        style="display: flex;align-items: center; width:100px;"
+        trigger="click"
+      >
         <div class="el-dropdown-link" style="display: flex;color: var(--TopTextColor);font-size: 14px; width:100%;">
 
           <span style="max-width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">{{ name }}</span>
@@ -62,21 +69,32 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+
   </div>
 
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import {
+  mapGetters
+} from 'vuex'
 import AppLink from './Sidebar/Link'
 import variables from '@/styles/variables.scss'
-import { isExternal } from '@/utils/validate'
+import {
+  isExternal
+} from '@/utils/validate'
 import Notification from '@/components/Notification'
 import bus from '@/utils/bus'
 import LangSelect from '@/components/LangSelect'
-import { getSysUI } from '@/utils/auth'
-import { pluginLoaded } from '@/api/user'
-import { initTheme } from '@/utils/ThemeUtil'
+import {
+  getSysUI
+} from '@/utils/auth'
+import {
+  pluginLoaded
+} from '@/api/user'
+import {
+  initTheme
+} from '@/utils/ThemeUtil'
 export default {
   name: 'Topbar',
   components: {
@@ -84,6 +102,12 @@ export default {
     Notification,
     LangSelect
 
+  },
+  props: {
+    showTips: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -100,27 +124,42 @@ export default {
     },
 
     topMenuColor() {
-      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuColor'] && this.$store.getters.uiInfo['ui.topMenuColor'].paramValue) { return this.$store.getters.uiInfo['ui.topMenuColor'].paramValue }
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuColor'] && this.$store.getters.uiInfo[
+        'ui.topMenuColor'].paramValue) {
+        return this.$store.getters.uiInfo['ui.topMenuColor'].paramValue
+      }
       return this.variables.topBarBg
     },
     topMenuActiveColor() {
-      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuActiveColor'] && this.$store.getters.uiInfo['ui.topMenuActiveColor'].paramValue) { return this.$store.getters.uiInfo['ui.topMenuActiveColor'].paramValue }
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuActiveColor'] && this.$store.getters
+        .uiInfo['ui.topMenuActiveColor'].paramValue) {
+        return this.$store.getters.uiInfo['ui.topMenuActiveColor'].paramValue
+      }
       return this.variables.topBarMenuActive
     },
     topMenuTextColor() {
-      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuTextColor'] && this.$store.getters.uiInfo['ui.topMenuTextColor'].paramValue) { return this.$store.getters.uiInfo['ui.topMenuTextColor'].paramValue }
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuTextColor'] && this.$store.getters
+        .uiInfo['ui.topMenuTextColor'].paramValue) {
+        return this.$store.getters.uiInfo['ui.topMenuTextColor'].paramValue
+      }
       return this.variables.topBarMenuText
     },
     topMenuTextActiveColor() {
-      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuTextActiveColor'] && this.$store.getters.uiInfo['ui.topMenuTextActiveColor'].paramValue) { return this.$store.getters.uiInfo['ui.topMenuTextActiveColor'].paramValue }
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.topMenuTextActiveColor'] && this.$store.getters
+        .uiInfo['ui.topMenuTextActiveColor'].paramValue) {
+        return this.$store.getters.uiInfo['ui.topMenuTextActiveColor'].paramValue
+      }
       return this.variables.topBarMenuTextActive
     },
     /* topMenuColor() {
-      return this.$store.getters.uiInfo.topMenuColor
-    }, */
+        return this.$store.getters.uiInfo.topMenuColor
+      }, */
     activeMenu() {
       const route = this.$route
-      const { meta, path } = route
+      const {
+        meta,
+        path
+      } = route
       // if set path, the sidebar will highlight the path you set
       if (meta.activeMenu) {
         // return meta.activeMenu
@@ -152,6 +191,10 @@ export default {
     bus.$on('set-top-menu-active-info', this.setTopMenuActiveInfo)
     bus.$on('set-top-text-info', this.setTopTextInfo)
     bus.$on('set-top-text-active-info', this.setTopTextActiveInfo)
+    this.showTips && this.$nextTick(() => {
+      const drop = this.$refs['my-drop']
+      drop && drop.show && drop.show()
+    })
   },
   created() {
     this.loadUiInfo()
@@ -159,13 +202,17 @@ export default {
   beforeCreate() {
     pluginLoaded().then(res => {
       this.isPluginLoaded = res.success && res.data
-      if (this.isPluginLoaded) { initTheme() }
+      if (this.isPluginLoaded) {
+        initTheme()
+      }
     })
   },
   methods: {
     // 通过当前路径找到二级菜单对应项，存到store，用来渲染左侧菜单
     initCurrentRoutes() {
-      const { path } = this.$route
+      const {
+        path
+      } = this.$route
       let route = this.permission_routes.find(
         item => item.path === '/' + path.split('/')[1]
       )
@@ -197,9 +244,9 @@ export default {
       // 如果有子项，默认跳转第一个子项路由
       let path = ''
       /**
-       * item 路由子项
-       * parent 路由父项
-       */
+         * item 路由子项
+         * parent 路由父项
+         */
       const getDefaultPath = (item, parent) => {
         // 如果path是个外部链接（不建议），直接返回链接，存在个问题：如果是外部链接点击跳转后当前页内容还是上一个路由内容
         if (isExternal(item.path)) {
@@ -233,7 +280,7 @@ export default {
     },
     // 设置侧边栏的显示和隐藏
     setSidebarHide(route) {
-    //   if (!route.children || route.children.length === 1) {
+      //   if (!route.children || route.children.length === 1) {
       if (route.name !== 'system' && (!route.children || this.showChildLength(route) === 1)) {
         this.$store.dispatch('app/toggleSideBarHide', true)
       } else {
@@ -266,12 +313,12 @@ export default {
         }
 
         /* if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
-          if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
-            document.body.className = 'blackTheme'
-          } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
-            document.body.className = ''
-          }
-        } */
+            if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
+              document.body.className = 'blackTheme'
+            } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
+              document.body.className = ''
+            }
+          } */
         this.axiosFinished = true
       })
     },
@@ -291,12 +338,14 @@ export default {
 
   }
 }
+
 </script>
 <style lang="scss" scoped>
   .el-dropdown-link {
     cursor: pointer;
     color: #1e212a;
   }
+
   .el-icon-arrow-down {
     font-size: 12px;
   }
@@ -312,7 +361,8 @@ export default {
   }
 
   .de-top-menu {
-      background-color: var(--MainBG);
+    background-color: var(--MainBG);
 
   }
+
 </style>
