@@ -31,8 +31,8 @@ export default {
 
 <style lang="scss" scoped>
   .card_main{
-    padding: 60px 30px 30px 30px;
-    height: 35vh;
+    padding: 40px 30px 30px 30px;
+    height: 33vh;
   }
   .card_head{
     padding-left: 15px;
