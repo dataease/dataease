@@ -95,7 +95,7 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/panel/index',
+    redirect: '/wizard/index',
     hidden: true
   }
 

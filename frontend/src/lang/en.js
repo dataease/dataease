@@ -1758,5 +1758,25 @@ export default {
     cmonth: 'This Month',
     cquarter: 'This Quarter',
     cyear: 'This Year'
+  },
+  wizard: {
+    welcome_title: 'Welcome To Use DataEase',
+    welcome_hint: 'Open source data visual analysis tool available to everyone',
+    demo_video: 'Demo',
+    online_document: 'Online',
+    latest_developments: 'Latest',
+    teaching_video: 'Teaching',
+    enterprise_edition: 'Enterprise',
+    contact_us: 'Contact Us',
+    demo_video_hint: 'How to make a DataEase dashboard in 3 minutes and share it with others',
+    online_document_hint: 'It covers the installation steps, user manuals, tutorials, solutions to common problems, and secondary development of DataEase',
+    teaching_video_bottom_hint: 'More videos',
+    enterprise_edition_hint1: 'Provide enterprise application scenario x-pack enhancement package',
+    enterprise_edition_hint2: 'Provide high-level original factory service support',
+    enterprise_edition_hint3: 'Provide dataease O & M security best practices',
+    open_source_community: 'Open source community',
+    click_show: 'Click To View',
+    show_more: 'Show More',
+    click_inner: 'Click To Enter'
   }
 }

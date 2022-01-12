@@ -1780,5 +1780,25 @@ export default {
     cmonth: '本月',
     cquarter: '本季',
     cyear: '本年'
+  },
+  wizard: {
+    welcome_title: '欢迎使用DataEase',
+    welcome_hint: '人人可用的开源数据可视化分析工具',
+    demo_video: '演示视频',
+    online_document: '在线文档',
+    latest_developments: '最新动态',
+    teaching_video: '教学视频',
+    enterprise_edition: '企业版',
+    contact_us: '联系我们',
+    demo_video_hint: '如何3分钟制作一个DataEase 数据看板、并分享给他人',
+    online_document_hint: '涵盖DataEase的安装步骤、用户手册、使用教程、常见问题的解决方案、以及二次开发等',
+    teaching_video_bottom_hint: '更多视频资料',
+    enterprise_edition_hint1: '提供企业级应用场景X-Pack增强包',
+    enterprise_edition_hint2: '提供高等级原厂服务支持',
+    enterprise_edition_hint3: '提供DataEase 运维安全最佳实践',
+    open_source_community: '开源社区',
+    click_show: '点击查看',
+    show_more: '查看更多',
+    click_inner: '点击进入'
   }
 }
