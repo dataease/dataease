@@ -74,7 +74,7 @@ import {
 import {
   baseMixOption
 } from '@/views/chart/chart/mix/mix'
-  // import eventBus from '@/components/canvas/utils/eventBus'
+// import eventBus from '@/components/canvas/utils/eventBus'
 import {
   uuid
 } from 'vue-uuid'
@@ -130,7 +130,8 @@ export default {
       pointParam: null,
 
       dynamicAreaCode: null,
-      borderRadius: '0px'
+      borderRadius: '0px',
+      mapCenter: null
     }
   },
 
@@ -276,6 +277,11 @@ export default {
       const base_json = JSON.parse(JSON.stringify(BASE_MAP))
       const chart_option = baseMapOption(base_json, chart)
       this.myEcharts(chart_option)
+      const opt = this.myChart.getOption()
+      if (opt && opt.series) {
+        const center = opt.series[0].center
+        this.mapCenter = center
+      }
     },
     myEcharts(option) {
       // 指定图表的配置项和数据
@@ -356,6 +362,7 @@ export default {
     resetZoom() {
       const options = JSON.parse(JSON.stringify(this.myChart.getOption()))
       options.series[0].zoom = 1
+      options.series[0].center = this.mapCenter
       this.myChart.setOption(options)
     }
   }
