@@ -39,14 +39,20 @@ export default {
     },
     onLoad(e) {
         this.language = getLanguage()
+        
     },
     methods: {
         radioChange(node) {
             this.language = node.detail.value
             if(node.detail.value === 'sys') {
-                var local = uni.getLocale()
-                uni.setLocale(local)   
-                this.$i18n.locale = local      
+                uni.getSystemInfo({
+                    success: res => {
+                        var local = res.language === 'zh-CN' ? 'zh-Hans' : res.language === 'zh-TW' ? 'zh-Hant' : 'en'
+                        uni.setLocale(local)   
+                        this.$i18n.locale = local
+                    }
+                })
+                      
                 
             }else {
                 uni.setLocale(node.detail.value)   

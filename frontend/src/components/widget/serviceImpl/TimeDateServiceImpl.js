@@ -1,4 +1,6 @@
-import { WidgetService } from '../service/WidgetService'
+import {
+  WidgetService
+} from '../service/WidgetService'
 
 const leftPanel = {
   icon: 'iconfont icon-ri',
@@ -19,7 +21,23 @@ const dialogPanel = {
         dkey: 0,
         dynamicPrefix: 1,
         dynamicInfill: 'day',
-        dynamicSuffix: 'before'
+        dynamicSuffix: 'before',
+        radioOptions: [{ value: false, text: 'dynamic_time.fix' }, { value: true, text: 'dynamic_time.dynamic' }],
+        relativeOptions: [
+          { value: 0, text: 'dynamic_time.today' },
+          { value: 1, text: 'dynamic_time.yesterday' },
+          { value: 2, text: 'dynamic_time.firstOfMonth' },
+          { value: 3, text: 'dynamic_time.custom' }
+        ],
+        custom: {
+          unitsOptions: [
+            { value: 'day', text: 'dynamic_time.date' },
+            { value: 'week', text: 'dynamic_time.week' },
+            { value: 'month', text: 'dynamic_time.month' },
+            { value: 'year', text: 'dynamic_time.year' }
+          ],
+          limits: [1, 12]
+        }
       }
     },
     value: ''
@@ -45,7 +63,9 @@ const drawPanel = {
 
 class TimeDateServiceImpl extends WidgetService {
   constructor(options = {}) {
-    Object.assign(options, { name: 'timeDateWidget' })
+    Object.assign(options, {
+      name: 'timeDateWidget'
+    })
     super(options)
     this.filterDialog = true
     this.showSwitch = false
@@ -70,6 +90,9 @@ class TimeDateServiceImpl extends WidgetService {
     return fields.filter(field => {
       return field['deType'] === 1
     })
+  }
+  defaultSetting() {
+    return dialogPanel.options.attrs.default
   }
   dynamicDateFormNow(element) {
     if (element.options.attrs.default === null || typeof element.options.attrs.default === 'undefined' || !element.options.attrs.default.isDynamic) return null
@@ -111,18 +134,10 @@ class TimeDateServiceImpl extends WidgetService {
         const nowYear = now.getFullYear()
         const nowDate = now.getDate()
 
-        const tarYear = nowYear
         if (dynamicSuffix === 'before') {
-          const deffMonth = nowMonth - dynamicPrefix
-          let diffYear = deffMonth / 12
-          if (deffMonth < 0) {
-            diffYear -= 1
-          }
-          return new Date(tarYear + diffYear, nowMonth - dynamicPrefix % 12, nowDate).getTime()
+          return new Date(nowYear, nowMonth - dynamicPrefix, nowDate).getTime()
         } else {
-          const deffMonth = nowMonth + dynamicPrefix
-          const diffYear = deffMonth / 12
-          return new Date(tarYear + diffYear, deffMonth % 12, nowDate).getTime()
+          return new Date(nowYear, nowMonth + dynamicPrefix, nowDate).getTime()
         }
       }
       if (dynamicInfill === 'year') {
@@ -136,5 +151,7 @@ class TimeDateServiceImpl extends WidgetService {
     }
   }
 }
-const timeDateServiceImpl = new TimeDateServiceImpl({ name: 'timeDateWidget' })
+const timeDateServiceImpl = new TimeDateServiceImpl({
+  name: 'timeDateWidget'
+})
 export default timeDateServiceImpl

@@ -1,43 +1,89 @@
 <template>
-  <div v-if="element">
+  <div v-if="element" class="default-value-div">
     <el-form ref="form" :model="element.options.attrs.default" label-width="100px">
 
       <el-form-item :label="$t('dynamic_time.set_default')">
         <el-radio-group v-model="element.options.attrs.default.isDynamic" @change="dynamicChange">
-          <el-radio :label="false">{{ $t('dynamic_time.fix') }}</el-radio>
-          <el-radio :label="true">{{ $t('dynamic_time.dynamic') }}</el-radio>
+
+          <el-radio
+            v-for="(item, index) in defaultSetting.radioOptions"
+            :key="index"
+            :label="item.value"
+          >
+            {{ $t(item.text) }}
+          </el-radio>
         </el-radio-group>
       </el-form-item>
 
       <el-form-item v-if="element.options.attrs.default.isDynamic" :label="$t('dynamic_time.relative')">
 
-        <el-select v-model="element.options.attrs.default.dkey" placeholder="" class="relative-time" @change="dkeyChange">
-          <el-option :label="$t('dynamic_time.today')" :value="0" />
-          <el-option :label="$t('dynamic_time.yesterday')" :value="1" />
-          <el-option :label="$t('dynamic_time.firstOfMonth')" :value="2" />
-          <el-option :label="$t('dynamic_time.custom')" :value="3" />
+        <el-select
+          v-model="element.options.attrs.default.dkey"
+          placeholder=""
+          class="relative-time"
+          @change="dkeyChange"
+        >
+          <el-option
+            v-for="(item, index) in defaultSetting.relativeOptions"
+            :key="item.value + index"
+            :label="$t(item.text)"
+            :value="item.value"
+          />
+
         </el-select>
 
       </el-form-item>
 
       <div class="inline">
 
-        <el-form-item v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3" label="">
-          <el-input v-model="element.options.attrs.default.dynamicPrefix" type="number" size="mini" :min="1" :max="10" @input="dynamicPrefixChange" />
+        <el-form-item
+          v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === (defaultSetting.relativeOptions.length - 1)"
+          label=""
+        >
+          <el-input
+            v-model="element.options.attrs.default.dynamicPrefix"
+            type="number"
+            size="mini"
+            :min="1"
+            :max="12"
+            @input="dynamicPrefixChange"
+          />
         </el-form-item>
 
-        <el-form-item v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3" label="" class="no-label-item">
-          <el-select v-model="element.options.attrs.default.dynamicInfill" size="mini" placeholder="" @change="dynamicInfillChange">
-            <el-option :label="$t('dynamic_time.date')" value="day" />
-            <el-option :label="$t('dynamic_time.week')" value="week" />
-            <el-option :label="$t('dynamic_time.month')" value="month" />
-            <el-option :label="$t('dynamic_time.year')" value="year" />
+        <el-form-item
+          v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === (defaultSetting.relativeOptions.length - 1)"
+          label=""
+          class="no-label-item"
+        >
+          <el-select
+            v-model="element.options.attrs.default.dynamicInfill"
+            size="mini"
+            placeholder=""
+            :disabled="defaultSetting.custom && defaultSetting.custom.unitsOptions && defaultSetting.custom.unitsOptions.length === 1"
+            @change="dynamicInfillChange"
+          >
+            <el-option
+              v-for="(item, index) in defaultSetting.custom.unitsOptions"
+              :key="item.value + index"
+              :label="$t(item.text)"
+              :value="item.value"
+            />
+
           </el-select>
         </el-form-item>
 
-        <el-form-item v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3" label="" class="no-label-item">
+        <el-form-item
+          v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === (defaultSetting.relativeOptions.length - 1)"
+          label=""
+          class="no-label-item"
+        >
 
-          <el-select v-model="element.options.attrs.default.dynamicSuffix" size="mini" placeholder="" @change="dynamicSuffixChange">
+          <el-select
+            v-model="element.options.attrs.default.dynamicSuffix"
+            size="mini"
+            placeholder=""
+            @change="dynamicSuffixChange"
+          >
             <el-option :label="$t('dynamic_time.before')" value="before" />
             <el-option :label="$t('dynamic_time.after')" value="after" />
           </el-select>
@@ -48,7 +94,7 @@
       <el-form-item v-if="element.options.attrs.default.isDynamic" :label="$t('dynamic_time.preview')">
         <el-date-picker
           v-model="dval"
-          type="date"
+          :type="element.options.attrs.type"
           disabled
           placeholder=""
           class="relative-time"
@@ -71,7 +117,9 @@
 </template>
 
 <script>
-import { ApplicationContext } from '@/utils/ApplicationContext'
+import {
+  ApplicationContext
+} from '@/utils/ApplicationContext'
 export default {
   name: 'DeDateDefault',
   props: {
@@ -84,6 +132,13 @@ export default {
   data() {
     return {
       dval: null
+    }
+  },
+  computed: {
+    defaultSetting() {
+      const widget = ApplicationContext.getService(this.element.serviceName)
+      const setting = widget.defaultSetting()
+      return setting
     }
   },
   created() {
@@ -117,17 +172,27 @@ export default {
     }
   }
 }
+
 </script>
 
 <style lang="scss" scoped>
-.inline {
-  display: flex;
-  >>>.el-input--mini {
-      min-width: 70px;
+  .inline {
+    display: flex;
+
   }
-}
-.relative-time {
-    width: 100%;
-}
+
+  .inline {
+    .el-form-item {
+      margin-bottom: 5px !important;
+
+      .el-form-item__content>.el-input--mini {
+        min-width: 70px;
+      }
+    }
+  }
+
+  .relative-time {
+    width: 100% !important;
+  }
 
 </style>

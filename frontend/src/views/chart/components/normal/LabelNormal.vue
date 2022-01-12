@@ -6,7 +6,7 @@
       id="label-content"
       :style="content_class"
     >
-      <span v-if="quotaShow" :style="label_class">
+      <span :style="label_class">
         <p v-for="item in chart.data.series" :key="item.name" :style="label_content_class">
           {{ item.data[0] }}
         </p>

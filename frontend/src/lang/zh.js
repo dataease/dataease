@@ -131,6 +131,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    apply: '应用',
     search: '搜索',
     folder: '目录',
     no_target_permission: '没有权限',
@@ -438,7 +439,10 @@ export default {
     background: '背景颜色',
     custom: '自定义颜色',
     otherSave: '主题另存为',
-    info: '主题信息'
+    info: '主题信息',
+    add: '新增主题',
+    please_input_name: '请输入名称',
+    name_repeat: '名称已存在'
   },
   tagsView: {
     refresh: '刷新',
@@ -1780,6 +1784,19 @@ export default {
     cmonth: '本月',
     cquarter: '本季',
     cyear: '本年'
+  },
+  dynamic_year: {
+    fix: '固定年份',
+    dynamic: '动态年份',
+    current: '当年',
+    last: '去年'
+  },
+  dynamic_month: {
+    fix: '固定年月',
+    dynamic: '动态年月',
+    current: '当月',
+    last: '上月',
+    firstOfYear: '当年首月'
   },
   wizard: {
     welcome_title: '欢迎使用DataEase',

@@ -2,6 +2,7 @@ package io.dataease.provider.datasource;
 
 import com.alibaba.druid.filter.Filter;
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.pool.DruidPooledConnection;
 import com.alibaba.druid.wall.WallFilter;
 import com.google.gson.Gson;
 import io.dataease.commons.constants.DatasourceTypes;
@@ -18,6 +19,7 @@ import javax.annotation.PostConstruct;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
@@ -143,6 +145,10 @@ public class JdbcProvider extends DatasourceProvider {
         }
         List<TableFiled> list = new LinkedList<>();
         try (Connection connection = getConnectionFromPool(datasourceRequest)) {
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")) {
+                Method setRemarksReporting = extendedJdbcClassLoader.loadClass("oracle.jdbc.driver.OracleConnection").getMethod("setRemarksReporting",boolean.class);
+                setRemarksReporting.invoke(((DruidPooledConnection) connection).getConnection(), true);
+            }
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             ResultSet resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable(), "%");
             while (resultSet.next()) {
