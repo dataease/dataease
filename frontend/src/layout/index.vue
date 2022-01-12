@@ -183,6 +183,7 @@ export default {
     z-index: 9999;
     border-radius: 4px;
     padding: 15px;
+    background: #fff;
   }
   .arrow{
     border-bottom: 7px solid #fff;
