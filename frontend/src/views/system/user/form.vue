@@ -13,12 +13,12 @@
       <el-form-item :label="$t('commons.email')" prop="email">
         <el-input v-model="form.email" />
       </el-form-item>
-      <el-form-item v-if="formType !== 'modify'" :label="$t('commons.password')" prop="password">
+      <!-- <el-form-item v-if="formType !== 'modify'" :label="$t('commons.password')" prop="password">
         <el-input v-model="form.password" autocomplete="off" show-password />
       </el-form-item>
       <el-form-item v-if="formType !== 'modify'" :label="$t('commons.confirmPassword')" prop="confirmPassword">
         <el-input v-model="form.confirmPassword" autocomplete="off" show-password />
-      </el-form-item>
+      </el-form-item> -->
 
       <el-form-item :label="$t('commons.gender')" prop="gender">
         <el-radio-group v-model="form.gender" style="width: 178px">
@@ -40,9 +40,9 @@
           :load-options="loadDepts"
           :auto-load-root-options="false"
           :placeholder="$t('user.choose_org')"
-          :noChildrenText="$t('commons.treeselect.no_children_text')"
-          :noOptionsText="$t('commons.treeselect.no_options_text')"
-          :noResultsText="$t('commons.treeselect.no_results_text')"
+          :no-children-text="$t('commons.treeselect.no_children_text')"
+          :no-options-text="$t('commons.treeselect.no_options_text')"
+          :no-results-text="$t('commons.treeselect.no_results_text')"
           @open="filterData"
         />
       </el-form-item>

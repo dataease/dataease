@@ -1,7 +1,7 @@
 <template>
   <div :class="classObj" class="app-wrapper">
     <licbar />
-    <topbar v-if="!fullHeightFlag" />
+    <topbar v-if="!fullHeightFlag && finishLoad" :show-tips="showTips" />
 
     <de-container :style="mainStyle">
       <de-aside-container v-if="!sidebar.hide" class="le-aside-container">
@@ -12,6 +12,14 @@
         <app-main />
       </de-main-container>
     </de-container>
+    <div v-if="showTips" class="pwd-tips">
+      <span>{{ $t('commons.first_login_tips') }}</span>
+      <div style="text-align: right; margin-bottom: 10px;">
+        <el-button type="primary" size="mini" @click="showTips = false">{{ $t('commons.roger_that') }}</el-button>
+      </div>
+      <div class="arrow" />
+    </div>
+
   </div>
 </template>
 
@@ -22,6 +30,8 @@ import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import bus from '@/utils/bus'
+
+import { needModifyPwd } from '@/api/user'
 
 export default {
   name: 'Layout',
@@ -37,7 +47,9 @@ export default {
   mixins: [ResizeMixin],
   data() {
     return {
-      componentName: 'PanelMain'
+      componentName: 'PanelMain',
+      showTips: false,
+      finishLoad: false
     }
   },
   computed: {
@@ -75,6 +87,14 @@ export default {
         mobile: this.device === 'mobile'
       }
     }
+  },
+  beforeCreate() {
+    needModifyPwd().then(res => {
+      this.showTips = res.success && res.data
+      this.finishLoad = true
+    }).catch(e => {
+      this.finishLoad = true
+    })
   },
   mounted() {
     bus.$on('PanelSwitchComponent', (c) => {
@@ -153,4 +173,28 @@ export default {
     }
 
   }
+  .pwd-tips {
+    position: absolute;
+    box-shadow: 0 0 0 1000em rgb(0, 0, 0, 0.3);
+    height: 100px;
+    width: 225px;
+    top: 105px;
+    right: 115px;
+    z-index: 9999;
+    border-radius: 4px;
+    padding: 15px;
+  }
+  .arrow{
+    border-bottom: 7px solid #fff;
+    border-right: 7px solid #b5b5b7;
+    border-left: 7px solid #b5b5b7;
+    border-top: 7px solid #b5b5b7;
+    width: 0px;
+    height: 0px;
+    position: relative;
+    top:-60px;
+    left:210px;
+    transform: rotate(90deg);
+}
+
 </style>

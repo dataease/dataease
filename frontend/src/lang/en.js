@@ -131,6 +131,8 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    first_login_tips: 'Please change the initial password',
+    roger_that: 'Roger That',
     apply: 'Apply',
     search: 'Search',
     folder: 'Folder',

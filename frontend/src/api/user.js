@@ -22,6 +22,13 @@ export function logout() {
   })
 }
 
+export function needModifyPwd() {
+  return request({
+    url: '/api/auth/useInitPwd',
+    method: 'post'
+  })
+}
+
 export function validateUserName(data) {
   return request({
     url: '/api/auth/validateName',

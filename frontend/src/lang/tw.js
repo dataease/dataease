@@ -131,6 +131,8 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
+    first_login_tips: '您使用的是初始密碼，記得修改密碼哦',
+    roger_that: '知道了',
     apply: '應用',
     search: '搜索',
     folder: '目錄',
