@@ -66,7 +66,8 @@ export function mobile2MainCanvas(mainSource, mobileSource) {
 export function panelInit(componentDatas) {
   componentDatas.forEach(item => {
     if (item.component && item.component === 'de-date') {
-      if (item.options.attrs && !item.options.attrs.default) {
+      if (item.options.attrs &&
+        (!item.options.attrs.default || (item.serviceName === 'timeYearWidget' && item.options.attrs.default.dynamicInfill !== 'year') || (item.serviceName === 'timeMonthWidget' && item.options.attrs.default.dynamicInfill !== 'month'))) {
         const widget = ApplicationContext.getService(item.serviceName)
         if (widget && widget.defaultSetting) {
           item.options.attrs.default = widget.defaultSetting()
