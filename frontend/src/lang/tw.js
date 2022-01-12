@@ -131,6 +131,7 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
+    apply: '應用',
     search: '搜索',
     folder: '目錄',
     no_target_permission: '沒有權限',
@@ -437,7 +438,10 @@ export default {
     background: '背景顏色',
     custom: '自定義顏色',
     otherSave: '主題另存為',
-    info: '主題信息'
+    info: '主題信息',
+    add: '新增主題',
+    please_input_name: '請輸入名稱',
+    name_repeat: '名稱已存在'
   },
   tagsView: {
     refresh: '刷新',
