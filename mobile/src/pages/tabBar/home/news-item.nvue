@@ -1,0 +1,215 @@
+<template>
+	<!-- remove list-cell layer fix android 4.x overflow limit error: 28 layers! -->
+	<!-- <view class="list-cell view" @click="click"></view> -->
+	<view class="media-item view" hover-class="media-item-hover" v-if="options.title" @click="click">
+		<!-- <view class="view" :style="options.article_type === 2 ? 'flex-direction: row';" :class="{'media-image-right': options.article_type === 2, 'media-image-left': options.article_type === 1}"> -->
+		<!-- TODO 在支付宝小程序下 需要用 style 覆盖标签的默认样式 -->
+		<view class="view" :style="{flexDirection: (options.article_type === 1 || options.article_type === 2)?(options.article_type === 2 ?'row':'row-reverse'):'column' }">
+			<text class="info-text">{{options.rightText}}</text>
+			<text class="media-title" :class="{'media-title2': options.article_type === 1 || options.article_type === 2}">{{options.title}}</text>
+			<view v-if="options.image_list || options.image_url" class="image-section flex-row" :class="{'image-section-right': options.article_type === 2, 'image-section-left': options.article_type === 1}"
+			 :style="{flexDirection: 'row' }">
+				<image class="image-list1" :class="{'image-list2': options.article_type === 1 || options.article_type === 2}" v-if="options.image_url"
+				 :src="options.image_url"></image>
+				<image class="image-list3" v-if="options.image_list" :src="source.url" v-for="(source, i) in options.image_list"
+				 :key="i" />
+				
+			</view>
+		</view>
+		<!-- <view class="media-foot flex-row" style="flex-direction: column;">
+			<view class="media-info flex-row" style="flex-direction: row;">
+				<text class="info-text"></text>
+				<text class="info-text"></text>
+				<text class="info-text">{{options.rightText}}</text>
+			</view>
+			<view class="max-close-view" @click.stop="close">
+				<view class="close-l close-h"></view>
+				<view class="close-l close-v"></view>
+			</view>
+		</view> -->
+		<view class="media-item-line" style="position: absolute;"></view>
+	</view>
+</template>
+
+<script>
+	export default {
+		props: {
+			options: {
+				type: Object,
+				default: function(e) {
+					return {}
+				}
+			}
+		},
+		methods: {
+			click() {
+				this.$emit('click');
+			},
+			close(e) {
+				this.$emit('close');
+			}
+		}
+	}
+</script>
+
+<style>
+	.view {
+			flex-direction: column;
+		}
+	
+		.flex-row {
+			flex-direction: row;
+		}
+	
+		.flex-col {
+			flex-direction: column;
+		}
+	
+		.list-cell {
+			width: 750rpx;
+			padding: 0 30rpx;
+		}
+	
+		.uni-list-cell-hover {
+			background-color: #eeeeee;
+		}
+	
+		.media-item {
+			position: relative;
+			flex: 1;
+			flex-direction: column;
+			/* border-bottom-width: 1rpx;
+			border-bottom-style: solid;
+			border-bottom-color: #ebebeb; */
+			padding: 20rpx 30rpx 21rpx 30rpx;
+		}
+	
+	    .media-item-hover{
+	        background-color: #eee;
+	    }
+	
+		.media-item-line {
+			position: absolute;
+			left: 30rpx;
+			right: 30rpx;
+			bottom: 0;
+			height: 1rpx;
+			background-color: #ebebeb;
+		}
+	
+		.media-image-right {
+			flex-direction: row;
+		}
+	
+		.media-image-left {
+			flex-direction: row-reverse;
+		}
+	
+		.media-title {
+			flex: 1;
+			display: flex;
+			align-items: center;
+		}
+	
+		.media-title {
+			lines: 3;
+			text-overflow: ellipsis;
+			font-size: 30rpx;
+			color: #555555;
+		}
+	
+		.media-title2 {
+			flex: 1;
+			margin-top: 6rpx;
+			line-height: 40rpx;
+		}
+	
+		.image-section {
+			margin-top: 20rpx;
+			flex-direction: row;
+			justify-content: space-between;
+		}
+	
+		.image-section-right {
+			margin-top: 0rpx;
+			margin-left: 10rpx;
+			width: 225rpx;
+			height: 146rpx;
+		}
+	
+		.image-section-left {
+			margin-top: 0rpx;
+			margin-right: 10rpx;
+			width: 80rpx;
+			height: 80rpx;
+		}
+	
+		.image-list1 {
+			width: 690rpx;
+			height: 481rpx;
+		}
+	
+		.image-list2 {
+			width: 80rpx;
+			height: 80rpx;
+		}
+	
+		.image-list3 {
+			width: 225rpx;
+			/* #ifdef H5 */
+			width: 30%;
+			/* #endif */
+			height: 146rpx;
+			/* #ifdef H5 */
+			height: 146px;
+			/* #endif */
+		}
+	
+		.media-info {
+			flex-direction: row;
+			align-items: center;
+		}
+	
+		.info-text {
+			margin-right: 20rpx;
+			color: #999999;
+			font-size: 24rpx;
+		}
+	
+		.media-foot {
+			margin-top: 25rpx;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+		}
+	
+		.max-close-view {
+			position: relative;
+			align-items: center;
+			flex-direction: row;
+			width: 40rpx;
+			height: 30rpx;
+			line-height: 30rpx;
+			border-width: 1rpx;
+			border-style: solid;
+			border-color: #aaaaaa;
+			border-radius: 4px;
+			justify-content: center;
+			text-align: center;
+		}
+	
+		.close-l {
+			position: absolute;
+			width: 18rpx;
+			height: 1rpx;
+			background-color: #aaaaaa;
+		}
+	
+		.close-h {
+			transform: rotate(45deg);
+		}
+	
+		.close-v {
+			transform: rotate(-45deg);
+		}
+</style>

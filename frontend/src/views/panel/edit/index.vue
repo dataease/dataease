@@ -37,35 +37,31 @@
             </div>
             <!-- 视图图表 end -->
             <!-- 过滤组件 start -->
-            <div tabindex="-1" style="position: relative; margin: 16px auto">
-              <div style="height: 60px; position: relative">
-                <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
-                  <el-button circle :class="show&&showIndex===1? 'button-show':'button-closed'" class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
-                </div>
-                <div class="button-text" style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
-                  <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                    {{ $t('panel.module') }}
-                  </div>
-                </div>
+
+            <div class="button-div-class" style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; ">
+              <el-button circle :class="show&&showIndex===1? 'button-show':'button-closed'" class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
+            </div>
+            <div class="button-text" style=" position: relative; margin: 18px auto 16px;">
+              <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+                {{ $t('panel.module') }}
               </div>
             </div>
+
             <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
               <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
             </div>
             <!-- 过滤组件 end -->
             <!-- 其他组件 start -->
-            <div tabindex="-1" style="position: relative; margin: 16px auto">
-              <div style="height: 60px; position: relative">
-                <div class="button-div-class" style=" text-align: center;line-height: 1;position: absolute;inset: 0px 0px 45px; ">
-                  <el-button circle :class="show&&showIndex===3? 'button-show':'button-closed'" class="el-icon-brush" size="mini" @click="showPanel(3)" />
-                </div>
-                <div class="button-text" style=" position: absolute;left: 0px;right: 0px;bottom: 10px; height: 16px;">
-                  <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                    {{ $t('panel.other_module') }}
-                  </div>
-                </div>
+
+            <div class="button-div-class" style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; ">
+              <el-button circle :class="show&&showIndex===3? 'button-show':'button-closed'" class="el-icon-brush" size="mini" @click="showPanel(3)" />
+            </div>
+            <div class="button-text" style=" position: relative; margin: 18px auto 16px;">
+              <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+                {{ $t('panel.other_module') }}
               </div>
             </div>
+
             <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
               <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
             </div>
@@ -112,7 +108,7 @@
         <el-row v-if="mobileLayoutStatus" class="mobile_canvas_main">
           <el-col :span="8" class="this_mobile_canvas_cell">
             <div
-              v-proportion="2.5"
+              v-proportion="2.1"
               :style="customCanvasMobileStyle"
               class="this_mobile_canvas"
               @drop="handleDrop"
@@ -122,16 +118,29 @@
               @scroll="canvasScroll"
             >
               <el-row class="this_mobile_canvas_top" />
+              <el-row class="this_mobile_canvas_inner_top">
+                {{ panelInfo.name }}
+              </el-row>
               <el-row
                 id="canvasInfoMobile"
                 class="this_mobile_canvas_main"
+                :style="mobileCanvasStyle"
               >
-                <Editor ref="editorMobile" :matrix-count="mobileMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
+                <Editor v-if="mobileEditorShow" ref="editorMobile" :matrix-count="mobileMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
+              </el-row>
+              <el-row class="this_mobile_canvas_inner_bottom">
+                <el-col :span="12">
+                  <i v-if="!hasStar" class="el-icon-star-off" size="mini" @click="star" />
+                  <i v-if="hasStar" class="el-icon-star-on" style="color: #0a7be0;font-size: 18px" size="mini" @click="unstar" />
+                </el-col>
+                <el-col :span="12" style="float: right">
+                  <i class="el-icon-refresh-right" size="mini" @click="mobileRefresh" />
+                </el-col>
               </el-row>
               <el-row class="this_mobile_canvas_bottom" />
             </div>
           </el-col>
-          <el-col :span="16" class="this_mobile_canvas_cell">
+          <el-col :span="16" class="this_mobile_canvas_cell this_mobile_canvas_wait_cell" :style="mobileCanvasStyle">
             <component-wait />
           </el-col>
         </el-row>
@@ -143,21 +152,20 @@
       :title="(currentWidget && currentWidget.getLeftPanel && currentWidget.getLeftPanel().label ? $t(currentWidget.getLeftPanel().label) : '') + $t('panel.module')"
       :visible.sync="filterVisible"
       custom-class="de-filter-dialog"
+      @close="cancelFilter"
     >
-      <filter-dialog v-if="filterVisible && currentWidget" :widget-info="currentWidget" :component-info="currentFilterCom" @re-fresh-component="reFreshComponent">
-        <component
-          :is="currentFilterCom.component"
-          :id="'component' + currentFilterCom.id"
-          class="component"
-          :style="currentFilterCom.style"
-          :element="currentFilterCom"
-          :in-draw="false"
-        />
-      </filter-dialog>
+      <filter-dialog
+        v-if="filterVisible && currentWidget"
+        :ref="'filter-setting-' + currentFilterCom.id"
+        :widget-info="currentWidget"
+        :element="currentFilterCom"
+        @sure-button-status="sureStatusChange"
+        @re-fresh-component="reFreshComponent"
+      />
       <div style="text-align: end !important;margin: 0 15px 10px !important;">
         <span slot="footer">
           <el-button size="mini" @click="cancelFilter">{{ $t('commons.cancel') }}</el-button>
-          <el-button :disabled="!currentFilterCom.options.attrs.fieldId" type="primary" size="mini" @click="sureFilter">{{ $t('commons.confirm') }}</el-button>
+          <el-button :disabled="!enableSureButton" type="primary" size="mini" @click="sureFilter">{{ $t('commons.confirm') }}</el-button>
         </span>
       </div>
     </el-dialog>
@@ -208,16 +216,14 @@ import ViewSelect from '../ViewSelect'
 import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
-import { deepCopy } from '@/components/canvas/utils/utils'
-import componentList, { BASE_MOBILE_STYLE } from '@/components/canvas/custom-component/component-list' // 左侧列表数据
+import { deepCopy, panelInit } from '@/components/canvas/utils/utils'
+import componentList, { BASE_MOBILE_STYLE, HYPERLINKS } from '@/components/canvas/custom-component/component-list' // 左侧列表数据
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
 import { findOne } from '@/api/panel/panel'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
-import PreviewFullScreen from '@/components/canvas/components/Editor/PreviewFullScreen'
 import Preview from '@/components/canvas/components/Editor/Preview'
-import AttrList from '@/components/canvas/components/AttrList'
 import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
@@ -232,11 +238,10 @@ import FilterDialog from '../filter/filterDialog'
 import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
-import RectangleAttr from '@/components/canvas/components/RectangleAttr'
 import TextAttr from '@/components/canvas/components/TextAttr'
-import FilterTextAttr from '@/components/canvas/components/FilterTextAttr'
 import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 import ComponentWait from '@/views/panel/edit/ComponentWait'
+import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
 
 export default {
   name: 'PanelEdit',
@@ -251,19 +256,17 @@ export default {
     Toolbar,
     FilterDialog,
     SubjectSetting,
-    PreviewFullScreen,
     Preview,
-    AttrList,
     AttrListExtend,
     AssistComponent,
     PanelTextEditor,
-    RectangleAttr,
     TextAttr,
-    ChartGroup,
-    FilterTextAttr
+    ChartGroup
   },
   data() {
     return {
+      mobileEditorShow: true,
+      hasStar: false,
       drawerSize: '300px',
       visible: false,
       show: false,
@@ -293,7 +296,6 @@ export default {
         width: null,
         height: null
       },
-      beforeDialogValue: [],
       styleDialogVisible: false,
       currentDropElement: null,
       adviceGroupId: null,
@@ -310,7 +312,9 @@ export default {
         'rect-shape',
         'de-show-date',
         'de-video'
-      ]
+      ],
+      enableSureButton: false,
+      filterFromDrag: false
     }
   },
 
@@ -320,7 +324,9 @@ export default {
       return !this.linkageSettingStatus && !this.mobileLayoutStatus
     },
     showAttr() {
-      if (this.curComponent && this.showAttrComponent.includes(this.curComponent.type)) {
+      if (this.mobileLayoutStatus) {
+        return false
+      } else if (this.curComponent && this.showAttrComponent.includes(this.curComponent.type)) {
         // 过滤组件有标题才显示
         if (this.curComponent.type === 'custom' && !this.curComponent.options.attrs.title) {
           return false
@@ -335,6 +341,25 @@ export default {
       return {
         padding: this.componentGap + 'px'
       }
+    },
+    mobileCanvasStyle() {
+      let style
+      if (this.canvasStyleData.openCommonStyle) {
+        if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
+          style = {
+            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`
+          }
+        } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          style = {
+            background: this.canvasStyleData.panel.color
+          }
+        } else {
+          style = {
+            background: '#f7f8fa'
+          }
+        }
+      }
+      return style
     },
     customCanvasStyle() {
       let style = {
@@ -440,20 +465,13 @@ export default {
   },
   methods: {
     init(panelId) {
+      this.initHasStar()
       // 如果临时画布有数据 则使用临时画布数据（视图编辑的时候 会保存临时画布数据）
       const componentDataTemp = this.$store.state.panel.componentDataTemp
       const canvasStyleDataTemp = this.$store.state.panel.canvasStyleDataTemp
       if (componentDataTemp && canvasStyleDataTemp) {
         const componentDatas = JSON.parse(componentDataTemp)
-        componentDatas.forEach(item => {
-          item.filters = (item.filters || [])
-          item.linkageFilters = (item.linkageFilters || [])
-          item.auxiliaryMatrix = (item.auxiliaryMatrix || false)
-          item.x = (item.x || 1)
-          item.y = (item.y || 1)
-          item.sizex = (item.sizex || 5)
-          item.sizey = (item.sizey || 5)
-        })
+        panelInit(componentDatas)
         this.$store.commit('setComponentData', this.resetID(componentDatas))
         const temp = JSON.parse(canvasStyleDataTemp)
         temp.refreshTime = (temp.refreshTime || 5)
@@ -467,25 +485,12 @@ export default {
       } else if (panelId) {
         findOne(panelId).then(response => {
           const componentDatas = JSON.parse(response.data.panelData)
-          const mobileComponentData = response.data.panelDataMobile ? JSON.parse(response.data.panelDataMobile) : []
-          componentDatas.forEach(item => {
-            item.filters = (item.filters || [])
-            item.linkageFilters = (item.linkageFilters || [])
-            item.auxiliaryMatrix = (item.auxiliaryMatrix || false)
-            item.x = (item.x || 1)
-            item.y = (item.y || 1)
-            item.sizex = (item.sizex || 5)
-            item.sizey = (item.sizey || 5)
-            item.mobileSelected = (item.mobileSelected || false)
-            item.mobileStyle = (item.mobileStyle || deepCopy(BASE_MOBILE_STYLE))
-          })
+          panelInit(componentDatas)
           this.$store.commit('setComponentData', this.resetID(componentDatas))
-          this.$store.commit('setMobileComponentData', this.resetID(mobileComponentData))
           const panelStyle = JSON.parse(response.data.panelStyle)
           panelStyle.refreshTime = (panelStyle.refreshTime || 5)
           panelStyle.refreshViewLoading = (panelStyle.refreshViewLoading || false)
           panelStyle.refreshUnit = (panelStyle.refreshUnit || 'minute')
-
           this.$store.commit('setCanvasStyle', panelStyle)
           this.$store.commit('recordSnapshot', 'init')// 记录快照
           // 刷新联动信息
@@ -498,6 +503,27 @@ export default {
           })
         })
       }
+    },
+    star() {
+      this.panelInfo && saveEnshrine(this.panelInfo.id, false).then(res => {
+        this.hasStar = true
+      })
+    },
+    unstar() {
+      this.panelInfo && deleteEnshrine(this.panelInfo.id, false).then(res => {
+        this.hasStar = false
+      })
+    },
+    initHasStar() {
+      starStatus(this.panelInfo.id, false).then(res => {
+        this.hasStar = res.data
+      })
+    },
+    mobileRefresh() {
+      this.mobileEditorShow = false
+      this.$nextTick(() => {
+        this.mobileEditorShow = true
+      })
     },
     save() {
 
@@ -599,10 +625,11 @@ export default {
         }
         this.currentFilterCom.id = newComponentId
         this.currentFilterCom.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
+        this.currentFilterCom.mobileStyle = BASE_MOBILE_STYLE
 
         if (this.currentWidget.filterDialog) {
           this.show = false
-          this.openFilterDialog()
+          this.openFilterDialog(true)
           return
         }
         component = deepCopy(this.currentFilterCom)
@@ -650,24 +677,26 @@ export default {
         this.$store.commit('hideContextMenu')
       }
     },
-    openFilterDialog() {
-      this.beforeDialogValue = []
+    openFilterDialog(fromDrag = false) {
+      this.filterFromDrag = fromDrag
       this.filterVisible = true
     },
     closeFilter() {
-      this.beforeDialogValue = []
       this.filterVisible = false
       this.currentWidget = null
       this.clearCurrentInfo()
     },
     cancelFilter() {
       this.closeFilter()
-      bus.$emit('onRemoveLastItem')
+      if(this.filterFromDrag){
+        bus.$emit('onRemoveLastItem')
+      }
     },
     sureFilter() {
-      this.currentFilterCom.options.value = []
+      this.currentFilterCom = this.$refs['filter-setting-' + this.currentFilterCom.id].getElementInfo()
       this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
+      this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
       this.closeFilter()
     },
     reFreshComponent(component) {
@@ -678,13 +707,12 @@ export default {
       if (this.curComponent && this.curComponent.serviceName) {
         const serviceName = this.curComponent.serviceName
         this.currentWidget = ApplicationContext.getService(serviceName)
+        this.currentFilterCom = this.curComponent
+        this.openFilterDialog()
       }
-      this.currentFilterCom = this.curComponent
-      this.openFilterDialog()
     },
     closeLeftPanel() {
       this.show = false
-      // this.beforeDestroy()
     },
     previewFullScreen() {
       this.previewVisible = true
@@ -735,31 +763,21 @@ export default {
             type: 'picture-add',
             label: '图片',
             icon: '',
+            hyperlinks: HYPERLINKS,
+            mobileStyle: BASE_MOBILE_STYLE,
             propValue: fileResult,
             style: {
               ...commonStyle
             }
           }
-          component.auxiliaryMatrix = _this.canvasStyleData.auxiliaryMatrix
-          if (_this.canvasStyleData.auxiliaryMatrix) {
-            component.x = _this.dropComponentInfo.x
-            component.y = _this.dropComponentInfo.y
-            component.sizex = _this.dropComponentInfo.sizex
-            component.sizey = _this.dropComponentInfo.sizey
-            component.style.left = (_this.dropComponentInfo.x - 1) * _this.curCanvasScale.matrixStyleOriginWidth
-            component.style.top = (_this.dropComponentInfo.y - 1) * _this.curCanvasScale.matrixStyleOriginHeight
-            component.style.width = _this.dropComponentInfo.sizex * _this.curCanvasScale.matrixStyleOriginWidth
-            component.style.height = _this.dropComponentInfo.sizey * _this.curCanvasScale.matrixStyleOriginHeight
-          } else {
-            component.style.top = _this.dropComponentInfo.shadowStyle.y
-            component.style.left = _this.dropComponentInfo.shadowStyle.x
-            component.style.width = _this.dropComponentInfo.shadowStyle.width
-            component.style.height = _this.dropComponentInfo.shadowStyle.height
-          }
+          component.auxiliaryMatrix = false
+          component.style.top = _this.dropComponentInfo.shadowStyle.y
+          component.style.left = _this.dropComponentInfo.shadowStyle.x
+          component.style.width = _this.dropComponentInfo.shadowStyle.width
+          component.style.height = _this.dropComponentInfo.shadowStyle.height
           this.$store.commit('addComponent', {
             component: component
           })
-
           this.$store.commit('recordSnapshot', 'handleFileChange')
         }
 
@@ -838,6 +856,7 @@ export default {
     canvasScroll(event) {
       this.scrollLeft = event.target.scrollLeft
       this.scrollTop = event.target.scrollTop
+      bus.$emit('onScroll')
     },
     destroyTimeMachine() {
       this.timeMachine && clearTimeout(this.timeMachine)
@@ -858,6 +877,9 @@ export default {
       e.preventDefault()
       e.dataTransfer.dropEffect = 'copy'
       this.$refs.canvasEditor.handleDragOver(e)
+    },
+    sureStatusChange(status) {
+      this.enableSureButton = status
     }
   }
 }
@@ -941,16 +963,35 @@ export default {
 
 .this_mobile_canvas{
   border-radius:30px;
-  min-width: 280px;
-  max-width: 300px;
-  min-height: 700px;
-  max-height: 750px;
+  min-width: 300px;
+  max-width: 350px;
+  min-height: 600px;
+  max-height: 700px;
   overflow: hidden;
   background-color: #000000;
   background-size:100% 100% !important;
 }
 
+.this_mobile_canvas_inner_top{
+  vertical-align: middle;
+  text-align: center;
+  background-color: #f7f8fa;
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
+  width: 100%;
+}
+
 .this_mobile_canvas_top{
+  height: 30px;
+  width: 100%;
+}
+
+.this_mobile_canvas_inner_bottom{
+  background-color: #f7f8fa;
+  line-height: 30px;
+  vertical-align: middle;
+  color: gray;
   height: 30px;
   width: 100%;
 }
@@ -963,7 +1004,7 @@ export default {
 .this_mobile_canvas_main{
   overflow-x: hidden;
   overflow-y: auto;
-  height:  calc(100% - 60px);;
+  height:  calc(100% - 120px);;
   background-color: #d7d9e3;
   background-size:100% 100% !important;
 }
@@ -974,6 +1015,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.this_mobile_canvas_wait_cell{
+  background-size:100% 100% !important;
+  border: 2px solid #9ea6b2
 }
 
 .this_canvas{

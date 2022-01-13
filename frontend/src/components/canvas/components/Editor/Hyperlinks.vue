@@ -7,7 +7,7 @@
   >
     <el-row>
       <el-form ref="form" size="mini" label-width="70px">
-        <el-form-item :label="$t('panel.is_enable')">
+        <el-form-item :label="$t('panel.enable_jump')">
           <el-switch v-model="linkInfo.enable" size="mini" />
           <span v-show="linkInfo.enable" style="color: #909399; font-size: 8px;margin-left: 3px">
             Tips:{{ $t('panel.link_open_tips') }}

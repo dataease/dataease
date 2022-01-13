@@ -131,6 +131,9 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    first_login_tips: 'Please change the initial password',
+    roger_that: 'Roger That',
+    apply: 'Apply',
     search: 'Search',
     folder: 'Folder',
     no_target_permission: 'No permission',
@@ -343,7 +346,12 @@ export default {
     },
     ukey_title: 'API Keys',
     thumbnail: 'thumbnail',
-    confirm_delete: 'Confirm delete'
+    confirm_delete: 'Confirm delete',
+    treeselect: {
+      no_children_text: 'No sub-options.',
+      no_options_text: 'No options available.',
+      no_results_text: 'No results found...'
+    }
   },
   documentation: {
     documentation: 'Documentation',
@@ -432,7 +440,10 @@ export default {
     background: 'Background color',
     custom: 'Custom color',
     otherSave: 'Theme Save as',
-    info: 'Theme info'
+    info: 'Theme info',
+    add: 'Add Theme',
+    please_input_name: 'Please enter a name',
+    name_repeat: 'Name already exists'
   },
   tagsView: {
     refresh: 'Refresh',
@@ -450,7 +461,8 @@ export default {
   sysParams: {
     display: 'Display Setting',
     ldap: 'LDAP Setting',
-    oidc: 'OIDC Setting'
+    oidc: 'OIDC Setting',
+    theme: 'Theme Setting'
   },
   license: {
     i18n_no_license_record: 'No License Record',
@@ -973,7 +985,33 @@ export default {
     next: 'Next',
     select_dataset: 'Select Dataset',
     select_chart_type: 'Select Chart Type',
-    recover: 'Reset'
+    recover: 'Reset',
+    yoy_label: 'YOY/MOM',
+    yoy_setting: 'Setting',
+    pls_select_field: 'Select Field',
+    compare_date: 'Compare Date',
+    compare_type: 'Compare Type',
+    compare_data: 'Data Setting',
+    year_yoy: 'Year yoy',
+    month_yoy: 'Month yoy',
+    quarter_yoy: 'Quarter yoy',
+    week_yoy: 'Week yoy',
+    day_yoy: 'Day yoy',
+    year_mom: 'Year mom',
+    month_mom: 'Month mom',
+    quarter_mom: 'Quarter mom',
+    week_mom: 'Week mom',
+    day_mom: 'Day mom',
+    data_sub: 'Sub',
+    data_percent: 'Percent',
+    compare_calc_expression: 'Expression',
+    and: 'And',
+    or: 'Or',
+    logic_exp: 'Logic',
+    enum_exp: 'Enum',
+    pls_slc: 'Please Select',
+    filter_exp: 'Filter Value',
+    filter_type: 'Filter Type'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1154,6 +1192,22 @@ export default {
     confirm_sync_field_tips: 'Sync field maybe change edit field，please confirm',
     sync_success: 'Success',
     sync_success_1: 'Success，please sync data again',
+    row_permission: {
+      type: 'Type',
+      name: 'Name',
+      condition: 'Conditions',
+      value: 'Value',
+      add: 'Add row permissions',
+      edit: 'Edit row permissions',
+      please_select_field: 'Please select a field',
+      please_select_auth_type: 'Please select the authorization type',
+      please_select_auth_id: 'Please select authorization target',
+      row_permission_not_empty: 'Row permission cannot be empty',
+      search_by_filed_name: 'Search by field name',
+      auth_type: 'Authorization type',
+      auth_obj: 'Authorized object'
+    },
+    row_permissions: 'Row Permissions',
     union_data: 'Union Dataset',
     add_union_table: 'Add Union Dataset',
     edit_union: 'Edit Union Dataset',
@@ -1164,7 +1218,8 @@ export default {
     add_union_field: 'Add Union Field',
     union_error: 'Union relation and field can not be empty',
     union_repeat: 'This dataset is already union，do not union repeat',
-    preview_result: 'Preview'
+    preview_result: 'Preview',
+    sql_ds_union_error: 'Direct connect SQL dataset can not be union'
   },
   datasource: {
     datasource: 'Data Source',
@@ -1242,8 +1297,8 @@ export default {
     link_share_desc: 'After opening the link, anyone can access the dashboard through this link.',
     share: 'Share',
     remove_share_confirm: 'Sure removel All share ?',
-    share_in: 'Share in',
-    share_out: 'Share out',
+    share_in: 'Share With Me',
+    share_out: 'I Share',
     who_share: 'Who share',
     when_share: 'When share',
     share_to: 'Share to',
@@ -1253,7 +1308,7 @@ export default {
     datalist: 'Chart List',
     group: 'Catalogue',
     panel: 'Dashboard',
-    groupAdd: 'Create Catalogue',
+    groupAdd: 'New Group',
     panelAdd: 'Create Dashboard',
     delete: 'Delete',
     move_to: 'Move',
@@ -1289,7 +1344,7 @@ export default {
     create_public_links: 'Create public links',
     to_default: 'Save To Default',
     to_default_panel: 'Save To Default Dashboard',
-    store: 'Store',
+    store: 'Favorites',
     save_to_panel: 'Save to template',
     export_to_panel: 'Export to template',
     export_to_pdf: 'Export to PDF',
@@ -1381,6 +1436,7 @@ export default {
     linkage: 'linkage',
     jump: 'Jump',
     cancel_linkage: 'Cancel Linkage',
+    switch_picture: 'Switch Picture',
     remove_all_linkage: 'Remove All Linkage',
     exit_un_march_linkage_field: 'Exit Un March Linkage Field',
     details: 'Details',
@@ -1395,7 +1451,7 @@ export default {
     open_mode: 'Open Model',
     new_window: 'New Window',
     now_window: 'Now Window',
-    hyperLinks: 'hyperlinks',
+    hyperLinks: 'target address',
     link_open_tips: 'Open When Panel Not In Edit Status',
     data_loading: 'Data Loading...',
     export_loading: 'Export Loading...',
@@ -1429,7 +1485,8 @@ export default {
     panel_view_result_tips: 'Chose "Panel" Will Overwrite View`s Result,Range 1~10000',
     timeout_refresh: 'Timeout，Will Refresh...',
     mobile_layout: 'Mobile Layout',
-    component_hidden: 'Component Hidden'
+    component_hidden: 'Component Hidden',
+    public_link_tips: 'New Is Public Link,The Target Panel Have Not Set Public Link,Can Not Jump'
   },
   plugin: {
     local_install: 'Local installation',
@@ -1456,7 +1513,9 @@ export default {
 
     themeLight: 'Light',
     themeDark: 'Dark',
-    themeCustom: 'Custom'
+    themeCustom: 'Custom',
+    openHomePage: 'Show Home Page'
+
   },
   auth: {
     authConfig: 'Auth Config',
@@ -1684,7 +1743,64 @@ export default {
     once_a_week: 'Once a week',
     once_a_month: 'Once a month',
     complex_repeat: 'Complex repeat',
-    pixel_tip: 'Please select'
+    pixel_tip: 'Please code custom pixel(such as 2560 * 1600) or select'
 
+  },
+  dynamic_time: {
+    set_default: 'Set Default',
+    fix: 'Fixed Time',
+    dynamic: 'Dynamic Time',
+    relative: 'Relative Current',
+    today: 'Today',
+    yesterday: 'Yesterday',
+    firstOfMonth: 'Month Beginning',
+    custom: 'Custom',
+    date: 'date',
+    week: 'week',
+    month: 'Month',
+    year: 'Year',
+    before: 'Before',
+    after: 'After',
+    preview: 'Preview',
+    set: 'Set',
+
+    cweek: 'This Week',
+    cmonth: 'This Month',
+    cquarter: 'This Quarter',
+    cyear: 'This Year',
+    openHomePage: 'Show Home Page'
+  },
+  dynamic_year: {
+    fix: 'Fixed Year',
+    dynamic: 'Dynamic Year',
+    current: 'This Year',
+    last: 'Last Year'
+  },
+  dynamic_month: {
+    fix: 'Fixed Month',
+    dynamic: 'Dynamic Month',
+    current: 'This Month',
+    last: 'Last Month',
+    firstOfYear: 'First month of this year'
+  },
+  wizard: {
+    welcome_title: 'Welcome To Use DataEase',
+    welcome_hint: 'Open source data visual analysis tool available to everyone',
+    demo_video: 'Demo',
+    online_document: 'Online',
+    latest_developments: 'Latest',
+    teaching_video: 'Teaching',
+    enterprise_edition: 'Enterprise',
+    contact_us: 'Contact Us',
+    demo_video_hint: 'How to make a DataEase dashboard in 3 minutes and share it with others',
+    online_document_hint: 'It covers the installation steps, user manuals, tutorials, solutions to common problems, and secondary development of DataEase',
+    teaching_video_bottom_hint: 'More videos',
+    enterprise_edition_hint1: 'Provide enterprise application scenario x-pack enhancement package',
+    enterprise_edition_hint2: 'Provide high-level original factory service support',
+    enterprise_edition_hint3: 'Provide dataease O & M security best practices',
+    open_source_community: 'Open source community',
+    click_show: 'Click To View',
+    show_more: 'Show More',
+    click_inner: 'Click To Enter'
   }
 }

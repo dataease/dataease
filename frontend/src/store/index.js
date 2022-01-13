@@ -28,6 +28,7 @@ import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
 import bus from '@/utils/bus'
+import { BASE_MOBILE_STYLE } from '@/components/canvas/custom-component/component-list'
 
 Vue.use(Vuex)
 
@@ -57,6 +58,11 @@ const data = {
     curComponent: null,
     curCanvasScale: null,
     curComponentIndex: null,
+    // 预览仪表板缩放信息
+    previewCanvasScale: {
+      scalePointWidth: 1,
+      scalePointHeight: 1
+    },
     // 点击画布时是否点中组件，主要用于取消选中组件用。
     // 如果没点中组件，并且在画布空白处弹起鼠标，则取消当前组件的选中状态
     isClickComponent: false,
@@ -79,6 +85,8 @@ const data = {
     componentGap: 5,
     // 移动端布局状态
     mobileLayoutStatus: false,
+    // 公共链接状态(当前是否是公共链接打开)
+    publicLinkStatus: false,
     pcMatrixCount: {
       x: 36,
       y: 18
@@ -133,13 +141,22 @@ const data = {
     setCurCanvasScale(state, curCanvasScale) {
       state.curCanvasScale = curCanvasScale
     },
-
+    setPreviewCanvasScale(state, scale) {
+      if (scale.scaleWidth) {
+        state.previewCanvasScale.scalePointWidth = scale.scaleWidth
+      }
+      if (scale.scaleHeight) {
+        state.previewCanvasScale.scalePointHeight = scale.scaleHeight
+      }
+    },
     setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
-      if (top || top === 0) curComponent.style.top = (top / curCanvasScale.scalePointHeight) + 0.0000001
-      if (left || left === 0) curComponent.style.left = (left / curCanvasScale.scalePointWidth) + 0.0000001
-      if (width || width === 0) curComponent.style.width = (width / curCanvasScale.scalePointWidth + 0.0000001)
-      if (height || height === 0) curComponent.style.height = (height / curCanvasScale.scalePointHeight) + 0.0000001
-      if (rotate || rotate === 0) curComponent.style.rotate = rotate
+      if (curComponent) {
+        if (top || top === 0) curComponent.style.top = (top / curCanvasScale.scalePointHeight) + 0.0000001
+        if (left || left === 0) curComponent.style.left = (left / curCanvasScale.scalePointWidth) + 0.0000001
+        if (width || width === 0) curComponent.style.width = (width / curCanvasScale.scalePointWidth + 0.0000001)
+        if (height || height === 0) curComponent.style.height = (height / curCanvasScale.scalePointHeight) + 0.0000001
+        if (rotate || rotate === 0) curComponent.style.rotate = rotate
+      }
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {
@@ -325,6 +342,35 @@ const data = {
     },
     setMobileLayoutStatus(state, status) {
       state.mobileLayoutStatus = status
+    },
+    setPublicLinkStatus(state, status) {
+      state.publicLinkStatus = status
+    },
+    // 启用移动端布局
+    openMobileLayout(state) {
+      state.componentDataCache = null
+      state.componentDataCache = JSON.stringify(state.componentData)
+      state.pcComponentData = state.componentData
+      const mainComponentData = []
+      // 移动端布局转换
+      state.componentData.forEach(item => {
+        item.mobileStyle = (item.mobileStyle || BASE_MOBILE_STYLE)
+        if (item.mobileSelected) {
+          item.style.width = item.mobileStyle.style.width
+          item.style.height = item.mobileStyle.style.height
+          item.style.top = item.mobileStyle.style.top
+          item.style.left = item.mobileStyle.style.left
+          item.style.borderRadius = 3
+          item.x = item.mobileStyle.x
+          item.y = item.mobileStyle.y
+          item.sizex = item.mobileStyle.sizex
+          item.sizey = item.mobileStyle.sizey
+          item.auxiliaryMatrix = item.mobileStyle.auxiliaryMatrix
+          mainComponentData.push(item)
+        }
+      })
+      state.componentData = mainComponentData
+      state.mobileLayoutStatus = !state.mobileLayoutStatus
     }
   },
   modules: {

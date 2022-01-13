@@ -35,18 +35,7 @@
         </el-col>
         <el-col :span="16" class="preview-show">
           <el-row v-if="linkJumpInfo">
-            <el-row style="margin-top: 10px">
-              <el-col :span="4" style="margin-left: 20px">
-                {{ $t('panel.open_model') }}：
-              </el-col>
-              <el-col :span="10">
-                <el-radio-group v-model="linkJumpInfo.jumpType" size="mini">
-                  <el-radio label="_self">{{ $t('panel.now_window') }}</el-radio>
-                  <el-radio label="_blank">{{ $t('panel.new_window') }}</el-radio>
-                </el-radio-group>
-              </el-col>
-            </el-row>
-            <el-row style="margin-top: 10px">
+            <el-row style="margin-top: 10px;height: 30px;">
               <el-col :span="4" style="margin-left: 20px">
                 {{ $t('panel.link_type') }}：
               </el-col>
@@ -63,10 +52,24 @@
                   :disable-branch-nodes="true"
                   :normalizer="normalizer"
                   :placeholder="$t('panel.select_jump_panel')"
+                  :noChildrenText="$t('commons.treeselect.no_children_text')"
+                  :noOptionsText="$t('commons.treeselect.no_options_text')"
+                  :noResultsText="$t('commons.treeselect.no_results_text')"
                   style="margin-right: 10px"
                   @select="panelNodeClick"
                   @input="inputVal"
                 />
+              </el-col>
+            </el-row>
+            <el-row style="margin-top: 10px;height: 30px">
+              <el-col :span="4" style="margin-left: 20px">
+                {{ $t('panel.open_model') }}：
+              </el-col>
+              <el-col :span="10">
+                <el-radio-group v-model="linkJumpInfo.jumpType" size="mini">
+                  <el-radio label="_self">{{ $t('panel.now_window') }}</el-radio>
+                  <el-radio label="_blank">{{ $t('panel.new_window') }}</el-radio>
+                </el-radio-group>
               </el-col>
             </el-row>
             <el-row v-if="linkJumpInfo.linkType==='inner'" style="margin-top: 5px;" class="top_border">
@@ -82,7 +85,7 @@
                 <el-row v-for="(targetViewInfo,index) in linkJumpInfo.targetViewInfoList" :key="index">
                   <el-col :span="11">
                     <div class="select-filed">
-                      <el-select v-model="targetViewInfo.targetViewId" style="width: 100%" size="mini" :placeholder="$t('panel.please_select')" @change="viewInfoOnChange(targetViewInfo)">
+                      <el-select v-model="targetViewInfo.targetViewId" style="width: 100%" size="mini" :placeholder="$t('fu.search_bar.please_select')" @change="viewInfoOnChange(targetViewInfo)">
                         <el-option
                           v-for="item in currentLinkPanelViewArray"
                           :key="item.id"
@@ -99,7 +102,7 @@
                   </el-col>
                   <el-col :span="11">
                     <div class="select-filed">
-                      <el-select v-model="targetViewInfo.targetFieldId" style="width: 100%" size="mini" :placeholder="$t('panel.please_select')">
+                      <el-select v-model="targetViewInfo.targetFieldId" style="width: 100%" size="mini" :placeholder="$t('fu.search_bar.please_select')">
                         <el-option
                           v-for="viewField in viewIdFieldArrayMap[targetViewInfo.targetViewId]"
                           :key="viewField.id"

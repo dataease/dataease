@@ -1,7 +1,7 @@
 <template>
   <layout-content :header="formType=='add' ? $t('datasource.create') : $t('datasource.modify')">
     <template v-slot:header>
-      <el-icon name="back" class="back-button" @click.native="backToList" />
+      <el-icon name="back" class="back-button" @click.native="backToList"/>
       {{
         params && params.id && params.showModel && params.showModel === 'show' && !canEdit ? $t('datasource.show_info') : formType == 'add' ? $t('datasource.create') : $t('datasource.modify')
       }}
@@ -18,10 +18,10 @@
         label-position="right"
       >
         <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="form.name" autocomplete="off" />
+          <el-input v-model="form.name" autocomplete="off"/>
         </el-form-item>
         <el-form-item :label="$t('commons.description')" prop="desc">
-          <el-input v-model="form.desc" autocomplete="off" />
+          <el-input v-model="form.desc" autocomplete="off"/>
         </el-form-item>
         <el-form-item :label="$t('datasource.type')" prop="type">
           <el-select
@@ -45,7 +45,7 @@
           :label="$t('datasource.host')"
           prop="configuration.host"
         >
-          <el-input v-model="form.configuration.host" autocomplete="off" />
+          <el-input v-model="form.configuration.host" autocomplete="off"/>
         </el-form-item>
         <el-form-item
           v-if="form.configuration.dataSourceType=='es'"
@@ -63,7 +63,7 @@
           :label="$t('datasource.data_base')"
           prop="configuration.dataBase"
         >
-          <el-input v-model="form.configuration.dataBase" autocomplete="off" />
+          <el-input v-model="form.configuration.dataBase" autocomplete="off"/>
         </el-form-item>
 
         <el-form-item
@@ -78,23 +78,23 @@
         </el-form-item>
 
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')">
-          <el-input v-model="form.configuration.username" autocomplete="off" />
+          <el-input v-model="form.configuration.username" autocomplete="off"/>
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')">
-          <el-input v-model="form.configuration.password" autocomplete="off" show-password />
+          <el-input v-model="form.configuration.password" autocomplete="off" show-password/>
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.user_name')">
-          <el-input v-model="form.configuration.esUsername" autocomplete="off" />
+          <el-input v-model="form.configuration.esUsername" autocomplete="off"/>
         </el-form-item>
         <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.password')">
-          <el-input v-model="form.configuration.esPassword" autocomplete="off" show-password />
+          <el-input v-model="form.configuration.esPassword" autocomplete="off" show-password/>
         </el-form-item>
 
         <el-form-item
           v-if="form.configuration.dataSourceType=='jdbc' && form.type!=='oracle'"
           :label="$t('datasource.extra_params')"
         >
-          <el-input v-model="form.configuration.extraParams" autocomplete="off" />
+          <el-input v-model="form.configuration.extraParams" autocomplete="off"/>
         </el-form-item>
 
         <el-form-item
@@ -102,16 +102,16 @@
           :label="$t('datasource.port')"
           prop="configuration.port"
         >
-          <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0" />
+          <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0"/>
         </el-form-item>
-        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift'">
+        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'">
           <el-button icon="el-icon-plus" size="mini" @click="getSchema()">
             {{ $t('datasource.get_schema') }}
           </el-button>
         </el-form-item>
 
         <el-form-item
-          v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift'"
+          v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'"
           :label="$t('datasource.schema')"
         >
           <el-select
@@ -140,10 +140,10 @@
               />
             </el-form-item>
             <el-form-item :label="$t('datasource.min_pool_size')" prop="configuration.minPoolSize">
-              <el-input v-model="form.configuration.minPoolSize" autocomplete="off" type="number" min="0" />
+              <el-input v-model="form.configuration.minPoolSize" autocomplete="off" type="number" min="0"/>
             </el-form-item>
             <el-form-item :label="$t('datasource.max_pool_size')" prop="configuration.maxPoolSize">
-              <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0" />
+              <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0"/>
             </el-form-item>
 
           </el-collapse-item>
@@ -181,13 +181,13 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import { addDs, editDs, getSchema, validateDs, validateDsById } from '@/api/system/datasource'
-import { $confirm } from '@/utils/message'
+import {addDs, editDs, getSchema, validateDs, validateDsById} from '@/api/system/datasource'
+import {$confirm} from '@/utils/message'
 import i18n from '@/lang/index'
 
 export default {
   name: 'DsForm',
-  components: { LayoutContent },
+  components: {LayoutContent},
   props: {
     params: {
       type: Object,
@@ -209,10 +209,10 @@ export default {
         }
       },
       rule: {
-        name: [{ required: true, message: i18n.t('datasource.input_name'), trigger: 'blur' },
-          { min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur' }],
-        desc: [{ min: 0, max: 50, message: i18n.t('datasource.input_limit_0_50'), trigger: 'blur' }],
-        type: [{ required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'change' }],
+        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
+          {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
+        desc: [{min: 0, max: 50, message: i18n.t('datasource.input_limit_0_50'), trigger: 'blur'}],
+        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'change'}],
         'configuration.dataBase': [{
           required: true,
           message: i18n.t('datasource.please_input_data_base'),
@@ -233,9 +233,9 @@ export default {
           message: i18n.t('datasource.please_input_password'),
           trigger: 'change'
         }],
-        'configuration.host': [{ required: true, message: i18n.t('datasource.please_input_host'), trigger: 'change' }],
-        'configuration.url': [{ required: true, message: i18n.t('datasource.please_input_url'), trigger: 'change' }],
-        'configuration.port': [{ required: true, message: i18n.t('datasource.please_input_port'), trigger: 'change' }],
+        'configuration.host': [{required: true, message: i18n.t('datasource.please_input_host'), trigger: 'change'}],
+        'configuration.url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'change'}],
+        'configuration.port': [{required: true, message: i18n.t('datasource.please_input_port'), trigger: 'change'}],
         'configuration.initialPoolSize': [{
           required: true,
           message: i18n.t('datasource.please_input_initial_pool_size'),
@@ -268,32 +268,19 @@ export default {
         }]
       },
       allTypes: [
-        {
-          name: 'mysql',
-          label: 'MySQL',
-          type: 'jdbc',
-          extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
+        {name: 'mysql', label: 'MySQL', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
         },
-        { name: 'hive', label: 'Apache Hive', type: 'jdbc', extraParams: '' },
-        { name: 'oracle', label: 'Oracle', type: 'jdbc' },
-        { name: 'sqlServer', label: 'SQL Server', type: 'jdbc', extraParams: '' },
-        { name: 'pg', label: 'PostgreSQL', type: 'jdbc', extraParams: '' },
-        { name: 'es', label: 'Elasticsearch', type: 'es' },
-        {
-          name: 'mariadb',
-          label: 'MariaDB',
-          type: 'jdbc',
-          extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
-        },
-        {
-          name: 'ds_doris',
-          label: 'Doris',
-          type: 'jdbc',
-          extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
-        },
-        { name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: '' },
-        { name: 'redshift', label: 'AWS Redshift', type: 'jdbc' },
-        { name: 'mongo', label: 'MongoDB', type: 'jdbc', extraParams: '' }
+        {name: 'hive', label: 'Apache Hive', type: 'jdbc', extraParams: ''},
+        {name: 'oracle', label: 'Oracle', type: 'jdbc'},
+        {name: 'sqlServer', label: 'SQL Server', type: 'jdbc', extraParams: ''},
+        {name: 'pg', label: 'PostgreSQL', type: 'jdbc', extraParams: ''},
+        {name: 'es', label: 'Elasticsearch', type: 'es'},
+        {name: 'mariadb', label: 'MariaDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
+        {name: 'ds_doris', label: 'Doris', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
+        {name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: ''},
+        {name: 'redshift', label: 'AWS Redshift', type: 'jdbc'},
+        {name: 'mongo', label: 'MongoDB', type: 'jdbc', extraParams: ''},
+        {name: 'db2', label: 'Db2', type: 'jdbc', extraParams: ''}
       ],
       schemas: [],
       canEdit: false,
@@ -416,18 +403,24 @@ export default {
               if (res.success) {
                 this.$success(i18n.t('datasource.validate_success'))
               } else {
-                this.$error(res.message)
+                if(res.message.length < 2500){
+                  this.$error(res.message)
+                }else {
+                  this.$error(res.message.substring(0,2500) + '......')
+                }
               }
               this.refreshType(data)
-            }).catch(res => {
-              this.$error(res.message)
             })
           } else {
             validateDs(data).then(res => {
               if (res.success) {
                 this.$success(i18n.t('datasource.validate_success'))
               } else {
-                this.$error(res.message)
+                if(res.message.length < 2500){
+                  this.$error(res.message)
+                }else {
+                  this.$error(res.message.substring(0,2500) + '......')
+                }
               }
             }).catch(res => {
               this.$error(res.message)

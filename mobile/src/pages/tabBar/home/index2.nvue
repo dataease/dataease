@@ -1,0 +1,246 @@
+<template>
+    <de-container>
+        <template v-slot:header>
+            <view class="tabs">
+            <scroll-view id="tab-bar" class="scroll-h" :scroll-x="true" :show-scrollbar="false" :scroll-into-view="scrollInto">
+                <view v-for="(tab,index) in tabBars" :key="tab.id" class="uni-tab-item" :id="tab.id" :data-current="index" @click="ontabtap">
+                    <text class="uni-tab-item-title" :class="tabIndex==index ? 'uni-tab-item-title-active' : ''">{{tab.name}}</text>
+                </view>
+            </scroll-view>
+            </view>
+        </template>
+
+        <swiper :current="tabIndex" class="swiper-box" style="flex: 1;" :duration="300" @change="ontabchange">
+            <swiper-item class="swiper-item" v-for="(tab,index1) in newsList" :key="index1">
+				<uni-list>
+                
+                    <uni-list-item 
+                      v-for="(node, i) in tab.data" 
+                      :key="i"
+                      clickable
+                      @click="goDetail(node)"
+                      :title="node.title"   
+                      thumb="../../../static/yibiaobans.png" 
+                      thumb-size="base" 
+                      :rightText="node.rightText" 
+                    />
+
+                    
+                    
+                </uni-list>
+            </swiper-item>
+        </swiper>
+        
+    </de-container>
+</template>
+
+<script>
+// 缓存每页最多
+const MAX_CACHE_DATA = 100
+// 缓存页签数量
+const MAX_CACHE_PAGE = 3
+
+import DeContainer from "../../../components/DeContainer"
+import {requestHome} from '@/api/panel'
+import {getRecent, formatHistoryDate} from '@/common/utils'
+
+export default {
+    components: {DeContainer},
+    data() {
+        return {
+            scrollInto: "",
+            tabIndex: 0,
+            
+            newsList: [],
+            cacheTab: [],
+            extraIcon: {
+                color: '#4cd964',
+                size: '22',
+                type: 'gear-filled'
+            }
+        }
+    },
+    computed: {
+        tabBars() {
+            return [
+                {name: this.$t('home.tab1'), id: 'guanzhu'}, 
+                {name: this.$t('home.tab2'), id: 'tuijian' }, 
+                {name: this.$t('home.tab3'), id: 'tiyu'}
+            ]
+        }
+    },
+    created() {
+        uni.$on('loadHomeIndex', this.loadHomeIndex)
+    },
+    beforeDestroy() {
+        uni.$off('loadHomeIndex',this.loadHomeIndex)
+    },
+    onLoad() {
+        
+        setTimeout(()=>{
+            this.tabBars.forEach((tabBar) => {
+                this.newsList.push({
+                    data: [],
+                    isLoading: false,
+                    refreshText: "",
+                    loadingText: '加载更多...'
+                })
+            })
+            this.getList(0)
+        },0)
+    },
+    onPullDownRefresh() {
+        this.clearTabData(this.tabIndex)
+        this.getList(this.tabIndex)
+    },
+    
+    methods: {
+        getList(index) {
+            let activeTab = this.newsList[index]
+            if (index === 1) {
+                this.loadRecentDats()
+                return 
+            }
+            requestHome(index).then(res => {
+                activeTab.data = activeTab.data.concat(res.data)
+                uni.stopPullDownRefresh()
+            })            
+        },
+        loadRecentDats() {
+            let activeTab = this.newsList[1]
+            let list = getRecent()
+            list.map(node => {
+                if(node.time)
+                    node.rightText = formatHistoryDate(node.time)
+                return node
+            })
+            activeTab.data = activeTab.data.concat(list)
+            uni.stopPullDownRefresh()
+        },
+        ontabtap(e) {
+            let index = e.target.dataset.current || e.currentTarget.dataset.current
+            this.switchTab(index)
+        },
+        ontabchange(e) {
+            /* let index = e.target.current || e.detail.current
+            this.switchTab(index) */
+        },
+        switchTab(index) {
+            if (this.newsList[index].data.length === 0) {
+                this.getList(index)
+            }
+
+            if (this.tabIndex === index) {
+                return
+            }
+
+            // 缓存 tabId
+            if (this.newsList[this.tabIndex].data.length > MAX_CACHE_DATA) {
+                let isExist = this.cacheTab.indexOf(this.tabIndex)
+                if (isExist < 0) {
+                    this.cacheTab.push(this.tabIndex)
+                }
+            }
+
+            this.tabIndex = index
+            this.scrollInto = this.tabBars[index].id
+
+            // 释放 tabId
+            if (this.cacheTab.length > MAX_CACHE_PAGE) {
+                let cacheIndex = this.cacheTab[0]
+                this.clearTabData(cacheIndex)
+                this.cacheTab.splice(0, 1)
+            }
+        }, 
+        clearTabData(e) {
+            this.newsList[e].data.length = 0
+            this.newsList[e].loadingText = "加载更多..."
+        },
+        goDetail(node) {
+            const param = {
+                id: node.id,
+                title: node.title,
+                index: this.tabIndex
+            }
+            if(this.tabIndex === 1) {
+                param.index = node.index
+            }
+
+            uni.navigateTo({
+                url: './detail?detailDate=' + encodeURIComponent(JSON.stringify(param))
+            })
+        },
+        loadHomeIndex(e) {
+            const index = e.index
+            this.clearTabData(index)
+            this.getList(index)
+        }
+    }
+    
+}
+</script>
+
+<style>
+.tabs {
+        flex: 1;
+        flex-direction: column;
+        overflow: hidden;
+        background-color: #ffffff;
+        /* #ifndef APP-PLUS */
+        height: 100vh;
+        /* #endif */
+    }
+
+.scroll-h {
+    width: 750rpx;
+    /* #ifdef H5 */
+    width:100%;
+    /* #endif */
+    height: 40px;
+    flex-direction: row;
+    /* #ifndef APP-PLUS */
+    white-space: nowrap;
+    /* #endif */
+    /* flex-wrap: nowrap; */
+    /* border-color: #cccccc;
+    border-bottom-style: solid;
+    border-bottom-width: 1px; */
+}
+
+ .uni-tab-item {
+    /* #ifndef APP-PLUS */
+    display: inline-block;
+    /* #endif */
+    flex-wrap: nowrap;
+    padding-left: 34rpx;
+    padding-right: 34rpx;
+}
+
+.uni-tab-item-title {
+    color: #555;
+    font-size: 35rpx;
+    height: 40px;
+    line-height: 40px;
+    flex-wrap: nowrap;
+    /* #ifndef APP-PLUS */
+    white-space: nowrap;
+    /* #endif */
+}
+
+.uni-tab-item-title-active {
+    color: #007AFF;
+}
+
+.swiper-box {
+    flex: 1;
+}
+
+.swiper-item {
+    flex: 1;
+    flex-direction: row;
+}
+.uni-list{
+    overflow-y: scroll;
+}
+
+</style>

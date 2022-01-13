@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -207,15 +208,15 @@ public class ChartViewService {
         }.getType());
         List<ChartViewFieldDTO> drill = new Gson().fromJson(view.getDrillFields(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
-        List<ChartCustomFilterDTO> customFilter = new ArrayList<>();
+        // 获取对应数据集行权限
+        DatasetTableField datasetTableFieldObj = DatasetTableField.builder().tableId(view.getTableId()).checked(Boolean.TRUE).build();
+        List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableFieldObj);
+        DatasetTable datasetTable = dataSetTableService.get(view.getTableId());
+        List<ChartFieldCustomFilterDTO> permissionFields = dataSetTableService.getCustomFilters(fields, datasetTable, requestList.getUser());
+        fieldCustomFilter.addAll(permissionFields);
+
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
-            List<ChartCustomFilterDTO> collect = ele.getFilter().stream().map(f -> {
-                ChartCustomFilterDTO dto = new ChartCustomFilterDTO();
-                BeanUtils.copyBean(dto, f);
-                dto.setField(dataSetTableFieldsService.get(f.getFieldId()));
-                return dto;
-            }).collect(Collectors.toList());
-            customFilter.addAll(collect);
+            ele.setField(dataSetTableFieldsService.get(ele.getId()));
         }
 
         if (StringUtils.equalsIgnoreCase("text", view.getType())
@@ -244,19 +245,29 @@ public class ChartViewService {
 
         // 过滤来自仪表板的条件
         List<ChartExtFilterRequest> extFilterList = new ArrayList<>();
-
         //组件过滤条件
         if (ObjectUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest request : requestList.getFilter()) {
-                DatasetTableField datasetTableField = dataSetTableFieldsService.get(request.getFieldId());
-                request.setDatasetTableField(datasetTableField);
-                if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
-                    if (CollectionUtils.isNotEmpty(request.getViewIds())) {
-                        if (request.getViewIds().contains(view.getId())) {
-                            extFilterList.add(request);
+                // 解析多个fieldId,fieldId是一个逗号分隔的字符串
+                String fieldId = request.getFieldId();
+                if (StringUtils.isNotEmpty(fieldId)) {
+                    String[] fieldIds = fieldId.split(",");
+                    for (String fId : fieldIds) {
+                        ChartExtFilterRequest filterRequest = new ChartExtFilterRequest();
+                        BeanUtils.copyBean(filterRequest, request);
+                        filterRequest.setFieldId(fId);
+
+                        DatasetTableField datasetTableField = dataSetTableFieldsService.get(fId);
+                        filterRequest.setDatasetTableField(datasetTableField);
+                        if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
+                            if (CollectionUtils.isNotEmpty(filterRequest.getViewIds())) {
+                                if (filterRequest.getViewIds().contains(view.getId())) {
+                                    extFilterList.add(filterRequest);
+                                }
+                            } else {
+                                extFilterList.add(filterRequest);
+                            }
                         }
-                    } else {
-                        extFilterList.add(request);
                     }
                 }
             }
@@ -333,6 +344,9 @@ public class ChartViewService {
             if (ObjectUtils.isEmpty(ds)) {
                 throw new RuntimeException(Translator.get("i18n_datasource_delete"));
             }
+            if(StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")){
+                throw new Exception(Translator.get("i18n_invalid_ds"));
+            }
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest.setDatasource(ds);
             DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
@@ -340,42 +354,42 @@ public class ChartViewService {
             if (StringUtils.equalsIgnoreCase(table.getType(), "db")) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
-                    datasourceRequest.setQuery(qp.getSQLSummary(dataTableInfoDTO.getTable(), yAxis, customFilter, extFilterList, view));
+                    datasourceRequest.setQuery(qp.getSQLSummary(dataTableInfoDTO.getTable(), yAxis, fieldCustomFilter, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                    datasourceRequest.setQuery(qp.getSQLStack(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList, extStack, ds, view));
+                    datasourceRequest.setQuery(qp.getSQLStack(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, extFilterList, extStack, ds, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    datasourceRequest.setQuery(qp.getSQLScatter(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList, extBubble, ds, view));
+                    datasourceRequest.setQuery(qp.getSQLScatter(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, extFilterList, extBubble, ds, view));
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                    datasourceRequest.setQuery(qp.getSQLTableInfo(dataTableInfoDTO.getTable(), xAxis, customFilter, extFilterList, ds, view));
+                    datasourceRequest.setQuery(qp.getSQLTableInfo(dataTableInfoDTO.getTable(), xAxis, fieldCustomFilter, extFilterList, ds, view));
                 } else {
-                    datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, customFilter, extFilterList, ds, view));
+                    datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, extFilterList, ds, view));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), "sql")) {
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
-                    datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(dataTableInfoDTO.getSql(), yAxis, customFilter, extFilterList, view));
+                    datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(dataTableInfoDTO.getSql(), yAxis, fieldCustomFilter, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpStack(dataTableInfoDTO.getSql(), xAxis, yAxis, customFilter, extFilterList, extStack, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpStack(dataTableInfoDTO.getSql(), xAxis, yAxis, fieldCustomFilter, extFilterList, extStack, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(dataTableInfoDTO.getSql(), xAxis, yAxis, customFilter, extFilterList, extBubble, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(dataTableInfoDTO.getSql(), xAxis, yAxis, fieldCustomFilter, extFilterList, extBubble, view));
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(dataTableInfoDTO.getSql(), xAxis, customFilter, extFilterList, ds, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(dataTableInfoDTO.getSql(), xAxis, fieldCustomFilter, extFilterList, ds, view));
                 } else {
-                    datasourceRequest.setQuery(qp.getSQLAsTmp(dataTableInfoDTO.getSql(), xAxis, yAxis, customFilter, extFilterList, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmp(dataTableInfoDTO.getSql(), xAxis, yAxis, fieldCustomFilter, extFilterList, view));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), "custom")) {
                 DataTableInfoDTO dt = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
                 List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
                 String sql = dataSetTableService.getCustomSQLDatasource(dt, list, ds);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
-                    datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, customFilter, extFilterList, view));
+                    datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpStack(sql, xAxis, yAxis, customFilter, extFilterList, extStack, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpStack(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, extStack, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, customFilter, extFilterList, extBubble, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, extBubble, view));
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(sql, xAxis, customFilter, extFilterList, ds, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, extFilterList, ds, view));
                 } else {
-                    datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, customFilter, extFilterList, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, view));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), "union")) {
                 DataTableInfoDTO dt = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
@@ -383,15 +397,15 @@ public class ChartViewService {
                 String sql = (String) sqlMap.get("sql");
 
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
-                    datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, customFilter, extFilterList, view));
+                    datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpStack(sql, xAxis, yAxis, customFilter, extFilterList, extStack, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpStack(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, extStack, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, customFilter, extFilterList, extBubble, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, extBubble, view));
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(sql, xAxis, customFilter, extFilterList, ds, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, extFilterList, ds, view));
                 } else {
-                    datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, customFilter, extFilterList, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, view));
                 }
             }
             data = datasourceProvider.getData(datasourceRequest);
@@ -404,15 +418,15 @@ public class ChartViewService {
             datasourceRequest.setTable(tableName);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
-                datasourceRequest.setQuery(qp.getSQLSummary(tableName, yAxis, customFilter, extFilterList, view));
+                datasourceRequest.setQuery(qp.getSQLSummary(tableName, yAxis, fieldCustomFilter, extFilterList, view));
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                datasourceRequest.setQuery(qp.getSQLStack(tableName, xAxis, yAxis, customFilter, extFilterList, extStack, ds, view));
+                datasourceRequest.setQuery(qp.getSQLStack(tableName, xAxis, yAxis, fieldCustomFilter, extFilterList, extStack, ds, view));
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                datasourceRequest.setQuery(qp.getSQLScatter(tableName, xAxis, yAxis, customFilter, extFilterList, extBubble, ds, view));
+                datasourceRequest.setQuery(qp.getSQLScatter(tableName, xAxis, yAxis, fieldCustomFilter, extFilterList, extBubble, ds, view));
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                datasourceRequest.setQuery(qp.getSQLTableInfo(tableName, xAxis, customFilter, extFilterList, ds, view));
+                datasourceRequest.setQuery(qp.getSQLTableInfo(tableName, xAxis, fieldCustomFilter, extFilterList, ds, view));
             } else {
-                datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, customFilter, extFilterList, ds, view));
+                datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, fieldCustomFilter, extFilterList, ds, view));
             }
             // 仪表板有参数不实用缓存
             if (!cache || CollectionUtils.isNotEmpty(requestList.getFilter())
@@ -433,6 +447,88 @@ public class ChartViewService {
             }
         }
 
+        // 同比/环比计算，通过对比类型和数据设置，计算出对应指标的结果，然后替换结果data数组中的对应元素
+        // 如果因维度变化（如时间字段缺失，时间字段的展示格式变化）导致无法计算结果的，则结果data数组中的对应元素全置为null
+        // 根据不同图表类型，获得需要替换的指标index array
+        for (int i = 0; i < yAxis.size(); i++) {
+            ChartViewFieldDTO chartViewFieldDTO = yAxis.get(i);
+            ChartFieldCompareDTO compareCalc = chartViewFieldDTO.getCompareCalc();
+            if (ObjectUtils.isEmpty(compareCalc)) {
+                continue;
+            }
+            if (StringUtils.isNotEmpty(compareCalc.getType())
+                    && !StringUtils.equalsIgnoreCase(compareCalc.getType(), "none")) {
+                String compareFieldId = compareCalc.getField();// 选中字段
+                String resultData = compareCalc.getResultData();// 数据设置
+                // 获取选中字段以及下标
+                List<ChartViewFieldDTO> checkedField = new ArrayList<>(xAxis);
+                if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                    checkedField.addAll(extStack);
+                }
+                int timeIndex = 0;// 时间字段下标
+                ChartViewFieldDTO timeField = null;
+                for (int j = 0; j < checkedField.size(); j++) {
+                    if (StringUtils.equalsIgnoreCase(checkedField.get(j).getId(), compareFieldId)) {
+                        timeIndex = j;
+                        timeField = checkedField.get(j);
+                    }
+                }
+                // 计算指标对应的下标
+                int dataIndex = 0;// 数据字段下标
+                if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                    dataIndex = xAxis.size() + extStack.size() + i;
+                } else {
+                    dataIndex = xAxis.size() + i;
+                }
+                // 无选中字段，或者选中字段已经不在维度list中，或者选中字段日期格式不符合对比类型的，直接将对应数据置为null
+                if (ObjectUtils.isEmpty(timeField) || !checkCalcType(timeField.getDateStyle(), compareCalc.getType())) {
+                    // set null
+                    for (String[] item : data) {
+                        item[dataIndex] = null;
+                    }
+                } else {
+                    // 计算 同比/环比
+                    // 1，处理当期数据；2，根据type计算上一期数据；3，根据resultData计算结果
+                    Map<String, String> currentMap = new LinkedHashMap<>();
+                    for (String[] item : data) {
+                        String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
+                        currentMap.put(StringUtils.join(dimension, "-"), item[dataIndex]);
+                    }
+
+                    for (int index = 0; index < data.size(); index++) {
+                        String[] item = data.get(index);
+                        String cTime = item[timeIndex];
+                        String cValue = item[dataIndex];
+
+                        // 获取计算后的时间，并且与所有维度拼接
+                        String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle(), timeField.getDatePattern());
+                        String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
+                        dimension[timeIndex] = lastTime;
+
+                        String lastValue = currentMap.get(StringUtils.join(dimension, "-"));
+                        if (StringUtils.isEmpty(cValue) || StringUtils.isEmpty(lastValue)) {
+                            item[dataIndex] = null;
+                        } else {
+                            if (StringUtils.equalsIgnoreCase(resultData, "sub")) {
+                                item[dataIndex] = new BigDecimal(cValue).subtract(new BigDecimal(lastValue)).toString();
+                            } else if (StringUtils.equalsIgnoreCase(resultData, "percent")) {
+                                if (new BigDecimal(lastValue).compareTo(BigDecimal.ZERO) == 0) {
+                                    item[dataIndex] = null;
+                                } else {
+                                    item[dataIndex] = new BigDecimal(cValue)
+                                            .divide(new BigDecimal(lastValue), 2, RoundingMode.HALF_UP)
+                                            .subtract(new BigDecimal(1))
+                                            .setScale(2, RoundingMode.HALF_UP)
+                                            .toString();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 构建结果
         Map<String, Object> map = new TreeMap<>();
         // 图表组件可再扩展
         Map<String, Object> mapChart = new HashMap<>();
@@ -489,6 +585,98 @@ public class ChartViewService {
         dto.setDrill(isDrill);
         dto.setDrillFilters(drillFilters);
         return dto;
+    }
+
+    private boolean checkCalcType(String dateStyle, String calcType) {
+        switch (dateStyle) {
+            case "y":
+                return StringUtils.equalsIgnoreCase(calcType, "year_mom");
+            case "y_M":
+                return StringUtils.equalsIgnoreCase(calcType, "month_mom")
+                        || StringUtils.equalsIgnoreCase(calcType, "year_yoy");
+            case "y_M_d":
+                return StringUtils.equalsIgnoreCase(calcType, "day_mom")
+                        || StringUtils.equalsIgnoreCase(calcType, "month_yoy")
+                        || StringUtils.equalsIgnoreCase(calcType, "year_yoy");
+        }
+        return false;
+    }
+
+    private String calcLastTime(String cTime, String type, String dateStyle, String datePattern) {
+        try {
+            String lastTime = null;
+            Calendar calendar = Calendar.getInstance();
+            if (StringUtils.equalsIgnoreCase(type, ChartConstants.YEAR_MOM)) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
+                Date date = simpleDateFormat.parse(cTime);
+                calendar.setTime(date);
+                calendar.add(Calendar.YEAR, -1);
+                lastTime = simpleDateFormat.format(calendar.getTime());
+            } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.MONTH_MOM)) {
+                SimpleDateFormat simpleDateFormat = null;
+                if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                    simpleDateFormat = new SimpleDateFormat("yyyy/MM");
+                } else {
+                    simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+                }
+                Date date = simpleDateFormat.parse(cTime);
+                calendar.setTime(date);
+                calendar.add(Calendar.MONTH, -1);
+                lastTime = simpleDateFormat.format(calendar.getTime());
+            } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.YEAR_YOY)) {
+                SimpleDateFormat simpleDateFormat = null;
+                if (StringUtils.equalsIgnoreCase(dateStyle, "y_M")) {
+                    if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/MM");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+                    }
+                } else if (StringUtils.equalsIgnoreCase(dateStyle, "y_M_d")) {
+                    if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    }
+                }
+                Date date = simpleDateFormat.parse(cTime);
+                calendar.setTime(date);
+                calendar.add(Calendar.YEAR, -1);
+                lastTime = simpleDateFormat.format(calendar.getTime());
+            } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.DAY_MOM)) {
+                SimpleDateFormat simpleDateFormat = null;
+                if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                    simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                } else {
+                    simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                }
+                Date date = simpleDateFormat.parse(cTime);
+                calendar.setTime(date);
+                calendar.add(Calendar.DAY_OF_MONTH, -1);
+                lastTime = simpleDateFormat.format(calendar.getTime());
+            } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.MONTH_YOY)) {
+                SimpleDateFormat simpleDateFormat = null;
+                if (StringUtils.equalsIgnoreCase(dateStyle, "y_M")) {
+                    if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/MM");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+                    }
+                } else if (StringUtils.equalsIgnoreCase(dateStyle, "y_M_d")) {
+                    if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    }
+                }
+                Date date = simpleDateFormat.parse(cTime);
+                calendar.setTime(date);
+                calendar.add(Calendar.MONTH, -1);
+                lastTime = simpleDateFormat.format(calendar.getTime());
+            }
+            return lastTime;
+        } catch (Exception e) {
+            return cTime;
+        }
     }
 
     private boolean checkDrillExist(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> extStack, ChartViewFieldDTO dto, ChartViewWithBLOBs view) {
@@ -588,7 +776,7 @@ public class ChartViewService {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
-                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(row[i]) ? "0" : row[i]));
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
@@ -644,7 +832,7 @@ public class ChartViewService {
                     quotaList.add(chartQuotaDTO);
                     axisChartDataDTO.setQuotaList(quotaList);
                     try {
-                        axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(row[valueIndex]) ? "0" : row[valueIndex]));
+                        axisChartDataDTO.setValue(StringUtils.isEmpty(row[valueIndex]) ? null : new BigDecimal(row[valueIndex]));
                     } catch (Exception e) {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
@@ -692,7 +880,7 @@ public class ChartViewService {
                     quotaList.add(chartQuotaDTO);
                     axisChartDataDTO.setQuotaList(quotaList);
                     try {
-                        axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(row[i]) ? "0" : row[i]));
+                        axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
                     } catch (Exception e) {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
@@ -747,14 +935,18 @@ public class ChartViewService {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
-                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(row[i]) ? "0" : row[i]));
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
                 axisChartDataDTO.setCategory(yAxis.get(j).getName());
                 // pop
                 if (CollectionUtils.isNotEmpty(extBubble)) {
-                    axisChartDataDTO.setPopSize(new BigDecimal(StringUtils.isEmpty(row[xAxis.size() + yAxis.size()]) ? "0" : row[xAxis.size() + yAxis.size()]));
+                    try {
+                        axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[xAxis.size() + yAxis.size()]) ? null : new BigDecimal(row[xAxis.size() + yAxis.size()]));
+                    } catch (Exception e) {
+                        axisChartDataDTO.setPopSize(new BigDecimal(0));
+                    }
                 }
                 datas.add(axisChartDataDTO);
             }
@@ -806,7 +998,7 @@ public class ChartViewService {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
-                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(row[i]) ? "0" : row[i]));
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
@@ -868,7 +1060,7 @@ public class ChartViewService {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
-                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]));
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
@@ -916,7 +1108,7 @@ public class ChartViewService {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
-                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]));
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
@@ -977,7 +1169,7 @@ public class ChartViewService {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
-                    axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]));
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
@@ -1032,7 +1224,7 @@ public class ChartViewService {
             for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
                 int j = i - xAxis.size();
                 try {
-                    series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                    series.get(j).getData().add(StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]));
                 } catch (Exception e) {
                     series.get(j).getData().add(new BigDecimal(0));
                 }
@@ -1074,7 +1266,7 @@ public class ChartViewService {
             for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
                 int j = i - xAxis.size();
                 try {
-                    series.get(j).getData().add(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                    series.get(j).getData().add(StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]));
                 } catch (Exception e) {
                     series.get(j).getData().add(new BigDecimal(0));
                 }
@@ -1214,7 +1406,7 @@ public class ChartViewService {
                     quotaList.add(chartQuotaDTO);
                     axisChartDataDTO.setQuotaList(quotaList);
                     try {
-                        axisChartDataDTO.setValue(new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]));
+                        axisChartDataDTO.setValue(StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]));
                     } catch (Exception e) {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
@@ -1292,8 +1484,8 @@ public class ChartViewService {
                     try {
                         scatterChartDataDTO.setValue(new Object[]{
                                 a.toString(),
-                                new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i]),
-                                new BigDecimal(StringUtils.isEmpty(d[xAxis.size() + yAxis.size()]) ? "0" : d[xAxis.size() + yAxis.size()])
+                                StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]),
+                                StringUtils.isEmpty(d[xAxis.size() + yAxis.size()]) ? null : new BigDecimal(d[xAxis.size() + yAxis.size()])
                         });
                     } catch (Exception e) {
                         scatterChartDataDTO.setValue(new Object[]{a.toString(), new BigDecimal(0), new BigDecimal(0)});
@@ -1302,7 +1494,7 @@ public class ChartViewService {
                     try {
                         scatterChartDataDTO.setValue(new Object[]{
                                 a.toString(),
-                                new BigDecimal(StringUtils.isEmpty(d[i]) ? "0" : d[i])
+                                StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i])
                         });
                     } catch (Exception e) {
                         scatterChartDataDTO.setValue(new Object[]{a.toString(), new BigDecimal(0)});
@@ -1338,7 +1530,7 @@ public class ChartViewService {
                 if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1) {
                     d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
                 } else if (chartViewFieldDTO.getDeType() == 2 || chartViewFieldDTO.getDeType() == 3) {
-                    d.put(fields.get(i).getDataeaseName(), new BigDecimal(StringUtils.isEmpty(ele[i]) ? "0" : ele[i]).setScale(2, RoundingMode.HALF_UP));
+                    d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? null : new BigDecimal(ele[i]).setScale(2, RoundingMode.HALF_UP));
                 }
             }
             tableRow.add(d);

@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2459092 */
-  src: url('iconfont.woff2?t=1636516993563') format('woff2'),
-       url('iconfont.woff?t=1636516993563') format('woff'),
-       url('iconfont.ttf?t=1636516993563') format('truetype');
+  src: url('iconfont.woff2?t=1642061879222') format('woff2'),
+       url('iconfont.woff?t=1642061879222') format('woff'),
+       url('iconfont.ttf?t=1642061879222') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,30 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-genghuan:before {
+  content: "\e606";
+}
+
+.icon-fasongyoujian:before {
+  content: "\e605";
+}
+
+.icon-github:before {
+  content: "\e6f8";
+}
+
+.icon-dianhua:before {
+  content: "\e681";
+}
+
+.icon-guanbi:before {
+  content: "\e60d";
+}
+
+.icon-juxing1:before {
+  content: "\e67e";
 }
 
 .icon-yidongduan:before {
@@ -35,10 +59,6 @@
 
 .icon-padding:before {
   content: "\e91b";
-}
-
-.icon-tabs:before {
-  content: "\e9a8";
 }
 
 .icon-shijian:before {
@@ -79,6 +99,10 @@
 
 .icon-xuanfuanniu:before {
   content: "\e8e6";
+}
+
+.icon-tabs:before {
+  content: "\e62a";
 }
 
 .icon-xiyu:before {

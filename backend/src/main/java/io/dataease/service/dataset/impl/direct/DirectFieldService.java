@@ -5,6 +5,8 @@ import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.Datasource;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
+import io.dataease.i18n.Translator;
 import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.controller.request.datasource.DatasourceRequest;
@@ -40,9 +42,7 @@ public class DirectFieldService implements DataSetFieldService {
     private DataSetTableUnionService dataSetTableUnionService;
 
     @Override
-    public List<Object> fieldValues(String fieldId) {
-
-
+    public List<Object> fieldValues(String fieldId, Long userId) throws Exception{
         List<DatasetTableField> list = dataSetTableFieldsService.getListByIds(new ArrayList<String>() {{
             add(fieldId);
         }});
@@ -51,15 +51,23 @@ public class DirectFieldService implements DataSetFieldService {
         DatasetTableField field = list.get(0);
         String tableId = field.getTableId();
         if (StringUtils.isEmpty(tableId)) return null;
+
         DatasetTable datasetTable = dataSetTableService.get(tableId);
         if (ObjectUtils.isEmpty(datasetTable) || StringUtils.isEmpty(datasetTable.getName())) return null;
-        String tableName = datasetTable.getName();
+        String tableName;
+
+        DatasetTableField datasetTableField = DatasetTableField.builder().tableId(tableId).checked(Boolean.TRUE).build();
+        List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+        List<ChartFieldCustomFilterDTO> customFilter = dataSetTableService.getCustomFilters(fields, datasetTable, userId);
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceProvider datasourceProvider = null;
         if (datasetTable.getMode() == 0) {// 直连
             if (StringUtils.isEmpty(datasetTable.getDataSourceId())) return null;
             Datasource ds = datasourceService.get(datasetTable.getDataSourceId());
+            if(StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")){
+                throw new Exception(Translator.get("i18n_invalid_ds"));
+            }
             datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
@@ -67,18 +75,18 @@ public class DirectFieldService implements DataSetFieldService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db")) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
-                datasourceRequest.setQuery(qp.createQuerySQL(dataTableInfoDTO.getTable(), Collections.singletonList(field), true, ds));
+                datasourceRequest.setQuery(qp.createQuerySQL(dataTableInfoDTO.getTable(), Collections.singletonList(field), true, ds, customFilter));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(dataTableInfoDTO.getSql(), Collections.singletonList(field), true));
+                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(dataTableInfoDTO.getSql(), Collections.singletonList(field), true, customFilter));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 List<DataSetTableUnionDTO> listUnion = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
                 String sql = dataSetTableService.getCustomSQLDatasource(dt, listUnion, ds);
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, Collections.singletonList(field), true));
+                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, Collections.singletonList(field), true, customFilter));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "union")) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 String sql = (String) dataSetTableService.getUnionSQLDatasource(dt, ds).get("sql");
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, Collections.singletonList(field), true));
+                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, Collections.singletonList(field), true, customFilter));
             }
         } else if (datasetTable.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
@@ -89,16 +97,11 @@ public class DirectFieldService implements DataSetFieldService {
             tableName = "ds_" + datasetTable.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.createQuerySQL(tableName, Collections.singletonList(field), true, null));
+            datasourceRequest.setQuery(qp.createQuerySQL(tableName, Collections.singletonList(field), true, null, customFilter));
         }
 
-        try {
-            List<String[]> rows = datasourceProvider.getData(datasourceRequest);
-            List<Object> results = rows.stream().map(row -> row[0]).distinct().collect(Collectors.toList());
-            return results;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        List<String[]> rows = datasourceProvider.getData(datasourceRequest);
+        List<Object> results = rows.stream().map(row -> row[0]).distinct().collect(Collectors.toList());
+        return results;
     }
 }

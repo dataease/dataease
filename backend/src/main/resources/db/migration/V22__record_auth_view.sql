@@ -33,7 +33,7 @@ SELECT
 	`sys_dept`.`dept_id` AS `id`,
 	`sys_dept`.`name` AS `name`,
 	`sys_dept`.`name` AS `lable`,
-	cast( `sys_dept`.`pid` AS CHAR ) AS `pid`,
+	cast( `sys_dept`.`pid` AS CHAR  CHARACTER set utf8mb4) COLLATE utf8mb4_general_ci  AS `pid`,
 IF
 	(( `sys_dept`.`sub_count` = 0 ), 'leaf', 'spine' ) AS `node_type`,
 	'dept' AS `model_type`,

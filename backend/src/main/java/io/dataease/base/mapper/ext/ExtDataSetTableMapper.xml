@@ -7,6 +7,12 @@
         <result column="privileges" property="privileges"/>
     </resultMap>
 
+
+    <resultMap id="roleItemMap" type="io.dataease.controller.sys.response.RoleUserItem">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
     <select id="searchOne" resultMap="BaseResultMapDTO">
         select
         id, `name`, scene_id, data_source_id, `type`, `mode`,`info`, create_by, create_time,
@@ -93,4 +99,5 @@
         </where>
         ORDER BY CONVERT(`name` using gbk)
     </select>
+
 </mapper>

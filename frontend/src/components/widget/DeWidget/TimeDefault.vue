@@ -44,7 +44,7 @@ export default {
     },
     formatDate() {
       const weekArr = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
-      let timeFormat = this.element.formatInfo.timeFormat || 'hh:mm:ss'
+      let timeFormat = this.element.formatInfo.timeFormat
       const showWeek = this.element.formatInfo.showWeek
       const showDate = this.element.formatInfo.showDate
       const dateFormat = this.element.formatInfo.dateFormat || 'yyyy-MM-dd'

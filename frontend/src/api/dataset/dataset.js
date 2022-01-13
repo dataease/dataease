@@ -120,12 +120,11 @@ export function batchEdit(data) {
   })
 }
 
-export function post(url, data, showLoading = true, timeout = 20000) {
+export function post(url, data, showLoading = true, timeout = 60000) {
   return request({
     url: url,
     method: 'post',
     loading: showLoading,
-    timeout: timeout,
     data
   })
 }
@@ -135,6 +134,24 @@ export function fieldValues(fieldId) {
     url: '/dataset/field/fieldValues/' + fieldId,
     method: 'post',
     loading: true
+  })
+}
+
+export function multFieldValues(data) {
+  return request({
+    url: '/dataset/field/multFieldValues',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
+export function linkMultFieldValues(data) {
+  return request({
+    url: '/dataset/field/linkMultFieldValues',
+    method: 'post',
+    loading: true,
+    data
   })
 }
 
@@ -164,4 +181,21 @@ export function datasetTaskList(page, size, data, loading) {
   })
 }
 
-export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree }
+export function datasetRowPermissionsList(datasetId, page, size, data, loading) {
+  return request({
+    url: 'plugin/dataset/rowPermissions/pageList/' + datasetId + '/' + page + '/' + size,
+    method: 'post',
+    data,
+    loading: loading
+  })
+}
+
+export function checkCustomDs() {
+  return request({
+    url: '/system/checkCustomDs',
+    method: 'post',
+    loading: true
+  })
+}
+
+export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs }

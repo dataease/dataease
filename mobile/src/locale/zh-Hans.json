@@ -1,0 +1,64 @@
+{
+    "app.name": "Hello uni-app",
+
+    "navigate.menuHome": "首页",
+    "navigate.menuDir": "目录",
+    "navigate.menuMe": "我的",
+
+    "navigate.search": "搜索",
+    "navigate.personInfo": "个人信息",
+    "navigate.language": "语言",
+    "navigate.about": "关于",
+    "navigate.login": "登录",
+    "searchPlaceholder": "请输入仪表板名称",
+    
+    "commons": {
+        "cancel": "取消",
+        "sure": "确定",
+        "en": "English",
+        "tw": "繁體中文",
+        "zh": "简体中文",
+        "sysLanguage": "跟随系统",
+        "tips": "提示"
+    },
+    "login": {
+        "title": "用户登录",
+        "account": "账号：",
+        "accountPlaceholder": "请输入账号",
+        "password": "密码：",
+        "passwordPlaceholder": "请输入密码",
+        "loginbtn": "登录",
+        "pwdFmtError": "密码最短为6个字符",
+        "uOrpwdError": "无效账号或密码"
+    },
+    "home": {
+        "tab1": "我的收藏",
+        "tab2": "最近浏览",
+        "tab3": "分享给我"
+    },
+    "dir": {
+        "searchPlaceholder": "请输入仪表板名称",
+        "searchHistory": "搜索历史",
+        "clearConfirm": "确定清除全部历史记录？",
+        "noHistory": "您还没有历史记录",
+        "contentPrefix": "您输入的内容为 ",
+        "contentSuffix": " 如果点击确定,将记录到历史搜索,并返回.如果取消不做操作"
+    },
+    "me": {
+        "moreInfo": "更多信息",
+        "logout": "注销",
+       
+        "systemInfo": "系统信息",
+        "userManual": "用户手册",
+        "community": "社区",
+        "enterprise": "企业版",
+        "standard": "标准版",
+        "organization": "组织",
+        "email": "邮箱",
+        "createTime": "创建时间"
+    },
+    "detail": {
+        "starSuccess": "收藏成功"
+    }
+    
+  }

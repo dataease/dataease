@@ -80,6 +80,7 @@
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
+        :h="getShapeStyleIntDeDrag(item.style,'height')"
       />
       <component
         :is="item.component"
@@ -104,6 +105,7 @@
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
+        :edit-mode="'edit'"
         :h="getShapeStyleIntDeDrag(item.style,'height')"
       />
     </de-drag>
@@ -1194,6 +1196,7 @@ export default {
             matrixStyleOriginWidth: this.matrixStyle.originWidth,
             matrixStyleOriginHeight: this.matrixStyle.originHeight
           })
+        this.$store.commit('setPreviewCanvasScale', { scaleWidth: this.scalePointWidth, scaleHeight: this.scalePointHeight })
       }
     },
     getShapeStyleIntDeDrag(style, prop) {
@@ -1229,7 +1232,6 @@ export default {
       this.timeMachine = setTimeout(() => {
         if (index === this.changeIndex) {
           this.changeScale()
-          console.log('changeScale')
         }
         this.destroyTimeMachine()
       }, 1500)
@@ -1565,13 +1567,6 @@ export default {
 
 .gap_class{
    padding:3px;
-}
-
-// 拖拽组件样式
-
-.de-drag-active{
-  outline: 1px solid #70c0ff;
-  user-select: none;
 }
 
 .ref-line {

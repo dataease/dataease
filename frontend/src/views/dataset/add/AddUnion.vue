@@ -16,7 +16,7 @@
     <el-divider />
     <div>
       <el-form :inline="true" style="display: flex;align-items: center;justify-content: space-between;">
-        <el-form-item class="form-item">
+        <el-form-item class="form-item" :label="$t('commons.name')">
           <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" clearable />
         </el-form-item>
         <el-form-item class="form-item">
@@ -59,7 +59,7 @@
     </div>
 
     <!--选择数据集-->
-    <el-dialog v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="360px" class="dialog-css" destroy-on-close>
+    <el-dialog v-if="selectDsDialog" v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="400px" class="dialog-css">
       <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" @getTable="firstDs" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
@@ -208,6 +208,14 @@ export default {
       this.tempDs = {}
     },
     confirmSelectDs() {
+      if (this.tempDs.mode === 0 && this.tempDs.modelInnerType === 'sql') {
+        this.$message({
+          showClose: true,
+          message: this.$t('dataset.sql_ds_union_error'),
+          type: 'error'
+        })
+        return
+      }
       const ds = JSON.parse(JSON.stringify(this.unionItem))
       ds.currentDs = this.tempDs
       this.dataset.push(ds)
@@ -336,5 +344,9 @@ export default {
 }
 .preview-style >>> .el-drawer .el-drawer__body{
   padding: 0 16px 10px!important;
+}
+.form-item >>> .el-form-item__label{
+  font-size: 12px!important;
+  font-weight: 400!important;
 }
 </style>

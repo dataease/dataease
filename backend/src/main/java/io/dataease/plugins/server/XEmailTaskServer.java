@@ -1,6 +1,5 @@
 package io.dataease.plugins.server;
 
-
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.commons.exception.DEException;
@@ -34,7 +33,8 @@ public class XEmailTaskServer {
     private ScheduleService scheduleService;
 
     @PostMapping("/queryTasks/{goPage}/{pageSize}")
-    public Pager<List<XpackTaskGridDTO>> queryTask(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody XpackGridRequest request) {
+    public Pager<List<XpackTaskGridDTO>> queryTask(@PathVariable int goPage, @PathVariable int pageSize,
+            @RequestBody XpackGridRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<XpackTaskGridDTO> tasks = emailXpackService.taskGrid(request);
@@ -80,14 +80,14 @@ public class XEmailTaskServer {
         String panelId = request.getPanelId();
         String content = request.getContent();
 
-        String url = ServletUtils.domain() + "/#/preview/" + panelId;
+        String url = ServletUtils.domain() + "/#/previewScreenShot/" + panelId + "/true";
 
         String token = ServletUtils.getToken();
         String fileId = null;
         try {
             fileId = emailXpackService.print(url, token, buildPixel(request.getPixel()));
         } catch (Exception e) {
-            LogUtil.error(e);
+            LogUtil.error(e.getMessage(), e);
             DEException.throwException("预览失败，请联系管理员");
         }
         String imageUrl = "/system/ui/image/" + fileId;
@@ -115,7 +115,8 @@ public class XEmailTaskServer {
     }
 
     @PostMapping("/queryInstancies/{goPage}/{pageSize}")
-    public Pager<List<XpackTaskInstanceDTO>> instancesGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody XpackGridRequest request) {
+    public Pager<List<XpackTaskInstanceDTO>> instancesGrid(@PathVariable int goPage, @PathVariable int pageSize,
+            @RequestBody XpackGridRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<XpackTaskInstanceDTO> instances = emailXpackService.taskInstanceGrid(request);
@@ -132,13 +133,15 @@ public class XEmailTaskServer {
 
     private XpackPixelEntity buildPixel(String pixel) {
 
-        if (StringUtils.isBlank(pixel)) return null;
+        if (StringUtils.isBlank(pixel))
+            return null;
         String[] arr = pixel.split("\\*");
-        if (arr.length != 2) return null;
+        if (arr.length != 2)
+            return null;
         try {
             XpackPixelEntity result = new XpackPixelEntity();
-            int x = Integer.parseInt(arr[0]);
-            int y = Integer.parseInt(arr[1]);
+            int x = Integer.parseInt(arr[0].trim());
+            int y = Integer.parseInt(arr[1].trim());
             result.setX(String.valueOf(x));
             result.setY(String.valueOf(y));
             return result;

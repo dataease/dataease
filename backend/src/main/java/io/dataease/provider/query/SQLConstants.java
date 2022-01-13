@@ -31,11 +31,11 @@ public class SQLConstants {
      */
     public static final String SQL_TEMPLATE = "sql/sqlTemplate.stg";
 
-    public static final String TABLE_ALIAS_PREFIX = "T_A_%s";
-    public static final String FIELD_ALIAS_X_PREFIX = "F_AX_%s";
-    public static final String FIELD_ALIAS_Y_PREFIX = "F_AY_%s";
-    public static final String GROUP_ALIAS_PREFIX = "G_A_%s";
-    public static final String ORDER_ALIAS_X_PREFIX = "O_AX_%s";
-    public static final String ORDER_ALIAS_Y_PREFIX = "O_AY_%s";
-    public static final String WHERE_ALIAS_PREFIX = "W_A_%s";
+    public static final String TABLE_ALIAS_PREFIX = "t_a_%s";
+    public static final String FIELD_ALIAS_X_PREFIX = "f_ax_%s";
+    public static final String FIELD_ALIAS_Y_PREFIX = "f_ay_%s";
+    public static final String GROUP_ALIAS_PREFIX = "g_a_%s";
+    public static final String ORDER_ALIAS_X_PREFIX = "o_ax_%s";
+    public static final String ORDER_ALIAS_Y_PREFIX = "o_ay_%s";
+    public static final String WHERE_ALIAS_PREFIX = "w_a_%s";
 }

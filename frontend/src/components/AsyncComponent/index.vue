@@ -3,6 +3,7 @@
     :is="mode"
     v-bind="$attrs"
     v-on="$listeners"
+    :obj="obj"
   />
 </template>
 
@@ -18,6 +19,10 @@ export default {
     url: {
       type: String,
       default: ''
+    },
+    obj: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {

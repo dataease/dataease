@@ -1,6 +1,6 @@
 <template>
-  <div v-loading="dataLoading" class="bg">
-    <Preview v-if="!dataLoading" />
+  <div v-loading="dataLoading" class="bg" :style="bgStyle">
+    <Preview v-if="!dataLoading" :back-screen-shot="backScreenShot" @mainHeightChange="mainHeightChange" />
   </div>
 </template>
 <script>
@@ -9,25 +9,45 @@ import { uuid } from 'vue-uuid'
 import { findOne } from '@/api/panel/panel'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import { queryPanelJumpInfo, queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
+import { panelInit } from '@/components/canvas/utils/utils'
 
 export default {
   components: { Preview },
   data() {
     return {
-      dataLoading: false
+      dataLoading: false,
+      backScreenShot: false,
+      mainHeight: '100vh!important'
+    }
+  },
+  computed: {
+    bgStyle() {
+      if (this.backScreenShot) {
+        return { height: this.mainHeight }
+      } else {
+        return { height: '100vh!important' }
+      }
     }
   },
   mounted() {
     this.restore()
   },
   methods: {
+    mainHeightChange(mainHeight) {
+      this.mainHeight = mainHeight
+    },
     restore() {
       this.dataLoading = true
-      this.panelId = this.$route.path.split('/')[2]
+      this.panelId = this.$route.params.reportId
+      if (this.$route.params.backScreenShot !== undefined) {
+        this.backScreenShot = this.$route.params.backScreenShot
+      }
       // 加载视图数据
       findOne(this.panelId).then(response => {
+        const componentDatas = JSON.parse(response.data.panelData)
+        panelInit(componentDatas)
         this.dataLoading = false
-        this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
+        this.$store.commit('setComponentData', this.resetID(componentDatas))
         this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
         const data = {
           id: response.data.id,
@@ -80,8 +100,8 @@ export default {
   .bg {
     width: 100%;
     height: 100vh!important;
-    min-width: 800px;
-    min-height: 600px;
+    min-width: 200px;
+    min-height: 300px;
     background-color: #f7f8fa;
   }
 </style>

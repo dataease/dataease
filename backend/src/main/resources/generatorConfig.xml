@@ -5,7 +5,6 @@
     <!--配置数据库连接的位置-->
     <properties url="file:///opt/dataease/conf/dataease.properties"/>
     <!-- 设置mysql驱动路径 -->
-    <!--<classPathEntry location="/Users/liuruibin/.m2/repository/mysql/mysql-connector-java/5.1.34/mysql-connector-java-5.1.34.jar"/>-->
     <!-- 此处指定生成针对MyBatis3的DAO -->
     <context id="mysql" targetRuntime="MyBatis3">
         <!-- 字段带`,解决列表跟关键字冲突问题 -->
@@ -37,8 +36,6 @@
         </commentGenerator>
 
         <!-- jdbc连接信息 --> <!-- EduLoanManage EduTestDataBase -->
-        <!--<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.20.180:3306/fit2cloud"-->
-        <!--userId="root" password="Fit2cloud2015!" />-->
         <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
                         connectionURL="${spring.datasource.url}&amp;nullCatalogMeansCurrent=true"
                         userId="${spring.datasource.username}" password="${spring.datasource.password}"/>
@@ -63,10 +60,6 @@
         </javaClientGenerator>
 
         <!--要生成的数据库表 -->
-
-
-        <table tableName="v_auth_model"/>
-
-
+        <table tableName="dataset_row_permissions"/>
     </context>
 </generatorConfiguration>

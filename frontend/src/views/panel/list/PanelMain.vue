@@ -1,6 +1,6 @@
 <template>
   <de-container>
-    <de-aside-container style="padding: 0 10px;">
+    <de-aside-container>
       <el-tabs v-model="activeName" class="tab-panel" :stretch="true" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
           <span slot="label"><i class="el-icon-document tablepanel-i" />{{ $t('panel.panel_list') }}</span>
@@ -132,6 +132,10 @@ export default {
   /*  align-items: center;*/
   /*  justify-content: center;*/
   /*}*/
+  .tab-panel{
+    height: 100%;
+    overflow-y: auto;
+  }
   .tab-panel>>>.el-tabs__nav-wrap{
     padding: 0 10px;
   }

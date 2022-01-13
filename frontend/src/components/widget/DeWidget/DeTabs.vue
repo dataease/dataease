@@ -10,7 +10,7 @@
         <span slot="label">
           <span>{{ item.title }}</span>
 
-          <el-dropdown v-if="isEdit" slot="label" class="de-tab-drop" trigger="click" @command="handleCommand">
+          <el-dropdown v-if="dropdownShow" slot="label" class="de-tab-drop" trigger="click" @command="handleCommand">
             <span class="el-dropdown-link">
 
               <!-- <span>{{ item.title }}</span> -->
@@ -35,7 +35,7 @@
         </span>
 
         <div v-if="activeTabName === item.name" class="de-tab-content">
-          <user-view v-if="item.content && item.content.propValue && item.content.propValue.viewId" :ref="item.name" :element="item.content" :out-style="outStyle" />
+          <user-view v-if="item.content && item.content.propValue && item.content.propValue.viewId" :ref="item.name" :in-tab="true" :is-edit="isEdit" :active="active" :element="item.content" :out-style="outStyle" />
         </div>
 
       </el-tab-pane>
@@ -94,6 +94,7 @@ import ViewSelect from '@/views/panel/ViewSelect'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import componentList from '@/components/canvas/custom-component/component-list'
+import { mapState } from 'vuex'
 
 export default {
   name: 'DeTabls',
@@ -106,6 +107,10 @@ export default {
     isEdit: {
       type: Boolean,
       default: true
+    },
+    active: {
+      type: Boolean,
+      default: false
     },
     outStyle: {
       type: Object,
@@ -127,6 +132,22 @@ export default {
       curItem: null,
       viewDialogVisible: false,
       tabList: []
+    }
+  },
+  computed: {
+    dropdownShow() {
+      return this.isEdit && !this.mobileLayoutStatus
+    },
+    ...mapState([
+      'curComponent',
+      'mobileLayoutStatus'
+    ])
+  },
+  watch: {
+    curComponent: {
+      handler(newVal, oldVla) {
+      },
+      deep: true
     }
   },
   created() {
@@ -226,7 +247,8 @@ export default {
       this.styleChange()
     },
 
-    addNewTab() {
+    addNewTab(componentId) {
+      if (!componentId || componentId !== this.element.id) return
       const curName = uuid.v1()
       const tab = {
         title: 'NewTab',
@@ -251,6 +273,7 @@ export default {
 <style lang="scss" scoped>
   .de-tabs-div {
     height: 100%;
+    overflow: hidden;
   }
   .de-tabs {
     height: 100%;

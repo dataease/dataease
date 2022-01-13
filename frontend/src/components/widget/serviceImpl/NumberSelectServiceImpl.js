@@ -13,9 +13,12 @@ const dialogPanel = {
       multiple: false,
       placeholder: 'denumberselect.placeholder',
       datas: [],
+      viewIds: [],
       key: 'id',
       label: 'text',
-      value: 'id'
+      value: 'id',
+      fieldId: '',
+      dragItems: []
     },
     value: ''
   },
@@ -63,7 +66,7 @@ class NumberSelectServiceImpl extends WidgetService {
 
   filterFieldMethod(fields) {
     return fields.filter(field => {
-      return field['deType'] === 2
+      return field['deType'] === 2 || field['deType'] === 3
     })
   }
 

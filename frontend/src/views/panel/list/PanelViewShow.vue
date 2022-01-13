@@ -4,7 +4,7 @@
     style="height: 100%;width: 100%;"
     :element-loading-text="$t('panel.data_loading')"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.8)"
+    element-loading-background="rgba(0, 0, 0, 1)"
   >
     <el-col v-if="panelInfo.name.length>0" class="panel-design">
 
@@ -73,9 +73,10 @@
       </el-row>
       <!-- 仪表板预览区域-->
       <el-row class="panel-design-preview">
-        <div id="imageWrapper" ref="imageWrapper" style="width: 100%;height: 100%">
+        <!--        <div id="imageWrapper" ref="imageWrapper" style="width: 4096px;height: 2160px">-->
+        <div id="imageWrapper" ref="imageWrapper" :style="imageWrapperStyle">
           <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
-            <Preview v-if="showMain" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
+            <Preview v-if="showMainFlag" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
           </fullscreen>
         </div>
       </el-row>
@@ -125,7 +126,7 @@ import SaveToTemplate from '@/views/panel/list/SaveToTemplate'
 import { mapState } from 'vuex'
 import html2canvas from 'html2canvasde'
 import FileSaver from 'file-saver'
-import { enshrineList, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
+import { starStatus, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
@@ -134,7 +135,6 @@ export default {
   name: 'PanelViewShow',
   components: { Preview, SaveToTemplate, PDFPreExport, ShareHead },
   props: {
-    // eslint-disable-next-line vue/require-default-prop
     activeTab: {
       type: String,
       required: false
@@ -154,10 +154,27 @@ export default {
       pdfExportShow: false,
       snapshotInfo: '',
       showType: 0,
-      dataLoading: false
+      dataLoading: false,
+      exporting: false
     }
   },
   computed: {
+    imageWrapperStyle() {
+      if (this.exporting) {
+        return {
+          width: '4096px',
+          height: '2160px'
+        }
+      } else {
+        return {
+          width: '100%',
+          height: '100%'
+        }
+      }
+    },
+    showMainFlag() {
+      return this.showMain
+    },
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
@@ -189,7 +206,6 @@ export default {
     bus.$on('set-panel-show-type', type => {
       this.showType = type || 0
     })
-
     this.initPdfTemplate()
   },
   methods: {
@@ -252,17 +268,24 @@ export default {
     },
 
     downloadAsPDF() {
+      // this.pdfExportShow = true
+      //
       this.dataLoading = true
+
       setTimeout(() => {
-        html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
-          const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
-          this.dataLoading = false
-          if (snapshot !== '') {
-            this.snapshotInfo = snapshot
-            this.pdfExportShow = true
-          }
-        })
-      }, 50)
+        this.exporting = true
+        setTimeout(() => {
+          html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+            const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
+            this.dataLoading = false
+            this.exporting = false
+            if (snapshot !== '') {
+              this.snapshotInfo = snapshot
+              this.pdfExportShow = true
+            }
+          })
+        }, 1500)
+      }, 500)
     },
     refreshTemplateInfo() {
       this.templateInfo = {}
@@ -294,9 +317,8 @@ export default {
       })
     },
     initHasStar() {
-      const param = {}
-      enshrineList(param).then(res => {
-        this.hasStar = res.data && res.data.some(item => item.panelGroupId === this.panelInfo.id)
+      starStatus(this.panelInfo.id).then(res => {
+        this.hasStar = res.data
       })
     },
     refreshStarList(isStar) {

@@ -27,6 +27,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,6 +40,9 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class AuthServer implements AuthApi {
+
+    @Value("${dataease.init_password:DataEase123..}")
+    private String DEFAULT_PWD;
 
     @Autowired
     private AuthUserService authUserService;
@@ -65,14 +69,19 @@ public class AuthServer implements AuthApi {
             SysUserEntity user = authUserService.getLdapUserByName(username);
             if (ObjectUtils.isEmpty(user) || ObjectUtils.isEmpty(user.getUserId())) {
                 LdapAddRequest ldapAddRequest = new LdapAddRequest();
-                ldapAddRequest.setUsers(new ArrayList<XpackLdapUserEntity>() {{
-                    add(ldapUserEntity);
-                }});
+                ldapAddRequest.setUsers(new ArrayList<XpackLdapUserEntity>() {
+                    {
+                        add(ldapUserEntity);
+                    }
+                });
                 ldapAddRequest.setEnabled(1L);
-                ldapAddRequest.setRoleIds(new ArrayList<Long>() {{
-                    add(2L);
-                }});
-                sysUserService.validateExistUser(ldapUserEntity.getUsername(), ldapUserEntity.getNickname(), ldapUserEntity.getEmail());
+                ldapAddRequest.setRoleIds(new ArrayList<Long>() {
+                    {
+                        add(2L);
+                    }
+                });
+                sysUserService.validateExistUser(ldapUserEntity.getUsername(), ldapUserEntity.getNickname(),
+                        ldapUserEntity.getEmail());
                 sysUserService.saveLdapUsers(ldapAddRequest);
             }
 
@@ -92,9 +101,9 @@ public class AuthServer implements AuthApi {
 
         // 普通登录需要验证密码
         if (loginType == 0 || !isSupportLdap) {
-            //私钥解密
+            // 私钥解密
 
-            //md5加密
+            // md5加密
             pwd = CodingUtil.md5(pwd);
 
             if (!StringUtils.equals(pwd, realPwd)) {
@@ -129,6 +138,16 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    public Boolean useInitPwd() {
+        CurrentUserDto user = AuthUtils.getUser();
+        if (null == user) {
+            return false;
+        }
+        String md5 = CodingUtil.md5(DEFAULT_PWD);
+        return StringUtils.equals(AuthUtils.getUser().getPassword(), md5);
+    }
+
+    @Override
     public String logout() {
         String token = ServletUtils.getToken();
 
@@ -158,7 +177,8 @@ public class AuthServer implements AuthApi {
     @Override
     public Boolean validateName(@RequestBody Map<String, String> nameDto) {
         String userName = nameDto.get("userName");
-        if (StringUtils.isEmpty(userName)) return false;
+        if (StringUtils.isEmpty(userName))
+            return false;
         SysUserEntity userEntity = authUserService.getUserByName(userName);
         return !ObjectUtils.isEmpty(userEntity);
     }
@@ -166,29 +186,30 @@ public class AuthServer implements AuthApi {
     @Override
     public boolean isOpenLdap() {
         Boolean licValid = PluginUtils.licValid();
-        if (!licValid) return false;
+        if (!licValid)
+            return false;
         return authUserService.supportLdap();
     }
 
     @Override
     public boolean isOpenOidc() {
         Boolean licValid = PluginUtils.licValid();
-        if (!licValid) return false;
+        if (!licValid)
+            return false;
         return authUserService.supportOidc();
     }
 
     @Override
     public boolean isPluginLoaded() {
         Boolean licValid = PluginUtils.licValid();
-        if (!licValid) return false;
+        if (!licValid)
+            return false;
         return authUserService.pluginLoaded();
     }
-
 
     @Override
     public String getPublicKey() {
         return RsaProperties.publicKey;
     }
-
 
 }

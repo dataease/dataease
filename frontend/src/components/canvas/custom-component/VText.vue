@@ -1,5 +1,5 @@
 <template>
-  <div v-if="editMode == 'edit'" class="v-text" @keydown="handleKeydown" @keyup="handleKeyup">
+  <div v-if="editStatus" class="v-text" @keydown="handleKeydown" @keyup="handleKeyup">
     <!-- tabindex >= 0 使得双击时聚集该元素 -->
     <div
       v-if="canEdit"
@@ -15,7 +15,16 @@
       @input="handleInput"
       v-html="element.propValue"
     />
-    <div v-if="!canEdit" :style="{ verticalAlign: element.style.verticalAlign }" @dblclick="setEdit" v-html="element.propValue" />
+    <div
+      v-if="!canEdit"
+      :style="{ verticalAlign: element.style.verticalAlign }"
+      @dblclick="setEdit"
+      @paste="clearStyle"
+      @mousedown="handleMousedown"
+      @blur="handleBlur"
+      @input="handleInput"
+      v-html="element.propValue"
+    />
   </div>
   <div v-else class="v-text">
     <div :style="{ verticalAlign: element.style.verticalAlign }" v-html="textInfo" />
@@ -24,6 +33,7 @@
 
 <script>
 import { keycodes } from '@/components/canvas/utils/shortcutKey.js'
+import { mapState } from 'vuex'
 
 export default {
   props: {
@@ -56,13 +66,19 @@ export default {
     }
   },
   computed: {
+    editStatus() {
+      return this.editMode === 'edit' && !this.mobileLayoutStatus
+    },
     textInfo() {
       if (this.element && this.element.hyperlinks && this.element.hyperlinks.enable) {
         return "<a title='" + this.element.hyperlinks.content + "' target='" + this.element.hyperlinks.openMode + "' href='" + this.element.hyperlinks.content + "'>" + this.element.propValue + '</a>'
       } else {
         return this.element.propValue
       }
-    }
+    },
+    ...mapState([
+      'mobileLayoutStatus'
+    ])
   },
 
   watch: {
@@ -75,6 +91,7 @@ export default {
   },
   methods: {
     handleInput(e) {
+      this.$store.state.styleChangeTimes++
       this.$emit('input', this.element, e.target.innerHTML)
       this.$store.commit('recordStyleChange')
     },

@@ -7,10 +7,14 @@
             s.panel_group_id as id,
             g.name as title,
             s.create_time as `time`
-        from panel_store s
+        from( SELECT GET_V_AUTH_MODEL_ID_P_USE_MOBILE ( #{userId}, 'panel' ) cids ) t, panel_store s
         inner join panel_group g
             on s.panel_group_id = g.id
         where s.user_id = #{userId}
+                and FIND_IN_SET( g.id, cids  )
+        <if test="lastTime != null">
+            and #{lastTime} > s.create_time
+        </if>
         order by s.create_time desc
     </select>
 
@@ -23,13 +27,18 @@
         inner join panel_group g
             on s.panel_group_id = g.id
         where
-            ( s.target_id = #{userId} and s.type = 0 ) or
-            ( s.target_id = #{deptId} and s.type = 2 ) or
-            ( s.target_id in
-            <foreach collection="roleIds" item="roleId" open='(' separator=',' close=')'>
-                #{roleId}
-            </foreach>
-            and s.type = 1 )
+            g.mobile_layout = 1 and (
+                ( s.target_id = #{userId} and s.type = 0 ) or
+                ( s.target_id = #{deptId} and s.type = 2 ) or
+                ( s.target_id in
+                <foreach collection="roleIds" item="roleId" open='(' separator=',' close=')'>
+                    #{roleId}
+                </foreach>
+                and s.type = 1 )
+            )
+        <if test="lastTime != null">
+            and #{lastTime} > s.create_time
+        </if>
         order by s.create_time desc
     </select>
 

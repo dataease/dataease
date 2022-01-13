@@ -7,6 +7,8 @@
         <result property="pid" column="pid" javaType="java.lang.Long"/>
     </resultMap>
 
+    <resultMap id="ExtBaseResultMap"  type="io.dataease.base.domain.SysMenu" extends="io.dataease.base.mapper.SysMenuMapper.BaseResultMap"></resultMap>
+
     <select id="allNodes" resultMap="simpleNode">
         select menu_id as id, pid from sys_menu where hidden != 1
     </select>
@@ -18,5 +20,28 @@
         and hidden != 1
     </select>
 
+
+    <select id="querySysMenu" resultMap="ExtBaseResultMap">
+        SELECT
+        *
+        FROM
+        sys_menu
+        WHERE
+        type &lt;= 1
+        AND (
+        sys_menu.menu_id != 61
+        OR EXISTS (
+        SELECT
+        1
+        FROM
+        system_parameter
+        WHERE
+        param_key = 'ui.openHomePage'
+        AND param_value = 'true'
+        )
+        )
+        ORDER BY
+        menu_sort
+    </select>
 
 </mapper>

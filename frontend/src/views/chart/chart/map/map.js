@@ -13,22 +13,31 @@ export function baseMapOption(chart_option, chart) {
     if (customAttr.tooltip) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
-      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      const text = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.formatter = function(params) {
+        const a = params.seriesName
+        const b = params.name
+        const c = params.value ? params.value : ''
+        return text.replace(new RegExp('{a}', 'g'), a).replace(new RegExp('{b}', 'g'), b).replace(new RegExp('{c}', 'g'), c)
+      }
       chart_option.tooltip = tooltip
     }
   }
   // 处理data
   if (chart.data) {
     chart_option.title.text = chart.title
-    if (chart.data.series.length > 0) {
+    if (chart.data.series && chart.data.series.length > 0) {
       chart_option.series[0].name = chart.data.series[0].name
-      // size
-      if (customAttr.size) {
-        chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
-      }
       // label
       if (customAttr.label) {
+        const text = customAttr.label.formatter
         chart_option.series[0].label = customAttr.label
+        chart_option.series[0].label.formatter = function(params) {
+          const a = params.seriesName
+          const b = params.name
+          const c = params.value ? params.value : ''
+          return text.replace(new RegExp('{a}', 'g'), a).replace(new RegExp('{b}', 'g'), b).replace(new RegExp('{c}', 'g'), c)
+        }
         chart_option.series[0].labelLine = customAttr.label.labelLine
       }
       // visualMap

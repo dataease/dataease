@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
-
 @Service
 public class EmailService {
 
@@ -47,7 +46,6 @@ public class EmailService {
 
     private static final String SMTP_CONNECTIONTIMEOUT_VAL = "5000";
 
-
     @Resource
     private SystemParameterMapper systemParameterMapper;
 
@@ -57,7 +55,8 @@ public class EmailService {
      * @param content 内容
      */
     public void send(String to, String title, String content) {
-        if (StringUtils.isBlank(to)) return;
+        if (StringUtils.isBlank(to))
+            return;
         MailInfo mailInfo = proxy().mailInfo();
         JavaMailSenderImpl driver = driver(mailInfo);
 
@@ -77,7 +76,8 @@ public class EmailService {
     }
 
     public void sendWithImage(String to, String title, String content, byte[] bytes) {
-        if (StringUtils.isBlank(to)) return;
+        if (StringUtils.isBlank(to))
+            return;
         MailInfo mailInfo = proxy().mailInfo();
         JavaMailSenderImpl driver = driver(mailInfo);
         MimeMessage mimeMessage = driver.createMimeMessage();
@@ -89,7 +89,8 @@ public class EmailService {
         MimeBodyPart text = new MimeBodyPart();
         try {
 
-            text.setContent("<h2>" + content + "</h2>" + "<br/><img src='cid:" + uuid + "' />", "text/html; charset=gb2312");
+            text.setContent(content + "<br/><img style='width: 60%;' src='cid:" + uuid + "' />",
+                    "text/html; charset=gb2312");
             image.setDataHandler(png);
             image.setContentID(uuid);
             MimeMultipart multipart = new MimeMultipart();
@@ -131,7 +132,6 @@ public class EmailService {
         return CommonBeanFactory.getBean(EmailService.class);
     }
 
-
     public MailInfo mailInfo() {
         String type = ParamConstants.Classify.MAIL.getValue();
         List<SystemParameter> paramList = getParamList(type);
@@ -159,13 +159,11 @@ public class EmailService {
         return mailInfo;
     }
 
-
     public List<SystemParameter> getParamList(String type) {
         SystemParameterExample example = new SystemParameterExample();
         example.createCriteria().andParamKeyLike(type + "%");
         return systemParameterMapper.selectByExample(example);
     }
-
 
     public void editMail(List<SystemParameter> parameters) {
         parameters.forEach(parameter -> {
@@ -203,7 +201,7 @@ public class EmailService {
             props.put("mail.smtp.starttls.enable", "true");
         }
         props.put("mail.smtp.timeout", "30000");
-        props.put("mail.smtp.connectiontimeout", "5000");
+        props.put("mail.smtp.connectiontimeout", "10000");
         javaMailSender.setJavaMailProperties(props);
         try {
             javaMailSender.testConnection();
@@ -221,12 +219,11 @@ public class EmailService {
                 helper.setText("这是一封测试邮件，邮件发送成功", true);
                 helper.setTo(recipients);
                 javaMailSender.send(mimeMessage);
-            } catch (MessagingException e) {
+            } catch (Exception e) {
                 LogUtil.error(e.getMessage(), e);
                 DEException.throwException(Translator.get("connection_failed"));
             }
         }
-
 
     }
 }

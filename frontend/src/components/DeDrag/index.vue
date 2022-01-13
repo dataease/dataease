@@ -9,6 +9,7 @@
         [classNameResizable]: resizable,
         [classNameRotating]: rotating,
         [classNameRotatable]: rotatable,
+        [classNameActive]: enabled ,
         ['linkageSetting']:linkageActive,
         ['positionChange']:!(dragging || resizing||rotating)
       },
@@ -22,7 +23,7 @@
     <div
       :class="[
         {
-          [classNameActive]: enabled ,
+          ['de-drag-active-inner']:enabled,
           [classNameMouseOn]: mouseOn || active
         },
         className
@@ -534,7 +535,7 @@ export default {
       return this.$store.state.curComponent
     },
     curGap() {
-      return this.element.auxiliaryMatrix && this.element.type !== 'custom' ? this.componentGap : 0
+      return (this.canvasStyleData.panel.gap === 'yes' && this.element.auxiliaryMatrix && this.element.type !== 'custom') ? this.componentGap : 0
     },
     ...mapState([
       'editor',
@@ -1809,7 +1810,10 @@ export default {
 }
 
 .de-drag-active{
-  outline: 1px solid #70c0ff;
   user-select: none;
+}
+
+.de-drag-active-inner{
+  outline: 1px solid #70c0ff;
 }
 </style>

@@ -153,6 +153,8 @@
 import { post } from '@/api/dataset/dataset'
 import { getToken } from '@/utils/auth'
 import i18n from '@/lang'
+import {$alert} from "@/utils/message";
+import store from "@/store";
 
 const token = getToken()
 
@@ -263,6 +265,20 @@ export default {
     uploadFail(response, file, fileList) {
       let myError = response.toString()
       myError = myError.replace('Error: ', '')
+
+      if(myError.indexOf('AuthenticationException') >= 0){
+        const message = i18n.t('login.tokenError')
+        $alert(message, () => {
+          store.dispatch('user/logout').then(() => {
+            location.reload()
+          })
+        }, {
+          confirmButtonText: i18n.t('login.re_login'),
+          showClose: false
+        })
+        return
+      }
+
       const errorMessage = JSON.parse(myError).message + ', ' + this.$t('dataset.parse_error')
 
       this.path = ''

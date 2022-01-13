@@ -3,7 +3,9 @@ package io.dataease.service.dataset;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.DatasetTableFieldExample;
 import io.dataease.base.mapper.DatasetTableFieldMapper;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.DorisTableUtils;
+import io.dataease.i18n.Translator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +46,21 @@ public class DataSetTableFieldsService {
             datasetTableFieldMapper.updateByPrimaryKeySelective(datasetTableField);
         }
         return datasetTableField;
+    }
+
+    public void checkFieldName(DatasetTableField datasetTableField) {
+        if (StringUtils.isNotEmpty(datasetTableField.getName()) && StringUtils.isNotEmpty(datasetTableField.getTableId())) {
+            DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+            DatasetTableFieldExample.Criteria criteria = datasetTableFieldExample.createCriteria();
+            criteria.andNameEqualTo(datasetTableField.getName()).andTableIdEqualTo(datasetTableField.getTableId());
+            if (StringUtils.isNotEmpty(datasetTableField.getId())) {
+                criteria.andIdNotEqualTo(datasetTableField.getId());
+            }
+            List<DatasetTableField> datasetTableFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
+            if (CollectionUtils.isNotEmpty(datasetTableFields)) {
+                DEException.throwException(Translator.get("i18n_field_name_repeat"));
+            }
+        }
     }
 
     public List<DatasetTableField> list(DatasetTableField datasetTableField) {

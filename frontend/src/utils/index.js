@@ -1,4 +1,3 @@
-
 import Cookies from 'js-cookie'
 export function timeSection(date, type) {
   if (!date) {
@@ -98,7 +97,9 @@ export function parseTime(time, cFormat) {
   const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
     const value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+    if (key === 'a') {
+      return ['日', '一', '二', '三', '四', '五', '六'][value]
+    }
     return value.toString().padStart(2, '0')
   })
   return time_str
@@ -115,19 +116,19 @@ export function hasClass(ele, cls) {
 }
 
 /**
-   * Add class to element
-   * @param {HTMLElement} elm
-   * @param {string} cls
-   */
+ * Add class to element
+ * @param {HTMLElement} elm
+ * @param {string} cls
+ */
 export function addClass(ele, cls) {
   if (!hasClass(ele, cls)) ele.className += ' ' + cls
 }
 
 /**
-   * Remove class from element
-   * @param {HTMLElement} elm
-   * @param {string} cls
-   */
+ * Remove class from element
+ * @param {HTMLElement} elm
+ * @param {string} cls
+ */
 export function removeClass(ele, cls) {
   if (hasClass(ele, cls)) {
     const reg = new RegExp('(\\s|^)' + cls + '(\\s|$)')
@@ -189,12 +190,12 @@ export function param2Obj(url) {
   }
   return JSON.parse(
     '{"' +
-      decodeURIComponent(search)
-        .replace(/"/g, '\\"')
-        .replace(/&/g, '","')
-        .replace(/=/g, '":"')
-        .replace(/\+/g, ' ') +
-      '"}'
+    decodeURIComponent(search)
+      .replace(/"/g, '\\"')
+      .replace(/&/g, '","')
+      .replace(/=/g, '":"')
+      .replace(/\+/g, ' ') +
+    '"}'
   )
 }
 
@@ -216,7 +217,9 @@ export function formatCondition(param) {
   if (!param) {
     return null
   }
-  const result = { conditions: [] }
+  const result = {
+    conditions: []
+  }
   // eslint-disable-next-line no-unused-vars
   for (const [key, value] of Object.entries(param)) {
     result.conditions.push(value)
@@ -269,16 +272,23 @@ export function formatQuickCondition(param, quickField) {
 }
 
 export function getQueryVariable(variable) {
-  debugger
   let query = window.location.search.substring(1)
   if (!query) {
     query = Cookies.get(variable)
   }
-  const vars = query.split('&')
-  for (var i = 0; i < vars.length; i++) {
-    const pair = vars[i].split('=')
-    if (pair[0] === variable) { return pair[1] }
+  if (query !== undefined) {
+    const vars = query.split('&')
+    for (var i = 0; i < vars.length; i++) {
+      const pair = vars[i].split('=')
+      if (pair[0] === variable) {
+        return pair[1]
+      }
+    }
   }
   return (false)
 }
 
+export function isMobile() {
+  const flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
+  return flag
+}

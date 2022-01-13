@@ -9,5 +9,7 @@ public class PanelLinkMapping implements Serializable {
 
     private String resourceId;
 
+    private Long userId;
+
     private static final long serialVersionUID = 1L;
 }

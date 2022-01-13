@@ -1,15 +1,15 @@
 <template>
-  <div class="bg" :style="customStyle">
-    <div id="canvasInfoMain" ref="canvasInfoMain" style="width: 100%;height: 100%">
+  <div class="bg" :style="customStyle" @scroll="canvasScroll">
+    <div id="canvasInfoMain" ref="canvasInfoMain" :style="canvasInfoMainStyle">
       <div
         id="canvasInfoTemp"
         ref="canvasInfoTemp"
-        :style="[{height:mainHeight},screenShotStyle]"
+        :style="[canvasInfoTempStyle,screenShotStyle]"
         class="main-class"
         @mouseup="deselectCurComponent"
         @mousedown="handleMouseDown"
       >
-        <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
+        <el-row v-if="componentDataShow.length===0" class="custom-position">
           {{ $t('panel.panelNull') }}
         </el-row>
         <canvas-opt-bar />
@@ -19,6 +19,7 @@
           :config="item"
           :search-count="searchCount"
           :in-screen="inScreen"
+          :terminal="terminal"
         />
         <!--视图详情-->
         <el-dialog
@@ -36,6 +37,17 @@
           </span>
           <UserViewDialog ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
         </el-dialog>
+
+        <!--手机视图详情-->
+        <el-dialog
+          :title="'['+showChartInfo.name+']'+$t('chart.chart_details')"
+          :visible.sync="mobileChartDetailsVisible"
+          :fullscreen="true"
+          class="mobile-dialog-css"
+          :destroy-on-close="true"
+        >
+          <UserViewMobileDialog :chart="showChartInfo" :chart-table="showChartTableInfo" />
+        </el-dialog>
       </div>
     </div>
   </div>
@@ -52,14 +64,21 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
+import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
+import bus from '@/utils/bus'
 
 export default {
-  components: { ComponentWrapper, UserViewDialog, CanvasOptBar },
+  components: { UserViewMobileDialog, ComponentWrapper, UserViewDialog, CanvasOptBar },
   model: {
     prop: 'show',
     event: 'change'
   },
   props: {
+    // 后端截图
+    backScreenShot: {
+      type: Boolean,
+      default: false
+    },
     screenShot: {
       type: Boolean,
       default: false
@@ -102,11 +121,42 @@ export default {
       mainHeight: '100%',
       searchCount: 0,
       chartDetailsVisible: false,
+      mobileChartDetailsVisible: false,
       showChartInfo: {},
-      showChartTableInfo: {}
+      showChartTableInfo: {},
+      // 布局展示 1.pc pc端布局 2.mobile 移动端布局
+      terminal: 'pc'
     }
   },
+  created() {
+  },
   computed: {
+    canvasInfoMainStyle() {
+      if (this.backScreenShot) {
+        return {
+          width: '100%',
+          height: this.mainHeight
+        }
+      } else {
+        return {
+          width: '100%',
+          height: '100%'
+        }
+      }
+    },
+    canvasInfoTempStyle() {
+      if (this.screenShot) {
+        return {
+          width: '100%',
+          height: this.mainHeight
+        }
+      } else {
+        return {
+          width: '100%',
+          height: '100%'
+        }
+      }
+    },
     customStyle() {
       let style = {
         width: '100%'
@@ -123,6 +173,11 @@ export default {
             ...style
           }
         }
+      }
+      if (this.backScreenShot) {
+        style.height = this.mainHeight
+      } else {
+        style.padding = '5px'
       }
       return style
     },
@@ -156,31 +211,41 @@ export default {
     }
   },
   mounted() {
+    this._isMobile()
     const _this = this
     const erd = elementResizeDetectorMaker()
-    // 监听div变动事件
-    const mainDom = document.getElementById('canvasInfoMain')
-    erd.listenTo(mainDom, element => {
+    // 监听主div变动事件
+    erd.listenTo(document.getElementById('canvasInfoMain'), element => {
       _this.$nextTick(() => {
         _this.restore()
       })
     })
-    // 监听div变动事件
+    // 监听画布div变动事件
     const tempCanvas = document.getElementById('canvasInfoTemp')
-    erd.listenTo(tempCanvas, element => {
+    erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
       _this.$nextTick(() => {
         // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
         _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
+        this.$emit('mainHeightChange', _this.mainHeight)
       })
     })
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     _this.$store.commit('clearLinkageSettingInfo', false)
     _this.canvasStyleDataInit()
+    // 如果当前终端设备是移动端，则进行移动端的布局设计
+    if (_this.terminal === 'mobile') {
+      _this.initMobileCanvas()
+    }
   },
   beforeDestroy() {
     clearInterval(this.timer)
   },
   methods: {
+    _isMobile() {
+      const flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
+      this.terminal = flag ? 'mobile' : 'pc'
+      // this.terminal = 'mobile'
+    },
     canvasStyleDataInit() {
       // 数据刷新计时器
       this.searchCount = 0
@@ -202,8 +267,14 @@ export default {
     restore() {
       const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
       const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
-      this.scaleWidth = canvasWidth * 100 / parseInt(this.canvasStyleData.width)// 获取宽度比
-      this.scaleHeight = canvasHeight * 100 / parseInt(this.canvasStyleData.height)// 获取高度比
+      this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
+      // 如果是后端截图方式使用 的高度伸缩比例和宽度比例相同
+      if (this.backScreenShot) {
+        this.scaleHeight = this.scaleWidth
+      } else {
+        this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
+      }
+      this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
       this.handleScaleChange()
     },
     resetID(data) {
@@ -215,7 +286,7 @@ export default {
       return data
     },
     format(value, scale) {
-      return value * parseInt(scale) / 100
+      return value * scale / 100
     },
     handleScaleChange() {
       if (this.componentData) {
@@ -237,7 +308,11 @@ export default {
     openChartDetailsDialog(chartInfo) {
       this.showChartInfo = chartInfo.chart
       this.showChartTableInfo = chartInfo.tableChart
-      this.chartDetailsVisible = true
+      if (this.terminal === 'pc') {
+        this.chartDetailsVisible = true
+      } else {
+        this.mobileChartDetailsVisible = true
+      }
     },
     exportExcel() {
       this.$refs['userViewDialog'].exportExcel()
@@ -249,6 +324,12 @@ export default {
     },
     handleMouseDown() {
       this.$store.commit('setClickComponentStatus', false)
+    },
+    initMobileCanvas() {
+      this.$store.commit('openMobileLayout')
+    },
+    canvasScroll() {
+      bus.$emit('onScroll')
     }
   }
 }
@@ -256,8 +337,7 @@ export default {
 
 <style lang="scss" scoped>
   .bg {
-    padding: 5px;
-    min-width: 600px;
+    min-width: 200px;
     min-height: 300px;
     width: 100%;
     height: 100%;
@@ -272,6 +352,7 @@ export default {
   }
 
   .custom-position {
+    height: 100%;
     flex: 1;
     display: flex;
     align-items: center;
@@ -279,10 +360,6 @@ export default {
     font-size: 14px;
     flex-flow: row nowrap;
     color: #9ea6b2;
-  }
-
-  .gap_class {
-    padding: 5px;
   }
 
   .dialog-css > > > .el-dialog__title {
@@ -297,9 +374,16 @@ export default {
     padding: 10px 20px 20px;
   }
 
+  .mobile-dialog-css > > > .el-dialog__body {
+    padding: 0px;
+  }
   ::-webkit-scrollbar {
     width: 0px!important;
     height: 0px!important;
+  }
+
+  ::v-deep .el-tabs__nav{
+   z-index: 0;
   }
 
 </style>

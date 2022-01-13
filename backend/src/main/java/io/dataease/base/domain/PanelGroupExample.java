@@ -923,6 +923,66 @@ public class PanelGroupExample {
             addCriterion("remark not between", value1, value2, "remark");
             return (Criteria) this;
         }
+
+        public Criteria andMobileLayoutIsNull() {
+            addCriterion("mobile_layout is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobileLayoutIsNotNull() {
+            addCriterion("mobile_layout is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobileLayoutEqualTo(Boolean value) {
+            addCriterion("mobile_layout =", value, "mobileLayout");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobileLayoutNotEqualTo(Boolean value) {
+            addCriterion("mobile_layout <>", value, "mobileLayout");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobileLayoutGreaterThan(Boolean value) {
+            addCriterion("mobile_layout >", value, "mobileLayout");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobileLayoutGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("mobile_layout >=", value, "mobileLayout");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobileLayoutLessThan(Boolean value) {
+            addCriterion("mobile_layout <", value, "mobileLayout");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobileLayoutLessThanOrEqualTo(Boolean value) {
+            addCriterion("mobile_layout <=", value, "mobileLayout");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobileLayoutIn(List<Boolean> values) {
+            addCriterion("mobile_layout in", values, "mobileLayout");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobileLayoutNotIn(List<Boolean> values) {
+            addCriterion("mobile_layout not in", values, "mobileLayout");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobileLayoutBetween(Boolean value1, Boolean value2) {
+            addCriterion("mobile_layout between", value1, value2, "mobileLayout");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobileLayoutNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("mobile_layout not between", value1, value2, "mobileLayout");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

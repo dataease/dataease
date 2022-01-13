@@ -3,19 +3,38 @@ import store from './store'
 // import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
+import {
+  getToken
+} from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
-import { buildMenus } from '@/api/system/menu'
-import { filterAsyncRouter } from '@/store/modules/permission'
+import {
+  buildMenus
+} from '@/api/system/menu'
+import {
+  filterAsyncRouter
+} from '@/store/modules/permission'
+import {
+  isMobile
+} from '@/utils/index'
+import Layout from '@/layout/index'
 // import bus from './utils/bus'
 
-NProgress.configure({ showSpinner: false }) // NProgress Configuration
+NProgress.configure({
+  showSpinner: false
+}) // NProgress Configuration
 
 const whiteList = ['/login', '/401', '/404', '/delink', '/nolic'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
+  const mobileIgnores = ['/delink']
+  const mobilePreview = '/preview/'
+
+  if (isMobile() && !to.path.includes(mobilePreview) && mobileIgnores.indexOf(to.path) === -1) {
+    window.location.href = window.origin + '/app.html'
+    NProgress.done()
+  }
 
   // set page title
   document.title = getPageTitle(to.meta.title)
@@ -25,11 +44,13 @@ router.beforeEach(async(to, from, next) => {
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
-      next({ path: '/' })
+      next({
+        path: '/'
+      })
       NProgress.done()
     } else {
       const hasGetUserInfo = store.getters.name
-      if (hasGetUserInfo || to.path.indexOf('/preview/') > -1 || to.path.indexOf('/delink') > -1 || to.path.indexOf('/nolic') > -1) {
+      if (hasGetUserInfo || to.path.indexOf('/previewScreenShot/') > -1 || to.path.indexOf('/preview/') > -1 || to.path.indexOf('/delink') > -1 || to.path.indexOf('/nolic') > -1) {
         next()
         store.dispatch('permission/setCurrentPath', to.path)
       } else {
@@ -75,29 +96,41 @@ router.beforeEach(async(to, from, next) => {
 export const loadMenus = (next, to) => {
   buildMenus().then(res => {
     const datas = res.data
-    disableSomeMenu(datas)
     const filterDatas = filterRouter(datas)
     const asyncRouter = filterAsyncRouter(filterDatas)
-    asyncRouter.push({ path: '*', redirect: '/404', hidden: true })
+    // 如果包含首页 则默认页面是 首页 否则默认页面是仪表板页面
+    if (JSON.stringify(datas).indexOf('wizard') > -1) {
+      asyncRouter.push({
+        path: '/',
+        component: Layout,
+        redirect: '/wizard/index',
+        hidden: true
+      })
+    } else {
+      asyncRouter.push({
+        path: '/',
+        component: Layout,
+        redirect: '/panel/index',
+        hidden: true
+      })
+    }
+
+    asyncRouter.push({
+      path: '*',
+      redirect: '/404',
+      hidden: true
+    })
     store.dispatch('permission/GenerateRoutes', asyncRouter).then(() => { // 存储路由
       router.addRoutes(asyncRouter)
       if (pathValid(to.path, asyncRouter)) {
-        next({ ...to, replace: true })
+        next({
+          ...to,
+          replace: true
+        })
       } else {
         next('/')
       }
     })
-  })
-}
-const disableSomeMenu = datas => {
-  datas.forEach(menu => {
-    if (menu.name === 'system') {
-      menu.children.forEach(item => {
-        if (item.name === 'sys-task') {
-          item.children = [item.children[0]]
-        }
-      })
-    }
   })
 }
 

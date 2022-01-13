@@ -145,6 +145,7 @@
           :model="groupForm"
           :rules="groupFormRules"
           @keypress.enter.native="saveGroup(groupForm)"
+          @submit.native.prevent
         >
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="groupForm.name" />
@@ -159,7 +160,7 @@
 
     <!--rename chart-->
     <el-dialog v-dialogDrag :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
-      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keypress.enter.native="saveTable(tableForm)">
+      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @submit.native.prevent @keypress.enter.native="saveTable(tableForm)">
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="tableForm.name" />
         </el-form-item>
@@ -191,9 +192,13 @@
             <el-form-item :label="$t('chart.belong_group')">
               <treeselect
                 v-model="currGroup.id"
+                :clearable="false"
                 :options="chartGroupTreeAvailable"
                 :normalizer="normalizer"
                 :placeholder="$t('chart.select_group')"
+                :no-children-text="$t('commons.treeselect.no_children_text')"
+                :no-options-text="$t('commons.treeselect.no_options_text')"
+                :no-results-text="$t('commons.treeselect.no_results_text')"
               />
             </el-form-item>
           </el-col>
@@ -425,7 +430,7 @@ export default {
         all: this.$t('commons.all'),
         folder: this.$t('commons.folder')
       },
-      currentNodeData: {},
+      currentViewNodeData: {},
       currentKey: null
     }
   },
@@ -553,7 +558,7 @@ export default {
               showClose: true
             })
             this.treeNode()
-            this.$store.dispatch('chart/setTable', null)
+            this.$store.dispatch('chart/setTable', new Date().getTime())
           })
         } else {
           // this.$message({
@@ -579,6 +584,7 @@ export default {
             showClose: true
           })
           this.treeNode()
+          this.$emit('switchComponent', { name: '' })
         })
       }).catch(() => {
       })
@@ -671,8 +677,8 @@ export default {
     },
 
     nodeClick(data, node) {
-      this.currentNodeData = data
       if (data.modelInnerType !== 'group') {
+        this.currentViewNodeData = data
         this.$emit('switchComponent', { name: 'ChartEdit', param: data })
       }
     },
@@ -767,6 +773,7 @@ export default {
       view.customFilter = JSON.stringify([])
       view.drillFields = JSON.stringify([])
       view.extBubble = JSON.stringify([])
+      this.setChartDefaultOptions(view)
       const _this = this
       post('/chart/view/save', view).then(response => {
         this.closeCreateChart()
@@ -780,6 +787,33 @@ export default {
           _this.treeNode()
         }
       })
+    },
+
+    setChartDefaultOptions(view) {
+      const type = view.type
+      const attr = JSON.parse(view.customAttr)
+      if (type.includes('pie')) {
+        if (view.render === 'echarts') {
+          attr.label.position = 'inside'
+        } else {
+          attr.label.position = 'inner'
+        }
+      } else if (type.includes('line')) {
+        attr.label.position = 'top'
+      } else if (type.includes('treemap')) {
+        if (view.render === 'echarts') {
+          attr.label.position = 'inside'
+        } else {
+          attr.label.position = 'middle'
+        }
+      } else {
+        if (view.render === 'echarts') {
+          attr.label.position = 'inside'
+        } else {
+          attr.label.position = 'middle'
+        }
+      }
+      view.customAttr = JSON.stringify(attr)
     },
 
     getTable(table) {
@@ -933,8 +967,8 @@ export default {
       this.searchType = searchTypeInfo
     },
     nodeTypeChange(newType) {
-      if (this.currentNodeData) {
-        this.currentNodeData.modelInnerType = newType
+      if (this.currentViewNodeData) {
+        this.currentViewNodeData.modelInnerType = newType
       }
     }
   }

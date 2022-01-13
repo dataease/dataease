@@ -1,7 +1,27 @@
 <template>
-  <div style="display: flex;">
-    <view-track-bar ref="viewTrack" :track-menu="trackMenu" class="track-bar" :style="trackBarStyleTime" @trackClick="trackClick" />
+  <div style="display: flex;position:relative">
+    <view-track-bar
+      ref="viewTrack"
+      :track-menu="trackMenu"
+      class="track-bar"
+      :style="trackBarStyleTime"
+      @trackClick="trackClick"
+    />
     <div :id="chartId" style="width: 100%;height: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius}" />
+    <div v-if="chart.type === 'map'" class="map-zoom-box">
+      <div style="margin-bottom: 0.5em;">
+        <el-button size="mini" icon="el-icon-plus" circle @click="roamMap(true)" />
+      </div>
+
+      <div style="margin-bottom: 0.5em;">
+        <el-button size="mini" icon="el-icon-refresh" circle @click="resetZoom()" />
+      </div>
+
+      <div>
+        <el-button size="mini" icon="el-icon-minus" circle @click="roamMap(false)" />
+      </div>
+
+    </div>
   </div>
 </template>
 
@@ -19,24 +39,55 @@ import {
   BASE_TREEMAP,
   BASE_MIX
 } from '../chart/chart'
-import { baseBarOption, stackBarOption, horizontalBarOption, horizontalStackBarOption } from '../chart/bar/bar'
-import { baseLineOption, stackLineOption } from '../chart/line/line'
-import { basePieOption, rosePieOption } from '../chart/pie/pie'
-import { baseMapOption } from '../chart/map/map'
-import { baseFunnelOption } from '../chart/funnel/funnel'
-import { baseRadarOption } from '../chart/radar/radar'
-import { baseGaugeOption } from '../chart/gauge/gauge'
-import { baseScatterOption } from '../chart/scatter/scatter'
-import { baseTreemapOption } from '../chart/treemap/treemap'
-import { baseMixOption } from '@/views/chart/chart/mix/mix'
+import {
+  baseBarOption,
+  stackBarOption,
+  horizontalBarOption,
+  horizontalStackBarOption
+} from '../chart/bar/bar'
+import {
+  baseLineOption,
+  stackLineOption
+} from '../chart/line/line'
+import {
+  basePieOption,
+  rosePieOption
+} from '../chart/pie/pie'
+import {
+  baseMapOption
+} from '../chart/map/map'
+import {
+  baseFunnelOption
+} from '../chart/funnel/funnel'
+import {
+  baseRadarOption
+} from '../chart/radar/radar'
+import {
+  baseGaugeOption
+} from '../chart/gauge/gauge'
+import {
+  baseScatterOption
+} from '../chart/scatter/scatter'
+import {
+  baseTreemapOption
+} from '../chart/treemap/treemap'
+import {
+  baseMixOption
+} from '@/views/chart/chart/mix/mix'
 // import eventBus from '@/components/canvas/utils/eventBus'
-import { uuid } from 'vue-uuid'
-import { geoJson } from '@/api/map/map'
+import {
+  uuid
+} from 'vue-uuid'
+import {
+  geoJson
+} from '@/api/map/map'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 
 export default {
   name: 'ChartComponent',
-  components: { ViewTrackBar },
+  components: {
+    ViewTrackBar
+  },
   props: {
     chart: {
       type: Object,
@@ -60,6 +111,10 @@ export default {
       type: Number,
       required: false,
       default: 0
+    },
+    terminalType: {
+      type: String,
+      default: 'pc'
     }
   },
   data() {
@@ -75,7 +130,8 @@ export default {
       pointParam: null,
 
       dynamicAreaCode: null,
-      borderRadius: '0px'
+      borderRadius: '0px',
+      mapCenter: null
     }
   },
 
@@ -106,7 +162,9 @@ export default {
       // 基于准备好的dom，初始化echarts实例
       // 渲染echart等待dom加载完毕,渲染之前先尝试销毁具有相同id的echart 放置多次切换仪表板有重复id情况
       const that = this
-      new Promise((resolve) => { resolve() }).then(() => {
+      new Promise((resolve) => {
+        resolve()
+      }).then(() => {
         //	此dom为echarts图标展示dom
         this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))
         if (!this.myChart) {
@@ -154,7 +212,7 @@ export default {
       } else if (chart.type === 'gauge') {
         chart_option = baseGaugeOption(JSON.parse(JSON.stringify(BASE_GAUGE)), chart)
       } else if (chart.type === 'scatter') {
-        chart_option = baseScatterOption(JSON.parse(JSON.stringify(BASE_SCATTER)), chart)
+        chart_option = baseScatterOption(JSON.parse(JSON.stringify(BASE_SCATTER)), chart, this.terminalType)
       } else if (chart.type === 'treemap') {
         chart_option = baseTreemapOption(JSON.parse(JSON.stringify(BASE_TREEMAP)), chart)
       } else if (chart.type === 'chart-mix') {
@@ -167,7 +225,10 @@ export default {
 
       if (chart.type === 'map') {
         const customAttr = JSON.parse(chart.customAttr)
-        if (!customAttr.areaCode) return
+        if (!customAttr.areaCode) {
+          this.myChart.clear()
+          return
+        }
         const cCode = this.dynamicAreaCode || customAttr.areaCode
         if (this.$store.getters.geoMap[cCode]) {
           const json = this.$store.getters.geoMap[cCode]
@@ -189,25 +250,25 @@ export default {
     },
     registerDynamicMap(areaCode) {
       this.dynamicAreaCode = areaCode
-    //   if (this.$store.getters.geoMap[areaCode]) {
-    //     const json = this.$store.getters.geoMap[areaCode]
-    //     this.myChart.dispose()
-    //     this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))
-    //     this.$echarts.registerMap('MAP', json)
-    //     return
-    //   }
-    //   geoJson(areaCode).then(res => {
-    //     this.$store.dispatch('map/setGeo', {
-    //       key: areaCode,
-    //       value: res
-    //     }).then(() => {
-    //       this.myChart.dispose()
-    //       this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))
-    //       this.$echarts.registerMap('MAP', res)
-    //     })
-    //   }).catch(() => {
-    //     this.downOrUp = true
-    //   })
+      //   if (this.$store.getters.geoMap[areaCode]) {
+      //     const json = this.$store.getters.geoMap[areaCode]
+      //     this.myChart.dispose()
+      //     this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))
+      //     this.$echarts.registerMap('MAP', json)
+      //     return
+      //   }
+      //   geoJson(areaCode).then(res => {
+      //     this.$store.dispatch('map/setGeo', {
+      //       key: areaCode,
+      //       value: res
+      //     }).then(() => {
+      //       this.myChart.dispose()
+      //       this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))
+      //       this.$echarts.registerMap('MAP', res)
+      //     })
+      //   }).catch(() => {
+      //     this.downOrUp = true
+      //   })
     },
 
     initMapChart(geoJson, chart) {
@@ -216,6 +277,11 @@ export default {
       const base_json = JSON.parse(JSON.stringify(BASE_MAP))
       const chart_option = baseMapOption(base_json, chart)
       this.myEcharts(chart_option)
+      const opt = this.myChart.getOption()
+      if (opt && opt.series) {
+        const center = opt.series[0].center
+        this.mapCenter = center
+      }
     },
     myEcharts(option) {
       // 指定图表的配置项和数据
@@ -280,11 +346,40 @@ export default {
         default:
           break
       }
+    },
+    roamMap(flag) {
+      let targetZoom = 1
+      const zoom = this.myChart.getOption().series[0].zoom
+      if (flag) {
+        targetZoom = zoom * 1.2
+      } else {
+        targetZoom = zoom / 1.2
+      }
+      const options = JSON.parse(JSON.stringify(this.myChart.getOption()))
+      options.series[0].zoom = targetZoom
+      this.myChart.setOption(options)
+    },
+    resetZoom() {
+      const options = JSON.parse(JSON.stringify(this.myChart.getOption()))
+      options.series[0].zoom = 1
+      options.series[0].center = this.mapCenter
+      this.myChart.setOption(options)
     }
   }
 }
+
 </script>
 
 <style scoped>
+  .map-zoom-box {
+    position: absolute;
+    z-index: 999;
+    left: 2%;
+    bottom: 30px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    text-align: center;
+    padding: 2px;
+    border-radius: 5px
+  }
 
 </style>

@@ -1,7 +1,10 @@
 <template>
   <div>
-    <div v-if="editControlButton" class="toolbar">
+    <div v-show="editControlButton" class="toolbar">
       <span style="float: right;">
+        <el-button v-if="mobileLayoutStatus" size="mini" @click="editReset">
+          {{ $t('commons.reset') }}
+        </el-button>
         <el-button size="mini" @click="editSave">
           {{ $t('commons.confirm') }}
         </el-button>
@@ -10,7 +13,7 @@
         </el-button>
       </span>
     </div>
-    <div v-else class="toolbar">
+    <div v-show="!editControlButton" class="toolbar">
       <el-tooltip :content="$t('panel.mobile_layout')">
         <el-button class="icon iconfont-tb icon-yidongduan" size="mini" circle @click="openMobileLayout" />
       </el-tooltip>
@@ -36,7 +39,7 @@
         <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
       </el-tooltip>
       <span style="float: right;margin-left: 10px">
-        <el-button size="mini" :disabled="changeTimes===0||snapshotIndex===lastSaveSnapshotIndex" @click="save(false)">
+        <el-button size="mini" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
         </el-button>
         <el-button size="mini" @click="closePanelEdit">
@@ -75,7 +78,6 @@ import { deepCopy, mobile2MainCanvas } from '@/components/canvas/utils/utils'
 import { panelSave } from '@/api/panel/panel'
 import { saveLinkage, getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import bus from '@/utils/bus'
-
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
@@ -105,6 +107,9 @@ export default {
     }
   },
   computed: {
+    saveButtonDisabled() {
+      return this.changeTimes === 0 || this.snapshotIndex === this.lastSaveSnapshotIndex
+    },
     editControlButton() {
       return this.linkageSettingStatus || this.mobileLayoutStatus
     },
@@ -263,6 +268,12 @@ export default {
         panelStyle: JSON.stringify(this.canvasStyleData),
         panelData: JSON.stringify(this.componentData)
       }
+      const components = deepCopy(this.componentData)
+      components.forEach(view => {
+        if (view.filters && view.filters.length > 0) { view.filters = [] }
+      })
+      // 无需保存条件
+      requestInfo.panelData = JSON.stringify(components)
       panelSave(requestInfo).then(response => {
         this.$store.commit('refreshSaveStatus')
         this.$message({
@@ -347,25 +358,9 @@ export default {
     auxiliaryMatrixChange() {
       this.canvasStyleData.auxiliaryMatrix = !this.canvasStyleData.auxiliaryMatrix
     },
+    // 启用移动端布局
     openMobileLayout() {
-      this.$store.commit('setComponentDataCache', JSON.stringify(this.componentData))
-      this.$store.commit('setPcComponentData', this.componentData)
-      const mainComponentData = []
-      // 移动端布局转换
-      this.componentData.forEach(item => {
-        if (item.mobileSelected) {
-          item.style = item.mobileStyle.style
-          item.x = item.mobileStyle.x
-          item.y = item.mobileStyle.y
-          item.sizex = item.mobileStyle.sizex
-          item.sizey = item.mobileStyle.sizey
-          item.auxiliaryMatrix = item.mobileStyle.auxiliaryMatrix
-          mainComponentData.push(item)
-        }
-      })
-
-      this.$store.commit('setComponentData', mainComponentData)
-      this.$store.commit('setMobileLayoutStatus', !this.mobileLayoutStatus)
+      this.$store.commit('openMobileLayout')
     },
     editSave() {
       if (this.mobileLayoutStatus) {
@@ -373,6 +368,10 @@ export default {
       } else {
         this.saveLinkage()
       }
+    },
+    editReset() {
+      this.cancelMobileLayoutStatue(JSON.parse(this.componentDataCache))
+      this.$store.commit('openMobileLayout')
     },
     editCancel() {
       if (this.mobileLayoutStatus) {
@@ -389,6 +388,7 @@ export default {
         mobileDataObj[item.id] = item
       })
       const sourceComponentData = JSON.parse(this.componentDataCache)
+      this.$store.commit('setComponentDataCache', null)
       sourceComponentData.forEach(item => {
         if (mobileDataObj[item.id]) {
           mobile2MainCanvas(item, mobileDataObj[item.id])

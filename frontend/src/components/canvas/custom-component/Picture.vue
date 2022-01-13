@@ -1,16 +1,28 @@
 <template>
   <div style="overflow: hidden;width: 100%;height: 100%;">
-    <img :src="propValue">
+    <img v-if="!showLink" :src="element.propValue">
+    <a v-if="showLink" :title="element.hyperlinks.content " :target="element.hyperlinks.openMode " :href="element.hyperlinks.content ">
+      <img :src="element.propValue">
+    </a>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    // eslint-disable-next-line vue/require-default-prop
-    propValue: {
-      type: String,
+    element: {
+      type: Object,
       require: true
+    },
+    editMode: {
+      type: String,
+      require: false,
+      default: 'preview'
+    }
+  },
+  computed: {
+    showLink() {
+      return this.editMode === 'preview' && this.element && this.element.hyperlinks && this.element.hyperlinks.enable
     }
   }
 }

@@ -1,0 +1,64 @@
+{
+    "app.name": "Hello uni-app",
+    "navigate.menuHome": "首頁",
+    "navigate.menuDir": "目錄",
+    "navigate.menuMe": "我的",
+
+    "navigate.search": "搜索",
+    "navigate.personInfo": "個人信息",
+    "navigate.language": "語言",
+    "navigate.about": "關於",
+    "navigate.login": "登錄",
+    "searchPlaceholder": "請輸入儀表板名稱",
+    
+    
+    "commons": {
+        "cancel": "取消",
+        "sure": "確定",
+        "en": "English",
+        "tw": "繁體中文",
+        "zh": "简体中文",
+        "sysLanguage": "跟隨系統",
+        "tips": "提示"
+        
+    },
+    "login": {
+        "title": "用戶登錄",
+        "account": "帳號：",
+        "accountPlaceholder": "請輸入帳號",
+        "password": "密碼：",
+        "passwordPlaceholder": "請輸入密碼",
+        "loginbtn": "登錄",
+        "pwdFmtError": "密碼最短為6個字符",
+        "uOrpwdError": "無效賬號或密碼"
+    },
+    "home": {
+        "tab1": "我的收藏",
+        "tab2": "最近瀏覽",
+        "tab3": "分享給我"
+    },
+    "dir": {
+        "searchPlaceholder": "請輸入儀表板名稱",
+        "searchHistory": "搜索歷史",
+        "clearConfirm": "確定清除全部歷史記錄？",
+        "noHistory": "您還沒有歷史記錄",
+        "contentPrefix": "您輸入的內容為 ",
+        "contentSuffix": " 如果點擊確定,將紀錄到歷史紀錄"
+    },
+    "me": {
+        "moreInfo": "更多信息",
+        "logout": "註銷",
+        
+        "systemInfo": "系統信息",
+        "userManual": "用戶手冊",
+        "community": "社區",
+        "enterprise": "企業版",
+        "standard": "標準版",
+        "organization": "組織",
+        "email": "郵箱",
+        "createTime": "創建時間"
+    },
+    "detail": {
+        "starSuccess": "收藏成功"
+    }
+  }

@@ -3,7 +3,9 @@ export const BASE_MOBILE_STYLE = {
   style: {
     width: 1600,
     height: 300,
-    borderRadius: 5
+    left: 0,
+    top: 0,
+    borderRadius: 3
   },
   x: 1,
   y: 1,
@@ -85,7 +87,7 @@ export const assistList = [
     component: 'rect-shape',
     type: 'rect-shape',
     label: '矩形',
-    icon: 'iconfont icon-juxing',
+    icon: 'iconfont icon-juxing1',
     defaultClass: 'text-filter'
   },
   {
@@ -330,6 +332,7 @@ const list = [
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 400,
       height: 200,

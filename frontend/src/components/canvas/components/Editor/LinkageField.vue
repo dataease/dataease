@@ -51,7 +51,7 @@
                   <svg-icon v-if="item.deType === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />
                   <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
                 </span>
-                <span style="float: left; color: #8492a6; font-size: 12px">{{ itemLinkage.targetField }}-{{ item.name }}</span>
+                <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
               </el-option>
             </el-select>
           </div>

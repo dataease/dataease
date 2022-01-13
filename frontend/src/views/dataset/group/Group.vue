@@ -91,7 +91,7 @@
                               <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
                               {{ $t('dataset.excel_data') }}
                             </el-dropdown-item>
-                            <el-dropdown-item :command="beforeClickAddData('custom',data)">
+                            <el-dropdown-item v-show="!hideCustomDs" :command="beforeClickAddData('custom',data)">
                               <svg-icon icon-class="ds-custom" class="ds-icon-custom" />
                               {{ $t('dataset.custom_data') }}
                             </el-dropdown-item>
@@ -174,7 +174,7 @@
       </el-col>
 
       <el-dialog v-dialogDrag :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
-        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @keypress.enter.native="saveGroup(groupForm)">
+        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @submit.native.prevent @keypress.enter.native="saveGroup(groupForm)">
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="groupForm.name" />
           </el-form-item>
@@ -188,7 +188,7 @@
     </el-col>
 
     <el-dialog v-dialogDrag :title="$t('dataset.table')" :visible="editTable" :show-close="false" width="30%">
-      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @keypress.enter.native="saveTable(tableForm)">
+      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @submit.native.prevent @keypress.enter.native="saveTable(tableForm)">
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="tableForm.name" />
         </el-form-item>
@@ -309,6 +309,9 @@ export default {
     }
   },
   computed: {
+    hideCustomDs: function() {
+      return this.$store.getters.hideCustomDs
+    }
   },
   watch: {
     saveStatus() {
@@ -454,6 +457,7 @@ export default {
             showClose: true
           })
           this.treeNode()
+          this.$emit('switchComponent', { name: '' })
         })
       }).catch(() => {
       })
@@ -472,6 +476,7 @@ export default {
             showClose: true
           })
           this.treeNode()
+          this.$emit('switchComponent', { name: '' })
           this.$store.dispatch('dataset/setTable', new Date().getTime())
         })
       }).catch(() => {

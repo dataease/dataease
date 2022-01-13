@@ -1,13 +1,17 @@
 package io.dataease.mobile.service;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.utils.AuthUtils;
+import io.dataease.commons.utils.PageUtils;
+import io.dataease.commons.utils.Pager;
 import io.dataease.mobile.dto.HomeItemDTO;
 import io.dataease.base.mapper.ext.HomeMapper;
+import io.dataease.mobile.dto.HomeRequest;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,26 +23,33 @@ public class HomeService {
     @Resource
     private HomeMapper homeMapper;
 
-    public List<HomeItemDTO> query(Integer type) {
-        List<HomeItemDTO> result = new ArrayList<>();
+    public Pager<List<HomeItemDTO>> query(HomeRequest request) {
         CurrentUserDto user = AuthUtils.getUser();
-        switch (type){
-            case 0:
-                result = homeMapper.queryStore(user.getUserId());
-                break;
-            case 1:
-                result = homeMapper.queryHistory();
-                break;
+        Page<Object> page = PageHelper.startPage(1, 13, true);
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("userId", user.getUserId());
+        switch (request.getType()){
+
+
             case 2:
-                Map<String, Object> param = new HashMap<>();
+
                 Long deptId = user.getDeptId();
                 List<Long> roleIds = user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList());
-                param.put("userId", user.getUserId());
+
                 param.put("deptId", deptId);
                 param.put("roleIds", roleIds);
-                result = homeMapper.queryShare(param);
-                break;
+                if (null != request.getLastTime()) {
+                    param.put("lastTime", request.getLastTime());
+                }
+
+                return PageUtils.setPageInfo(page, homeMapper.queryShare(param));
+            default:
+                param.put("userId", user.getUserId());
+                if (null != request.getLastTime()) {
+                    param.put("lastTime", request.getLastTime());
+                }
+                return PageUtils.setPageInfo(page, homeMapper.queryStore(param));
         }
-        return result;
     }
 }

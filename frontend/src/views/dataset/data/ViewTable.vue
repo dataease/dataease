@@ -1,6 +1,6 @@
 <template>
   <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
-    <!--    <span v-show="false">{{ tableRefresh }}</span>-->
+    <span v-show="false">{{ refreshPage }}</span>
     <el-row style="height: 26px;">
       <span class="title-text" style="line-height: 26px;">
         {{ table.name }}
@@ -39,12 +39,6 @@
         <el-button v-if="table.type ==='union'" size="mini" @click="editUnion">
           {{ $t('dataset.edit_union') }}
         </el-button>
-        <!--        <el-button size="mini" @click="edit">-->
-        <!--          {{ $t('dataset.edit_field') }}-->
-        <!--        </el-button>-->
-        <!--        <el-button size="mini" type="primary" @click="createChart">-->
-        <!--          {{$t('dataset.create_view')}}-->
-        <!--        </el-button>-->
       </el-row>
     </el-row>
     <el-divider />
@@ -56,11 +50,14 @@
       <el-tab-pane :label="$t('dataset.field_manage')" name="fieldEdit">
         <field-edit :param="param" :table="table" />
       </el-tab-pane>
-      <el-tab-pane v-if="table.type !== 'custom' && !(table.type === 'sql' && table.mode === 0)" :label="$t('dataset.join_view')" name="joinView">
+      <el-tab-pane v-if="!hideCustomDs && table.type !== 'union' && table.type !== 'custom' && !(table.type === 'sql' && table.mode === 0)" :label="$t('dataset.join_view')" name="joinView">
         <union-view :param="param" :table="table" />
       </el-tab-pane>
       <el-tab-pane v-if="table.mode === 1 && (table.type === 'excel' || table.type === 'db' || table.type === 'sql')" :label="$t('dataset.update_info')" name="updateInfo">
         <update-info v-if="tabActive=='updateInfo'" :param="param" :table="table" />
+      </el-tab-pane>
+      <el-tab-pane v-if="isPluginLoaded && hasDataPermission('manage',param.privileges)" :lazy="true" :label="$t('dataset.row_permissions')" name="rowPermissions">
+        <plugin-com v-if="isPluginLoaded && tabActive=='rowPermissions'" ref="RowPermissions" component-name="RowPermissions" :obj="table" />
       </el-tab-pane>
     </el-tabs>
   </el-row>
@@ -73,10 +70,12 @@ import UpdateInfo from './UpdateInfo'
 import DatasetChartDetail from '../common/DatasetChartDetail'
 import UnionView from './UnionView'
 import FieldEdit from './FieldEdit'
+import { pluginLoaded } from '@/api/user'
+import PluginCom from '@/views/system/plugin/PluginCom'
 
 export default {
   name: 'ViewTable',
-  components: { FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview },
+  components: { FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview, PluginCom },
   props: {
     param: {
       type: Object,
@@ -99,20 +98,29 @@ export default {
       tableViewRowForm: {
         row: 1000
       },
-      tabStatus: false
+      tabStatus: false,
+      isPluginLoaded: false
     }
   },
   computed: {
-    // tableRefresh() {
-    //   this.initTable(this.param)
-    //   return this.$store.state.dataset.table
-    // }
+    hideCustomDs: function() {
+      return this.$store.getters.hideCustomDs
+    },
+    refreshPage: function() {
+      this.initTable(this.param.id)
+      return this.$store.getters.table
+    }
   },
   watch: {
     'param': function() {
       this.tabActive = 'dataPreview'
       this.initTable(this.param.id)
     }
+  },
+  beforeCreate() {
+    pluginLoaded().then(res => {
+      this.isPluginLoaded = res.success && res.data
+    })
   },
   created() {
 

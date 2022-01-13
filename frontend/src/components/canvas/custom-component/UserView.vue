@@ -8,6 +8,7 @@
       'rect-shape'
     ]"
   >
+    <EditBarView v-if="editBarViewShowFlag" :is-edit="isEdit" :view-id="element.propValue.viewId" @showViewDetails="openChartDetailsDialog" />
     <div v-if="requestStatus==='error'" class="chart-error-class">
       <div class="chart-error-message-class">
         {{ message }},{{ $t('chart.chart_show_error') }}
@@ -22,6 +23,7 @@
       :chart="chart"
       :track-menu="trackMenu"
       :search-count="searchCount"
+      :terminal-type="scaleCoefficientType"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -67,10 +69,12 @@ import { getToken, getLinkToken } from '@/utils/auth'
 import DrillPath from '@/views/chart/view/DrillPath'
 import { areaMapping } from '@/api/map/map'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
+import EditBarView from '@/components/canvas/components/Editor/EditBarView'
+import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/components/canvas/utils/style'
 
 export default {
   name: 'UserView',
-  components: { ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
+  components: { EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
   props: {
     element: {
       type: Object,
@@ -93,10 +97,23 @@ export default {
       required: false,
       default: false
     },
-    // eslint-disable-next-line vue/require-default-prop
     componentIndex: {
       type: Number,
       required: false
+    },
+    inTab: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    isEdit: {
+      type: Boolean,
+      require: false,
+      default: true
+    },
+    terminal: {
+      type: String,
+      default: 'pc'
     }
   },
   data() {
@@ -114,12 +131,33 @@ export default {
         msg: ''
       },
       timeMachine: null,
+      scaleTimeMachine: null,
       changeIndex: 0,
+      changeScaleIndex: 0,
       pre: null,
-      preCanvasPanel: null
+      preCanvasPanel: null,
+      sourceCustomAttrStr: null,
+      sourceCustomStyleStr: null
     }
   },
   computed: {
+    scaleCoefficient() {
+      if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
+        return 1.1
+      } else {
+        return 4.5
+      }
+    },
+    scaleCoefficientType() {
+      if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
+        return 'pc'
+      } else {
+        return 'mobile'
+      }
+    },
+    editBarViewShowFlag() {
+      return this.active && this.inTab && !this.mobileLayoutStatus
+    },
     charViewShowFlag() {
       return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.renderComponent() === 'echarts'
     },
@@ -194,7 +232,11 @@ export default {
     ...mapState([
       'canvasStyleData',
       'nowPanelTrackInfo',
-      'nowPanelJumpInfo'
+      'nowPanelJumpInfo',
+      'publicLinkStatus',
+      'previewCanvasScale',
+      'mobileLayoutStatus',
+      'componentData'
     ])
   },
 
@@ -217,6 +259,10 @@ export default {
         // 如果视图结果模式模式 或者 视图结果获取数量改变 刷新视图
         if (!this.preCanvasPanel || this.preCanvasPanel.resultCount !== newVal.panel.resultCount || this.preCanvasPanel.resultMode !== newVal.panel.resultMode) {
           this.getData(this.element.propValue.viewId, false)
+        }
+        // 如果gap有变化刷新
+        if (this.preCanvasPanel && this.preCanvasPanel.gap !== newVal.panel.gap) {
+          this.$refs[this.element.propValue.id].chartResize()
         }
         this.preCanvasPanel = deepCopy(newVal.panel)
       },
@@ -253,15 +299,44 @@ export default {
       if (newVal === 'map' && newVal !== oldVal) {
         this.initAreas()
       }
+    },
+    // 监控缩放比例
+    previewCanvasScale: {
+      handler(newVal, oldVal) {
+        this.destroyScaleTimeMachine()
+        this.changeScaleIndex++
+        this.chartScale(this.changeScaleIndex)
+      },
+      deep: true
     }
   },
   created() {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
-      this.getData(this.element.propValue.viewId, false)
+      const hasFilter = this.componentData.filter(item => item.type === 'custom').some(item => item.options.value && !(item.options.value instanceof Object) || (item.options.attrs && item.options.attrs.default && item.options.attrs.default.isDynamic))
+      if (!hasFilter || this.filters.length > 0) { this.getData(this.element.propValue.viewId, false) }
     }
   },
   methods: {
+    // 根据仪表板的缩放比例，修改视图内部参数
+    mergeScale() {
+      const scale = Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient
+      const customAttrChart = JSON.parse(this.sourceCustomAttrStr)
+      const customStyleChart = JSON.parse(this.sourceCustomStyleStr)
+      recursionTransObj(customAttrTrans, customAttrChart, scale, this.scaleCoefficientType)
+      recursionTransObj(customStyleTrans, customStyleChart, scale, this.scaleCoefficientType)
+
+      // 移动端地图标签不显示
+      if (this.chart.type === 'map' && this.scaleCoefficientType === 'mobile') {
+        customAttrChart.label.show = false
+      }
+      this.chart = {
+        ...this.chart,
+        customAttr: JSON.stringify(customAttrChart),
+        customStyle: JSON.stringify(customStyleChart)
+      }
+      this.mergeStyle()
+    },
     mergeStyle() {
       if ((this.requestStatus === 'success' || this.requestStatus === 'merging') && this.chart.stylePriority === 'panel' && this.canvasStyleData.chart) {
         const customAttrChart = JSON.parse(this.chart.customAttr)
@@ -303,6 +378,8 @@ export default {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
+            this.sourceCustomAttrStr = this.chart.customAttr
+            this.sourceCustomStyleStr = this.chart.customStyle
             this.chart.drillFields = this.chart.drillFields ? JSON.parse(this.chart.drillFields) : []
             if (!response.data.drill) {
               this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
@@ -311,7 +388,7 @@ export default {
             this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
             this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
             this.requestStatus = 'merging'
-            this.mergeStyle()
+            this.mergeScale()
             this.requestStatus = 'success'
             this.httpRequest.status = true
           } else {
@@ -385,9 +462,23 @@ export default {
         // 内部仪表板跳转
         if (jumpInfo.linkType === 'inner') {
           if (jumpInfo.targetPanelId) {
-            const url = '#/preview/' + jumpInfo.targetPanelId
             localStorage.setItem('jumpInfoParam', JSON.stringify(param))
-            window.open(url, jumpInfo.jumpType)
+            if (this.publicLinkStatus) {
+              // 判断是否有公共链接ID
+              if (jumpInfo.publicJumpId) {
+                const url = '/link/' + jumpInfo.publicJumpId
+                window.open(url, jumpInfo.jumpType)
+              } else {
+                this.$message({
+                  type: 'warn',
+                  message: this.$t('panel.public_link_tips'),
+                  showClose: true
+                })
+              }
+            } else {
+              const url = '#/preview/' + jumpInfo.targetPanelId
+              window.open(url, jumpInfo.jumpType)
+            }
           } else {
             this.$message({
               type: 'warn',
@@ -457,7 +548,7 @@ export default {
         const nextNode = currentNode.children.find(item => item.name === name)
         this.currentAcreaNode = nextNode
         const current = this.$refs[this.element.propValue.id]
-        current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
+        nextNode && current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
       }
     },
 
@@ -504,6 +595,10 @@ export default {
       this.timeMachine && clearTimeout(this.timeMachine)
       this.timeMachine = null
     },
+    destroyScaleTimeMachine() {
+      this.scaleTimeMachine && clearTimeout(this.scaleTimeMachine)
+      this.scaleTimeMachine = null
+    },
 
     // 边框变化
     chartResize(index) {
@@ -514,6 +609,18 @@ export default {
           }
           this.destroyTimeMachine()
         }, 50)
+      }
+    },
+
+    // 边框变化 修改视图内部参数
+    chartScale(index) {
+      if (this.$refs[this.element.propValue.id]) {
+        this.scaleTimeMachine = setTimeout(() => {
+          if (index === this.changeScaleIndex) {
+            this.mergeScale()
+          }
+          this.destroyScaleTimeMachine()
+        }, 100)
       }
     },
 
@@ -566,31 +673,31 @@ export default {
     display: block !important;
   }
 
-  .rect-shape > i {
-    right: 5px;
-    color: gray;
-    position: absolute;
-  }
+  /*.rect-shape > i {*/
+  /*  right: 5px;*/
+  /*  color: gray;*/
+  /*  position: absolute;*/
+  /*}*/
 
-  .rect-shape > > > i:hover {
-    color: red;
-  }
+  /*.rect-shape > > > i:hover {*/
+  /*  color: red;*/
+  /*}*/
 
-  .rect-shape:hover > > > .icon-fangda {
-    z-index: 2;
-    display: block;
-  }
+  /*.rect-shape:hover > > > .icon-fangda {*/
+  /*  z-index: 2;*/
+  /*  display: block;*/
+  /*}*/
 
-  .rect-shape > > > .icon-fangda {
-    display: none
-  }
+  /*.rect-shape > > > .icon-fangda {*/
+  /*  display: none*/
+  /*}*/
 
-  .rect-shape:hover > > > .icon-shezhi {
-    z-index: 2;
-    display: block;
-  }
+  /*.rect-shape:hover > > > .icon-shezhi {*/
+  /*  z-index: 2;*/
+  /*  display: block;*/
+  /*}*/
 
-  .rect-shape > > > .icon-shezhi {
-    display: none
-  }
+  /*.rect-shape > > > .icon-shezhi {*/
+  /*  display: none*/
+  /*}*/
 </style>

@@ -1,13 +1,13 @@
 <template>
 
-  <el-form v-if="options!== null && options.attrs!==null" ref="form" :model="form" :rules="rules">
+  <el-form v-if="element.options!== null && element.options.attrs!==null" ref="form" :model="form" :rules="rules">
     <div class="de-number-range-container">
       <el-form-item prop="min">
-        <el-input v-model="form.min" :placeholder="$t(options.attrs.placeholder_min)" @change="handleMinChange" />
+        <el-input v-model="form.min" :placeholder="$t(element.options.attrs.placeholder_min)" :size="size" @input="inputChange" @change="handleMinChange" />
       </el-form-item>
       <span>{{ $t('denumberrange.split_placeholder') }}</span>
       <el-form-item prop="max">
-        <el-input v-model="form.max" :placeholder="$t(options.attrs.placeholder_max)" @change="handleMaxChange" />
+        <el-input v-model="form.max" :placeholder="$t(element.options.attrs.placeholder_max)" :size="size" @input="inputChange" @change="handleMaxChange" />
       </el-form-item>
     </div>
   </el-form>
@@ -27,12 +27,12 @@ export default {
     inDraw: {
       type: Boolean,
       default: true
-    }
+    },
+    size: String
   },
 
   data() {
     return {
-      options: null,
       operator: 'between',
       values: null,
       canEdit: false,
@@ -54,7 +54,32 @@ export default {
       timeMachine: null
     }
   },
+  computed: {
+    defaultvalues() {
+      if (!this.element.options.value) {
+        return JSON.stringify([])
+      }
+      return JSON.stringify(this.element.options.value)
+    },
+    viewIds() {
+      if (!this.element || !this.element.options || !this.element.options.attrs.viewIds) return ''
+      return this.element.options.attrs.viewIds.toString()
+    }
+  },
   watch: {
+    'viewIds': function(value, old) {
+      if (typeof value === 'undefined' || value === old) return
+      this.setCondition()
+    },
+    'defaultvalues': function(value, old) {
+      if (value === old) return
+      const values = this.element.options.value
+      this.form.min = values[0]
+      if (values.length > 1) {
+        this.form.max = values[1]
+      }
+      this.search()
+    },
     form: {
       handler(value) {
         this.destryTimeMachine()
@@ -65,12 +90,13 @@ export default {
     }
   },
   created() {
-    this.options = this.element.options
-    if (this.inDraw && this.options.value && this.options.value.length > 0) {
-      this.form.min = this.options.value[0]
-      if (this.options.value.length > 1) {
-        this.form.max = this.options.value[1]
+    if (this.element.options.value && this.element.options.value.length > 0) {
+      const values = this.element.options.value
+      this.form.min = values[0]
+      if (values.length > 1) {
+        this.form.max = values[1]
       }
+      this.search()
     }
   },
   methods: {
@@ -136,13 +162,15 @@ export default {
     },
 
     search() {
-      this.$refs.form.validate(valid => {
-        if (!valid) {
-          return false
-        }
+      this.$nextTick(() => {
+        this.$refs.form.validate(valid => {
+          if (!valid) {
+            return false
+          }
 
-        this.setCondition()
-        this.$store.commit('recordStyleChange')
+          this.setCondition()
+          this.$store.commit('recordStyleChange')
+        })
       })
     },
     setCondition() {
@@ -153,7 +181,6 @@ export default {
         operator: this.operator
       }
 
-      this.inDraw && (this.options.value = param.value)
       if (this.form.min && this.form.max) {
         this.inDraw && this.$store.commit('addViewFilter', param)
         return
@@ -178,6 +205,13 @@ export default {
     },
     styleChange() {
       this.$store.commit('recordStyleChange')
+    },
+
+    inputChange(val) {
+      if (!this.inDraw) {
+        const values = [this.form.min, this.form.max]
+        this.element.options.value = values
+      }
     }
   }
 }
@@ -186,6 +220,7 @@ export default {
 <style lang="scss" scoped>
 .de-number-range-container {
   display: inline;
+  max-height: 40px;
   >>>div.el-form-item {
     width: calc(50% - 10px) !important;
     display: inline-block;
