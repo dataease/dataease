@@ -28,7 +28,7 @@ public class ScheduleManager {
      * @throws SchedulerException
      */
     public void addSimpleJob(JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> cls, int repeatIntervalTime,
-                             JobDataMap jobDataMap) throws SchedulerException {
+            JobDataMap jobDataMap) throws SchedulerException {
 
         JobBuilder jobBuilder = JobBuilder.newJob(cls).withIdentity(jobKey);
 
@@ -46,7 +46,8 @@ public class ScheduleManager {
         scheduler.scheduleJob(jd, trigger);
     }
 
-    public void addSimpleJob(JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> cls, int repeatIntervalTime) throws SchedulerException {
+    public void addSimpleJob(JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> cls, int repeatIntervalTime)
+            throws SchedulerException {
         addSimpleJob(jobKey, triggerKey, cls, repeatIntervalTime);
     }
 
@@ -59,7 +60,8 @@ public class ScheduleManager {
      * @param cron
      * @param jobDataMap
      */
-    public void addCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime, Date endTime, JobDataMap jobDataMap) {
+    public void addCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime,
+            Date endTime, JobDataMap jobDataMap) {
         try {
 
             LogUtil.info("addCronJob: " + triggerKey.getName() + "," + triggerKey.getGroup());
@@ -99,7 +101,8 @@ public class ScheduleManager {
         }
     }
 
-    public void addCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime, Date endTime) {
+    public void addCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime,
+            Date endTime) {
         addCronJob(jobKey, triggerKey, jobClass, cron, startTime, endTime, null);
     }
 
@@ -140,7 +143,8 @@ public class ScheduleManager {
      * @param cron
      * @throws SchedulerException
      */
-    public void modifyCronJobTime(TriggerKey triggerKey, String cron, Date startTime, Date endTime) throws SchedulerException {
+    public void modifyCronJobTime(TriggerKey triggerKey, String cron, Date startTime, Date endTime)
+            throws SchedulerException {
 
         LogUtil.info("modifyCronJobTime: " + triggerKey.getName() + "," + triggerKey.getGroup());
 
@@ -150,7 +154,6 @@ public class ScheduleManager {
             if (trigger == null) {
                 return;
             }
-
 
             /** 方式一 ：调用 rescheduleJob 开始 */
             TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger();// 触发器
@@ -279,7 +282,6 @@ public class ScheduleManager {
         }
     }
 
-
     public static void startJobs(Scheduler sched) {
         try {
             sched.start();
@@ -288,7 +290,6 @@ public class ScheduleManager {
             DataEaseException.throwException(e);
         }
     }
-
 
     public void shutdownJobs(Scheduler sched) {
         try {
@@ -312,7 +313,7 @@ public class ScheduleManager {
      * @throws SchedulerException
      */
     public void addOrUpdateSimpleJob(JobKey jobKey, TriggerKey triggerKey, Class clz,
-                                     int intervalTime, JobDataMap jobDataMap) throws SchedulerException {
+            int intervalTime, JobDataMap jobDataMap) throws SchedulerException {
 
         if (scheduler.checkExists(triggerKey)) {
             modifySimpleJobTime(triggerKey, intervalTime);
@@ -323,7 +324,7 @@ public class ScheduleManager {
     }
 
     public void addOrUpdateSingleJob(JobKey jobKey, TriggerKey triggerKey, Class clz,
-                                     Date date, JobDataMap jobDataMap) throws SchedulerException {
+            Date date, JobDataMap jobDataMap) throws SchedulerException {
         if (scheduler.checkExists(triggerKey)) {
             modifySingleJobTime(triggerKey, date);
         } else {
@@ -333,14 +334,14 @@ public class ScheduleManager {
     }
 
     public void addOrUpdateSingleJob(JobKey jobKey, TriggerKey triggerKey, Class clz,
-                                     Date date) throws SchedulerException {
+            Date date) throws SchedulerException {
         addOrUpdateSingleJob(jobKey, triggerKey, clz, date, null);
     }
 
-    public void addOrUpdateSimpleJob(JobKey jobKey, TriggerKey triggerKey, Class clz, int intervalTime) throws SchedulerException {
+    public void addOrUpdateSimpleJob(JobKey jobKey, TriggerKey triggerKey, Class clz, int intervalTime)
+            throws SchedulerException {
         addOrUpdateSimpleJob(jobKey, triggerKey, clz, intervalTime, null);
     }
-
 
     /**
      * 添加或修改 cronJob
@@ -352,7 +353,8 @@ public class ScheduleManager {
      * @param jobDataMap
      * @throws SchedulerException
      */
-    public void addOrUpdateCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime, Date endTime, JobDataMap jobDataMap) throws SchedulerException {
+    public void addOrUpdateCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime,
+            Date endTime, JobDataMap jobDataMap) throws SchedulerException {
 
         LogUtil.info("AddOrUpdateCronJob: " + jobKey.getName() + "," + triggerKey.getGroup());
 
@@ -363,7 +365,8 @@ public class ScheduleManager {
         }
     }
 
-    public void addOrUpdateCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime, Date endTime) throws SchedulerException {
+    public void addOrUpdateCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime,
+            Date endTime) throws SchedulerException {
         addOrUpdateCronJob(jobKey, triggerKey, jobClass, cron, startTime, endTime, null);
     }
 
@@ -398,7 +401,8 @@ public class ScheduleManager {
         if (!CronExpression.isValidExpression(cron)) {
             DataEaseException.throwException("cron :" + cron + " error");
         }
-        return TriggerBuilder.newTrigger().withIdentity("Calculate Date").withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
+        return TriggerBuilder.newTrigger().withIdentity("Calculate Date")
+                .withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
 
     }
 
