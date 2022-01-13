@@ -1530,7 +1530,8 @@ export default {
 
     themeLight: '浅色',
     themeDark: '深色',
-    themeCustom: '自定义'
+    themeCustom: '自定义',
+    openHomePage: '显示首页'
 
   },
   auth: {

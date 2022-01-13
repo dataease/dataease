@@ -461,7 +461,8 @@ export default {
   sysParams: {
     display: '顯示設置',
     ldap: 'LDAP設置',
-    oidc: 'OIDC設置'
+    oidc: 'OIDC設置',
+    theme: '主题设置'
   },
   license: {
     i18n_no_license_record: '沒有 License 記錄',
@@ -1521,7 +1522,8 @@ export default {
 
     themeLight: '淺色',
     themeDark: '深色',
-    themeCustom: '自定義'
+    themeCustom: '自定義',
+    openHomePage: '显示首页'
 
   },
   auth: {

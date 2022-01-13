@@ -7,6 +7,7 @@ import io.dataease.base.domain.SysMenu;
 import io.dataease.base.domain.SysMenuExample;
 import io.dataease.base.mapper.SysMenuMapper;
 import io.dataease.base.mapper.ext.ExtPluginSysMenuMapper;
+import io.dataease.base.mapper.ext.ExtSysMenuMapper;
 import io.dataease.plugins.common.dto.PluginSysMenu;
 import io.dataease.plugins.util.PluginUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -30,12 +31,16 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
     @Resource
     private ExtPluginSysMenuMapper extPluginSysMenuMapper;
 
+    @Resource
+    private ExtSysMenuMapper extSysMenuMapper;
+
     @Override
     public List<DynamicMenuDto> load(String userId) {
-        SysMenuExample sysMenuExample = new SysMenuExample();
-        sysMenuExample.createCriteria().andTypeLessThanOrEqualTo(1);
-        sysMenuExample.setOrderByClause(" menu_sort ");
-        List<SysMenu> sysMenus = sysMenuMapper.selectByExample(sysMenuExample);
+//        SysMenuExample sysMenuExample = new SysMenuExample();
+//        sysMenuExample.createCriteria().andTypeLessThanOrEqualTo(1);
+//        sysMenuExample.setOrderByClause(" menu_sort ");
+//        List<SysMenu> sysMenus = sysMenuMapper.selectByExample(sysMenuExample);
+        List<SysMenu> sysMenus = extSysMenuMapper.querySysMenu();
         List<DynamicMenuDto> dynamicMenuDtos = sysMenus.stream().map(this::convert).collect(Collectors.toList());
         //增加插件中的菜单
         List<PluginSysMenu> pluginSysMenus = PluginUtils.pluginMenus();

@@ -207,6 +207,9 @@ export default {
     },
     linkJumpSet() {
       this.$emit('linkJumpSet')
+    },
+    goFile() {
+      this.$refs.files.click()
     }
   }
 }

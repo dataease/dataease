@@ -114,6 +114,8 @@ export default {
   @import "~@/styles/variables.scss";
 
   .app-wrapper {
+    min-width: 1000px!important;
+    min-height: 600px!important;
     @include clearfix;
     position: relative;
     height: 100%;

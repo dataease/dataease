@@ -461,7 +461,8 @@ export default {
   sysParams: {
     display: 'Display Setting',
     ldap: 'LDAP Setting',
-    oidc: 'OIDC Setting'
+    oidc: 'OIDC Setting',
+    theme: 'Theme Setting'
   },
   license: {
     i18n_no_license_record: 'No License Record',
@@ -1511,7 +1512,9 @@ export default {
 
     themeLight: 'Light',
     themeDark: 'Dark',
-    themeCustom: 'Custom'
+    themeCustom: 'Custom',
+    openHomePage: 'Show Home Page'
+
   },
   auth: {
     authConfig: 'Auth Config',
@@ -1763,7 +1766,8 @@ export default {
     cweek: 'This Week',
     cmonth: 'This Month',
     cquarter: 'This Quarter',
-    cyear: 'This Year'
+    cyear: 'This Year',
+    openHomePage: 'Show Home Page'
   },
   dynamic_year: {
     fix: 'Fixed Year',
