@@ -1,5 +1,6 @@
 <template>
   <div class="bar-main">
+    <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
     <div v-if="linkageAreaShow" style="margin-right: -1px;width: 18px">
       <el-checkbox v-model="linkageInfo.linkageActive" />
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
@@ -25,6 +26,9 @@
       <span :title="$t('panel.cancel_linkage')">
         <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
       </span>
+      <span :title="$t('panel.switch_picture')">
+        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='picture-add'" class="icon iconfont icon-genghuan" @click.stop="goFile" />
+      </span>
     </div>
   </div>
 </template>
@@ -34,6 +38,7 @@ import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 import LinkageField from '@/components/canvas/components/Editor/LinkageField'
+import toast from '@/components/canvas/utils/toast'
 
 export default {
   components: { SettingMenu, LinkageField },
@@ -210,6 +215,21 @@ export default {
     },
     goFile() {
       this.$refs.files.click()
+    },
+    handleFileChange(e) {
+      const file = e.target.files[0]
+      if (!file.type.includes('image')) {
+        toast('只能插入图片')
+        return
+      }
+      const reader = new FileReader()
+      reader.onload = (res) => {
+        const fileResult = res.target.result
+        this.curComponent.propValue = fileResult
+        this.$store.commit('recordSnapshot', 'handleFileChange')
+      }
+
+      reader.readAsDataURL(file)
     }
   }
 }

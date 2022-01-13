@@ -1436,6 +1436,7 @@ export default {
     linkage: 'linkage',
     jump: 'Jump',
     cancel_linkage: 'Cancel Linkage',
+    switch_picture: 'Switch Picture',
     remove_all_linkage: 'Remove All Linkage',
     exit_un_march_linkage_field: 'Exit Un March Linkage Field',
     details: 'Details',

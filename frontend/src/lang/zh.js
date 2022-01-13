@@ -1447,6 +1447,7 @@ export default {
     linkage: '联动',
     jump: '跳转',
     cancel_linkage: '取消联动',
+    switch_picture: '更换图片',
     remove_all_linkage: '清除所有联动',
     exit_un_march_linkage_field: '存在未匹配联动关系的字段',
     details: '详情',
