@@ -161,12 +161,13 @@ export default {
 
 <style lang="scss" scoped>
   .my-container {
-    position: absolute;
+    position: relative;
     overflow: auto;
     top: 0px;
     right: 0px;
     bottom: 0px;
     left: 0px;
+    border-radius: 5px;
   }
 
   .ccondition-main {
@@ -241,11 +242,12 @@ export default {
   }
 
   .first-element-contaner {
-    width: calc(100% - 10px);
+    /*width: calc(100% - 10px);*/
+    width: 100%;
     background: initial;
     position: absolute;
-    bottom: 5px;
-    margin: 0 4px;
+    bottom: 0px;
+    /*margin: 0 4px;*/
 
     div {
       width: 100%;
@@ -258,7 +260,7 @@ export default {
   .first-element-grid-contaner {
     background: #fff;
     border: 1px solid #d7dae2;
-    top: 5px;
+    top: 0px;
   }
 
   .condition-main-line {

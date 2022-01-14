@@ -535,7 +535,7 @@ export default {
       return this.$store.state.curComponent
     },
     curGap() {
-      return (this.canvasStyleData.panel.gap === 'yes' && this.element.auxiliaryMatrix && this.element.type !== 'custom') ? this.componentGap : 0
+      return (this.canvasStyleData.panel.gap === 'yes' && this.element.auxiliaryMatrix) ? this.componentGap : 0
     },
     ...mapState([
       'editor',
