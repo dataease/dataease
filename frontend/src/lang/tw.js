@@ -1480,7 +1480,10 @@ export default {
     timeout_refresh: '請求超時，稍後刷新...',
     mobile_layout: '移動端佈局',
     component_hidden: '隱藏的組件',
-    public_link_tips: '當前是公共鏈接模式，目標儀錶闆未設置公共鏈接，無法跳轉'
+    public_link_tips: '當前是公共鏈接模式，目標儀錶闆未設置公共鏈接，無法跳轉',
+    input_title: '請輸入標題',
+    show_title: '顯示標題',
+    default_settings: '默認值設置'
   },
   plugin: {
     local_install: '本地安裝',

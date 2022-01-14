@@ -14,11 +14,11 @@
     <el-col :span="16">
       <div class="filter-options-right">
         <span style="padding-right: 10px;">
-          <el-checkbox v-model="attrs.showTitle" @change="showTitleChange">显示标题
+          <el-checkbox v-model="attrs.showTitle" @change="showTitleChange">{{ $t('panel.show_title') }}
           </el-checkbox>
           <el-popover v-model="titlePopovervisible" placement="bottom-end" :disabled="!attrs.showTitle" width="200">
             <div style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
-              <el-input v-model="attrs.title" placeholder="请输入标题" type="textarea" maxlength="15" show-word-limit />
+              <el-input v-model="attrs.title" :placeholder="$t('panel.input_title')" type="textarea" maxlength="15" show-word-limit />
             </div>
 
             <i
