@@ -167,7 +167,6 @@ export default {
     right: 0px;
     bottom: 0px;
     left: 0px;
-    border-radius: 5px;
   }
 
   .ccondition-main {
@@ -242,12 +241,11 @@ export default {
   }
 
   .first-element-contaner {
-    /*width: calc(100% - 10px);*/
-    width: 100%;
+    width: calc(100% - 10px);
     background: initial;
     position: absolute;
-    bottom: 0px;
-    /*margin: 0 4px;*/
+    bottom: 5px;
+    margin: 0 4px;
 
     div {
       width: 100%;
@@ -260,7 +258,7 @@ export default {
   .first-element-grid-contaner {
     background: #fff;
     border: 1px solid #d7dae2;
-    top: 0px;
+    top: 5px;
   }
 
   .condition-main-line {
