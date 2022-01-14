@@ -92,15 +92,14 @@ class TimeMonthServiceImpl extends WidgetService {
     const now = new Date()
     const nowMonth = now.getMonth()
     const nowYear = now.getFullYear()
-    const nowDate = now.getDate()
     if (element.options.attrs.default === null || typeof element.options.attrs.default === 'undefined' || !element.options.attrs.default.isDynamic) return null
 
     if (element.options.attrs.default.dkey === 0) {
-      return Date.now()
+      return new Date(nowYear, nowMonth, 1).getTime()
     }
 
     if (element.options.attrs.default.dkey === 1) {
-      return new Date(nowYear, nowMonth - 1, nowDate).getTime()
+      return new Date(nowYear, nowMonth - 1, 1).getTime()
     }
 
     if (element.options.attrs.default.dkey === 2) {
@@ -112,9 +111,9 @@ class TimeMonthServiceImpl extends WidgetService {
       const dynamicSuffix = element.options.attrs.default.dynamicSuffix
 
       if (dynamicSuffix === 'before') {
-        return new Date(nowYear, nowMonth - dynamicPrefix, nowDate).getTime()
+        return new Date(nowYear, nowMonth - dynamicPrefix, 1).getTime()
       } else {
-        return new Date(nowYear, nowMonth + dynamicPrefix, nowDate).getTime()
+        return new Date(nowYear, nowMonth + dynamicPrefix, 1).getTime()
       }
     }
   }
