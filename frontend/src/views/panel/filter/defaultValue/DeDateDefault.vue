@@ -169,6 +169,7 @@ export default {
       const widget = ApplicationContext.getService(this.element.serviceName)
       const time = widget.dynamicDateFormNow(this.element)
       this.dval = time
+      this.element.options.manualModify = false
     }
   }
 }

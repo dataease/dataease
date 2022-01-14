@@ -40,7 +40,8 @@ const dialogPanel = {
         }
       }
     },
-    value: ''
+    value: '',
+    manualModify: false
   },
   defaultClass: 'time-filter',
   component: 'de-date'

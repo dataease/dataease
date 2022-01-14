@@ -29,7 +29,8 @@ const dialogPanel = {
         eDynamicSuffix: 'after'
       }
     },
-    value: ''
+    value: '',
+    manualModify: false
   },
   defaultClass: 'time-filter',
   component: 'de-date'
