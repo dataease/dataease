@@ -64,6 +64,9 @@ export default {
     viewIds() {
       if (!this.element || !this.element.options || !this.element.options.attrs.viewIds) return ''
       return this.element.options.attrs.viewIds.toString()
+    },
+    manualModify() {
+      return !!this.element.options.manualModify
     }
   },
   watch: {
@@ -111,6 +114,18 @@ export default {
         this.$refs.dateRef.hidePicker()
       }
     })
+    bus.$on('reset-default-value', id => {
+      if (this.inDraw && this.manualModify && this.element.id === id) {
+        if (!this.element.options.attrs.default.isDynamic) {
+          this.values = this.fillValueDerfault()
+          this.dateChange(this.values)
+          return
+        }
+        const widget = ApplicationContext.getService(this.element.serviceName)
+        this.values = widget.dynamicDateFormNow(this.element)
+        this.dateChange(this.values)
+      }
+    })
   },
   methods: {
     onBlur() {
@@ -138,6 +153,9 @@ export default {
         } else {
           this.element.options.value = Array.isArray(value) ? value.join() : value.toString()
         }
+        this.element.options.manualModify = false
+      } else {
+        this.element.options.manualModify = true
       }
       this.setCondition()
       this.styleChange()

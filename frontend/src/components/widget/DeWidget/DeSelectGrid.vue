@@ -38,6 +38,7 @@
 <script>
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import { getLinkToken, getToken } from '@/utils/auth'
+import bus from '@/utils/bus'
 export default {
 
   props: {
@@ -89,6 +90,9 @@ export default {
     viewIds() {
       if (!this.element || !this.element.options || !this.element.options.attrs.viewIds) return ''
       return this.element.options.attrs.viewIds.toString()
+    },
+    manualModify() {
+      return !!this.element.options.manualModify
     }
   },
   watch: {
@@ -137,6 +141,19 @@ export default {
   created() {
     this.initLoad()
   },
+  mounted() {
+    bus.$on('reset-default-value', id => {
+      if (this.inDraw && this.manualModify && this.element.id === id) {
+        this.value = this.fillValueDerfault()
+        this.changeValue(this.value)
+
+        if (this.element.options.attrs.multiple) {
+          this.checkAll = this.value.length === this.datas.length
+          this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
+        }
+      }
+    })
+  },
 
   methods: {
     initLoad() {
@@ -168,6 +185,9 @@ export default {
         } else {
           this.element.options.value = Array.isArray(value) ? value.join() : value
         }
+        this.element.options.manualModify = false
+      } else {
+        this.element.options.manualModify = true
       }
       this.setCondition()
       this.styleChange()

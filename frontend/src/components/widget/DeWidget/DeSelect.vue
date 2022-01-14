@@ -28,9 +28,9 @@
 </template>
 
 <script>
-import { multFieldValues, linkMultFieldValues} from '@/api/dataset/dataset'
+import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
-import {getLinkToken, getToken} from "@/utils/auth";
+import { getLinkToken, getToken } from '@/utils/auth'
 export default {
 
   props: {
@@ -70,6 +70,9 @@ export default {
     viewIds() {
       if (!this.element || !this.element.options || !this.element.options.attrs.viewIds) return ''
       return this.element.options.attrs.viewIds.toString()
+    },
+    manualModify() {
+      return !!this.element.options.manualModify
     }
   },
 
@@ -87,7 +90,7 @@ export default {
       if (typeof value === 'undefined' || value === old) return
       this.datas = []
 
-      let method =  multFieldValues
+      let method = multFieldValues
       const token = this.$store.getters.token || getToken()
       const linkToken = this.$store.getters.linkToken || getLinkToken()
       if (!token && linkToken) {
@@ -95,7 +98,7 @@ export default {
       }
       this.element.options.attrs.fieldId &&
       this.element.options.attrs.fieldId.length > 0 &&
-      method({fieldIds: this.element.options.attrs.fieldId.split(',')}).then(res => {
+      method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
         this.datas = this.optionDatas(res.data)
       }) || (this.element.options.value = '')
     },
@@ -122,6 +125,12 @@ export default {
         this.$refs.deSelect.blur()
       }
     })
+    bus.$on('reset-default-value', id => {
+      if (this.inDraw && this.manualModify && this.element.id === id) {
+        this.value = this.fillValueDerfault()
+        this.changeValue(this.value)
+      }
+    })
   },
 
   methods: {
@@ -132,13 +141,13 @@ export default {
       this.value = this.fillValueDerfault()
       this.datas = []
       if (this.element.options.attrs.fieldId) {
-        let method =  multFieldValues
+        let method = multFieldValues
         const token = this.$store.getters.token || getToken()
         const linkToken = this.$store.getters.linkToken || getLinkToken()
         if (!token && linkToken) {
           method = linkMultFieldValues
         }
-        method({fieldIds: this.element.options.attrs.fieldId.split(',')}).then(res => {
+        method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
           this.datas = this.optionDatas(res.data)
         })
       }
@@ -154,6 +163,9 @@ export default {
         } else {
           this.element.options.value = Array.isArray(value) ? value.join() : value
         }
+        this.element.options.manualModify = false
+      } else {
+        this.element.options.manualModify = true
       }
       this.setCondition()
       this.styleChange()

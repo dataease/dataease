@@ -17,6 +17,7 @@
 <script>
 const MIN_NUMBER = -2147483648
 const MAX_NUMBER = 2147483647
+import bus from '@/utils/bus'
 export default {
 
   props: {
@@ -64,6 +65,9 @@ export default {
     viewIds() {
       if (!this.element || !this.element.options || !this.element.options.attrs.viewIds) return ''
       return this.element.options.attrs.viewIds.toString()
+    },
+    manualModify() {
+      return !!this.element.options.manualModify
     }
   },
   watch: {
@@ -98,6 +102,18 @@ export default {
       }
       this.search()
     }
+  },
+  mounted() {
+    bus.$on('reset-default-value', id => {
+      if (this.inDraw && this.manualModify && this.element.id === id) {
+        const values = this.element.options.value
+        this.form.min = values[0]
+        if (values.length > 1) {
+          this.form.max = values[1]
+        }
+        this.search()
+      }
+    })
   },
   methods: {
     searchWithKey(index) {
@@ -211,6 +227,9 @@ export default {
       if (!this.inDraw) {
         const values = [this.form.min, this.form.max]
         this.element.options.value = values
+        this.element.options.manualModify = false
+      } else {
+        this.element.options.manualModify = true
       }
     }
   }
