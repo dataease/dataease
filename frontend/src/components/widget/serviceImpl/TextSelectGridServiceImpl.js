@@ -20,7 +20,8 @@ const dialogPanel = {
       fieldId: '',
       dragItems: []
     },
-    value: ''
+    value: '',
+    manualModify: false
   },
   defaultClass: 'text-filter',
   component: 'de-select-grid'

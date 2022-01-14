@@ -688,7 +688,7 @@ export default {
     },
     cancelFilter() {
       this.closeFilter()
-      if(this.filterFromDrag){
+      if (this.filterFromDrag) {
         bus.$emit('onRemoveLastItem')
       }
     },
@@ -697,6 +697,7 @@ export default {
       this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
+      bus.$emit('reset-default-value', this.currentFilterCom.id)
       this.closeFilter()
     },
     reFreshComponent(component) {
