@@ -13,6 +13,8 @@ import fuZh from 'fit2cloud-ui/src/locale/lang/zh-CN' // 加载fit2cloud的内�
 
 import fuEn from 'fit2cloud-ui/src/locale/lang/en_US' // 加载fit2cloud的内容
 
+import fuTW from 'fit2cloud-ui/src/locale/lang/zh-TW' // 加载fit2cloud的内容
+
 Vue.use(VueI18n)
 
 const messages = {
@@ -28,7 +30,8 @@ const messages = {
   },
   zh_TW: {
     ...twLocale,
-    ...elementTWLocale
+    ...elementTWLocale,
+    ...fuTW
   }
 }
 export function getLanguage() {

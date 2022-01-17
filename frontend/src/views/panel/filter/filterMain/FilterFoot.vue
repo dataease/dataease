@@ -7,7 +7,7 @@
           class="box-card"
         >
           <div style="margin-bottom: 10px;">
-            <span>默认值设置</span>
+            <span>{{ $t('panel.default_settings') }}</span>
           </div>
           <div class="custom-component-class">
             <component
