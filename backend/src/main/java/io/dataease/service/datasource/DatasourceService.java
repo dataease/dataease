@@ -193,22 +193,23 @@ public class DatasourceService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         datasourceProvider.checkStatus(datasourceRequest);
-        List<String> tables = datasourceProvider.getTables(datasourceRequest);
+        List<TableDesc> tables = datasourceProvider.getTables(datasourceRequest);
 
         // 获取当前数据源下的db类型数据集
         DatasetTableExample datasetTableExample = new DatasetTableExample();
         datasetTableExample.createCriteria().andTypeEqualTo("db").andDataSourceIdEqualTo(datasource.getId());
         List<DatasetTable> datasetTables = datasetTableMapper.selectByExampleWithBLOBs(datasetTableExample);
         List<DBTableDTO> list = new ArrayList<>();
-        for (String name : tables) {
+        for (TableDesc tableDesc : tables) {
             DBTableDTO dbTableDTO = new DBTableDTO();
             dbTableDTO.setDatasourceId(datasource.getId());
-            dbTableDTO.setName(name);
+            dbTableDTO.setName(tableDesc.getName());
+            dbTableDTO.setRemark(tableDesc.getRemark());
             dbTableDTO.setEnableCheck(true);
             dbTableDTO.setDatasetPath(null);
             for (DatasetTable datasetTable : datasetTables) {
                 DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
-                if (StringUtils.equals(name, dataTableInfoDTO.getTable())) {
+                if (StringUtils.equals(tableDesc.getName(), dataTableInfoDTO.getTable())) {
                     dbTableDTO.setEnableCheck(false);
                     List<DatasetGroup> parents = dataSetGroupService.getParents(datasetTable.getSceneId());
                     StringBuilder stringBuilder = new StringBuilder();
