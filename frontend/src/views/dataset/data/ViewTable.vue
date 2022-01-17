@@ -59,6 +59,9 @@
       <el-tab-pane v-if="isPluginLoaded && hasDataPermission('manage',param.privileges)" :lazy="true" :label="$t('dataset.row_permissions')" name="rowPermissions">
         <plugin-com v-if="isPluginLoaded && tabActive=='rowPermissions'" ref="RowPermissions" component-name="RowPermissions" :obj="table"/>
       </el-tab-pane>
+      <el-tab-pane v-if="isPluginLoaded && hasDataPermission('manage',param.privileges)" :lazy="true" :label="$t('dataset.column_permissions')" name="columnPermissions">
+        <plugin-com v-if="isPluginLoaded && tabActive=='columnPermissions'" ref="ColumnPermissions" component-name="ColumnPermissions" :obj="table" />
+      </el-tab-pane>
     </el-tabs>
   </el-row>
 </template>

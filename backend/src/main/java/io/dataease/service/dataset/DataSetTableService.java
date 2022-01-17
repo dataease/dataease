@@ -1,21 +1,12 @@
 package io.dataease.service.dataset;
 
-
-import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
-import io.dataease.auth.api.dto.CurrentRoleDto;
-import io.dataease.auth.api.dto.CurrentUserDto;
-import io.dataease.auth.entity.SysUserEntity;
-import io.dataease.auth.service.AuthUserService;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
 import io.dataease.base.mapper.ext.ExtDataSetTableMapper;
 import io.dataease.base.mapper.ext.UtilMapper;
-import io.dataease.commons.constants.DatasourceTypes;
-import io.dataease.commons.constants.JobStatus;
-import io.dataease.commons.constants.ScheduleType;
-import io.dataease.commons.constants.TaskStatus;
+import io.dataease.commons.constants.*;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
@@ -23,7 +14,6 @@ import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.controller.response.DataSetDetail;
-import io.dataease.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.dto.dataset.*;
 import io.dataease.dto.dataset.union.UnionDTO;
@@ -32,12 +22,7 @@ import io.dataease.dto.dataset.union.UnionParamDTO;
 import io.dataease.dto.datasource.TableFiled;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
-import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.loader.ClassloaderResponsity;
-import io.dataease.plugins.xpack.auth.dto.request.DataSetRowPermissionsDTO;
-import io.dataease.plugins.xpack.auth.dto.request.DatasetRowPermissions;
-import io.dataease.plugins.xpack.auth.dto.response.XpackSysAuthDetailDTO;
-import io.dataease.plugins.xpack.auth.service.RowPermissionService;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.provider.datasource.JdbcProvider;
@@ -72,7 +57,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-;
+;import static io.dataease.commons.constants.ColumnPermissionConstants.Desensitization_desc;
 
 /**
  * @Author gin
@@ -108,7 +93,7 @@ public class DataSetTableService {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;
     @Resource
-    private AuthUserService authUserService;
+    private PermissionService permissionService;
 
     private static final String lastUpdateTime = "${__last_update_time__}";
     private static final String currentUpdateTime = "${__current_update_time__}";
@@ -448,103 +433,6 @@ public class DataSetTableService {
         return map;
     }
 
-    private List<DatasetRowPermissions> rowPermissions(String datasetId, Long userId) {
-        List<DatasetRowPermissions> datasetRowPermissions = new ArrayList<>();
-        Map<String, RowPermissionService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((RowPermissionService.class));
-        if (beansOfType.keySet().size() == 0) {
-            return new ArrayList<>();
-        }
-        RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
-        CurrentUserDto user = AuthUtils.getUser();
-        List<Long> roleIds = new ArrayList<>();
-        Long deptId = null;
-
-        if (user == null && userId == null) {
-            return datasetRowPermissions;
-        }
-
-        if (user != null && userId != null) {
-            return datasetRowPermissions;
-        }
-
-        if (user != null) {
-            if (user.getIsAdmin()) {
-                return datasetRowPermissions;
-            }
-            userId = user.getUserId();
-            deptId = user.getDeptId();
-            roleIds = user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList());
-        }
-
-        if (userId != null) {
-            SysUserEntity userEntity = authUserService.getUserById(userId);
-            if (userEntity.getIsAdmin()) {
-                return datasetRowPermissions;
-            }
-            deptId = userEntity.getDeptId();
-            roleIds = authUserService.roles(userId).stream().map(r -> Long.valueOf(r)).collect(Collectors.toList());
-        }
-
-
-        DataSetRowPermissionsDTO dataSetRowPermissionsDTO = new DataSetRowPermissionsDTO();
-        dataSetRowPermissionsDTO.setDatasetId(datasetId);
-        dataSetRowPermissionsDTO.setAuthTargetIds(Collections.singletonList(userId));
-        dataSetRowPermissionsDTO.setAuthTargetType("user");
-        datasetRowPermissions.addAll(rowPermissionService.searchRowPermissions(dataSetRowPermissionsDTO));
-        dataSetRowPermissionsDTO.setAuthTargetIds(roleIds);
-        dataSetRowPermissionsDTO.setAuthTargetType("role");
-        datasetRowPermissions.addAll(rowPermissionService.searchRowPermissions(dataSetRowPermissionsDTO));
-        dataSetRowPermissionsDTO.setAuthTargetIds(Collections.singletonList(deptId));
-        dataSetRowPermissionsDTO.setAuthTargetType("dept");
-        datasetRowPermissions.addAll(rowPermissionService.searchRowPermissions(dataSetRowPermissionsDTO));
-        return datasetRowPermissions;
-    }
-
-    private DatasetTableField getFieldById(List<DatasetTableField> fields, String fieldId) {
-        DatasetTableField field = null;
-        for (DatasetTableField datasetTableField : fields) {
-            if (fieldId.equalsIgnoreCase(datasetTableField.getId())) {
-                field = datasetTableField;
-            }
-        }
-        return field;
-    }
-
-    public List<ChartFieldCustomFilterDTO> getCustomFilters(List<DatasetTableField> fields, DatasetTable datasetTable, Long user) {
-        List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
-        for (DatasetRowPermissions datasetRowPermissions : rowPermissions(datasetTable.getId(), user)) {
-            ChartFieldCustomFilterDTO dto = new ChartFieldCustomFilterDTO();
-            if (StringUtils.isEmpty(datasetRowPermissions.getDatasetFieldId())) {
-                continue;
-            }
-            DatasetTableField field = getFieldById(fields, datasetRowPermissions.getDatasetFieldId());
-            if (field == null) {
-                continue;
-            }
-            dto.setField(field);
-            dto.setId(field.getId());
-            dto.setFilterType(datasetRowPermissions.getFilterType());
-            if (datasetRowPermissions.getFilterType().equalsIgnoreCase("logic")) {
-                if (StringUtils.isEmpty(datasetRowPermissions.getFilter())) {
-                    continue;
-                }
-                List<ChartCustomFilterItemDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartCustomFilterItemDTO.class);
-                lists.forEach(chartCustomFilterDTO -> {
-                    chartCustomFilterDTO.setFieldId(field.getId());
-                });
-                dto.setFilter(lists);
-                dto.setLogic(datasetRowPermissions.getLogic());
-                customFilter.add(dto);
-            } else {
-                if (StringUtils.isEmpty(datasetRowPermissions.getEnumCheckField())) {
-                    continue;
-                }
-                dto.setEnumCheckField(Arrays.asList(datasetRowPermissions.getEnumCheckField().split(",").clone()));
-                customFilter.add(dto);
-            }
-        }
-        return customFilter;
-    }
 
     public Map<String, Object> getPreviewData(DataSetTableRequest dataSetTableRequest, Integer page, Integer pageSize, List<DatasetTableField> extFields) throws Exception {
         Map<String, Object> map = new HashMap<>();
@@ -560,7 +448,11 @@ public class DataSetTableService {
             return map;
         }
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(dataSetTableRequest.getId());
-        List<ChartFieldCustomFilterDTO> customFilter = getCustomFilters(fields, datasetTable, null);
+        //列权限
+        List<String> desensitizationList = new ArrayList<>();
+        fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable, null);
+        //行权限
+        List<ChartFieldCustomFilterDTO> customFilter = permissionService.getCustomFilters(fields, datasetTable, null);
         String[] fieldArray = fields.stream().map(DatasetTableField::getDataeaseName).toArray(String[]::new);
 
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
@@ -873,7 +765,11 @@ public class DataSetTableService {
             jsonArray = data.stream().map(ele -> {
                 Map<String, Object> tmpMap = new HashMap<>();
                 for (int i = 0; i < ele.length; i++) {
-                    tmpMap.put(fieldArray[i], ele[i]);
+                    if (desensitizationList.contains(fieldArray[i])) {
+                        tmpMap.put(fieldArray[i], Desensitization_desc);
+                    } else {
+                        tmpMap.put(fieldArray[i], ele[i]);
+                    }
                 }
                 return tmpMap;
             }).collect(Collectors.toList());

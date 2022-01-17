@@ -6,6 +6,7 @@ import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.base.mapper.ext.ExtChartGroupMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
+import io.dataease.commons.constants.ColumnPermissionConstants;
 import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.JdbcConstants;
 import io.dataease.commons.utils.AuthUtils;
@@ -27,6 +28,7 @@ import io.dataease.provider.query.QueryProvider;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.dataset.DataSetTableUnionService;
+import io.dataease.service.dataset.PermissionService;
 import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -40,6 +42,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+
+import static io.dataease.commons.constants.ColumnPermissionConstants.Desensitization_desc;
 
 /**
  * @Author gin
@@ -61,6 +65,8 @@ public class ChartViewService {
     private ExtChartGroupMapper extChartGroupMapper;
     @Resource
     private DataSetTableUnionService dataSetTableUnionService;
+    @Resource
+    private PermissionService permissionService;
 
     //默认使用非公平
     private ReentrantLock lock = new ReentrantLock();
@@ -187,6 +193,25 @@ public class ChartViewService {
         return calcData(view, request, request.isCache());
     }
 
+    private void checkPermissions(List<? extends ChartViewFieldBaseDTO> chartViewFieldDTOS, List<DatasetTableField> fields, List<String> desensitizationList, Boolean alowDesensitization) throws Exception{
+        String filedName = "";
+        for (ChartViewFieldBaseDTO chartViewFieldDTO : chartViewFieldDTOS) {
+            if(alowDesensitization){
+                if (!fields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()).contains(chartViewFieldDTO.getDataeaseName())) {
+                    filedName = filedName + chartViewFieldDTO.getName() + " ,";
+                }
+            }else {
+                if (desensitizationList.contains(chartViewFieldDTO.getDataeaseName()) || !fields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()).contains(chartViewFieldDTO.getDataeaseName())) {
+                    filedName = filedName + chartViewFieldDTO.getName() + " ,";
+                }
+            }
+        }
+        filedName = filedName.endsWith(",") ? filedName.substring(0, filedName.length() - 1) : filedName;
+        if(StringUtils.isNotEmpty(filedName)){
+            throw new Exception("以下字段没有权限: " + filedName);
+        }
+    }
+
     public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest requestList, boolean cache) throws Exception {
         if (ObjectUtils.isEmpty(view)) {
             throw new RuntimeException(Translator.get("i18n_chart_delete"));
@@ -208,39 +233,52 @@ public class ChartViewService {
         }.getType());
         List<ChartViewFieldDTO> drill = new Gson().fromJson(view.getDrillFields(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
-        // 获取对应数据集行权限
+
+
         DatasetTableField datasetTableFieldObj = DatasetTableField.builder().tableId(view.getTableId()).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableFieldObj);
         DatasetTable datasetTable = dataSetTableService.get(view.getTableId());
-        List<ChartFieldCustomFilterDTO> permissionFields = dataSetTableService.getCustomFilters(fields, datasetTable, requestList.getUser());
+
+        //列权限
+        List<String> desensitizationList = new ArrayList<>();
+        fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable, null);
+        checkPermissions(fieldCustomFilter, fields, desensitizationList, false);
+        //行权限
+        List<ChartFieldCustomFilterDTO> permissionFields = permissionService.getCustomFilters(fields, datasetTable, requestList.getUser());
         fieldCustomFilter.addAll(permissionFields);
 
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
             ele.setField(dataSetTableFieldsService.get(ele.getId()));
         }
 
-        if (StringUtils.equalsIgnoreCase("text", view.getType())
-                || StringUtils.equalsIgnoreCase("gauge", view.getType())
-                || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
-            xAxis = new ArrayList<>();
-            if (CollectionUtils.isEmpty(yAxis)) {
-                ChartViewDTO dto = new ChartViewDTO();
-                BeanUtils.copyBean(dto, view);
-                return dto;
-            }
-        } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-            yAxis = new ArrayList<>();
-            if (CollectionUtils.isEmpty(xAxis)) {
-                ChartViewDTO dto = new ChartViewDTO();
-                BeanUtils.copyBean(dto, view);
-                return dto;
-            }
-        } else {
-            if (CollectionUtils.isEmpty(xAxis) && CollectionUtils.isEmpty(yAxis)) {
-                ChartViewDTO dto = new ChartViewDTO();
-                BeanUtils.copyBean(dto, view);
-                return dto;
-            }
+        if (CollectionUtils.isEmpty(xAxis) && CollectionUtils.isEmpty(yAxis)) {
+            return emptyChartViewDTO(view);
+        }
+
+        switch (view.getType()){
+            case "text":
+            case "gauge":
+            case "liquid":
+                xAxis = new ArrayList<>();
+                checkPermissions(yAxis, fields, desensitizationList, false);
+                if (CollectionUtils.isEmpty(yAxis)) {
+                    return emptyChartViewDTO(view);
+                }
+                break;
+            case "table-info":
+                yAxis = new ArrayList<>();
+                checkPermissions(xAxis, fields, desensitizationList, true);
+                if (CollectionUtils.isEmpty(xAxis)) {
+                    return emptyChartViewDTO(view);
+                }
+                break;
+            case "table-normal":
+                checkPermissions(xAxis, fields, desensitizationList, true);
+                checkPermissions(yAxis, fields, desensitizationList, true);
+                break;
+            default:
+                checkPermissions(xAxis, fields, desensitizationList, false);
+                checkPermissions(yAxis, fields, desensitizationList, false);
         }
 
         // 过滤来自仪表板的条件
@@ -344,7 +382,7 @@ public class ChartViewService {
             if (ObjectUtils.isEmpty(ds)) {
                 throw new RuntimeException(Translator.get("i18n_datasource_delete"));
             }
-            if(StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")){
+            if (StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")) {
                 throw new Exception(Translator.get("i18n_invalid_ds"));
             }
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
@@ -569,7 +607,7 @@ public class ChartViewService {
         }
 
         // table组件，明细表，也用于导出数据
-        Map<String, Object> mapTableNormal = transTableNormal(xAxis, yAxis, view, data, extStack);
+        Map<String, Object> mapTableNormal = transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
 
         map.putAll(mapChart);
         map.putAll(mapTableNormal);
@@ -584,6 +622,12 @@ public class ChartViewService {
 
         dto.setDrill(isDrill);
         dto.setDrillFilters(drillFilters);
+        return dto;
+    }
+
+    private ChartViewDTO emptyChartViewDTO(ChartViewDTO view) {
+        ChartViewDTO dto = new ChartViewDTO();
+        BeanUtils.copyBean(dto, view);
         return dto;
     }
 
@@ -1510,7 +1554,7 @@ public class ChartViewService {
     }
 
     // 表格
-    private Map<String, Object> transTableNormal(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, List<ChartViewFieldDTO> extStack) {
+    private Map<String, Object> transTableNormal(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, List<ChartViewFieldDTO> extStack, List<String> desensitizationList) {
         Map<String, Object> map = new TreeMap<>();
         List<ChartViewFieldDTO> fields = new ArrayList<>();
         List<Map<String, Object>> tableRow = new ArrayList<>();
@@ -1526,9 +1570,14 @@ public class ChartViewService {
         data.forEach(ele -> {
             Map<String, Object> d = new HashMap<>();
             for (int i = 0; i < fields.size(); i++) {
+                if(CollectionUtils.isNotEmpty(desensitizationList) && desensitizationList.contains(fields.get(i).getDataeaseName())){
+                    d.put(fields.get(i).getDataeaseName(), ColumnPermissionConstants.Desensitization_desc);
+                    continue;
+                }
+
                 ChartViewFieldDTO chartViewFieldDTO = fields.get(i);
                 if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1) {
-                    d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
+                        d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
                 } else if (chartViewFieldDTO.getDeType() == 2 || chartViewFieldDTO.getDeType() == 3) {
                     d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? null : new BigDecimal(ele[i]).setScale(2, RoundingMode.HALF_UP));
                 }

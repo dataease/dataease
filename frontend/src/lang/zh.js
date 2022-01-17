@@ -1203,7 +1203,22 @@ export default {
       auth_type: '授权类型',
       auth_obj: '授权对象'
     },
+    column_permission: {
+      add: '添加列权限',
+      edit: '编辑列权限',
+      please_select_field: '请选择字段',
+      please_select_auth_type: '请选择授权类型',
+      please_select_auth_id: '请选择授权目标',
+      column_permission_not_empty: '列权限不能为空',
+      auth_type: '授权类型',
+      auth_obj: '授权对象',
+      enable: '启用列权限',
+      prohibit: '禁用',
+      desensitization: '脱敏'
+    },
     row_permissions: '行权限',
+    column_permissions: '列权限',
+    row_column_permissions: '行列权限',
     union_data: '关联数据集',
     add_union_table: '添加关联数据集',
     edit_union: '编辑关联数据集',
