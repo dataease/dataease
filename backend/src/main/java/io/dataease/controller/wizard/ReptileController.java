@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 
 @Api(tags = "首页")
@@ -24,7 +25,7 @@ public class ReptileController {
 
     @GetMapping("lastActive")
     @ApiOperation("获取官方Blog最新动态")
-    public Map<String, String> lastActive() {
+    public List lastActive() {
         return reptileService.lastActive();
     }
 }
