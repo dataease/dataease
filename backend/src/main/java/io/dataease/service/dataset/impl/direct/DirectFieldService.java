@@ -4,20 +4,18 @@ import com.google.gson.Gson;
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.Datasource;
+import io.dataease.commons.constants.ColumnPermissionConstants;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.controller.request.datasource.DatasourceRequest;
+import io.dataease.service.dataset.*;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.provider.query.QueryProvider;
-import io.dataease.service.dataset.DataSetFieldService;
-import io.dataease.service.dataset.DataSetTableFieldsService;
-import io.dataease.service.dataset.DataSetTableService;
-import io.dataease.service.dataset.DataSetTableUnionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,32 +38,38 @@ public class DirectFieldService implements DataSetFieldService {
     private DatasourceService datasourceService;
     @Resource
     private DataSetTableUnionService dataSetTableUnionService;
+    @Resource
+    private PermissionService permissionService;
 
     @Override
-    public List<Object> fieldValues(String fieldId, Long userId) throws Exception{
-        List<DatasetTableField> list = dataSetTableFieldsService.getListByIds(new ArrayList<String>() {{
-            add(fieldId);
-        }});
-        if (CollectionUtils.isEmpty(list)) return null;
+    public List<Object> fieldValues(String fieldId, Long userId) throws Exception {
+        DatasetTableField field = dataSetTableFieldsService.selectByPrimaryKey(fieldId);
+        if (field == null || StringUtils.isEmpty(field.getTableId())) return null;
 
-        DatasetTableField field = list.get(0);
-        String tableId = field.getTableId();
-        if (StringUtils.isEmpty(tableId)) return null;
-
-        DatasetTable datasetTable = dataSetTableService.get(tableId);
+        DatasetTable datasetTable = dataSetTableService.get(field.getTableId());
         if (ObjectUtils.isEmpty(datasetTable) || StringUtils.isEmpty(datasetTable.getName())) return null;
-        String tableName;
 
-        DatasetTableField datasetTableField = DatasetTableField.builder().tableId(tableId).checked(Boolean.TRUE).build();
+        DatasetTableField datasetTableField = DatasetTableField.builder().tableId(field.getTableId()).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
-        List<ChartFieldCustomFilterDTO> customFilter = dataSetTableService.getCustomFilters(fields, datasetTable, userId);
+
+        //列权限
+        List<String> desensitizationList = new ArrayList<>();
+        fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable, userId);
+
+        if (CollectionUtils.isNotEmpty(desensitizationList) && desensitizationList.contains(field.getDataeaseName())) {
+            List<Object> results = new ArrayList<>();
+            results.add(ColumnPermissionConstants.Desensitization_desc);
+            return results;
+        }
+        //行权限
+        List<ChartFieldCustomFilterDTO> customFilter = permissionService.getCustomFilters(fields, datasetTable, userId);
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceProvider datasourceProvider = null;
         if (datasetTable.getMode() == 0) {// 直连
             if (StringUtils.isEmpty(datasetTable.getDataSourceId())) return null;
             Datasource ds = datasourceService.get(datasetTable.getDataSourceId());
-            if(StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")){
+            if (StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")) {
                 throw new Exception(Translator.get("i18n_invalid_ds"));
             }
             datasourceProvider = ProviderFactory.getProvider(ds.getType());
@@ -94,7 +98,7 @@ public class DirectFieldService implements DataSetFieldService {
             datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
-            tableName = "ds_" + datasetTable.getId().replaceAll("-", "_");
+            String tableName = "ds_" + datasetTable.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             datasourceRequest.setQuery(qp.createQuerySQL(tableName, Collections.singletonList(field), true, null, customFilter));
