@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "12851123",
+      "name": "更换",
+      "font_class": "genghuan",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "1286",
+      "name": "发送邮件",
+      "font_class": "fasongyoujian",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
+      "icon_id": "7239484",
+      "name": "github",
+      "font_class": "github",
+      "unicode": "e6f8",
+      "unicode_decimal": 59128
+    },
+    {
+      "icon_id": "11810462",
+      "name": "电话",
+      "font_class": "dianhua",
+      "unicode": "e681",
+      "unicode_decimal": 59009
+    },
+    {
       "icon_id": "1367318",
       "name": "关闭",
       "font_class": "guanbi",

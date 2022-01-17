@@ -196,9 +196,9 @@
                 :options="chartGroupTreeAvailable"
                 :normalizer="normalizer"
                 :placeholder="$t('chart.select_group')"
-                :noChildrenText="$t('commons.treeselect.no_children_text')"
-                :noOptionsText="$t('commons.treeselect.no_options_text')"
-                :noResultsText="$t('commons.treeselect.no_results_text')"
+                :no-children-text="$t('commons.treeselect.no_children_text')"
+                :no-options-text="$t('commons.treeselect.no_options_text')"
+                :no-results-text="$t('commons.treeselect.no_results_text')"
               />
             </el-form-item>
           </el-col>
@@ -558,7 +558,7 @@ export default {
               showClose: true
             })
             this.treeNode()
-            this.$store.dispatch('chart/setTable', null)
+            this.$store.dispatch('chart/setTable', new Date().getTime())
           })
         } else {
           // this.$message({
@@ -773,6 +773,7 @@ export default {
       view.customFilter = JSON.stringify([])
       view.drillFields = JSON.stringify([])
       view.extBubble = JSON.stringify([])
+      this.setChartDefaultOptions(view)
       const _this = this
       post('/chart/view/save', view).then(response => {
         this.closeCreateChart()
@@ -786,6 +787,33 @@ export default {
           _this.treeNode()
         }
       })
+    },
+
+    setChartDefaultOptions(view) {
+      const type = view.type
+      const attr = JSON.parse(view.customAttr)
+      if (type.includes('pie')) {
+        if (view.render === 'echarts') {
+          attr.label.position = 'inside'
+        } else {
+          attr.label.position = 'inner'
+        }
+      } else if (type.includes('line')) {
+        attr.label.position = 'top'
+      } else if (type.includes('treemap')) {
+        if (view.render === 'echarts') {
+          attr.label.position = 'inside'
+        } else {
+          attr.label.position = 'middle'
+        }
+      } else {
+        if (view.render === 'echarts') {
+          attr.label.position = 'inside'
+        } else {
+          attr.label.position = 'middle'
+        }
+      }
+      view.customAttr = JSON.stringify(attr)
     },
 
     getTable(table) {

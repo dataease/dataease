@@ -131,6 +131,9 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
+    first_login_tips: '您使用的是初始密碼，記得修改密碼哦',
+    roger_that: '知道了',
+    apply: '應用',
     search: '搜索',
     folder: '目錄',
     no_target_permission: '沒有權限',
@@ -437,7 +440,10 @@ export default {
     background: '背景顏色',
     custom: '自定義顏色',
     otherSave: '主題另存為',
-    info: '主題信息'
+    info: '主題信息',
+    add: '新增主題',
+    please_input_name: '請輸入名稱',
+    name_repeat: '名稱已存在'
   },
   tagsView: {
     refresh: '刷新',
@@ -455,7 +461,8 @@ export default {
   sysParams: {
     display: '顯示設置',
     ldap: 'LDAP設置',
-    oidc: 'OIDC設置'
+    oidc: 'OIDC設置',
+    theme: '主题设置'
   },
   license: {
     i18n_no_license_record: '沒有 License 記錄',
@@ -1445,6 +1452,7 @@ export default {
     linkage: '聯動',
     jump: '跳轉',
     cancel_linkage: '取消聯動',
+    switch_picture: '更换图片',
     remove_all_linkage: '清除所有聯動',
     exit_un_march_linkage_field: '存在未匹配聯動關繫的字段',
     details: '詳情',
@@ -1529,7 +1537,8 @@ export default {
 
     themeLight: '淺色',
     themeDark: '深色',
-    themeCustom: '自定義'
+    themeCustom: '自定義',
+    openHomePage: '显示首页'
 
   },
   auth: {
@@ -1784,5 +1793,38 @@ export default {
     cmonth: '本月',
     cquarter: '本季',
     cyear: '本年'
+  },
+  dynamic_year: {
+    fix: '固定年份',
+    dynamic: '動態年份',
+    current: '當年',
+    last: '去年'
+  },
+  dynamic_month: {
+    fix: '固定年月',
+    dynamic: '動態年月',
+    current: '本月',
+    last: '上月',
+    firstOfYear: '當年首月'
+  },
+  wizard: {
+    welcome_title: '歡迎使用DataEase',
+    welcome_hint: '人人可用的開源數據可視化分析工具',
+    demo_video: '演示視頻',
+    online_document: '在線文檔',
+    latest_developments: '最新動態',
+    teaching_video: '教學視頻',
+    enterprise_edition: '企業版',
+    contact_us: '聯系我們',
+    demo_video_hint: '如何3分鐘製作一個DataEase 數據看板、並分享給他人',
+    online_document_hint: '涵蓋DataEase的安裝步驟、用戶手冊、使用教程、常見問題的解決方案、以及二次開發等',
+    teaching_video_bottom_hint: '更多視頻資料',
+    enterprise_edition_hint1: '提供企業級應用場景X-Pack增強包',
+    enterprise_edition_hint2: '提供高等級原廠服務支持',
+    enterprise_edition_hint3: '提供DataEase 運維安全最佳實踐',
+    open_source_community: '開源社區',
+    click_show: '點擊查看',
+    show_more: '查看更多',
+    click_inner: '點擊進入'
   }
 }

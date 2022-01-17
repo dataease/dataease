@@ -29,7 +29,8 @@ const dialogPanel = {
         eDynamicSuffix: 'after'
       }
     },
-    value: ''
+    value: '',
+    manualModify: false
   },
   defaultClass: 'time-filter',
   component: 'de-date'
@@ -79,6 +80,9 @@ class TimeDateRangeServiceImpl extends WidgetService {
     return fields.filter(field => {
       return field['deType'] === 1
     })
+  }
+  defaultSetting() {
+    return dialogPanel.options.attrs.default
   }
   getStartDayOfWeek() {
     var now = new Date() // 当前日期

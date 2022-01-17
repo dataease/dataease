@@ -3,6 +3,10 @@ import {
   HYPERLINKS
 } from '@/components/canvas/custom-component/component-list'
 
+import {
+  ApplicationContext
+} from '@/utils/ApplicationContext'
+
 export function deepCopy(target) {
   if (typeof target === 'object') {
     const result = Array.isArray(target) ? [] : {}
@@ -62,27 +66,16 @@ export function mobile2MainCanvas(mainSource, mobileSource) {
 export function panelInit(componentDatas) {
   componentDatas.forEach(item => {
     if (item.component && item.component === 'de-date') {
-      if (item.serviceName === 'timeDateWidget' && item.options.attrs && !item.options.attrs.default) {
-        item.options.attrs.default = {
-          isDynamic: false,
-          dkey: 0,
-          dynamicPrefix: 1,
-          dynamicInfill: 'day',
-          dynamicSuffix: 'before'
+      if (item.options.attrs &&
+        (!item.options.attrs.default || (item.serviceName === 'timeYearWidget' && item.options.attrs.default.dynamicInfill !== 'year') || (item.serviceName === 'timeMonthWidget' && item.options.attrs.default.dynamicInfill !== 'month'))) {
+        const widget = ApplicationContext.getService(item.serviceName)
+        if (widget && widget.defaultSetting) {
+          item.options.attrs.default = widget.defaultSetting()
         }
       }
-      if (item.serviceName === 'timeDateRangeWidget' && item.options.attrs && !item.options.attrs.default) {
-        item.options.attrs.default = {
-          isDynamic: false,
-          dkey: 0,
-          sDynamicPrefix: 1,
-          sDynamicInfill: 'day',
-          sDynamicSuffix: 'before',
-          eDynamicPrefix: 1,
-          eDynamicInfill: 'day',
-          eDynamicSuffix: 'after'
-        }
-      }
+    }
+    if (item.type === 'custom') {
+      item.options.manualModify = false
     }
     if (item.filters && item.filters.length > 0) {
       item.filters = []

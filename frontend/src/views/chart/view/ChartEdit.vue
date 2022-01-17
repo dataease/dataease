@@ -1,6 +1,7 @@
 <template>
   <el-row v-loading="loading" style="height: 100%;overflow-y: hidden;width: 100%;">
     <el-row style="height: 40px;" class="padding-lr">
+      <span v-show="false">{{ refreshPage }}</span>
       <span class="title-text" style="line-height: 40px;">{{ view.name }}</span>
       <el-popover
         placement="right-start"
@@ -141,7 +142,7 @@
                                 class="render-select"
                                 style="width: 100px"
                                 size="mini"
-                                @change="calcData(true,'chart',true,true)"
+                                @change="changeChartType()"
                               >
                                 <el-option
                                   v-for="item in renderOptions"
@@ -158,7 +159,7 @@
                                 v-model="view.type"
                                 style="width: 100%"
                                 :disabled="!hasDataPermission('manage',param.privileges)"
-                                @change="calcData(true,'chart',true,true)"
+                                @change="changeChartType()"
                               >
                                 <chart-type :chart="view" style="height: 480px" />
                               </el-radio-group>
@@ -1105,11 +1106,10 @@ export default {
     }
   },
   computed: {
-    // vId() {
-    //   // console.log(this.$store.state.chart.viewId);
-    //   this.getData(this.$store.state.chart.viewId)
-    //   return this.$store.state.chart.viewId
-    // }
+    refreshPage: function() {
+      this.getChart(this.param.id)
+      return this.$store.getters.chartTable
+    },
     chartType() {
       return this.chart.type
     }
@@ -2066,6 +2066,36 @@ export default {
 
     reset() {
       this.getData(this.param.id)
+    },
+
+    changeChartType() {
+      this.setChartDefaultOptions()
+      this.calcData(true, 'chart', true, true)
+    },
+
+    setChartDefaultOptions() {
+      const type = this.view.type
+      if (type.includes('pie')) {
+        if (this.view.render === 'echarts') {
+          this.view.customAttr.label.position = 'inside'
+        } else {
+          this.view.customAttr.label.position = 'inner'
+        }
+      } else if (type.includes('line')) {
+        this.view.customAttr.label.position = 'top'
+      } else if (type.includes('treemap')) {
+        if (this.view.render === 'echarts') {
+          this.view.customAttr.label.position = 'inside'
+        } else {
+          this.view.customAttr.label.position = 'middle'
+        }
+      } else {
+        if (this.view.render === 'echarts') {
+          this.view.customAttr.label.position = 'inside'
+        } else {
+          this.view.customAttr.label.position = 'middle'
+        }
+      }
     }
   }
 }

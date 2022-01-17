@@ -256,6 +256,11 @@
             <artifactId>selenium-java</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.14.3</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -415,10 +420,10 @@
                                     </fileset>
                                 </copy>
 
-                                
+
                                 <copy file="../mobile/dist/build/h5/index.html" tofile="src/main/resources/templates/app.html" />
-                                    
-                                
+
+
                             </target>
                         </configuration>
                         <goals>

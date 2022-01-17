@@ -161,7 +161,7 @@ export default {
 
 <style lang="scss" scoped>
   .my-container {
-    position: absolute;
+    position: relative;
     overflow: auto;
     top: 0px;
     right: 0px;

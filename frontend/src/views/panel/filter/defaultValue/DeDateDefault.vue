@@ -4,8 +4,14 @@
 
       <el-form-item :label="$t('dynamic_time.set_default')">
         <el-radio-group v-model="element.options.attrs.default.isDynamic" @change="dynamicChange">
-          <el-radio :label="false">{{ $t('dynamic_time.fix') }}</el-radio>
-          <el-radio :label="true">{{ $t('dynamic_time.dynamic') }}</el-radio>
+
+          <el-radio
+            v-for="(item, index) in defaultSetting.radioOptions"
+            :key="index"
+            :label="item.value"
+          >
+            {{ $t(item.text) }}
+          </el-radio>
         </el-radio-group>
       </el-form-item>
 
@@ -17,10 +23,13 @@
           class="relative-time"
           @change="dkeyChange"
         >
-          <el-option :label="$t('dynamic_time.today')" :value="0" />
-          <el-option :label="$t('dynamic_time.yesterday')" :value="1" />
-          <el-option :label="$t('dynamic_time.firstOfMonth')" :value="2" />
-          <el-option :label="$t('dynamic_time.custom')" :value="3" />
+          <el-option
+            v-for="(item, index) in defaultSetting.relativeOptions"
+            :key="item.value + index"
+            :label="$t(item.text)"
+            :value="item.value"
+          />
+
         </el-select>
 
       </el-form-item>
@@ -28,7 +37,7 @@
       <div class="inline">
 
         <el-form-item
-          v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3"
+          v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === (defaultSetting.relativeOptions.length - 1)"
           label=""
         >
           <el-input
@@ -42,7 +51,7 @@
         </el-form-item>
 
         <el-form-item
-          v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3"
+          v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === (defaultSetting.relativeOptions.length - 1)"
           label=""
           class="no-label-item"
         >
@@ -50,17 +59,21 @@
             v-model="element.options.attrs.default.dynamicInfill"
             size="mini"
             placeholder=""
+            :disabled="defaultSetting.custom && defaultSetting.custom.unitsOptions && defaultSetting.custom.unitsOptions.length === 1"
             @change="dynamicInfillChange"
           >
-            <el-option :label="$t('dynamic_time.date')" value="day" />
-            <el-option :label="$t('dynamic_time.week')" value="week" />
-            <el-option :label="$t('dynamic_time.month')" value="month" />
-            <el-option :label="$t('dynamic_time.year')" value="year" />
+            <el-option
+              v-for="(item, index) in defaultSetting.custom.unitsOptions"
+              :key="item.value + index"
+              :label="$t(item.text)"
+              :value="item.value"
+            />
+
           </el-select>
         </el-form-item>
 
         <el-form-item
-          v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 3"
+          v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === (defaultSetting.relativeOptions.length - 1)"
           label=""
           class="no-label-item"
         >
@@ -79,7 +92,13 @@
       </div>
 
       <el-form-item v-if="element.options.attrs.default.isDynamic" :label="$t('dynamic_time.preview')">
-        <el-date-picker v-model="dval" type="date" disabled placeholder="" class="relative-time" />
+        <el-date-picker
+          v-model="dval"
+          :type="element.options.attrs.type"
+          disabled
+          placeholder=""
+          class="relative-time"
+        />
       </el-form-item>
 
       <el-form-item v-else :label="$t('dynamic_time.set')">
@@ -115,6 +134,13 @@ export default {
       dval: null
     }
   },
+  computed: {
+    defaultSetting() {
+      const widget = ApplicationContext.getService(this.element.serviceName)
+      const setting = widget.defaultSetting()
+      return setting
+    }
+  },
   created() {
     this.setDval()
   },
@@ -143,6 +169,7 @@ export default {
       const widget = ApplicationContext.getService(this.element.serviceName)
       const time = widget.dynamicDateFormNow(this.element)
       this.dval = time
+      this.element.options.manualModify = false
     }
   }
 }

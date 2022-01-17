@@ -13,9 +13,29 @@ const dialogPanel = {
       placeholder: 'deyear.placeholder',
       viewIds: [],
       fieldId: '',
-      dragItems: []
+      dragItems: [],
+      default: {
+        isDynamic: false,
+        dkey: 0,
+        dynamicPrefix: 1,
+        dynamicInfill: 'year',
+        dynamicSuffix: 'before',
+        radioOptions: [{ value: false, text: 'dynamic_year.fix' }, { value: true, text: 'dynamic_year.dynamic' }],
+        relativeOptions: [
+          { value: 0, text: 'dynamic_year.current' },
+          { value: 1, text: 'dynamic_year.last' },
+          { value: 2, text: 'dynamic_time.custom' }
+        ],
+        custom: {
+          unitsOptions: [
+            { value: 'year', text: 'dynamic_time.year' }
+          ],
+          limits: [0, 10]
+        }
+      }
     },
-    value: ''
+    value: '',
+    manualModify: false
   },
   defaultClass: 'time-filter',
   component: 'de-date'
@@ -64,6 +84,29 @@ class TimeYearServiceImpl extends WidgetService {
     return fields.filter(field => {
       return field['deType'] === 1
     })
+  }
+  defaultSetting() {
+    return dialogPanel.options.attrs.default
+  }
+  dynamicDateFormNow(element) {
+    if (element.options.attrs.default === null || typeof element.options.attrs.default === 'undefined' || !element.options.attrs.default.isDynamic) return null
+
+    const now = new Date()
+    const nowYear = now.getFullYear()
+    if (element.options.attrs.default.dkey === 0) {
+      return new Date(nowYear, 0, 1).getTime()
+    }
+
+    if (element.options.attrs.default.dkey === 1) {
+      return new Date(nowYear - 1, 0, 1).getTime()
+    }
+
+    if (element.options.attrs.default.dkey === 2) {
+      const dynamicPrefix = parseInt(element.options.attrs.default.dynamicPrefix)
+      const dynamicSuffix = element.options.attrs.default.dynamicSuffix
+
+      return new Date(dynamicSuffix === 'before' ? (nowYear - dynamicPrefix) : (nowYear + dynamicPrefix), 0, 1).getTime()
+    }
   }
 }
 const timeYearServiceImpl = new TimeYearServiceImpl()

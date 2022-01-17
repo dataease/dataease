@@ -5,6 +5,7 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.impl.AuthUserServiceImpl;
 import io.dataease.auth.util.JWTUtils;
+import io.dataease.base.mapper.ext.ExtTaskMapper;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
@@ -20,6 +21,7 @@ import io.dataease.service.system.EmailService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -46,6 +48,16 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         return jobDataMap;
     }
 
+    public EmailTaskHandler proxy() {
+        return CommonBeanFactory.getBean(EmailTaskHandler.class);
+    }
+
+    @Override
+    protected Boolean taskIsRunning(Long taskId) {
+        ExtTaskMapper extTaskMapper = CommonBeanFactory.getBean(ExtTaskMapper.class);
+        return extTaskMapper.runningCount(taskId) > 0;
+    }
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         // 插件没有加载 空转
@@ -54,9 +66,14 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
         JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
         GlobalTaskEntity taskEntity = (GlobalTaskEntity) jobDataMap.get("taskEntity");
+        ScheduleManager scheduleManager = SpringContextUtil.getBean(ScheduleManager.class);
         if (taskExpire(taskEntity.getEndTime())) {
-            ScheduleManager scheduleManager = SpringContextUtil.getBean(ScheduleManager.class);
             removeTask(scheduleManager, taskEntity);
+            return;
+        }
+        if (taskIsRunning(taskEntity.getTaskId())) {
+            LogUtil.info("Skip synchronization task: {} ,due to task status is {}",
+                    taskEntity.getTaskId(), "running");
             return;
         }
 
@@ -67,10 +84,15 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         XpackEmailTemplateDTO emailTemplate = (XpackEmailTemplateDTO) jobDataMap.get("emailTemplate");
         SysUserEntity creator = (SysUserEntity) jobDataMap.get("creator");
         LogUtil.info("start execute send panel report task...");
-        sendReport(taskInstance, emailTemplate, creator);
+        proxy().sendReport(taskInstance, emailTemplate, creator);
 
     }
 
+    @Override
+    public void resetRunningInstance(Long taskId) {
+        ExtTaskMapper extTaskMapper = CommonBeanFactory.getBean(ExtTaskMapper.class);
+        extTaskMapper.resetRunnings(taskId);
+    }
 
     public Long saveInstance(GlobalTaskInstance taskInstance) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
@@ -99,11 +121,12 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         emailXpackService.saveInstance(taskInstance);
     }
 
-
+    @Async("priorityExecutor")
     public void sendReport(GlobalTaskInstance taskInstance, XpackEmailTemplateDTO emailTemplateDTO,
-                           SysUserEntity user) {
+            SysUserEntity user) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         try {
+
             String panelId = emailTemplateDTO.getPanelId();
             String url = panelUrl(panelId);
             String token = tokenByUser(user);
@@ -116,11 +139,15 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             String recipients = emailTemplateDTO.getRecipients();
             byte[] content = emailTemplateDTO.getContent();
             EmailService emailService = SpringContextUtil.getBean(EmailService.class);
+
             String contentStr = "";
             if (ObjectUtils.isNotEmpty(content)) {
                 contentStr = new String(content, "UTF-8");
             }
-            emailService.sendWithImage(recipients, emailTemplateDTO.getTitle(), contentStr, bytes);
+            emailService.sendWithImage(recipients, emailTemplateDTO.getTitle(),
+                    contentStr, bytes);
+
+            Thread.sleep(10000);
             success(taskInstance);
         } catch (Exception e) {
             error(taskInstance, e);

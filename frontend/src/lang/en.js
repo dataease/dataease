@@ -131,6 +131,9 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    first_login_tips: 'Please change the initial password',
+    roger_that: 'Roger That',
+    apply: 'Apply',
     search: 'Search',
     folder: 'Folder',
     no_target_permission: 'No permission',
@@ -437,7 +440,10 @@ export default {
     background: 'Background color',
     custom: 'Custom color',
     otherSave: 'Theme Save as',
-    info: 'Theme info'
+    info: 'Theme info',
+    add: 'Add Theme',
+    please_input_name: 'Please enter a name',
+    name_repeat: 'Name already exists'
   },
   tagsView: {
     refresh: 'Refresh',
@@ -455,7 +461,8 @@ export default {
   sysParams: {
     display: 'Display Setting',
     ldap: 'LDAP Setting',
-    oidc: 'OIDC Setting'
+    oidc: 'OIDC Setting',
+    theme: 'Theme Setting'
   },
   license: {
     i18n_no_license_record: 'No License Record',
@@ -1443,6 +1450,7 @@ export default {
     linkage: 'linkage',
     jump: 'Jump',
     cancel_linkage: 'Cancel Linkage',
+    switch_picture: 'Switch Picture',
     remove_all_linkage: 'Remove All Linkage',
     exit_un_march_linkage_field: 'Exit Un March Linkage Field',
     details: 'Details',
@@ -1519,7 +1527,9 @@ export default {
 
     themeLight: 'Light',
     themeDark: 'Dark',
-    themeCustom: 'Custom'
+    themeCustom: 'Custom',
+    openHomePage: 'Show Home Page'
+
   },
   auth: {
     authConfig: 'Auth Config',
@@ -1771,6 +1781,40 @@ export default {
     cweek: 'This Week',
     cmonth: 'This Month',
     cquarter: 'This Quarter',
-    cyear: 'This Year'
+    cyear: 'This Year',
+    openHomePage: 'Show Home Page'
+  },
+  dynamic_year: {
+    fix: 'Fixed Year',
+    dynamic: 'Dynamic Year',
+    current: 'This Year',
+    last: 'Last Year'
+  },
+  dynamic_month: {
+    fix: 'Fixed Month',
+    dynamic: 'Dynamic Month',
+    current: 'This Month',
+    last: 'Last Month',
+    firstOfYear: 'First month of this year'
+  },
+  wizard: {
+    welcome_title: 'Welcome To Use DataEase',
+    welcome_hint: 'Open source data visual analysis tool available to everyone',
+    demo_video: 'Demo',
+    online_document: 'Online',
+    latest_developments: 'Latest',
+    teaching_video: 'Teaching',
+    enterprise_edition: 'Enterprise',
+    contact_us: 'Contact Us',
+    demo_video_hint: 'How to make a DataEase dashboard in 3 minutes and share it with others',
+    online_document_hint: 'It covers the installation steps, user manuals, tutorials, solutions to common problems, and secondary development of DataEase',
+    teaching_video_bottom_hint: 'More videos',
+    enterprise_edition_hint1: 'Provide enterprise application scenario x-pack enhancement package',
+    enterprise_edition_hint2: 'Provide high-level original factory service support',
+    enterprise_edition_hint3: 'Provide dataease O & M security best practices',
+    open_source_community: 'Open source community',
+    click_show: 'Click To View',
+    show_more: 'Show More',
+    click_inner: 'Click To Enter'
   }
 }

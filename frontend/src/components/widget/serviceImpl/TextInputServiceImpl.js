@@ -15,7 +15,8 @@ const dialogPanel = {
       dragItems: []
 
     },
-    value: ''
+    value: '',
+    manualModify: false
   },
   defaultClass: 'text-filter',
   component: 'de-input-search'

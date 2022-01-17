@@ -21,10 +21,27 @@ const dialogPanel = {
         dkey: 0,
         dynamicPrefix: 1,
         dynamicInfill: 'day',
-        dynamicSuffix: 'before'
+        dynamicSuffix: 'before',
+        radioOptions: [{ value: false, text: 'dynamic_time.fix' }, { value: true, text: 'dynamic_time.dynamic' }],
+        relativeOptions: [
+          { value: 0, text: 'dynamic_time.today' },
+          { value: 1, text: 'dynamic_time.yesterday' },
+          { value: 2, text: 'dynamic_time.firstOfMonth' },
+          { value: 3, text: 'dynamic_time.custom' }
+        ],
+        custom: {
+          unitsOptions: [
+            { value: 'day', text: 'dynamic_time.date' },
+            { value: 'week', text: 'dynamic_time.week' },
+            { value: 'month', text: 'dynamic_time.month' },
+            { value: 'year', text: 'dynamic_time.year' }
+          ],
+          limits: [1, 12]
+        }
       }
     },
-    value: ''
+    value: '',
+    manualModify: false
   },
   defaultClass: 'time-filter',
   component: 'de-date'
@@ -74,6 +91,9 @@ class TimeDateServiceImpl extends WidgetService {
     return fields.filter(field => {
       return field['deType'] === 1
     })
+  }
+  defaultSetting() {
+    return dialogPanel.options.attrs.default
   }
   dynamicDateFormNow(element) {
     if (element.options.attrs.default === null || typeof element.options.attrs.default === 'undefined' || !element.options.attrs.default.isDynamic) return null

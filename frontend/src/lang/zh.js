@@ -131,6 +131,9 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    first_login_tips: '您使用的是初始密码，记得修改密码哦',
+    roger_that: '知道了',
+    apply: '应用',
     search: '搜索',
     folder: '目录',
     no_target_permission: '没有权限',
@@ -438,7 +441,10 @@ export default {
     background: '背景颜色',
     custom: '自定义颜色',
     otherSave: '主题另存为',
-    info: '主题信息'
+    info: '主题信息',
+    add: '新增主题',
+    please_input_name: '请输入名称',
+    name_repeat: '名称已存在'
   },
   tagsView: {
     refresh: '刷新',
@@ -1456,6 +1462,7 @@ export default {
     linkage: '联动',
     jump: '跳转',
     cancel_linkage: '取消联动',
+    switch_picture: '更换图片',
     remove_all_linkage: '清除所有联动',
     exit_un_march_linkage_field: '存在未匹配联动关系的字段',
     details: '详情',
@@ -1539,7 +1546,8 @@ export default {
 
     themeLight: '浅色',
     themeDark: '深色',
-    themeCustom: '自定义'
+    themeCustom: '自定义',
+    openHomePage: '显示首页'
 
   },
   auth: {
@@ -1795,5 +1803,38 @@ export default {
     cmonth: '本月',
     cquarter: '本季',
     cyear: '本年'
+  },
+  dynamic_year: {
+    fix: '固定年份',
+    dynamic: '动态年份',
+    current: '当年',
+    last: '去年'
+  },
+  dynamic_month: {
+    fix: '固定年月',
+    dynamic: '动态年月',
+    current: '当月',
+    last: '上月',
+    firstOfYear: '当年首月'
+  },
+  wizard: {
+    welcome_title: '欢迎使用DataEase',
+    welcome_hint: '人人可用的开源数据可视化分析工具',
+    demo_video: '演示视频',
+    online_document: '在线文档',
+    latest_developments: '最新动态',
+    teaching_video: '教学视频',
+    enterprise_edition: '企业版',
+    contact_us: '联系我们',
+    demo_video_hint: '如何3分钟制作一个DataEase 数据看板、并分享给他人',
+    online_document_hint: '涵盖DataEase的安装步骤、用户手册、使用教程、常见问题的解决方案、以及二次开发等',
+    teaching_video_bottom_hint: '更多视频资料',
+    enterprise_edition_hint1: '提供企业级应用场景X-Pack增强包',
+    enterprise_edition_hint2: '提供高等级原厂服务支持',
+    enterprise_edition_hint3: '提供DataEase 运维安全最佳实践',
+    open_source_community: '开源社区',
+    click_show: '点击查看',
+    show_more: '查看更多',
+    click_inner: '点击进入'
   }
 }

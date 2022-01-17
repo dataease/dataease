@@ -91,12 +91,6 @@ export const constantRoutes = [
     path: '/previewFullScreen',
     component: () => import('@/components/canvas/components/Editor/PreviewFullScreen'),
     hidden: true
-  },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/panel/index',
-    hidden: true
   }
 
   //   {

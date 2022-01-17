@@ -64,6 +64,9 @@ export default {
     viewIds() {
       if (!this.element || !this.element.options || !this.element.options.attrs.viewIds) return ''
       return this.element.options.attrs.viewIds.toString()
+    },
+    manualModify() {
+      return !!this.element.options.manualModify
     }
   },
   watch: {
@@ -72,9 +75,7 @@ export default {
       this.setCondition()
     },
     'defaultValueStr': function(value, old) {
-      if ((this.element.serviceName === 'timeDateWidget' || this.element.serviceName === 'timeDateRangeWidget') &&
-          this.element.options.attrs.default.isDynamic) {
-        // 如果设置了动态时间 不做任何操作
+      if (this.element.options.attrs.default.isDynamic) {
         return
       }
       if (value === old) return
@@ -82,13 +83,10 @@ export default {
       this.dateChange(value)
     },
     'defaultoptions': function(val, old) {
-      // console.log('default chaneg')
-      if (this.element.serviceName !== 'timeDateWidget' || this.element.serviceName === 'timeDateRangeWidget') {
-        if (!this.element.options.attrs.default.isDynamic) {
-          this.values = this.fillValueDerfault()
-          this.dateChange(this.values)
-          return
-        }
+      if (!this.element.options.attrs.default.isDynamic) {
+        this.values = this.fillValueDerfault()
+        this.dateChange(this.values)
+        return
       }
       if (val === old) return
       const widget = ApplicationContext.getService(this.element.serviceName)
@@ -97,9 +95,7 @@ export default {
     }
   },
   created() {
-    if ((this.element.serviceName === 'timeDateWidget' || this.element.serviceName === 'timeDateRangeWidget') && this
-      .element.options.attrs.default && this.element.options
-      .attrs.default.isDynamic) {
+    if (this.element.options.attrs.default && this.element.options.attrs.default.isDynamic) {
       if (this.element.options.attrs.default) {
         const widget = ApplicationContext.getService(this.element.serviceName)
         this.values = widget.dynamicDateFormNow(this.element)
@@ -116,6 +112,18 @@ export default {
     bus.$on('onScroll', () => {
       if (this.onFocus) {
         this.$refs.dateRef.hidePicker()
+      }
+    })
+    bus.$on('reset-default-value', id => {
+      if (this.inDraw && this.manualModify && this.element.id === id) {
+        if (!this.element.options.attrs.default.isDynamic) {
+          this.values = this.fillValueDerfault()
+          this.dateChange(this.values)
+          return
+        }
+        const widget = ApplicationContext.getService(this.element.serviceName)
+        this.values = widget.dynamicDateFormNow(this.element)
+        this.dateChange(this.values)
       }
     })
   },
@@ -145,6 +153,9 @@ export default {
         } else {
           this.element.options.value = Array.isArray(value) ? value.join() : value.toString()
         }
+        this.element.options.manualModify = false
+      } else {
+        this.element.options.manualModify = true
       }
       this.setCondition()
       this.styleChange()
