@@ -26,8 +26,6 @@
 
 <script>
 
-import { blogLastActive } from '@/api/wizard/wizard'
-
 export default {
   name: 'CardDetail',
   props: {
@@ -42,28 +40,18 @@ export default {
   },
   data() {
     return {
-      blogsInfo: {},
       imgSrc: '../../../assets/DataEase-' + this.imgIndex + '.jpg'
     }
   },
   computed: {
 
-  },
-  mounted() {
-    this.init()
-  },
-  methods: {
-    init() {
-      blogLastActive().then(res => {
-        this.blogsInfo = res.data[0]
-      })
-    }
   }
 }
 
 </script>
 
 <style lang="scss" scoped>
+  ::v-deep a:hover{color:blue;}
   .demo_main{
     height: 100%;
   }
@@ -83,10 +71,10 @@ export default {
     .content{
       height: 50%;
       padding-top: 15px;
-      padding-right: 20px;
+      padding-right: 10px;
       color: var(--TextPrimary, #6D6D6D);
       font-size: 12px;
-      overflow: hidden;
+      overflow-y: auto;
     }
     .bottom{
       height: 25%;
@@ -94,7 +82,7 @@ export default {
         color: var(--TextPrimary, #6D6D6D);
         font-size: 12px;
         position: absolute;
-        bottom: 5px;
+        bottom: 8px;
       }
     }
   }

@@ -1839,6 +1839,8 @@ export default {
     open_source_community: '开源社区',
     click_show: '点击查看',
     show_more: '查看更多',
-    click_inner: '点击进入'
+    email: '邮箱：',
+    tel: '电话：',
+    web: '网址：'
   }
 }

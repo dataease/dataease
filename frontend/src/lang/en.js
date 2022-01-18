@@ -1820,6 +1820,9 @@ export default {
     open_source_community: 'Open source community',
     click_show: 'Click To View',
     show_more: 'Show More',
-    click_inner: 'Click To Enter'
+    click_inner: 'Click To Enter',
+    email: 'Email:',
+    tel: 'Tel:',
+    web: 'Web:'
   }
 }
