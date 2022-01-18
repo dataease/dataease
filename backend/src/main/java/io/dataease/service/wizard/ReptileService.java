@@ -7,8 +7,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Author: wangjiahao
@@ -18,27 +17,33 @@ import java.util.Map;
 @Service
 public class ReptileService {
     String blogUrl = "https://blog.fit2cloud.com/?cat=321";
+    //获取最新的前几条数据
+    private static int infoCount=1;
 
-    public Map<String, String> lastActive() {
-        Map<String, String> result = new HashMap();
+    public List lastActive() {
+        List result = new ArrayList();
         try {
             //爬取最新数据
             Document doc = Jsoup.parse(HttpClientUtil.get(blogUrl, null));
             Elements elementsContent = doc.getElementsByAttributeValue("rel", "bookmark");
             Elements elementsTime = doc.getElementsByTag("time");
-            Element lastInfo = elementsContent.get(0);
-            result.put("title",lastInfo.attr("title"));
-            result.put("href",lastInfo.attr("href"));
-            result.put("time",elementsTime.get(0).childNode(0).outerHtml());
+            for(int i = 0;i<infoCount;i++){
+                Element info = elementsContent.get(i*3);
+                Map<String, String> infoMap = new HashMap();
+                infoMap.put("title",info.attr("title"));
+                infoMap.put("href",info.attr("href"));
+                infoMap.put("time",elementsTime.get(i).childNode(0).outerHtml());
+                result.add(infoMap);
+            }
         } catch (Exception e) {
             //ignore
-            result.put("title","支持移动端展示，数据源新增对DB2的支持，DataEase开源数据可视化分析平台v1.6.0发布");
-            result.put("href","https://blog.fit2cloud.com/?p=3200");
-            result.put("time","2022年1月10日");
+            Map<String, String> infoMap = new HashMap();
+            infoMap.put("title","支持移动端展示，数据源新增对DB2的支持，DataEase开源数据可视化分析平台v1.6.0发布");
+            infoMap.put("href","https://blog.fit2cloud.com/?p=3200");
+            infoMap.put("time","2022年1月10日");
+            result.add(infoMap);
         }
-
         return result;
-
     }
 
 
