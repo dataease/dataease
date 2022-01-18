@@ -1207,7 +1207,21 @@ export default {
       auth_type: '授權類型',
       auth_obj: '授權對象'
     },
+    column_permission: {
+      add: '添加列權限',
+      edit: '編輯列權限',
+      please_select_auth_type: '請選餓授權類型',
+      please_select_auth_id: '請選擇授權目標',
+      column_permission_not_empty: '列權限不能為空',
+      auth_type: '授權類型',
+      auth_obj: '授權對象',
+      enable: '啟用列權限',
+      prohibit: '禁用',
+      desensitization: '脫敏'
+    },
     row_permissions: '行權限',
+    column_permissions: '列權限',
+    row_column_permissions: '行列權限',
     union_data: '關聯數據集',
     add_union_table: '添加關聯數據集',
     edit_union: '編輯關聯數據集',

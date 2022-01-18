@@ -17,15 +17,12 @@ import org.springframework.core.env.Environment;
 
 import java.util.Date;
 
-
 public class JWTUtils {
-
 
     // token过期时间1min (过期会自动刷新续命 目的是避免一直都是同一个token )
     private static final long EXPIRE_TIME = 1 * 60 * 1000;
     // 登录间隔时间10min 超过这个时间强制重新登录
     private static long Login_Interval;
-
 
     /**
      * 校验token是否正确
@@ -82,7 +79,8 @@ public class JWTUtils {
     public static boolean loginExpire(String token) {
         if (Login_Interval == 0) {
             // 默认超时时间是8h
-            int minute = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.login_timeout", Integer.class, 8 * 60);
+            Long minute = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.login_timeout", Long.class,
+                    8 * 60L);
             // 分钟换算成毫秒
             Login_Interval = minute * 1000 * 60;
         }
@@ -128,19 +126,19 @@ public class JWTUtils {
 
     public static String signLink(String resourceId, Long userId, String secret) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
-        if(userId == null){
+        if (userId == null) {
             return JWT.create().withClaim("resourceId", resourceId).sign(algorithm);
-        }else {
+        } else {
             return JWT.create().withClaim("resourceId", resourceId).withClaim("userId", userId).sign(algorithm);
         }
     }
 
-    public static boolean verifyLink(String token, String resourceId, Long userId,  String secret) {
+    public static boolean verifyLink(String token, String resourceId, Long userId, String secret) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
         JWTVerifier verifier;
-        if(userId == null){
+        if (userId == null) {
             verifier = JWT.require(algorithm).withClaim("resourceId", resourceId).build();
-        }else {
+        } else {
             verifier = JWT.require(algorithm).withClaim("resourceId", resourceId).withClaim("userId", userId).build();
         }
 

@@ -3,6 +3,7 @@ package io.dataease.plugins.server;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.commons.exception.DEException;
+import io.dataease.commons.pool.PriorityThreadPoolExecutor;
 import io.dataease.commons.utils.*;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
@@ -23,6 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.Future;
+
+import javax.annotation.Resource;
 
 @Api(tags = "xpack：定时报告")
 @RequestMapping("/plugin/task")
@@ -31,6 +35,9 @@ public class XEmailTaskServer {
 
     @Autowired
     private ScheduleService scheduleService;
+
+    @Resource
+    private PriorityThreadPoolExecutor priorityExecutor;
 
     @PostMapping("/queryTasks/{goPage}/{pageSize}")
     public Pager<List<XpackTaskGridDTO>> queryTask(@PathVariable int goPage, @PathVariable int pageSize,
@@ -85,7 +92,19 @@ public class XEmailTaskServer {
         String token = ServletUtils.getToken();
         String fileId = null;
         try {
-            fileId = emailXpackService.print(url, token, buildPixel(request.getPixel()));
+            Future<?> future = priorityExecutor.submit(() -> {
+                try {
+                    return emailXpackService.print(url, token, buildPixel(request.getPixel()));
+                } catch (Exception e) {
+                    LogUtil.error(e.getMessage(), e);
+                    DEException.throwException("预览失败，请联系管理员");
+                }
+                return null;
+            }, 0);
+            Object object = future.get();
+            if (ObjectUtils.isNotEmpty(object)) {
+                fileId = object.toString();
+            }
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
             DEException.throwException("预览失败，请联系管理员");

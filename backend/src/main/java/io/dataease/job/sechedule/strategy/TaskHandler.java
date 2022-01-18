@@ -13,9 +13,6 @@ import java.util.Date;
 
 public abstract class TaskHandler implements InitializingBean {
 
-    private static final String[] week = {"SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"};
-
-
     public void addTask(ScheduleManager scheduleManager, GlobalTaskEntity taskEntity) throws Exception {
         // 1。首先看看是否过期
         Long endTime = taskEntity.getEndTime();
@@ -30,11 +27,10 @@ public abstract class TaskHandler implements InitializingBean {
         if (ObjectUtils.isNotEmpty(taskEntity.getEndTime())) {
             new Date(taskEntity.getEndTime());
         }
-        Class executor = this.getClass();
+        Class<? extends TaskHandler> executor = this.getClass();
         String cron = cron(taskEntity);
         scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, executor, cron, start, end, jobDataMap(taskEntity));
     }
-
 
     protected abstract JobDataMap jobDataMap(GlobalTaskEntity taskEntity);
 
@@ -54,35 +50,33 @@ public abstract class TaskHandler implements InitializingBean {
         instance.setTime(date);
 
         if (taskEntity.getRateType() == 0) {
-            return
-                    instance.get(Calendar.SECOND) + " " +
-                            instance.get(Calendar.MINUTE) + " " +
-                            instance.get(Calendar.HOUR_OF_DAY) + " * * ?";
+            return instance.get(Calendar.SECOND) + " " +
+                    instance.get(Calendar.MINUTE) + " " +
+                    instance.get(Calendar.HOUR_OF_DAY) + " * * ?";
         }
         if (taskEntity.getRateType() == 1) {
-            return
-                    instance.get(Calendar.SECOND) + " " +
-                            instance.get(Calendar.MINUTE) + " " +
-                            instance.get(Calendar.HOUR_OF_DAY) + " ? * " +
-                            getDayOfWeek(instance);
+            return instance.get(Calendar.SECOND) + " " +
+                    instance.get(Calendar.MINUTE) + " " +
+                    instance.get(Calendar.HOUR_OF_DAY) + " ? * " +
+                    getDayOfWeek(instance);
         }
         if (taskEntity.getRateType() == 2) {
-            return
-                    instance.get(Calendar.SECOND) + " " +
-                            instance.get(Calendar.MINUTE) + " " +
-                            instance.get(Calendar.HOUR_OF_DAY) + " " +
-                            instance.get(Calendar.DATE) + " * ?";
+            return instance.get(Calendar.SECOND) + " " +
+                    instance.get(Calendar.MINUTE) + " " +
+                    instance.get(Calendar.HOUR_OF_DAY) + " " +
+                    instance.get(Calendar.DATE) + " * ?";
         }
 
         return null;
     }
 
+    public abstract void resetRunningInstance(Long taskId);
+
     private String getDayOfWeek(Calendar instance) {
         int index = instance.get(Calendar.DAY_OF_WEEK);
-         index = (index + 1) % 7;
+        index = (index + 1) % 7;
         return String.valueOf(index);
     }
-
 
     public void removeTask(ScheduleManager scheduleManager, GlobalTaskEntity taskEntity) {
         JobKey jobKey = new JobKey(taskEntity.getTaskId().toString());
@@ -95,13 +89,15 @@ public abstract class TaskHandler implements InitializingBean {
         scheduleManager.fireNow(jobKey);
     }
 
-
-    //判断任务是否过期
+    // 判断任务是否过期
     public Boolean taskExpire(Long endTime) {
-        if (ObjectUtils.isEmpty(endTime)) return false;
+        if (ObjectUtils.isEmpty(endTime))
+            return false;
         Long now = System.currentTimeMillis();
         return now > endTime;
     }
+
+    protected abstract Boolean taskIsRunning(Long taskId);
 
     @Override
     public void afterPropertiesSet() throws Exception {

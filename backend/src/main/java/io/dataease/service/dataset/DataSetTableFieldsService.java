@@ -91,6 +91,10 @@ public class DataSetTableFieldsService {
         return datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
     }
 
+    public DatasetTableField selectByPrimaryKey(String id) {
+        return datasetTableFieldMapper.selectByPrimaryKey(id);
+    }
+
     public List<DatasetTableField> getListByIdsEach(List<String> ids) {
         List<DatasetTableField> list = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(ids)) {

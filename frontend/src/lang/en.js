@@ -1207,7 +1207,21 @@ export default {
       auth_type: 'Authorization type',
       auth_obj: 'Authorized object'
     },
+    column_permission: {
+      add: 'Add',
+      edit: 'Edit',
+      please_select_auth_type: 'Please select the authorization type',
+      please_select_auth_id: '请选择授权目标',
+      column_permission_not_empty: 'Please select authorization target',
+      auth_type: 'Authorization type',
+      auth_obj: 'Authorized object',
+      enable: 'Enable column permissions',
+      prohibit: 'Prohibit',
+      desensitization: 'Desensitization'
+    },
     row_permissions: 'Row Permissions',
+    column_permissions: '列权限',
+    row_column_permissions: '行列权限',
     union_data: 'Union Dataset',
     add_union_table: 'Add Union Dataset',
     edit_union: 'Edit Union Dataset',

@@ -32,6 +32,7 @@ public class GlobalTaskStartListener implements ApplicationListener<ApplicationR
             tasks.stream().forEach(task -> {
                 TaskHandler taskHandler = TaskStrategyFactory.getInvokeStrategy(task.getTaskType());
                 try {
+                    taskHandler.resetRunningInstance(task.getTaskId());
                     taskHandler.addTask(scheduleManager, task);
                 } catch (Exception e) {
                     e.printStackTrace();

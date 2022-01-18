@@ -34,7 +34,8 @@ const dialogPanel = {
         }
       }
     },
-    value: ''
+    value: '',
+    manualModify: false
   },
   defaultClass: 'time-filter',
   component: 'de-date'
@@ -90,28 +91,21 @@ class TimeYearServiceImpl extends WidgetService {
   dynamicDateFormNow(element) {
     if (element.options.attrs.default === null || typeof element.options.attrs.default === 'undefined' || !element.options.attrs.default.isDynamic) return null
 
+    const now = new Date()
+    const nowYear = now.getFullYear()
     if (element.options.attrs.default.dkey === 0) {
-      return Date.now()
+      return new Date(nowYear, 0, 1).getTime()
     }
 
     if (element.options.attrs.default.dkey === 1) {
-      const now = new Date()
-      const nowYear = now.getFullYear()
-      const nowMonth = now.getMonth()
-      const nowDate = now.getDate()
-      return new Date(nowYear - 1, nowMonth, nowDate).getTime()
+      return new Date(nowYear - 1, 0, 1).getTime()
     }
 
     if (element.options.attrs.default.dkey === 2) {
       const dynamicPrefix = parseInt(element.options.attrs.default.dynamicPrefix)
       const dynamicSuffix = element.options.attrs.default.dynamicSuffix
 
-      const now = new Date()
-      const nowMonth = now.getMonth()
-      const nowYear = now.getFullYear()
-      const nowDate = now.getDate()
-
-      return new Date(dynamicSuffix === 'before' ? (nowYear - dynamicPrefix) : (nowYear + dynamicPrefix), nowMonth, nowDate).getTime()
+      return new Date(dynamicSuffix === 'before' ? (nowYear - dynamicPrefix) : (nowYear + dynamicPrefix), 0, 1).getTime()
     }
   }
 }

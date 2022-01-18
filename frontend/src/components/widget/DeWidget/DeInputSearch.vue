@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import bus from '@/utils/bus'
 export default {
 
   props: {
@@ -45,6 +46,9 @@ export default {
     viewIds() {
       if (!this.element || !this.element.options || !this.element.options.attrs.viewIds) return ''
       return this.element.options.attrs.viewIds.toString()
+    },
+    manualModify() {
+      return !!this.element.options.manualModify
     }
   },
   watch: {
@@ -63,6 +67,14 @@ export default {
       this.value = this.element.options.value
       this.search()
     }
+  },
+  mounted() {
+    bus.$on('reset-default-value', id => {
+      if (this.inDraw && this.manualModify && this.element.id === id) {
+        this.value = this.fillValueDerfault()
+        this.search()
+      }
+    })
   },
   methods: {
     search() {
@@ -85,6 +97,9 @@ export default {
     valueChange(val) {
       if (!this.inDraw) {
         this.element.options.value = val
+        this.element.options.manualModify = false
+      } else {
+        this.element.options.manualModify = true
       }
     },
     fillValueDerfault() {

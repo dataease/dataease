@@ -213,6 +213,7 @@ export default {
       const time = widget.dynamicDateFormNow(this.element)
       this.dval = time
       bus.$emit('valid-values-change', (!time || time.length === 0 || time[1] > time[0]))
+      this.element.options.manualModify = false
     }
   }
 }

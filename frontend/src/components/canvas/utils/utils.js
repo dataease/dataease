@@ -74,6 +74,9 @@ export function panelInit(componentDatas) {
         }
       }
     }
+    if (item.type === 'custom') {
+      item.options.manualModify = false
+    }
     if (item.filters && item.filters.length > 0) {
       item.filters = []
     }
