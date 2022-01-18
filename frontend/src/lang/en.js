@@ -1269,6 +1269,8 @@ export default {
     get_schema: 'Get Schema',
     schema: 'Database Schema',
     please_choose_schema: 'Please select Schema',
+    edit_datasource_msg: 'Modifying the data source information may make the data set under the modified data source unavailable. Confirm the modification？',
+    repeat_datasource_msg: 'Data source information with the same configuration already exists. Confirm？',
     in_valid: 'Invalid datasource',
     initial_pool_size: 'Initial connections',
     min_pool_size: 'Minimum of connections',

@@ -4,7 +4,7 @@
       <ds-tree ref="dsTree" :datasource="datasource" @switch-main="switchMain"/>
     </de-aside-container>
     <de-main-container>
-      <component :is="component" v-if="!!component" :params="param" @refresh-type="refreshType"
+      <component :is="component" v-if="!!component" :params="param" :tData="tData" @refresh-type="refreshType"
                  @switch-component="switchMain"/>
     </de-main-container>
   </de-container>
@@ -25,7 +25,8 @@ export default {
     return {
       component: DataHome,
       datasource: {},
-      param: null
+      param: null,
+      tData: null
     }
   },
   computed: {},
@@ -36,7 +37,8 @@ export default {
   methods: {
     // 切换main区内容
     switchMain(param) {
-      const {component, componentParam} = param
+      console.log(param)
+      const {component, componentParam, tData} = param
       this.component = DataHome
       this.param = null
       this.$nextTick(() => {
@@ -44,6 +46,7 @@ export default {
           case 'DsForm':
             this.component = DsForm
             this.param = componentParam
+            this.tData = tData
             break
           default:
             this.component = DataHome

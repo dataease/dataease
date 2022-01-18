@@ -192,6 +192,10 @@ export default {
     params: {
       type: Object,
       default: null
+    },
+    tData: {
+      type: Array,
+      default: null
     }
   },
   data() {
@@ -346,29 +350,79 @@ export default {
         this.$message.error(i18n.t('datasource.no_less_then_0'))
         return
       }
+      let repeat = false
+      this.tData.forEach(item => {
+        if(item.id === this.form.type){
+          item.children.forEach(child => {
+            let configuration = JSON.parse(child.configuration)
+            switch (this.form.type) {
+              case 'mysql':
+              case 'hive':
+              case 'mariadb':
+              case 'ds_doris':
+              case 'ck':
+              case 'mongo':
+              case 'mariadb':
+                if(configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port){
+                  repeat = true
+                }
+                break
+              case 'pg':
+              case 'sqlServer':
+              case 'redshift':
+              case 'oracle':
+              case 'db2':
+                if(configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port && configuration.schema == this.form.configuration.schema){
+                  repeat = true
+                }
+                break
+              case 'es':
+                if(configuration.url == this.form.configuration.url){
+                  repeat = true
+                }
+                break
+              default:
+                break
+            }
+          })
+        }
+      })
+
       this.$refs.dsForm.validate(valid => {
-        if (valid) {
-          const method = this.formType === 'add' ? addDs : editDs
-          const form = JSON.parse(JSON.stringify(this.form))
-          form.configuration = JSON.stringify(form.configuration)
-          if (this.formType !== 'add' && this.originConfiguration !== form.configuration) {
-            $confirm(i18n.t('datasource.edit_datasource_msg'), () => {
-              method(form).then(res => {
-                this.$success(i18n.t('commons.save_success'))
-                this.refreshType(form)
-                this.backToList()
-              })
-            })
-          } else {
-            method(form).then(res => {
-              this.$success(i18n.t('commons.save_success'))
-              this.refreshType(form)
-              this.backToList()
-            })
-          }
-        } else {
+        if (!valid) {
           return false
         }
+        const method = this.formType === 'add' ? addDs : editDs
+        const form = JSON.parse(JSON.stringify(this.form))
+        form.configuration = JSON.stringify(form.configuration)
+        if (this.formType === 'modify' && this.originConfiguration !== form.configuration) {
+          if(repeat){
+            $confirm(i18n.t('datasource.repeat_datasource_msg'), () => {
+              $confirm(i18n.t('datasource.edit_datasource_msg'), () => {
+                this.method(method, form)
+              })
+            })
+          }else {
+            $confirm(i18n.t('datasource.edit_datasource_msg'), () => {
+              this.method(method, form)
+            })
+          }
+          return
+        }
+        if(repeat){
+          $confirm(i18n.t('datasource.repeat_datasource_msg'), () => {
+            this.method(method, form)
+          })
+        }else {
+          this.method(method, form)
+        }
+      })
+    },
+    method(method, form){
+      method(form).then(res => {
+        this.$success(i18n.t('commons.save_success'))
+        this.refreshType(form)
+        this.backToList()
       })
     },
     getSchema() {
