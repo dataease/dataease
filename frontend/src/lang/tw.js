@@ -1216,6 +1216,7 @@ export default {
       auth_type: '授權類型',
       auth_obj: '授權對象',
       enable: '啟用列權限',
+      disable: '',
       prohibit: '禁用',
       desensitization: '脫敏'
     },

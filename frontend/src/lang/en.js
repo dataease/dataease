@@ -1216,6 +1216,7 @@ export default {
       auth_type: 'Authorization type',
       auth_obj: 'Authorized object',
       enable: 'Enable column permissions',
+      disable: '',
       prohibit: 'Prohibit',
       desensitization: 'Desensitization'
     },
