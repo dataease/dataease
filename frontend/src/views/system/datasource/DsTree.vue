@@ -216,10 +216,10 @@ export default {
     },
 
     addFolder() {
-      this.switchMain('DsForm')
+      this.switchMain('DsForm', {}, this.tData)
     },
     addFolderWithType(data) {
-      this.switchMain('DsForm', {type: data.id})
+      this.switchMain('DsForm', {type: data.id}, this.tData)
     },
     nodeClick(node, data) {
       if (node.type === 'folder') return
@@ -243,11 +243,11 @@ export default {
       return {optType, data, node}
     },
     edit(row) {
-      this.switchMain('DsForm', row)
+      this.switchMain('DsForm', row, this.tData)
     },
     showInfo(row) {
       const param = {...row.data, ...{showModel: 'show'}}
-      this.switchMain('DsForm', param)
+      this.switchMain('DsForm', param, this.tData)
     },
     _handleDelete(datasource) {
       this.$confirm(this.$t('datasource.delete_warning'), '', {
@@ -257,7 +257,7 @@ export default {
       }).then(() => {
         delDs(datasource.id).then(res => {
           this.$success(this.$t('commons.delete_success'))
-          this.switchMain('DataHome')
+          this.switchMain('DataHome', {}, this.tData)
           this.refreshType(datasource)
         })
       }).catch(() => {
@@ -267,10 +267,12 @@ export default {
         })
       })
     },
-    switchMain(component, componentParam) {
+    switchMain(component, componentParam, tData) {
+      console.log(tData)
       this.$emit('switch-main', {
         component,
-        componentParam
+        componentParam,
+        tData
       })
     },
     markInvalid(msgParam) {

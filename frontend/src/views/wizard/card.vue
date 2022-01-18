@@ -54,7 +54,7 @@ export default {
     border: lightgray solid 1px;
     border-radius: 0px 5px 5px 5px;
     height: 100%;
-    overflow: hidden;
+    overflow-y: auto;
   }
 
 </style>

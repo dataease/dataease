@@ -1271,6 +1271,8 @@ export default {
     schema: '數據庫 Schema',
     please_choose_schema: '請選擇數據庫 Schema',
     edit_datasource_msg: '修改數據源信息，可能會導致改數據源下的數據集不可用，確認修改？',
+    repeat_datasource_msg: '已經存在相同配置的數據源信息，',
+    confirm_save: '確認保存?',
     in_valid: '無效數據源',
     initial_pool_size: '初始連接數',
     min_pool_size: '最小連接數',
@@ -1502,7 +1504,10 @@ export default {
     timeout_refresh: '請求超時，稍後刷新...',
     mobile_layout: '移動端佈局',
     component_hidden: '隱藏的組件',
-    public_link_tips: '當前是公共鏈接模式，目標儀錶闆未設置公共鏈接，無法跳轉'
+    public_link_tips: '當前是公共鏈接模式，目標儀錶闆未設置公共鏈接，無法跳轉',
+    input_title: '請輸入標題',
+    show_title: '顯示標題',
+    default_settings: '默認值設置'
   },
   plugin: {
     local_install: '本地安裝',
@@ -1825,6 +1830,9 @@ export default {
     open_source_community: '開源社區',
     click_show: '點擊查看',
     show_more: '查看更多',
-    click_inner: '點擊進入'
+    click_inner: '點擊進入',
+    email: '邮箱：',
+    tel: '电话：',
+    web: '网址：'
   }
 }

@@ -1269,6 +1269,9 @@ export default {
     get_schema: 'Get Schema',
     schema: 'Database Schema',
     please_choose_schema: 'Please select Schema',
+    edit_datasource_msg: 'Modifying the data source information may make the data set under the modified data source unavailable. Confirm the modification？',
+    repeat_datasource_msg: 'Data source information with the same configuration already exists, ',
+    confirm_save: 'Confirm save?',
     in_valid: 'Invalid datasource',
     initial_pool_size: 'Initial connections',
     min_pool_size: 'Minimum of connections',
@@ -1500,7 +1503,10 @@ export default {
     timeout_refresh: 'Timeout，Will Refresh...',
     mobile_layout: 'Mobile Layout',
     component_hidden: 'Component Hidden',
-    public_link_tips: 'New Is Public Link,The Target Panel Have Not Set Public Link,Can Not Jump'
+    public_link_tips: 'New Is Public Link,The Target Panel Have Not Set Public Link,Can Not Jump',
+    input_title: 'Input Title',
+    show_title: 'Show Title',
+    default_settings: 'Default Settings'
   },
   plugin: {
     local_install: 'Local installation',
@@ -1815,6 +1821,9 @@ export default {
     open_source_community: 'Open source community',
     click_show: 'Click To View',
     show_more: 'Show More',
-    click_inner: 'Click To Enter'
+    click_inner: 'Click To Enter',
+    email: 'Email:',
+    tel: 'Tel:',
+    web: 'Web:'
   }
 }

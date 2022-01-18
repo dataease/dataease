@@ -1275,6 +1275,8 @@ export default {
     schema: '数据库 Schema',
     please_choose_schema: '请选择数据库 Schema',
     edit_datasource_msg: '修改数据源信息，可能会导致该数据源下的数据集不可用，确认修改？',
+    repeat_datasource_msg: '已经存在相同配置的数据源信息, ',
+    confirm_save: '确认保存?',
     in_valid: '无效数据源',
     initial_pool_size: '初始连接数',
     min_pool_size: '最小连接数',
@@ -1511,7 +1513,10 @@ export default {
     timeout_refresh: '请求超时，稍后刷新...',
     mobile_layout: '移动端布局',
     component_hidden: '隐藏的组件',
-    public_link_tips: '当前是公共链接模式，目标仪表板未设置公共链接，无法跳转'
+    public_link_tips: '当前是公共链接模式，目标仪表板未设置公共链接，无法跳转',
+    input_title: '请输入标题',
+    show_title: '显示标题',
+    default_settings: '默认值设置'
   },
   plugin: {
     local_install: '本地安装',
@@ -1835,6 +1840,8 @@ export default {
     open_source_community: '开源社区',
     click_show: '点击查看',
     show_more: '查看更多',
-    click_inner: '点击进入'
+    email: '邮箱：',
+    tel: '电话：',
+    web: '网址：'
   }
 }
