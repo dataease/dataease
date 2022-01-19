@@ -14,6 +14,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.service.dataset.DataSetFieldService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
+import io.dataease.service.dataset.PermissionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
@@ -47,13 +48,17 @@ public class DataSetTableFieldController {
 
     @Resource
     private DataSetTableService dataSetTableService;
+    @Resource
+    private PermissionService permissionService;
 
     @ApiOperation("查询表下属字段")
     @PostMapping("list/{tableId}")
     public List<DatasetTableField> list(@PathVariable String tableId) {
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(tableId);
-        return dataSetTableFieldsService.list(datasetTableField);
+        List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+        fields = permissionService.filterColumnPermissons(fields, new ArrayList<>(), tableId, null);
+        return fields;
     }
 
     @ApiOperation("分组查询表下属字段")
@@ -63,8 +68,10 @@ public class DataSetTableFieldController {
         datasetTableField.setTableId(tableId);
         datasetTableField.setGroupType("d");
         List<DatasetTableField> dimensionList = dataSetTableFieldsService.list(datasetTableField);
+        dimensionList = permissionService.filterColumnPermissons(dimensionList, new ArrayList<>(), tableId, null);
         datasetTableField.setGroupType("q");
         List<DatasetTableField> quotaList = dataSetTableFieldsService.list(datasetTableField);
+        quotaList = permissionService.filterColumnPermissons(quotaList, new ArrayList<>(), tableId, null);
 
         DatasetTableField4Type datasetTableField4Type = new DatasetTableField4Type();
         datasetTableField4Type.setDimensionList(dimensionList);

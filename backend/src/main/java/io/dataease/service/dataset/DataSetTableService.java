@@ -399,7 +399,7 @@ public class DataSetTableService {
         datasetTableField.setTableId(dataSetTableRequest.getId());
         datasetTableField.setChecked(Boolean.TRUE);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
-
+        fields = permissionService.filterColumnPermissons(fields, new ArrayList<>(), dataSetTableRequest.getId(), null);
         List<DatasetTableField> dimension = new ArrayList<>();
         List<DatasetTableField> quota = new ArrayList<>();
 
@@ -450,7 +450,7 @@ public class DataSetTableService {
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(dataSetTableRequest.getId());
         //列权限
         List<String> desensitizationList = new ArrayList<>();
-        fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable, null);
+        fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), null);
         //行权限
         List<ChartFieldCustomFilterDTO> customFilter = permissionService.getCustomFilters(fields, datasetTable, null);
         String[] fieldArray = fields.stream().map(DatasetTableField::getDataeaseName).toArray(String[]::new);

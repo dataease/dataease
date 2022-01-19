@@ -64,10 +64,10 @@ public class PermissionService {
         return customFilter;
     }
 
-    public List<DatasetTableField> filterColumnPermissons(List<DatasetTableField> fields, List<String>desensitizationList, DatasetTable datasetTable, Long user){
+    public List<DatasetTableField> filterColumnPermissons(List<DatasetTableField> fields, List<String> desensitizationList, String datasetTableId, Long user){
         List<DatasetTableField> result = new ArrayList<>();
         List<ColumnPermissionItem> allColumnPermissionItems = new ArrayList<>();
-        for (DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO : columnPermissions(datasetTable.getId(), user)) {
+        for (DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO : columnPermissions(datasetTableId, user)) {
             ColumnPermissions columnPermissions = JSONObject.parseObject(dataSetColumnPermissionsDTO.getPermissions(), ColumnPermissions.class);
             if(!columnPermissions.getEnable()){continue;}
             allColumnPermissionItems.addAll(columnPermissions.getColumns().stream().filter(columnPermissionItem -> columnPermissionItem.getSelected()).collect(Collectors.toList()));

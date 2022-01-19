@@ -1218,7 +1218,8 @@ export default {
       column_permission_not_empty: '列权限不能为空',
       auth_type: '授权类型',
       auth_obj: '授权对象',
-      enable: '启用列权限',
+      enable: '启用',
+      disable: '禁用',
       prohibit: '禁用',
       desensitization: '脱敏'
     },
