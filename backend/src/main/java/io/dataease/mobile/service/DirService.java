@@ -40,7 +40,6 @@ public class DirService {
     }
 
     public List<DirItemDTO> query(DirRequest request) {
-//        CurrentUserDto user = AuthUtils.getUser();
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         List<PanelEntity> panelEntities = new ArrayList<>();
         if (StringUtils.isNotBlank(request.getName())) {
@@ -58,17 +57,6 @@ public class DirService {
             return dirItemDTO;
         }).collect(Collectors.toList());
         return dtos;
-
-//        if (user.getUserId() == 1 && StringUtils.equals("admin", user.getUsername())) {
-//            return dtos;
-//        }
-//        List<String> permissions = proxy().permissions();
-//        return dtos.stream().filter(
-//                dto -> permissions.stream().anyMatch(
-//                        permission -> StringUtils.equals(permission, dto.getId())
-//                )
-//        ).collect(Collectors.toList());
-
     }
 
     public DirService proxy() {
