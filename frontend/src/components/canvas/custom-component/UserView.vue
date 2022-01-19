@@ -118,9 +118,10 @@ export default {
   },
   data() {
     return {
+      filterInit: false, // 标记是否已经通过watch.filters 进行初始化，如果filterInit=true 则create放弃数据初始化防止数据覆盖
       refId: null,
       chart: BASE_CHART_STRING,
-      requestStatus: 'waiting',
+      requestStatus: 'success',
       message: null,
       drillClickDimensionList: [],
       drillFilters: [],
@@ -242,7 +243,10 @@ export default {
 
   watch: {
     'filters': function(val1, val2) {
-      isChange(val1, val2) && this.getData(this.element.propValue.viewId)
+      if (isChange(val1, val2)) {
+        this.filterInit = true
+        this.getData(this.element.propValue.viewId)
+      }
     },
     linkageFilters: {
       handler(newVal, oldVal) {
@@ -313,8 +317,8 @@ export default {
   created() {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
-      const hasFilter = this.componentData.filter(item => item.type === 'custom').some(item => item.options.value && !(item.options.value instanceof Object) || (item.options.attrs && item.options.attrs.default && item.options.attrs.default.isDynamic))
-      if (!hasFilter || this.filters.length > 0) { this.getData(this.element.propValue.viewId, false) }
+      // 如果watch.filters 已经进行数据初始化时候，此处放弃数据初始化
+      !this.filterInit && this.getData(this.element.propValue.viewId, false)
     }
   },
   methods: {

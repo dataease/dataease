@@ -11,3 +11,6 @@ CREATE TABLE `dataset_column_permissions` (
 INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (61, 0, 0, 1, '首页', 'wizard', 'wizard/index', 0, '', '/wizard', b'1', b'0', b'0', NULL, NULL, NULL, NULL, 1614915491036);
 INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.openHomePage', 'true', 'boolean', 13);
 
+UPDATE `dataset_table_function` SET `desc` = '如果expr等于某个vn，则返回对应位置THEN后面的结果，如果与所有值都不相等，则返回ELSE后面的rn' WHERE `id` = 47;
+UPDATE `dataset_table_function` SET `desc` = '如果expr等于某个vn，则返回对应位置THEN后面的结果，如果与所有值都不相等，则返回ELSE后面的rn' WHERE `id` = 96;
+

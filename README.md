@@ -38,6 +38,7 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 - MongoDB
 - Amazon Redshift
 - Hive
+- DB2
 
 > 更多数据源支持持续增加中...
 
