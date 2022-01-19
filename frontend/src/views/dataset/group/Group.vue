@@ -436,7 +436,7 @@ export default {
             _this.expandedArray.push(table.sceneId)
             _this.$refs.datasetTreeRef.setCurrentKey(table.id)
             _this.treeNode()
-            this.$store.dispatch('dataset/setTable', new Date().getTime())
+            this.$emit('switchComponent', { name: '' })
           })
         } else {
           return false
