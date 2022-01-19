@@ -1215,7 +1215,8 @@ export default {
       column_permission_not_empty: '列權限不能為空',
       auth_type: '授權類型',
       auth_obj: '授權對象',
-      enable: '啟用列權限',
+      enable: '啟用',
+      disable: '禁用',
       prohibit: '禁用',
       desensitization: '脫敏'
     },

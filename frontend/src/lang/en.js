@@ -1215,7 +1215,8 @@ export default {
       column_permission_not_empty: 'Please select authorization target',
       auth_type: 'Authorization type',
       auth_obj: 'Authorized object',
-      enable: 'Enable column permissions',
+      enable: 'Enable',
+      disable: 'Disable',
       prohibit: 'Prohibit',
       desensitization: 'Desensitization'
     },

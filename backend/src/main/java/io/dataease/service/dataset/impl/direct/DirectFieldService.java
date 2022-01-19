@@ -54,7 +54,7 @@ public class DirectFieldService implements DataSetFieldService {
 
         //列权限
         List<String> desensitizationList = new ArrayList<>();
-        fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable, userId);
+        fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), userId);
 
         if (CollectionUtils.isNotEmpty(desensitizationList) && desensitizationList.contains(field.getDataeaseName())) {
             List<Object> results = new ArrayList<>();
