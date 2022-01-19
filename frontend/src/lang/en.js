@@ -1504,7 +1504,7 @@ export default {
     timeout_refresh: 'Timeout，Will Refresh...',
     mobile_layout: 'Mobile Layout',
     component_hidden: 'Component Hidden',
-    public_link_tips: 'New Is Public Link,The Target Panel Have Not Set Public Link,Can Not Jump',
+    public_link_tips: 'Currently in public link mode, the target panel does not have a public link and cannot jump to it',
     input_title: 'Input Title',
     show_title: 'Show Title',
     default_settings: 'Default Settings'
