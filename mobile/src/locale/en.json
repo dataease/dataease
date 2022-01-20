@@ -1,7 +1,7 @@
 {
     "app.name": "DataEase",
     "navigate.menuHome": "Home",
-    "navigate.menuDir": "Dir",    
+    "navigate.menuDir": "Folder",    
     "navigate.menuMe": "Me",
 
     "navigate.search": "Search",
@@ -38,9 +38,9 @@
     },
     "dir": {
         "searchHistory": "Search History",
-        "clearConfirm": "Sure Clean All History ?",
+        "clearConfirm": "Are You Sure To Clean All History ?",
         "noHistory": "There Are No Any History",
-        "contentPrefix": "The Content You Code Are ",
+        "contentPrefix": "The Content Is ",
         "contentSuffix": "Will Be Marked As History When You Confirm"
     },
     "me": {
