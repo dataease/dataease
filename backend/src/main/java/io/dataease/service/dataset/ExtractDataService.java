@@ -150,7 +150,7 @@ public class ExtractDataService {
         }
     }
 
-    public void extractExcelData(String datasetTableId, String type, String ops, List<DatasetTableField> datasetTableFields) {
+    public void extractExcelData(String datasetTableId, String type, String ops, List<DatasetTableField> datasetTableFields, List<String> datasetTableIds) {
         Datasource datasource = new Datasource();
         datasource.setType("excel");
         DatasetTable datasetTable = getDatasetTable(datasetTableId);
@@ -223,9 +223,7 @@ public class ExtractDataService {
                     dropDorisTable(DorisTableUtils.dorisTmpName(DorisTableUtils.dorisName(datasetTableId)));
                 } finally {
                     deleteFile("all_scope", datasetTableId);
-                    for (ExcelSheetData excelSheetData : new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getExcelSheetDataList()) {
-                        deleteFile(excelSheetData.getPath());
-                    }
+                    deleteExcelFile(datasetTable, datasetTableIds);
                 }
                 break;
 
@@ -1081,6 +1079,27 @@ public class ExtractDataService {
         deleteFile(root_path + transName + ".ktr");
     }
 
+    private void deleteExcelFile(DatasetTable datasetTable, List<String>datasetTableIds){
+        List<DatasetTable> datasetTables = dataSetTableService.list(datasetTableIds);
+        for (ExcelSheetData excelSheetData : new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getExcelSheetDataList()) {
+            Boolean allIsFinished = true;
+            for (DatasetTable table : datasetTables) {
+                for(ExcelSheetData data : new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class).getExcelSheetDataList()){
+                    if(data.getPath().equalsIgnoreCase(excelSheetData.getPath())){
+                        if(StringUtils.isEmpty(table.getSyncStatus()) || table.getSyncStatus().equalsIgnoreCase(JobStatus.Underway.name())){
+                            allIsFinished = false;
+                        }
+                    }
+                }
+            }
+            if(allIsFinished){
+                deleteFile(excelSheetData.getPath());
+            }else {
+               try { Thread.sleep(5000); }catch (Exception ignore){}
+                deleteExcelFile(datasetTable, datasetTableIds);
+            }
+        }
+    }
     private void deleteFile(String filePath){
         if(StringUtils.isEmpty(filePath)){
             return;
