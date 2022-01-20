@@ -52,6 +52,8 @@ import { loadTree, loadShareOutTree, removeShares } from '@/api/panel/share'
 import { uuid } from 'vue-uuid'
 import { get } from '@/api/panel/panel'
 import bus from '@/utils/bus'
+import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
+import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 export default {
   name: 'ShareTree',
   props: {
@@ -106,8 +108,15 @@ export default {
       get('panel/group/findOne/' + data.id).then(response => {
         this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
         this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
-
         this.$store.dispatch('panel/setPanelInfo', data)
+        // 刷新联动信息
+        getPanelAllLinkageInfo(data.id).then(rsp => {
+          this.$store.commit('setNowPanelTrackInfo', rsp.data)
+        })
+        // 刷新跳转信息
+        queryPanelJumpInfo(data.id).then(rsp => {
+          this.$store.commit('setNowPanelJumpInfo', rsp.data)
+        })
         bus.$emit('set-panel-show-type', 1)
       })
       this.$refs['botTree'].setCurrentKey(null)
@@ -118,6 +127,14 @@ export default {
         this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
 
         this.$store.dispatch('panel/setPanelInfo', data)
+        // 刷新联动信息
+        getPanelAllLinkageInfo(data.id).then(rsp => {
+          this.$store.commit('setNowPanelTrackInfo', rsp.data)
+        })
+        // 刷新跳转信息
+        queryPanelJumpInfo(data.id).then(rsp => {
+          this.$store.commit('setNowPanelJumpInfo', rsp.data)
+        })
         bus.$emit('set-panel-show-type', 2)
       })
       this.$refs['topTree'].setCurrentKey(null)
