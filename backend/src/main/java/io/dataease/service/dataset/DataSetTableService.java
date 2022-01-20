@@ -126,6 +126,8 @@ public class DataSetTableService {
     }
 
     public void saveExcel(DataSetTableRequest datasetTable) throws Exception {
+        List<String> datasetIdList = new ArrayList<>();
+
         if (StringUtils.isEmpty(datasetTable.getId())) {
             if (datasetTable.isMergeSheet()) {
                 Map<String, List<ExcelSheetData>> map = datasetTable.getSheets().stream().collect(Collectors.groupingBy(ExcelSheetData::getFieldsMd5));
@@ -149,12 +151,13 @@ public class DataSetTableService {
                     DataTableInfoDTO info = new DataTableInfoDTO();
                     info.setExcelSheetDataList(excelSheetDataList);
                     sheetTable.setInfo(new Gson().toJson(info));
-                    int insert = datasetTableMapper.insert(sheetTable);
-                    if (insert == 1) {
-                        saveExcelTableField(sheetTable.getId(), excelSheetDataList.get(0).getFields(), true);
-                        commonThreadPool.addTask(() -> extractDataService.extractExcelData(sheetTable.getId(), "all_scope", "初始导入", null));
-                    }
+                    datasetTableMapper.insert(sheetTable);
+                    saveExcelTableField(sheetTable.getId(), excelSheetDataList.get(0).getFields(), true);
+                    datasetIdList.add(sheetTable.getId());
                 }
+                datasetIdList.forEach(datasetId ->{
+                    commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetId, "all_scope", "初始导入", null, datasetIdList));
+                });
             } else {
                 for (ExcelSheetData sheet : datasetTable.getSheets()) {
                     String[] fieldArray = sheet.getFields().stream().map(TableFiled::getFieldName).toArray(String[]::new);
@@ -175,12 +178,14 @@ public class DataSetTableService {
                     DataTableInfoDTO info = new DataTableInfoDTO();
                     info.setExcelSheetDataList(excelSheetDataList);
                     sheetTable.setInfo(new Gson().toJson(info));
-                    int insert = datasetTableMapper.insert(sheetTable);
-                    if (insert == 1) {
-                        saveExcelTableField(sheetTable.getId(), sheet.getFields(), true);
-                        commonThreadPool.addTask(() -> extractDataService.extractExcelData(sheetTable.getId(), "all_scope", "初始导入", null));
-                    }
+                    datasetTableMapper.insert(sheetTable);
+                    saveExcelTableField(sheetTable.getId(), sheet.getFields(), true);
+                    datasetIdList.add(sheetTable.getId());
                 }
+                datasetIdList.forEach(datasetId ->{
+                    commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetId, "all_scope", "初始导入", null, datasetIdList));
+                });
+
             }
             return;
         }
@@ -210,13 +215,10 @@ public class DataSetTableService {
         datasetTable.setInfo(new Gson().toJson(info));
         int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
         // 替換時，先不刪除旧字段；同步成功后再删除
-
-        if (update == 1) {
-            if (datasetTable.getEditType() == 0) {
-                commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetTable.getId(), "all_scope", "替换", saveExcelTableField(datasetTable.getId(), datasetTable.getSheets().get(0).getFields(), false)));
-            } else if (datasetTable.getEditType() == 1) {
-                commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetTable.getId(), "add_scope", "追加", null));
-            }
+        if (datasetTable.getEditType() == 0) {
+            commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetTable.getId(), "all_scope", "替换", saveExcelTableField(datasetTable.getId(), datasetTable.getSheets().get(0).getFields(), false), Arrays.asList(datasetTable.getId())));
+        } else if (datasetTable.getEditType() == 1) {
+            commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetTable.getId(), "add_scope", "追加", null, Arrays.asList(datasetTable.getId())));
         }
     }
 
@@ -300,6 +302,12 @@ public class DataSetTableService {
         dataSetTableRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         dataSetTableRequest.setTypeFilter(dataSetTableRequest.getTypeFilter());
         return extDataSetTableMapper.search(dataSetTableRequest);
+    }
+
+    public List<DatasetTable> list(List<String> datasetIds) {
+        DatasetTableExample example = new DatasetTableExample();
+        example.createCriteria().andIdIn(datasetIds);
+        return datasetTableMapper.selectByExample(example);
     }
 
     public List<DataSetTableDTO> listAndGroup(DataSetTableRequest dataSetTableRequest) {
