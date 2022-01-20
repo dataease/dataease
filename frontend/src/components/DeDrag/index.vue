@@ -1236,8 +1236,9 @@ export default {
       // eslint-disable-next-line no-unused-vars
       const [_, newHeight] = snapToGrid(this.grid, 0, val, this.scale)
       // const bottom = restrictToBounds(this.parentHeight - newHeight - this.top, this.bounds.minBottom, this.bounds.maxBottom)
-      // private 将 this.bounds.minBottom 设置为0
-      const bottom = restrictToBounds(this.parentHeight - newHeight - this.top, 0, this.bounds.maxBottom)
+      // private 将 this.bounds.minBottom parentHeight理论不设上限 所以这里不再检验bottom底部距离
+      // const bottom = restrictToBounds(this.parentHeight - newHeight - this.top, 0, this.bounds.maxBottom)
+      const bottom = this.parentHeight - newHeight - this.top
       let right = this.right
       if (this.lockAspectRatio) {
         right = this.right - (this.bottom - bottom) * this.aspectFactor
