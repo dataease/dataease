@@ -36,10 +36,6 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
 
     @Override
     public List<DynamicMenuDto> load(String userId) {
-//        SysMenuExample sysMenuExample = new SysMenuExample();
-//        sysMenuExample.createCriteria().andTypeLessThanOrEqualTo(1);
-//        sysMenuExample.setOrderByClause(" menu_sort ");
-//        List<SysMenu> sysMenus = sysMenuMapper.selectByExample(sysMenuExample);
         List<SysMenu> sysMenus = extSysMenuMapper.querySysMenu();
         List<DynamicMenuDto> dynamicMenuDtos = sysMenus.stream().map(this::convert).collect(Collectors.toList());
         //增加插件中的菜单
