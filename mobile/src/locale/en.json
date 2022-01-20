@@ -1,15 +1,15 @@
 {
     "app.name": "DataEase",
     "navigate.menuHome": "Home",
-    "navigate.menuDir": "Dir",    
+    "navigate.menuDir": "Folder",    
     "navigate.menuMe": "Me",
 
     "navigate.search": "Search",
-    "navigate.personInfo": "Person Info",
+    "navigate.personInfo": "My Profile",
     "navigate.language": "Language",
     "navigate.about": "About",
     "navigate.login": "Login",
-    "searchPlaceholder": "Please Code Panel Name",
+    "searchPlaceholder": "Please Input Panel Name",
     
     "commons": {
         "cancel": "Cancel",
@@ -24,11 +24,11 @@
     "login": {
         "title": "User Login",
         "account": "Account:",
-        "accountPlaceholder": "Please Code Account",
+        "accountPlaceholder": "Please Input Account",
         "password": "Password:",
-        "passwordPlaceholder": "Please Code Password:",
+        "passwordPlaceholder": "Please Input Password:",
         "loginbtn": "Login",
-        "pwdFmtError": "Password Must More Than 6 Character",
+        "pwdFmtError": "Password Must More Than 6 Characters",
         "uOrpwdError": "Invalid Account Or Password"
     },
     "home": {
@@ -38,13 +38,13 @@
     },
     "dir": {
         "searchHistory": "Search History",
-        "clearConfirm": "Sure Clean All History ?",
+        "clearConfirm": "Are You Sure To Clean All History ?",
         "noHistory": "There Are No Any History",
-        "contentPrefix": "The Content You Code Are ",
+        "contentPrefix": "The Content Is ",
         "contentSuffix": "Will Be Marked As History When You Confirm"
     },
     "me": {
-        "moreInfo": "More Info",
+        "moreInfo": "More",
         "logout": "Logout",
         
         "systemInfo": "System Info",

@@ -17,7 +17,7 @@ import io.dataease.plugins.xpack.email.dto.response.XpackTaskGridDTO;
 import io.dataease.plugins.xpack.email.dto.response.XpackTaskInstanceDTO;
 import io.dataease.plugins.xpack.email.service.EmailXpackService;
 import io.dataease.service.ScheduleService;
-import io.swagger.annotations.Api;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ import java.util.concurrent.Future;
 
 import javax.annotation.Resource;
 
-@Api(tags = "xpack：定时报告")
+
 @RequestMapping("/plugin/task")
 @RestController
 public class XEmailTaskServer {
@@ -45,6 +45,28 @@ public class XEmailTaskServer {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<XpackTaskGridDTO> tasks = emailXpackService.taskGrid(request);
+        if (CollectionUtils.isNotEmpty(tasks)) {
+            tasks.forEach(item -> {
+                if (CronUtils.taskExpire(item.getEndTime())) {
+                    item.setNextExecTime(null);
+                }else {
+                    GlobalTaskEntity globalTaskEntity = new GlobalTaskEntity();
+                    globalTaskEntity.setRateType(item.getRateType());
+                    globalTaskEntity.setRateVal(item.getRateVal());
+                    try{
+                        String cron = CronUtils.cron(globalTaskEntity);
+                        if (StringUtils.isNotBlank(cron)) {
+                            Long nextTime = CronUtils.getNextTriggerTime(cron).getTime();
+                            item.setNextExecTime(nextTime);
+                        }
+                    }catch (Exception e) {
+                        item.setNextExecTime(null);
+                    }
+                }
+
+            });
+        }
+
         Pager<List<XpackTaskGridDTO>> listPager = PageUtils.setPageInfo(page, tasks);
         return listPager;
     }
@@ -131,6 +153,12 @@ public class XEmailTaskServer {
             LogUtil.error(e);
             DEException.throwException(e);
         }
+    }
+
+    @PostMapping("/stop/{taskId}")
+    public void stop(@PathVariable Long taskId) throws Exception {
+        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
+        emailXpackService.stop(taskId);
     }
 
     @PostMapping("/queryInstancies/{goPage}/{pageSize}")
