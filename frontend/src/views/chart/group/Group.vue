@@ -558,7 +558,7 @@ export default {
               showClose: true
             })
             this.treeNode()
-            this.$store.dispatch('chart/setTable', new Date().getTime())
+            this.$emit('switchComponent', { name: '' })
           })
         } else {
           // this.$message({

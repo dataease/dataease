@@ -1,6 +1,5 @@
 <template>
   <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
-    <span v-show="false">{{ refreshPage }}</span>
     <el-row style="height: 26px;">
       <span class="title-text" style="line-height: 26px;">
         {{ table.name }}
@@ -108,10 +107,6 @@ export default {
   computed: {
     hideCustomDs: function() {
       return this.$store.getters.hideCustomDs
-    },
-    refreshPage: function() {
-      this.initTable(this.param.id)
-      return this.$store.getters.table
     }
   },
   watch: {

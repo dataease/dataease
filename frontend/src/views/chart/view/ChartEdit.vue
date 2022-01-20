@@ -1,7 +1,6 @@
 <template>
   <el-row v-loading="loading" style="height: 100%;overflow-y: hidden;width: 100%;">
     <el-row style="height: 40px;" class="padding-lr">
-      <span v-show="false">{{ refreshPage }}</span>
       <span class="title-text" style="line-height: 40px;">{{ view.name }}</span>
       <el-popover
         placement="right-start"
@@ -1106,10 +1105,6 @@ export default {
     }
   },
   computed: {
-    refreshPage: function() {
-      this.getChart(this.param.id)
-      return this.$store.getters.chartTable
-    },
     chartType() {
       return this.chart.type
     }
