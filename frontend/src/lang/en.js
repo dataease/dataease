@@ -131,6 +131,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    stop: 'Stop',
     first_login_tips: 'Please change the initial password',
     roger_that: 'Roger That',
     apply: 'Apply',
@@ -347,6 +348,8 @@ export default {
     ukey_title: 'API Keys',
     thumbnail: 'thumbnail',
     confirm_delete: 'Confirm delete',
+    confirm_stop: 'Confirm stop',
+    stop_success: 'Stop success',
     treeselect: {
       no_children_text: 'No sub-options.',
       no_options_text: 'No options available.',
@@ -1739,7 +1742,8 @@ export default {
     search_by_name: 'Search by name',
     exec_time: 'Execute time',
     status: 'Execute status',
-    pixel_error: 'Pixel only support {800 - 10000} * {500 - 6250}'
+    pixel_error: 'Pixel only support {800 - 10000} * {500 - 6250}',
+    next_exec_time: 'Next execute time'
 
   },
   emailtask: {

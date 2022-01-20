@@ -7,6 +7,7 @@ import io.dataease.auth.service.impl.AuthUserServiceImpl;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.base.mapper.ext.ExtTaskMapper;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.CronUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.job.sechedule.ScheduleManager;
@@ -67,7 +68,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
         GlobalTaskEntity taskEntity = (GlobalTaskEntity) jobDataMap.get("taskEntity");
         ScheduleManager scheduleManager = SpringContextUtil.getBean(ScheduleManager.class);
-        if (taskExpire(taskEntity.getEndTime())) {
+        if (CronUtils.taskExpire(taskEntity.getEndTime())) {
             removeTask(scheduleManager, taskEntity);
             return;
         }
