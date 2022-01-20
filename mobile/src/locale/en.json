@@ -9,7 +9,7 @@
     "navigate.language": "Language",
     "navigate.about": "About",
     "navigate.login": "Login",
-    "searchPlaceholder": "Please Code Panel Name",
+    "searchPlaceholder": "Please Input Panel Name",
     
     "commons": {
         "cancel": "Cancel",
@@ -24,11 +24,11 @@
     "login": {
         "title": "User Login",
         "account": "Account:",
-        "accountPlaceholder": "Please Code Account",
+        "accountPlaceholder": "Please Input Account",
         "password": "Password:",
-        "passwordPlaceholder": "Please Code Password:",
+        "passwordPlaceholder": "Please Input Password:",
         "loginbtn": "Login",
-        "pwdFmtError": "Password Must More Than 6 Character",
+        "pwdFmtError": "Password Must More Than 6 Characters",
         "uOrpwdError": "Invalid Account Or Password"
     },
     "home": {
