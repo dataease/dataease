@@ -25,8 +25,6 @@ export default {
       // 置顶
       if (curComponentIndex < componentData.length - 1) {
         toTop(componentData, curComponentIndex)
-      } else {
-        toast('已经到顶了')
       }
     },
 

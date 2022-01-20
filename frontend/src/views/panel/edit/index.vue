@@ -126,7 +126,7 @@
                 class="this_mobile_canvas_main"
                 :style="mobileCanvasStyle"
               >
-                <Editor v-if="mobileEditorShow" ref="editorMobile" :matrix-count="mobileMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
+                <Editor v-if="mobileEditorShow" id="editorMobile" ref="editorMobile" :matrix-count="mobileMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" @canvasDragging="canvasDragging" />
               </el-row>
               <el-row class="this_mobile_canvas_inner_bottom">
                 <el-col :span="12">
@@ -265,6 +265,7 @@ export default {
   },
   data() {
     return {
+      autoMoveOffSet: 15,
       mobileEditorShow: true,
       hasStar: false,
       drawerSize: '300px',
@@ -397,7 +398,8 @@ export default {
       'mobileLayoutStatus',
       'pcMatrixCount',
       'mobileMatrixCount',
-      'mobileLayoutStyle'
+      'mobileLayoutStyle',
+      'scrollAutoMove'
     ])
   },
 
@@ -881,6 +883,33 @@ export default {
     },
     sureStatusChange(status) {
       this.enableSureButton = status
+    },
+    canvasDragging(mY, offsetY) {
+      if (this.curComponent && this.curComponent.optStatus.dragging) {
+        // 触发滚动的区域偏移量
+        const touchOffset = 100
+        const canvasInfoMobile = document.getElementById('canvasInfoMobile')
+        // 获取子盒子（高度肯定比父盒子大）
+        // const editorMobile = document.getElementById('editorMobile')
+        // 画布区顶部到浏览器顶部距离
+        const canvasTop = canvasInfoMobile.offsetTop + 75
+        // 画布区有高度
+        const canvasHeight = canvasInfoMobile.offsetHeight
+        // 画布区域底部距离浏览器顶部距离
+        const canvasBottom = canvasTop + canvasHeight
+        if (mY > (canvasBottom - touchOffset) && offsetY > 0) {
+          // 触发底部滚动
+          this.scrollMove(this.autoMoveOffSet)
+        } else if (mY < (canvasTop + touchOffset) && offsetY < 0) {
+          // 触发顶部滚动
+          this.scrollMove(-this.autoMoveOffSet)
+        }
+      }
+    },
+    scrollMove(offset) {
+      const canvasInfoMobile = document.getElementById('canvasInfoMobile')
+      canvasInfoMobile.scrollTop = canvasInfoMobile.scrollTop + offset
+      this.$store.commit('setScrollAutoMove', this.scrollAutoMove + offset)
     }
   }
 }

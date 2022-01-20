@@ -55,6 +55,7 @@
       @amRemoveItem="removeItem(item._dragId)"
       @amAddItem="addItemBox(item)"
       @linkJumpSet="linkJumpSet(item)"
+      @canvasDragging="canvasDragging"
     >
       <component
         :is="item.component"
@@ -1533,6 +1534,9 @@ export default {
       _this.componentData.forEach(function(data, index) {
         _this.$refs.deDragRef && _this.$refs.deDragRef[index] && _this.$refs.deDragRef[index].checkParentSize()
       })
+    },
+    canvasDragging(mY, offsetY) {
+      this.$emit('canvasDragging', mY, offsetY)
     }
   }
 }
