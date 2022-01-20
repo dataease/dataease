@@ -315,7 +315,9 @@ public class ShareService {
     }
 
     public List<PanelShareOutDTO> queryTargets(String panelId) {
-        return extPanelShareMapper.queryTargets(panelId);
+        List<PanelShareOutDTO> targets = extPanelShareMapper.queryTargets(panelId);
+        if (CollectionUtils.isEmpty(targets)) return new ArrayList<>();
+        return targets.stream().filter(item -> StringUtils.isNotEmpty(item.getTargetName())).collect(Collectors.toList());
     }
 
     public void removeShares(PanelShareRemoveRequest removeRequest) {
