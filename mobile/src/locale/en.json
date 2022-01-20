@@ -5,7 +5,7 @@
     "navigate.menuMe": "Me",
 
     "navigate.search": "Search",
-    "navigate.personInfo": "Person Info",
+    "navigate.personInfo": "My Profile",
     "navigate.language": "Language",
     "navigate.about": "About",
     "navigate.login": "Login",
@@ -44,7 +44,7 @@
         "contentSuffix": "Will Be Marked As History When You Confirm"
     },
     "me": {
-        "moreInfo": "More Info",
+        "moreInfo": "More",
         "logout": "Logout",
         
         "systemInfo": "System Info",
