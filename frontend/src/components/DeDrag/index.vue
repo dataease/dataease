@@ -370,7 +370,9 @@ export default {
       // 鼠标移入事件
       mouseOn: false,
       // 是否移动 （如果没有移动 不需要记录snapshot）
-      hasMove: false
+      hasMove: false,
+      // 上次的鼠标指针纵向位置，用来判断指针是上移还是下移
+      latestMoveY: 0
     }
   },
   computed: {
@@ -543,7 +545,8 @@ export default {
       'canvasStyleData',
       'linkageSettingStatus',
       'mobileLayoutStatus',
-      'componentGap'
+      'componentGap',
+      'scrollAutoMove'
     ])
   },
   watch: {
@@ -646,12 +649,14 @@ export default {
     dragging(val) {
       if (this.enabled) {
         this.curComponent.optStatus.dragging = val
+        this.$store.commit('setScrollAutoMove', 0)
       }
     },
     // private 监控dragging  resizing
     resizing(val) {
       if (this.enabled) {
         this.curComponent.optStatus.resizing = val
+        this.$store.commit('setScrollAutoMove', 0)
       }
     }
   },
@@ -724,6 +729,8 @@ export default {
       // 此处阻止冒泡 但是外层需要获取pageX pageY
       this.element.auxiliaryMatrix && this.$emit('elementMouseDown', e)
       this.$store.commit('setCurComponent', { component: this.element, index: this.index })
+      // 移动端组件点击自动置顶
+      this.mobileLayoutStatus && this.$store.commit('topComponent')
       eventsFor = events.mouse
       this.elementDown(e)
     },
@@ -763,6 +770,8 @@ export default {
         this.mouseClickPosition.bottom = this.bottom
         this.mouseClickPosition.width = this.width
         this.mouseClickPosition.height = this.height
+        // 鼠标按下 重置上次鼠标指针位置
+        this.latestMoveY = this.mouseClickPosition.mouseY
         if (this.parent) {
           this.bounds = this.calcDragLimits()
         }
@@ -997,7 +1006,13 @@ export default {
       // 水平移动
       const tmpDeltaX = axis && axis !== 'y' ? mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX) : 0
       // 垂直移动
-      const tmpDeltaY = axis && axis !== 'x' ? mouseClickPosition.mouseY - (e.touches ? e.touches[0].pageY : e.pageY) : 0
+      const mY = e.touches ? e.touches[0].pageY : e.pageY
+      const tmpDeltaY = axis && axis !== 'x' ? mouseClickPosition.mouseY - mY : 0
+      // mY 鼠标指针移动的点 mY - this.latestMoveY 是计算向下移动还是向上移动
+      const offsetY = mY - this.latestMoveY
+      // console.log('mY:' + mY + ';latestMoveY=' + this.latestMoveY + ';offsetY=' + offsetY)
+      this.$emit('canvasDragging', mY, offsetY)
+      this.latestMoveY = mY
       const [deltaX, deltaY] = snapToGrid(grid, tmpDeltaX, tmpDeltaY, this.scaleRatio)
       const left = restrictToBounds(mouseClickPosition.left - deltaX, bounds.minLeft, bounds.maxLeft)
       const top = restrictToBounds(mouseClickPosition.top - deltaY, bounds.minTop, bounds.maxTop)
@@ -1007,7 +1022,7 @@ export default {
       const right = restrictToBounds(mouseClickPosition.right + deltaX, bounds.minRight, bounds.maxRight)
       const bottom = restrictToBounds(mouseClickPosition.bottom + deltaY, bounds.minBottom, bounds.maxBottom)
       this.left = left
-      this.top = top
+      this.top = top + this.scrollAutoMove
       this.right = right
       this.bottom = bottom
       await this.snapCheck()
@@ -1221,8 +1236,9 @@ export default {
       // eslint-disable-next-line no-unused-vars
       const [_, newHeight] = snapToGrid(this.grid, 0, val, this.scale)
       // const bottom = restrictToBounds(this.parentHeight - newHeight - this.top, this.bounds.minBottom, this.bounds.maxBottom)
-      // private 将 this.bounds.minBottom 设置为0
-      const bottom = restrictToBounds(this.parentHeight - newHeight - this.top, 0, this.bounds.maxBottom)
+      // private 将 this.bounds.minBottom parentHeight理论不设上限 所以这里不再检验bottom底部距离
+      // const bottom = restrictToBounds(this.parentHeight - newHeight - this.top, 0, this.bounds.maxBottom)
+      const bottom = this.parentHeight - newHeight - this.top
       let right = this.right
       if (this.lockAspectRatio) {
         right = this.right - (this.bottom - bottom) * this.aspectFactor

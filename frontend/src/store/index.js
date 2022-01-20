@@ -98,7 +98,8 @@ const data = {
     mobileLayoutStyle: {
       x: 300,
       y: 600
-    }
+    },
+    scrollAutoMove: 0
   },
   mutations: {
     ...animation.mutations,
@@ -371,6 +372,9 @@ const data = {
       })
       state.componentData = mainComponentData
       state.mobileLayoutStatus = !state.mobileLayoutStatus
+    },
+    setScrollAutoMove(state, offset) {
+      state.scrollAutoMove = offset
     }
   },
   modules: {

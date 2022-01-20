@@ -131,6 +131,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    stop: '停止',
     first_login_tips: '您使用的是初始密码，记得修改密码哦',
     roger_that: '知道了',
     apply: '应用',
@@ -348,6 +349,8 @@ export default {
     ukey_title: 'API Keys',
     thumbnail: '缩略图',
     confirm_delete: '确认删除',
+    confirm_stop: '确认停止',
+    stop_success: '停止成功',
     treeselect: {
       no_children_text: '没有子节点',
       no_options_text: '没有可用选项',
@@ -1759,7 +1762,8 @@ export default {
     search_by_name: '根据名称搜索',
     exec_time: '执行时间',
     status: '执行状态',
-    pixel_error: '分辨率支持{800 - 10000} * {500 - 6250}'
+    pixel_error: '分辨率支持{800 - 10000} * {500 - 6250}',
+    next_exec_time: '下次执行时间'
 
   },
   emailtask: {
