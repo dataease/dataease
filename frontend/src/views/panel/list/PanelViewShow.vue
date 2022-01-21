@@ -317,7 +317,7 @@ export default {
       })
     },
     initHasStar() {
-      starStatus(this.panelInfo.id).then(res => {
+      this.panelInfo && this.panelInfo.id && starStatus(this.panelInfo.id).then(res => {
         this.hasStar = res.data
       })
     },
