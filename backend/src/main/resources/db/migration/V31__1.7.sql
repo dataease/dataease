@@ -14,3 +14,7 @@ INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALU
 UPDATE `dataset_table_function` SET `desc` = '如果expr等于某个vn，则返回对应位置THEN后面的结果，如果与所有值都不相等，则返回ELSE后面的rn' WHERE `id` = 47;
 UPDATE `dataset_table_function` SET `desc` = '如果expr等于某个vn，则返回对应位置THEN后面的结果，如果与所有值都不相等，则返回ELSE后面的rn' WHERE `id` = 96;
 
+UPDATE `chart_view` SET `name` = '2021年GDP同比增长率' WHERE `id` = 'a0058881-b29f-4b5c-911f-7f1480b07eb0';
+UPDATE `chart_view` SET `name` = '2021年GDP总值' WHERE `id` = 'f257452d-6fc1-4499-bdce-bd10b3e1c520';
+
+
