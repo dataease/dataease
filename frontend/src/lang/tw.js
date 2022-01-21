@@ -1807,7 +1807,7 @@ export default {
   dynamic_year: {
     fix: '固定年份',
     dynamic: '動態年份',
-    current: '當年',
+    current: '今年',
     last: '去年'
   },
   dynamic_month: {
