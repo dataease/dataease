@@ -38,14 +38,14 @@ public class ColumnPermissionsController {
         List<DataSetColumnPermissionsDTO> columnPermissionsDTOS = columnPermissionService.searchPermissions(request);
         if(StringUtils.isEmpty(datasetColumnPermissions.getId())){
             if(!CollectionUtils.isEmpty(columnPermissionsDTOS)){
-                throw new Exception(Translator.get("i18n_rp_exist"));
+                throw new Exception(Translator.get("i18n_cp_exist"));
             }
         }else {
             if(!CollectionUtils.isEmpty(columnPermissionsDTOS) && columnPermissionsDTOS.size() > 1){
-                throw new Exception(Translator.get("i18n_rp_exist"));
+                throw new Exception(Translator.get("i18n_cp_exist"));
             }
             if(columnPermissionsDTOS.size() == 1 && !columnPermissionsDTOS.get(0).getId().equalsIgnoreCase(datasetColumnPermissions.getId())){
-                throw new Exception(Translator.get("i18n_rp_exist"));
+                throw new Exception(Translator.get("i18n_cp_exist"));
             }
         }
         columnPermissionService.save(datasetColumnPermissions);

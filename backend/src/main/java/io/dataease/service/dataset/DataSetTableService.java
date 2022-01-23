@@ -459,6 +459,12 @@ public class DataSetTableService {
         //列权限
         List<String> desensitizationList = new ArrayList<>();
         fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), null);
+        if (CollectionUtils.isEmpty(fields)) {
+            map.put("fields", fields);
+            map.put("data", new ArrayList<>());
+            map.put("page", new DataSetPreviewPage());
+            return map;
+        }
         //行权限
         List<ChartFieldCustomFilterDTO> customFilter = permissionService.getCustomFilters(fields, datasetTable, null);
         String[] fieldArray = fields.stream().map(DatasetTableField::getDataeaseName).toArray(String[]::new);

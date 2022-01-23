@@ -61,6 +61,15 @@ public class DataSetTableFieldController {
         return fields;
     }
 
+    @ApiOperation("查询表下属字段")
+    @PostMapping("listForPermissionSeting/{tableId}")
+    public List<DatasetTableField> listForPermissionSeting(@PathVariable String tableId) {
+        DatasetTableField datasetTableField = DatasetTableField.builder().build();
+        datasetTableField.setTableId(tableId);
+        List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+        return fields;
+    }
+
     @ApiOperation("分组查询表下属字段")
     @PostMapping("listByDQ/{tableId}")
     public DatasetTableField4Type listByDQ(@PathVariable String tableId) {
