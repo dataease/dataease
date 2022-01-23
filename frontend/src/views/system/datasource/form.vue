@@ -355,6 +355,9 @@ export default {
       this.tData.forEach(item => {
         if(item.id === this.form.type){
           item.children.forEach(child => {
+            if(this.formType === 'modify' && child.id===this.form.id){
+              return
+            }
             let configuration = JSON.parse(child.configuration)
             switch (this.form.type) {
               case 'mysql':
