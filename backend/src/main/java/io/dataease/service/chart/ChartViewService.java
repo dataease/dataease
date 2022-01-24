@@ -75,13 +75,14 @@ public class ChartViewService {
         checkName(chartView);
         long timestamp = System.currentTimeMillis();
         chartView.setUpdateTime(timestamp);
-        int i = chartViewMapper.updateByPrimaryKeySelective(chartView);
-        if (i == 0) {
+        if (ObjectUtils.isEmpty(chartView.getId())) {
             chartView.setId(UUID.randomUUID().toString());
             chartView.setCreateBy(AuthUtils.getUser().getUsername());
             chartView.setCreateTime(timestamp);
             chartView.setUpdateTime(timestamp);
             chartViewMapper.insertSelective(chartView);
+        } else {
+            chartViewMapper.updateByPrimaryKeySelective(chartView);
         }
         Optional.ofNullable(chartView.getId()).ifPresent(id -> {
             CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
@@ -216,8 +217,10 @@ public class ChartViewService {
         if (ObjectUtils.isEmpty(view)) {
             throw new RuntimeException(Translator.get("i18n_chart_delete"));
         }
-        List<ChartViewFieldDTO> xAxis = new Gson().fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {}.getType());
-        List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {}.getType());
+        List<ChartViewFieldDTO> xAxis = new Gson().fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
+        }.getType());
+        List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
+        }.getType());
         if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")) {
             List<ChartViewFieldDTO> yAxisExt = new Gson().fromJson(view.getYAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
             }.getType());
