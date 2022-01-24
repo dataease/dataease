@@ -155,7 +155,7 @@ public class DataSetTableService {
                     saveExcelTableField(sheetTable.getId(), excelSheetDataList.get(0).getFields(), true);
                     datasetIdList.add(sheetTable.getId());
                 }
-                datasetIdList.forEach(datasetId ->{
+                datasetIdList.forEach(datasetId -> {
                     commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetId, "all_scope", "初始导入", null, datasetIdList));
                 });
             } else {
@@ -182,7 +182,7 @@ public class DataSetTableService {
                     saveExcelTableField(sheetTable.getId(), sheet.getFields(), true);
                     datasetIdList.add(sheetTable.getId());
                 }
-                datasetIdList.forEach(datasetId ->{
+                datasetIdList.forEach(datasetId -> {
                     commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetId, "all_scope", "初始导入", null, datasetIdList));
                 });
 
@@ -510,7 +510,7 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
 
                 try {
@@ -519,7 +519,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             } else {
                 // check doris table
@@ -538,14 +538,14 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             }
 
@@ -576,7 +576,7 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 try {
                     datasourceRequest.setPageable(false);
@@ -584,7 +584,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             } else {
                 // check doris table
@@ -603,14 +603,14 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
@@ -630,14 +630,14 @@ public class DataSetTableService {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
             } catch (Exception e) {
                 logger.error(e.getMessage());
-                DEException.throwException(Translator.get("i18n_ds_error"));
+                DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
             }
             try {
                 datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields, Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
                 dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
                 logger.error(e.getMessage());
-                DEException.throwException(Translator.get("i18n_ds_error"));
+                DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
             if (datasetTable.getMode() == 0) {
@@ -657,7 +657,7 @@ public class DataSetTableService {
                     sql = getCustomSQLDatasource(dt, list, ds);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false, customFilter));
@@ -672,7 +672,7 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 try {
                     datasourceRequest.setPageable(false);
@@ -680,7 +680,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             } else {
                 Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
@@ -695,7 +695,7 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
 
                 try {
@@ -703,7 +703,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "union")) {
@@ -723,7 +723,7 @@ public class DataSetTableService {
                     sql = (String) getUnionSQLDatasource(dt, ds).get("sql");
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false, customFilter));
@@ -738,7 +738,7 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 try {
                     datasourceRequest.setPageable(false);
@@ -746,7 +746,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             } else {
                 Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
@@ -761,7 +761,7 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
 
                 try {
@@ -769,7 +769,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error"));
+                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             }
         }
