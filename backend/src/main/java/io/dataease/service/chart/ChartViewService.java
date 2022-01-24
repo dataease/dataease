@@ -242,6 +242,7 @@ public class ChartViewService {
         fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), requestList.getUser());
         //将没有权限的列删掉
         List<String> dataeaseNames = fields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList());
+        dataeaseNames.add("count");
         fieldCustomFilter = fieldCustomFilter.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
         extStack = extStack.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
         extBubble = extBubble.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
