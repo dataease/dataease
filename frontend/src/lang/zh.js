@@ -1016,7 +1016,8 @@ export default {
     enum_exp: '字段枚举值',
     pls_slc: '请选择',
     filter_exp: '过滤值',
-    filter_type: '过滤方式'
+    filter_type: '过滤方式',
+    filter_value_can_not_str: '数值类型字段过滤值不能包含文本'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
