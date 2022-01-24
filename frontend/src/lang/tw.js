@@ -1014,7 +1014,8 @@ export default {
     enum_exp: '字段枚舉值',
     pls_slc: '請選擇',
     filter_exp: '過濾值',
-    filter_type: '過濾方式'
+    filter_type: '過濾方式',
+    filter_value_can_not_str: '數值類型字段過濾值不能包含文本'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

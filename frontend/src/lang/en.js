@@ -1014,7 +1014,8 @@ export default {
     enum_exp: 'Enum',
     pls_slc: 'Please Select',
     filter_exp: 'Filter Value',
-    filter_type: 'Filter Type'
+    filter_type: 'Filter Type',
+    filter_value_can_not_str: 'Value type can not input string'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

@@ -1638,6 +1638,14 @@ export default {
           })
           return
         }
+        if (parseFloat(f.value).toString() === 'NaN') {
+          this.$message({
+            message: this.$t('chart.filter_value_can_not_str'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
       }
       if (this.quotaItem.filterType === 'quota') {
         this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
@@ -1685,6 +1693,16 @@ export default {
               showClose: true
             })
             return
+          }
+          if (this.filterItem.deType === 2 || this.filterItem.deType === 3) {
+            if (parseFloat(f.value).toString() === 'NaN') {
+              this.$message({
+                message: this.$t('chart.filter_value_can_not_str'),
+                type: 'error',
+                showClose: true
+              })
+              return
+            }
           }
         }
       }
