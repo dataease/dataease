@@ -40,7 +40,6 @@
 
         <!--手机视图详情-->
         <el-dialog
-          :title="'['+showChartInfo.name+']'+$t('chart.chart_details')"
           :visible.sync="mobileChartDetailsVisible"
           :fullscreen="true"
           class="mobile-dialog-css"
@@ -378,6 +377,9 @@ export default {
     padding: 10px 20px 20px;
   }
 
+  .mobile-dialog-css > > > .el-dialog__headerbtn {
+    top: 7px
+  }
   .mobile-dialog-css > > > .el-dialog__body {
     padding: 0px;
   }
