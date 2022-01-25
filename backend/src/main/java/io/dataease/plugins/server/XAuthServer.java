@@ -12,16 +12,18 @@ import io.dataease.plugins.xpack.auth.dto.request.XpackSysAuthRequest;
 import io.dataease.plugins.xpack.auth.dto.response.XpackSysAuthDetail;
 import io.dataease.plugins.xpack.auth.dto.response.XpackSysAuthDetailDTO;
 import io.dataease.plugins.xpack.auth.dto.response.XpackVAuthModelDTO;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import io.dataease.plugins.xpack.auth.service.AuthXpackService;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
 
 @RequestMapping("/plugin/auth")
 @RestController
 public class XAuthServer {
+
+    private static final Set<String> cacheTypes = new HashSet<>();
 
     @PostMapping("/authModels")
     @I18n
@@ -64,6 +66,26 @@ public class XAuthServer {
                 CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
                 CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
             }
+            String authCacheKey = getAuthCacheKey(request);
+            if (StringUtils.isNotBlank(authCacheKey)) {
+                CacheUtils.remove(authCacheKey, request.getAuthTargetType() + request.getAuthTarget());
+            }
         });
+    }
+
+
+    private String getAuthCacheKey(XpackSysAuthRequest request) {
+        if (CollectionUtils.isEmpty(cacheTypes)) {
+            cacheTypes.add("link");
+            cacheTypes.add("dataset");
+            cacheTypes.add("panel");
+        }
+        String authTargetType = request.getAuthTargetType();
+        String authSourceType = request.getAuthSourceType();
+        if (!cacheTypes.contains(authSourceType)) {
+            return null;
+        }
+        return authTargetType + "_" + authSourceType;
+
     }
 }
