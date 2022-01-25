@@ -305,14 +305,19 @@ public class ChartViewService {
                         filterRequest.setFieldId(fId);
 
                         DatasetTableField datasetTableField = dataSetTableFieldsService.get(fId);
-                        filterRequest.setDatasetTableField(datasetTableField);
-                        if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
-                            if (CollectionUtils.isNotEmpty(filterRequest.getViewIds())) {
-                                if (filterRequest.getViewIds().contains(view.getId())) {
+                        if(datasetTableField == null){
+                            continue;
+                        }
+                        if(!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())){
+                            filterRequest.setDatasetTableField(datasetTableField);
+                            if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
+                                if (CollectionUtils.isNotEmpty(filterRequest.getViewIds())) {
+                                    if (filterRequest.getViewIds().contains(view.getId())) {
+                                        extFilterList.add(filterRequest);
+                                    }
+                                } else {
                                     extFilterList.add(filterRequest);
                                 }
-                            } else {
-                                extFilterList.add(filterRequest);
                             }
                         }
                     }
@@ -324,14 +329,16 @@ public class ChartViewService {
         if (ObjectUtils.isNotEmpty(requestList.getLinkageFilters())) {
             for (ChartExtFilterRequest request : requestList.getLinkageFilters()) {
                 DatasetTableField datasetTableField = dataSetTableFieldsService.get(request.getFieldId());
-                request.setDatasetTableField(datasetTableField);
-                if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
-                    if (CollectionUtils.isNotEmpty(request.getViewIds())) {
-                        if (request.getViewIds().contains(view.getId())) {
+                if(!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())){
+                    request.setDatasetTableField(datasetTableField);
+                    if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
+                        if (CollectionUtils.isNotEmpty(request.getViewIds())) {
+                            if (request.getViewIds().contains(view.getId())) {
+                                extFilterList.add(request);
+                            }
+                        } else {
                             extFilterList.add(request);
                         }
-                    } else {
-                        extFilterList.add(request);
                     }
                 }
             }

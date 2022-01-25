@@ -40,7 +40,6 @@
 
         <!--手机视图详情-->
         <el-dialog
-          :title="'['+showChartInfo.name+']'+$t('chart.chart_details')"
           :visible.sync="mobileChartDetailsVisible"
           :fullscreen="true"
           class="mobile-dialog-css"

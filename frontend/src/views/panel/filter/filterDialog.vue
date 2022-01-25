@@ -184,7 +184,7 @@ import {
 } from 'vuex'
 import {
   groupTree,
-  fieldList,
+  fieldListWithPermission,
   post
 } from '@/api/dataset/dataset'
 import {
@@ -489,7 +489,7 @@ export default {
     },
 
     loadField(tableId) {
-      fieldList(tableId).then(res => {
+      fieldListWithPermission(tableId).then(res => {
         let datas = res.data
         if (this.widget && this.widget.filterFieldMethod) {
           datas = this.widget.filterFieldMethod(datas)
@@ -498,7 +498,7 @@ export default {
       })
     },
     comLoadField(tableId) {
-      fieldList(tableId).then(res => {
+      fieldListWithPermission(tableId).then(res => {
         let datas = res.data
         if (this.widget && this.widget.filterFieldMethod) {
           datas = this.widget.filterFieldMethod(datas)
