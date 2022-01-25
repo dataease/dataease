@@ -103,6 +103,14 @@ export function fieldList(id, showLoading = true) {
   })
 }
 
+export function fieldListWithPermission(id, showLoading = true) {
+  return request({
+    url: '/dataset/field/listWithPermission/' + id,
+    loading: showLoading,
+    method: 'post'
+  })
+}
+
 export function fieldListDQ(id, showLoading = true) {
   return request({
     url: '/dataset/field/listByDQ/' + id,

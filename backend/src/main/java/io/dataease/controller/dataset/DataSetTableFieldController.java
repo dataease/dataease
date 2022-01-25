@@ -62,6 +62,19 @@ public class DataSetTableFieldController {
     }
 
     @ApiOperation("查询表下属字段")
+    @PostMapping("listWithPermission/{tableId}")
+    public List<DatasetTableField> listWithPermission(@PathVariable String tableId) {
+        DatasetTableField datasetTableField = DatasetTableField.builder().build();
+        datasetTableField.setTableId(tableId);
+        List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+        List<String> desensitizationList = new ArrayList<>();
+        fields = permissionService.filterColumnPermissons(fields, desensitizationList, tableId, null);
+        fields = fields.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName())).collect(Collectors.toList());
+        return fields;
+    }
+
+    //管理权限，可以列出所有字段
+    @ApiOperation("查询表下属字段")
     @PostMapping("listForPermissionSeting/{tableId}")
     public List<DatasetTableField> listForPermissionSeting(@PathVariable String tableId) {
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
@@ -70,6 +83,7 @@ public class DataSetTableFieldController {
         return fields;
     }
 
+    //管理权限，可以列出所有字段
     @ApiOperation("分组查询表下属字段")
     @PostMapping("listByDQ/{tableId}")
     public DatasetTableField4Type listByDQ(@PathVariable String tableId) {
@@ -77,10 +91,8 @@ public class DataSetTableFieldController {
         datasetTableField.setTableId(tableId);
         datasetTableField.setGroupType("d");
         List<DatasetTableField> dimensionList = dataSetTableFieldsService.list(datasetTableField);
-        dimensionList = permissionService.filterColumnPermissons(dimensionList, new ArrayList<>(), tableId, null);
         datasetTableField.setGroupType("q");
         List<DatasetTableField> quotaList = dataSetTableFieldsService.list(datasetTableField);
-        quotaList = permissionService.filterColumnPermissons(quotaList, new ArrayList<>(), tableId, null);
 
         DatasetTableField4Type datasetTableField4Type = new DatasetTableField4Type();
         datasetTableField4Type.setDimensionList(dimensionList);
@@ -134,7 +146,30 @@ public class DataSetTableFieldController {
     public List<Object> multFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
         List<Object> results = new ArrayList<>();
         for (String fieldId : multFieldValuesRequest.getFieldIds()) {
-            List<Object> fieldValues = dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getUserId());
+            List<Object> fieldValues = dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getUserId(), true);
+            if (CollectionUtil.isNotEmpty(fieldValues)) {
+                results.addAll(fieldValues);
+            }
+
+        }
+        ArrayList<Object> list = results.stream().collect(
+                Collectors.collectingAndThen(
+                        Collectors.toCollection(
+                                () -> new TreeSet<>(Comparator.comparing(t -> {
+                                    if (ObjectUtils.isEmpty(t))
+                                        return "";
+                                    return t.toString();
+                                }))),
+                        ArrayList::new));
+        return list;
+    }
+
+    @ApiOperation("多字段值枚举")
+    @PostMapping("multFieldValuesForPermissions")
+    public List<Object> multFieldValuesForPermissions(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
+        List<Object> results = new ArrayList<>();
+        for (String fieldId : multFieldValuesRequest.getFieldIds()) {
+            List<Object> fieldValues = dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getUserId(), false);
             if (CollectionUtil.isNotEmpty(fieldValues)) {
                 results.addAll(fieldValues);
             }

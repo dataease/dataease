@@ -42,7 +42,7 @@ public class DirectFieldService implements DataSetFieldService {
     private PermissionService permissionService;
 
     @Override
-    public List<Object> fieldValues(String fieldId, Long userId) throws Exception {
+    public List<Object> fieldValues(String fieldId, Long userId, Boolean userPermissions) throws Exception {
         DatasetTableField field = dataSetTableFieldsService.selectByPrimaryKey(fieldId);
         if (field == null || StringUtils.isEmpty(field.getTableId())) return null;
 
@@ -52,22 +52,23 @@ public class DirectFieldService implements DataSetFieldService {
         DatasetTableField datasetTableField = DatasetTableField.builder().tableId(field.getTableId()).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
 
-        //列权限
-        List<String> desensitizationList = new ArrayList<>();
-        fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), userId);
-
-        //禁用的
-        if(!fields.stream().map(DatasetTableField::getId).collect(Collectors.toList()).contains(fieldId)){
-            return new ArrayList<>();
+        List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
+        if(userPermissions){
+            //列权限
+            List<String> desensitizationList = new ArrayList<>();
+            fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), userId);
+            //禁用的
+            if(!fields.stream().map(DatasetTableField::getId).collect(Collectors.toList()).contains(fieldId)){
+                return new ArrayList<>();
+            }
+            if (CollectionUtils.isNotEmpty(desensitizationList) && desensitizationList.contains(field.getDataeaseName())) {
+                List<Object> results = new ArrayList<>();
+                results.add(ColumnPermissionConstants.Desensitization_desc);
+                return results;
+            }
+            //行权限
+            customFilter = permissionService.getCustomFilters(fields, datasetTable, userId);
         }
-
-        if (CollectionUtils.isNotEmpty(desensitizationList) && desensitizationList.contains(field.getDataeaseName())) {
-            List<Object> results = new ArrayList<>();
-            results.add(ColumnPermissionConstants.Desensitization_desc);
-            return results;
-        }
-        //行权限
-        List<ChartFieldCustomFilterDTO> customFilter = permissionService.getCustomFilters(fields, datasetTable, userId);
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         DatasourceProvider datasourceProvider = null;
