@@ -23,6 +23,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -44,6 +46,7 @@ public class SysUserController {
     private SysRoleService sysRoleService;
 
     @ApiOperation("查询用户")
+    @RequiresPermissions("user:read")
     @PostMapping("/userGrid/{goPage}/{pageSize}")
     @ApiImplicitParams({
         @ApiImplicitParam(paramType="path", name = "goPage", value = "页码", required = true, dataType = "Integer"),
@@ -57,18 +60,21 @@ public class SysUserController {
 
 
     @ApiOperation("创建用户")
+    @RequiresPermissions("user:add")
     @PostMapping("/create")
     public void create(@RequestBody SysUserCreateRequest request){
         sysUserService.save(request);
     }
 
     @ApiOperation("更新用户")
+    @RequiresPermissions("user:edit")
     @PostMapping("/update")
     public void update(@RequestBody SysUserCreateRequest request){
         sysUserService.update(request);
     }
 
     @ApiOperation("删除用户")
+    @RequiresPermissions("user:del")
     @PostMapping("/delete/{userId}")
     @ApiImplicitParam(paramType = "path", value = "用户ID", name = "userId", required = true, dataType = "Integer")
     public void delete(@PathVariable("userId") Long userId){
@@ -77,6 +83,8 @@ public class SysUserController {
 
 
     @ApiOperation("更新用户状态")
+    @RequiresPermissions("user:edit")
+    @RequiresRoles("1")
     @PostMapping("/updateStatus")
     public void updateStatus(@RequestBody SysUserStateRequest request){
         sysUserService.updateStatus(request);
@@ -89,6 +97,7 @@ public class SysUserController {
         sysUserService.updatePwd(request);
     }
     @ApiOperation("更新指定用户密码")
+    @RequiresPermissions("user:editPwd")
     @PostMapping("/adminUpdatePwd")
     public void adminUpdatePwd(@RequestBody SysUserPwdRequest request){
         sysUserService.adminUpdatePwd(request);
