@@ -116,7 +116,7 @@ export default {
       borderRadius: '0px',
       currentPage: {
         page: 1,
-        pageSize: 10,
+        pageSize: 20,
         show: 0
       }
     }
@@ -165,7 +165,7 @@ export default {
       if (this.chart.data) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
-        this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 10)
+        this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
         datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
         if (this.chart.type === 'table-info') {
           // 计算分页
@@ -341,7 +341,7 @@ export default {
     resetPage() {
       this.currentPage = {
         page: 1,
-        pageSize: 10,
+        pageSize: 20,
         show: 0
       }
     }
