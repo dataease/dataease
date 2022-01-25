@@ -1,6 +1,7 @@
 package io.dataease.plugins.server;
 
 
+import io.dataease.auth.service.ExtAuthService;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.sys.response.DeptNodeResponse;
 import io.dataease.plugins.common.entity.XpackGridRequest;
@@ -13,6 +14,7 @@ import io.dataease.plugins.xpack.dept.dto.response.XpackSysDept;
 import io.dataease.plugins.xpack.dept.service.DeptXpackService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -22,6 +24,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/plugin/dept")
 @RestController
 public class XDeptServer {
+
+    @Autowired
+    private ExtAuthService extAuthService;
 
     @ApiOperation("查询子节点")
     @PostMapping("/childNodes/{pid}")
@@ -72,6 +77,9 @@ public class XDeptServer {
     @PostMapping("/delete")
     public void delete(@RequestBody List<XpackDeleteDept> requests){
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
+        requests.forEach(request -> {
+            extAuthService.clearDeptResource(request.getDeptId());
+        });
         deptService.batchDelete(requests);
     }
 

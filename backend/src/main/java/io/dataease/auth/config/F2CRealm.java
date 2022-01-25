@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,11 +45,11 @@ public class F2CRealm extends AuthorizingRealm {
     //验证资源权限
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        Long userId = JWTUtils.tokenInfoByToken(principals.toString()).getUserId();
+        CurrentUserDto userDto = (CurrentUserDto)principals.getPrimaryPrincipal();
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
-        Set<String> role = new HashSet<>(authUserService.roles(userId));
+        Set<String> role = new HashSet<>(userDto.getRoles().stream().map(item -> ( item.getId() + "")).collect(Collectors.toSet()));
         simpleAuthorizationInfo.addRoles(role);
-        Set<String> permission = new HashSet<>(authUserService.permissions(userId));
+        Set<String> permission = new HashSet<>(userDto.getPermissions());
         simpleAuthorizationInfo.addStringPermissions(permission);
         return simpleAuthorizationInfo;
     }

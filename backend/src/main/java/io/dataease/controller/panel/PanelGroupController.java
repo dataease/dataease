@@ -1,14 +1,19 @@
 package io.dataease.controller.panel;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.DePermission;
+import io.dataease.auth.annotation.DePermissions;
 import io.dataease.base.domain.PanelGroup;
 import io.dataease.base.domain.PanelGroupWithBLOBs;
+import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.service.panel.PanelGroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.Logical;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -42,18 +47,24 @@ public class PanelGroupController {
 
     @ApiOperation("保存")
     @PostMapping("/save")
+    @DePermissions(value = {
+        @DePermission(type = DePermissionType.PANEL, value = "id"),
+        @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
+    }, logical = Logical.AND)
     @I18n
     public PanelGroup saveOrUpdate(@RequestBody PanelGroupRequest request) {
         return panelGroupService.saveOrUpdate(request);
     }
 
     @ApiOperation("删除")
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
     @PostMapping("/deleteCircle/{id}")
     public void deleteCircle(@PathVariable String id) {
         panelGroupService.deleteCircle(id);
     }
 
     @ApiOperation("详细信息")
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW)
     @GetMapping("/findOne/{id}")
     public PanelGroupWithBLOBs findOne(@PathVariable String id) throws Exception {
         return panelGroupService.findOne(id);
