@@ -157,12 +157,12 @@ public class Db2QueryProvider extends QueryProvider {
     @Override
     public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
         Integer size = (page - 1) * pageSize + realSize;
-        return createQuerySQL(table, fields, isGroup, null, fieldCustomFilter) + String.format(" fetch first %s rows only; ", size);
+        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter) + String.format(" fetch first %s rows only; ", size);
     }
 
     @Override
     public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
-        return createQuerySQL(table, fields, isGroup, null, fieldCustomFilter) + String.format(" fetch first %s rows only; ", limit);
+        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter) + String.format(" fetch first %s rows only; ", limit);
     }
 
     @Override
