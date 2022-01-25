@@ -6,10 +6,8 @@
 <script>
 import Preview from './Preview'
 import { uuid } from 'vue-uuid'
-import { findOne } from '@/api/panel/panel'
-import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
-import { queryPanelJumpInfo, queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
-import { panelInit } from '@/components/canvas/utils/utils'
+import { initPanelData } from '@/api/panel/panel'
+import { queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
 
 export default {
   components: { Preview },
@@ -37,31 +35,14 @@ export default {
       this.mainHeight = mainHeight
     },
     restore() {
-      this.dataLoading = true
-      this.panelId = this.$route.params.reportId
-      if (this.$route.params.backScreenShot !== undefined) {
-        this.backScreenShot = this.$route.params.backScreenShot
+      const _this = this
+      _this.dataLoading = true
+      _this.panelId = this.$route.params.reportId
+      if (_this.$route.params.backScreenShot !== undefined) {
+        _this.backScreenShot = _this.$route.params.backScreenShot
       }
       // 加载视图数据
-      findOne(this.panelId).then(response => {
-        const componentDatas = JSON.parse(response.data.panelData)
-        panelInit(componentDatas)
-        this.dataLoading = false
-        this.$store.commit('setComponentData', this.resetID(componentDatas))
-        this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
-        const data = {
-          id: response.data.id,
-          name: response.data.name
-        }
-        // 刷新联动信息
-        getPanelAllLinkageInfo(this.panelId).then(rsp => {
-          this.$store.commit('setNowPanelTrackInfo', rsp.data)
-        })
-        // 刷新跳转信息
-        queryPanelJumpInfo(this.panelId).then(rsp => {
-          this.$store.commit('setNowPanelJumpInfo', rsp.data)
-        })
-
+      initPanelData(this.panelId, function() {
         // 如果含有跳转参数 进行触发
         const tempParam = localStorage.getItem('jumpInfoParam')
         if (tempParam) {
@@ -71,17 +52,16 @@ export default {
             sourcePanelId: jumpParam.sourcePanelId,
             sourceViewId: jumpParam.sourceViewId,
             sourceFieldId: jumpParam.sourceFieldId,
-            targetPanelId: this.panelId
+            targetPanelId: _this.panelId
           }
-          this.dataLoading = true
+          _this.dataLoading = true
           // 刷新跳转目标仪表板联动信息
           queryTargetPanelJumpInfo(jumpRequestParam).then(rsp => {
-            this.dataLoading = false
-            this.$store.commit('setNowTargetPanelJumpInfo', rsp.data)
-            this.$store.commit('addViewTrackFilter', jumpParam)
+            _this.dataLoading = false
+            _this.$store.commit('setNowTargetPanelJumpInfo', rsp.data)
+            _this.$store.commit('addViewTrackFilter', jumpParam)
           })
         }
-        this.$store.dispatch('panel/setPanelInfo', data)
       })
     },
     resetID(data) {
