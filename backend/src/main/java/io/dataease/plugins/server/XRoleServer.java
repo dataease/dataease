@@ -3,6 +3,7 @@ package io.dataease.plugins.server;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.dataease.auth.service.ExtAuthService;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.plugins.common.entity.XpackGridRequest;
@@ -12,6 +13,7 @@ import io.dataease.plugins.xpack.role.dto.response.XpackRoleItemDto;
 import io.dataease.plugins.xpack.role.service.RoleXpackService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -21,6 +23,8 @@ import java.util.List;
 @RestController
 public class XRoleServer {
 
+    @Autowired
+    private ExtAuthService extAuthService;
 
     @ApiOperation("新增角色")
     @PostMapping("/create")
@@ -34,6 +38,7 @@ public class XRoleServer {
     @PostMapping("/delete/{roleId}")
     public void delete(@PathVariable("roleId") Long roleId){
         RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
+        extAuthService.clearDeptResource(roleId);
         roleXpackService.delete(roleId);
     }
 

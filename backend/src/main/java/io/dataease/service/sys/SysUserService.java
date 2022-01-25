@@ -1,6 +1,7 @@
 package io.dataease.service.sys;
 
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.auth.service.ExtAuthService;
 import io.dataease.base.domain.SysUser;
 import io.dataease.base.domain.SysUserExample;
 import io.dataease.base.domain.SysUsersRolesExample;
@@ -27,6 +28,7 @@ import io.dataease.plugins.xpack.oidc.dto.SSOUserInfo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -53,6 +55,9 @@ public class SysUserService {
 
     @Resource
     private ExtSysUserMapper extSysUserMapper;
+
+    @Autowired
+    private ExtAuthService extAuthService;
 
 
     public List<SysUserGridResponse> query(BaseGridRequest request) {
@@ -268,6 +273,7 @@ public class SysUserService {
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #userId")
     @Transactional
     public int delete(Long userId) {
+        extAuthService.clearUserResource(userId);
         deleteUserRoles(userId);
         return sysUserMapper.deleteByPrimaryKey(userId);
     }
