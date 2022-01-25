@@ -150,11 +150,7 @@ export default {
           height: '100%'
         }
       } else {
-        if (this.terminal === 'pc') {
-          return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
-        } else {
-          return getStyle(style, ['top', 'left', 'width', 'height', 'rotate', 'fontSize'])
-        }
+        return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       }
     },
 
