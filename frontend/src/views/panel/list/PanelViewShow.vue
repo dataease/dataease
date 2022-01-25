@@ -68,6 +68,12 @@
               </el-tooltip>
             </span>
 
+            <span style="float: right;margin-right: 10px">
+              <el-tooltip :content="$t('commons.refresh')">
+                <el-button class="el-icon-refresh" size="mini" circle @click="refreshPanel" />
+              </el-tooltip>
+            </span>
+
           </el-col>
         </div>
       </el-row>
@@ -130,6 +136,7 @@ import { starStatus, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
+import { initPanelData } from '@/api/panel/panel'
 
 export default {
   name: 'PanelViewShow',
@@ -334,8 +341,10 @@ export default {
     },
     editPanel() {
       this.$emit('editPanel')
+    },
+    refreshPanel() {
+      initPanelData(this.panelInfo.id)
     }
-
   }
 }
 </script>

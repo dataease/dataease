@@ -226,16 +226,13 @@ import LinkGenerate from '@/views/link/generate'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
-import { addGroup, delGroup, groupTree, defaultTree, findOne, panelSave } from '@/api/panel/panel'
-import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
-import { queryPanelJumpInfo } from '@/api/panel/linkJump'
+import { addGroup, delGroup, groupTree, defaultTree, panelSave, initPanelData } from '@/api/panel/panel'
 import { mapState } from 'vuex'
 import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
 import TreeSelector from '@/components/TreeSelector'
 import { queryAuthModel } from '@/api/authModel/authModel'
-import { panelInit } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'PanelList',
@@ -649,29 +646,7 @@ export default {
       if (data.nodeType === 'panel') {
         // 清理pc布局缓存
         this.$store.commit('setComponentDataCache', null)
-        // 加载视图数据
-        findOne(data.id).then(response => {
-          const componentDatas = JSON.parse(response.data.panelData)
-          panelInit(componentDatas)
-          this.$store.commit('setComponentData', this.resetID(componentDatas))
-          const temp = JSON.parse(response.data.panelStyle)
-          temp.refreshTime = (temp.refreshTime || 5)
-          temp.refreshViewLoading = (temp.refreshViewLoading || false)
-          temp.refreshUnit = (temp.refreshUnit || 'minute')
-
-          this.$store.commit('setCanvasStyle', temp)
-          this.$store.dispatch('panel/setPanelInfo', data)
-
-          // 刷新联动信息
-          getPanelAllLinkageInfo(data.id).then(rsp => {
-            this.$store.commit('setNowPanelTrackInfo', rsp.data)
-          })
-
-          // 刷新跳转信息
-          queryPanelJumpInfo(data.id).then(rsp => {
-            this.$store.commit('setNowPanelJumpInfo', rsp.data)
-          })
-
+        initPanelData(data.id, function(response) {
           bus.$emit('set-panel-show-type', 0)
         })
       }

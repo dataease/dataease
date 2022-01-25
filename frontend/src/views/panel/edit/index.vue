@@ -221,8 +221,7 @@ import componentList, { BASE_MOBILE_STYLE, HYPERLINKS } from '@/components/canva
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
-import { findOne } from '@/api/panel/panel'
-import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
+import { initPanelData } from '@/api/panel/panel'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
@@ -239,7 +238,6 @@ import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
 import TextAttr from '@/components/canvas/components/TextAttr'
-import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 import ComponentWait from '@/views/panel/edit/ComponentWait'
 import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
 
@@ -414,9 +412,6 @@ export default {
         removeClass(document.body, 'showRightPanel')
       }
     },
-    panelInfo(newVal, oldVal) {
-      this.init(newVal.id)
-    },
     '$store.state.styleChangeTimes'() {
       if (this.$store.state.styleChangeTimes > 0) {
         this.destroyTimeMachine()
@@ -467,42 +462,19 @@ export default {
   },
   methods: {
     init(panelId) {
-      this.initHasStar()
+      const _this = this
+      _this.initHasStar()
       // 如果临时画布有数据 则使用临时画布数据（视图编辑的时候 会保存临时画布数据）
       const componentDataTemp = this.$store.state.panel.componentDataTemp
       const canvasStyleDataTemp = this.$store.state.panel.canvasStyleDataTemp
       if (componentDataTemp && canvasStyleDataTemp) {
-        const componentDatas = JSON.parse(componentDataTemp)
-        panelInit(componentDatas)
-        this.$store.commit('setComponentData', this.resetID(componentDatas))
-        const temp = JSON.parse(canvasStyleDataTemp)
-        temp.refreshTime = (temp.refreshTime || 5)
-        temp.refreshViewLoading = (temp.refreshViewLoading || false)
-        temp.refreshUnit = (temp.refreshUnit || 'minute')
-
-        this.$store.commit('setCanvasStyle', temp)
+        panelInit(JSON.parse(componentDataTemp), JSON.parse(canvasStyleDataTemp))
         // 清空临时画布数据
-        this.$store.dispatch('panel/setComponentDataTemp', null)
-        this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
+        _this.$store.dispatch('panel/setComponentDataTemp', null)
+        _this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
       } else if (panelId) {
-        findOne(panelId).then(response => {
-          const componentDatas = JSON.parse(response.data.panelData)
-          panelInit(componentDatas)
-          this.$store.commit('setComponentData', this.resetID(componentDatas))
-          const panelStyle = JSON.parse(response.data.panelStyle)
-          panelStyle.refreshTime = (panelStyle.refreshTime || 5)
-          panelStyle.refreshViewLoading = (panelStyle.refreshViewLoading || false)
-          panelStyle.refreshUnit = (panelStyle.refreshUnit || 'minute')
-          this.$store.commit('setCanvasStyle', panelStyle)
-          this.$store.commit('recordSnapshot', 'init')// 记录快照
-          // 刷新联动信息
-          getPanelAllLinkageInfo(panelId).then(rsp => {
-            this.$store.commit('setNowPanelTrackInfo', rsp.data)
-          })
-          // 刷新跳转信息
-          queryPanelJumpInfo(panelId).then(rsp => {
-            this.$store.commit('setNowPanelJumpInfo', rsp.data)
-          })
+        initPanelData(panelId, function() {
+          _this.$store.commit('recordSnapshot', 'init')// 记录快照
         })
       }
     },

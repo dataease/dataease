@@ -45,7 +45,6 @@ export default {
           this.$store.commit('setNowPanelTrackInfo', rsp.data)
         })
         this.$store.commit('setComponentData', this.resetID(JSON.parse(res.data.panelData)))
-        // this.$store.commit('setComponentData', JSON.parse(res.data.panelData))
         this.$store.commit('setCanvasStyle', JSON.parse(res.data.panelStyle))
         // 刷新跳转信息
         queryPanelJumpInfo(this.resourceId).then(rsp => {

@@ -6,6 +6,8 @@ import {
 import {
   ApplicationContext
 } from '@/utils/ApplicationContext'
+import { uuid } from 'vue-uuid'
+import store from '@/store'
 
 export function deepCopy(target) {
   if (typeof target === 'object') {
@@ -63,8 +65,8 @@ export function mobile2MainCanvas(mainSource, mobileSource) {
   mainSource.mobileStyle.sizey = mobileSource.sizey
 }
 
-export function panelInit(componentDatas) {
-  componentDatas.forEach(item => {
+export function panelInit(componentData, componentStyle) {
+  componentData.forEach(item => {
     if (item.component && item.component === 'de-date') {
       if (item.options.attrs &&
         (!item.options.attrs.default || (item.serviceName === 'timeYearWidget' && item.options.attrs.default.dynamicInfill !== 'year') || (item.serviceName === 'timeMonthWidget' && item.options.attrs.default.dynamicInfill !== 'month'))) {
@@ -92,4 +94,21 @@ export function panelInit(componentDatas) {
       item.hyperlinks = (item.hyperlinks || HYPERLINKS)
     }
   })
+  // style初始化
+  componentStyle.refreshTime = (componentStyle.refreshTime || 5)
+  componentStyle.refreshViewLoading = (componentStyle.refreshViewLoading || false)
+  componentStyle.refreshUnit = (componentStyle.refreshUnit || 'minute')
+
+  // 将data 和 style 数据设置到全局store中
+  store.commit('setComponentData', resetID(componentData))
+  store.commit('setCanvasStyle', componentStyle)
+}
+
+export function resetID(data) {
+  if (data) {
+    data.forEach(item => {
+      item.type !== 'custom' && (item.id = uuid.v1())
+    })
+  }
+  return data
 }
