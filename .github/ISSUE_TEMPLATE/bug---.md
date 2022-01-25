@@ -10,6 +10,9 @@ assignees: BBchicken-9527, youliyuan-fit2cloud, zyyfit
 **DataEase 版本**
 
 
+**运行方式(安装包运行 or 源码运行 ?)**
+
+
 **浏览器版本**
 
 
