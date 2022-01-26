@@ -338,7 +338,7 @@ export default {
       this.$refs.dsForm.resetFields()
     },
     save() {
-      if (!this.form.configuration.schema && (this.form.type === 'oracle' || this.form.type === 'sqlServer')) {
+      if (!this.form.configuration.schema && (this.form.type === 'oracle' || this.form.type === 'sqlServer' || this.form.type === 'pg' || this.form.type === 'redshift' || this.form.type === 'db2')) {
         this.$message.error(i18n.t('datasource.please_choose_schema'))
         return
       }
@@ -378,11 +378,13 @@ export default {
               case 'oracle':
               case 'db2':
                 if(configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port && configuration.schema == this.form.configuration.schema){
+                  repeatDsName = child.name
                   repeat = true
                 }
                 break
               case 'es':
                 if(configuration.url == this.form.configuration.url){
+                  repeatDsName = child.name
                   repeat = true
                 }
                 break
