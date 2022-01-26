@@ -91,7 +91,7 @@
 			try {
 				this.banner = JSON.parse(decodeURIComponent(payload));
                 uni.showLoading({
-					title: 'loading'
+					title: this.$t('commons.loading')
 				});
                 this.loadLinkUrl()
 			} catch (error) {
@@ -189,7 +189,7 @@
                     if(!this.hasStar) {
                         uni.showToast({
                             icon: 'success',
-                            title: '收藏成功'
+                            title: this.$t('detail.starSuccess')
                         })
                     }
                     this.loadStarStatus()
@@ -201,7 +201,7 @@
             },
             refresh() {
                 uni.showLoading({
-					title: 'loading'
+					title: this.$t('commons.loading')
 				});
                 
                 this.url = null
