@@ -1,7 +1,8 @@
 <template>
-  <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+  <layout-content>
     <complex-table
       v-if="canLoadDom"
+      v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
       :data="data"
       :columns="columns"
       local-key="userGrid"
@@ -107,9 +108,9 @@
             :load-options="loadDepts"
             style="width: 430px"
             :placeholder="$t('user.choose_org')"
-            :noChildrenText="$t('commons.treeselect.no_children_text')"
-            :noOptionsText="$t('commons.treeselect.no_options_text')"
-            :noResultsText="$t('commons.treeselect.no_results_text')"
+            :no-children-text="$t('commons.treeselect.no_children_text')"
+            :no-options-text="$t('commons.treeselect.no_options_text')"
+            :no-results-text="$t('commons.treeselect.no_results_text')"
           />
         </el-form-item>
         <el-form-item style="margin-bottom: 0;" :label="$t('commons.role')" prop="roleIds">
