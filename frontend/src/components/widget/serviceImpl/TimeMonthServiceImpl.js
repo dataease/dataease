@@ -39,7 +39,9 @@ const dialogPanel = {
     manualModify: false
   },
   defaultClass: 'time-filter',
-  component: 'de-date'
+  component: 'de-date',
+  miniSizex: 1,
+  miniSizey: 1
 }
 const drawPanel = {
   type: 'custom',
