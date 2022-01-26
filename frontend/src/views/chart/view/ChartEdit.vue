@@ -1860,29 +1860,29 @@ export default {
       }
     },
     addXaxis(e) {
-      if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxis.length > 1) {
-        this.view.xaxis = [this.view.xaxis[0]]
-      }
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxis, 'd')
       }
       this.dragMoveDuplicate(this.view.xaxis, e)
+      if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxis.length > 1) {
+        this.view.xaxis = [this.view.xaxis[0]]
+      }
       this.calcData(true)
     },
     addYaxis(e) {
+      this.dragCheckType(this.view.yaxis, 'q')
+      this.dragMoveDuplicate(this.view.yaxis, e)
       if ((this.view.type === 'map' || this.view.type === 'waterfall' || this.view.type === 'word-cloud') && this.view.yaxis.length > 1) {
         this.view.yaxis = [this.view.yaxis[0]]
       }
-      this.dragCheckType(this.view.yaxis, 'q')
-      this.dragMoveDuplicate(this.view.yaxis, e)
       this.calcData(true)
     },
     addYaxisExt(e) {
+      this.dragCheckType(this.view.yaxisExt, 'q')
+      this.dragMoveDuplicate(this.view.yaxisExt, e)
       if (this.view.type === 'map' && this.view.yaxisExt.length > 1) {
         this.view.yaxisExt = [this.view.yaxisExt[0]]
       }
-      this.dragCheckType(this.view.yaxisExt, 'q')
-      this.dragMoveDuplicate(this.view.yaxisExt, e)
       this.calcData(true)
     },
     moveToDimension(e) {
