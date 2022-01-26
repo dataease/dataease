@@ -82,7 +82,7 @@ export default {
         color: var(--TextPrimary, #6D6D6D);
         font-size: 12px;
         position: absolute;
-        bottom: 8px;
+        bottom: 16px;
       }
     }
   }
