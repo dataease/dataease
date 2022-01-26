@@ -1,5 +1,6 @@
 package io.dataease.service.wizard;
 
+import io.dataease.commons.utils.HttpClientConfig;
 import io.dataease.commons.utils.HttpClientUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,8 +24,10 @@ public class ReptileService {
     public List lastActive() {
         List result = new ArrayList();
         try {
+            HttpClientConfig config = new HttpClientConfig();
+            config.setCocketTimeout(5000);
             //爬取最新数据
-            Document doc = Jsoup.parse(HttpClientUtil.get(blogUrl, null));
+            Document doc = Jsoup.parse(HttpClientUtil.get(blogUrl, config));
             Elements elementsContent = doc.getElementsByAttributeValue("rel", "bookmark");
             Elements elementsTime = doc.getElementsByTag("time");
             for(int i = 0;i<infoCount;i++){
@@ -36,6 +39,7 @@ public class ReptileService {
                 result.add(infoMap);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             //ignore
             Map<String, String> infoMap = new HashMap();
             infoMap.put("title","支持移动端展示，数据源新增对DB2的支持，DataEase开源数据可视化分析平台v1.6.0发布");
