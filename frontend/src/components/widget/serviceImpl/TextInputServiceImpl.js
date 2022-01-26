@@ -19,7 +19,9 @@ const dialogPanel = {
     manualModify: false
   },
   defaultClass: 'text-filter',
-  component: 'de-input-search'
+  component: 'de-input-search',
+  miniSizex: 1,
+  miniSizey: 1
 }
 const drawPanel = {
   type: 'custom',

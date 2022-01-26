@@ -102,6 +102,16 @@ export default {
     linkageInfo() {
       return this.targetLinkageInfo[this.element.propValue.viewId]
     },
+    miniHeight() {
+      let miniHeight = this.curComponent.miniSizey || 1
+      if (this.element.component === 'de-number-range') {
+        miniHeight = this.curComponent.miniSizey || 2
+      }
+      return miniHeight
+    },
+    miniWidth() {
+      return this.curComponent.miniSizex || 1
+    },
     ...mapState([
       'menuTop',
       'menuLeft',
@@ -146,6 +156,8 @@ export default {
         this.curComponent.y = Math.round(this.curComponent.style.top / this.curCanvasScale.matrixStyleOriginHeight) + 1
         this.curComponent.sizex = Math.round(this.curComponent.style.width / this.curCanvasScale.matrixStyleOriginWidth)
         this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
+        this.curComponent.sizey = this.curComponent.sizey > this.miniHeight ? this.curComponent.sizey : this.miniHeight
+        this.curComponent.sizex = this.curComponent.sizex > this.miniWidth ? this.curComponent.sizex : this.miniWidth
         this.curComponent.auxiliaryMatrix = true
         this.$emit('amAddItem')
       }

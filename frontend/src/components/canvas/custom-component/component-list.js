@@ -11,6 +11,8 @@ export const BASE_MOBILE_STYLE = {
   y: 1,
   sizex: 6,
   sizey: 4,
+  miniSizex: 1,
+  miniSizey: 1,
   auxiliaryMatrix: true
 }
 
@@ -158,7 +160,9 @@ const list = [
     x: 1,
     y: 1,
     sizex: 10,
-    sizey: 2
+    sizey: 2,
+    miniSizex: 1,
+    miniSizey: 1
   },
   {
     id: '10002',
@@ -181,7 +185,9 @@ const list = [
       textAlign: '',
       color: '',
       backgroundColor: ''
-    }
+    },
+    miniSizex: 1,
+    miniSizey: 1
   },
   {
     id: '10003',
@@ -199,7 +205,9 @@ const list = [
     x: 1,
     y: 1,
     sizex: 10,
-    sizey: 6
+    sizey: 6,
+    miniSizex: 1,
+    miniSizey: 1
   },
   {
     id: '10003-1',
@@ -215,7 +223,9 @@ const list = [
       width: 600,
       height: 300,
       borderRadius: ''
-    }
+    },
+    miniSizex: 1,
+    miniSizey: 1
   },
   {
     id: '10004',
@@ -237,7 +247,9 @@ const list = [
     x: 1,
     y: 1,
     sizex: 10,
-    sizey: 6
+    sizey: 6,
+    miniSizex: 1,
+    miniSizey: 1
   },
   {
     id: '10005',
@@ -256,7 +268,9 @@ const list = [
     y: 36,
     sizex: 10,
     sizey: 6,
-    auxiliaryMatrix: true
+    auxiliaryMatrix: true,
+    miniSizex: 1,
+    miniSizey: 1
   },
   {
     id: '10006',
@@ -285,7 +299,9 @@ const list = [
     x: 1,
     y: 1,
     sizex: 10,
-    sizey: 10
+    sizey: 10,
+    miniSizex: 1,
+    miniSizey: 1
   },
   {
     id: '30001',
@@ -322,7 +338,9 @@ const list = [
     x: 1,
     y: 1,
     sizex: 10,
-    sizey: 2
+    sizey: 2,
+    miniSizex: 1,
+    miniSizey: 1
   },
   {
     id: '20001',
@@ -341,7 +359,9 @@ const list = [
     x: 1,
     y: 1,
     sizex: 10,
-    sizey: 5
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
   },
   {
     id: '20002',
@@ -360,7 +380,9 @@ const list = [
     x: 1,
     y: 1,
     sizex: 10,
-    sizey: 5
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
   }
 ]
 

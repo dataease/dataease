@@ -24,7 +24,9 @@ const dialogPanel = {
     manualModify: false
   },
   defaultClass: 'tree-filter',
-  component: 'de-select-grid'
+  component: 'de-select-grid',
+  miniSizex: 1,
+  miniSizey: 1
 }
 const drawPanel = {
   type: 'custom',
