@@ -34,7 +34,9 @@ const drawPanel = {
     textAlign: '',
     color: ''
   },
-  component: 'de-number-range'
+  component: 'de-number-range',
+  miniSizex: 1,
+  miniSizey: 2
 }
 
 class NumberRangeServiceImpl extends WidgetService {

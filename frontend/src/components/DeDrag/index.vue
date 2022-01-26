@@ -539,6 +539,20 @@ export default {
     curGap() {
       return (this.canvasStyleData.panel.gap === 'yes' && this.element.auxiliaryMatrix) ? this.componentGap : 0
     },
+    miniWidth() {
+      return this.element.auxiliaryMatrix ? this.curCanvasScale.matrixStyleWidth * (this.element.miniSizex || 1) : 0
+    },
+    miniHeight() {
+      if (this.element.auxiliaryMatrix) {
+        if (this.element.component === 'de-number-range') {
+          return this.element.auxiliaryMatrix ? this.curCanvasScale.matrixStyleHeight * (this.element.miniSizey || 2) : 0
+        } else {
+          return this.element.auxiliaryMatrix ? this.curCanvasScale.matrixStyleHeight * (this.element.miniSizey || 1) : 0
+        }
+      } else {
+        return 0
+      }
+    },
     ...mapState([
       'editor',
       'curCanvasScale',
@@ -1190,8 +1204,10 @@ export default {
         newH = restrictToBounds(newH, 0, this.parentHeight)
       }
       // 外部传参限制大小
-      newW = restrictToBounds(newW, this.minW || 0, this.maxW)
-      newH = restrictToBounds(newH, this.minH || 0, this.maxH)
+      // newW = restrictToBounds(newW, this.minW || 0, this.maxW)
+      // newH = restrictToBounds(newH, this.minH || 0, this.maxH)
+      newW = restrictToBounds(newW, this.miniWidth || 0, this.maxW)
+      newH = restrictToBounds(newH, this.miniHeight || 0, this.maxH)
       // 纵横比
       if (this.lockAspectRatio) {
         // console.log(this.lockAspectRatio, this.aspectFactor)

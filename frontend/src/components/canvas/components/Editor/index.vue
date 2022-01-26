@@ -939,7 +939,8 @@ export default {
       'curLinkageView',
       'doSnapshotIndex',
       'componentGap',
-      'mobileLayoutStatus'
+      'mobileLayoutStatus',
+      'curCanvasScale'
     ])
   },
   watch: {
