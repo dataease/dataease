@@ -20,6 +20,7 @@
           :search-count="searchCount"
           :in-screen="inScreen"
           :terminal="terminal"
+          :filters="filterMap[item.propValue && item.propValue.viewId]"
         />
         <!--视图详情-->
         <el-dialog
@@ -65,7 +66,7 @@ import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
 import bus from '@/utils/bus'
-
+import { buildFilterMap } from '@/utils/conditionUtil'
 export default {
   components: { UserViewMobileDialog, ComponentWrapper, UserViewDialog, CanvasOptBar },
   model: {
@@ -193,7 +194,11 @@ export default {
       'componentData',
       'canvasStyleData',
       'componentGap'
-    ])
+    ]),
+    filterMap() {
+      const map = buildFilterMap(this.componentData)
+      return map
+    }
   },
   watch: {
     componentData: {
