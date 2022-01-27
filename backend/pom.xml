@@ -418,13 +418,13 @@
                                 </move>
 
                                 <copy todir="src/main/resources/static/de-app">
-                                    <fileset dir="../mobile/dist/build/h5">
+                                    <fileset dir="../mobile/dist">
                                         <exclude name="*.html"/>
                                     </fileset>
                                 </copy>
 
 
-                                <copy file="../mobile/dist/build/h5/index.html" tofile="src/main/resources/templates/app.html" />
+                                <copy file="../mobile/dist/index.html" tofile="src/main/resources/templates/app.html" />
 
 
                             </target>
