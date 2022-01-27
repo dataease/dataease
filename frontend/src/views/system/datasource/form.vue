@@ -215,7 +215,7 @@ export default {
       rule: {
         name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
           {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
-        desc: [{min: 0, max: 50, message: i18n.t('datasource.input_limit_0_50'), trigger: 'blur'}],
+        desc: [{min: 2, max: 50, message: i18n.t('datasource.input_limit_2_50'), trigger: 'blur'}],
         type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'change'}],
         'configuration.dataBase': [{
           required: true,
