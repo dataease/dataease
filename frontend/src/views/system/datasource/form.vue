@@ -215,7 +215,7 @@ export default {
       rule: {
         name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
           {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
-        desc: [{min: 0, max: 50, message: i18n.t('datasource.input_limit_0_50'), trigger: 'blur'}],
+        desc: [{min: 2, max: 50, message: i18n.t('datasource.input_limit_2_50'), trigger: 'blur'}],
         type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'change'}],
         'configuration.dataBase': [{
           required: true,
@@ -351,7 +351,7 @@ export default {
         return
       }
       let repeat = false
-      let repeatDsName = ''
+      let repeatDsName = []
       this.tData.forEach(item => {
         if(item.id === this.form.type){
           item.children.forEach(child => {
@@ -369,7 +369,7 @@ export default {
               case 'mariadb':
                 if(configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port){
                   repeat = true
-                  repeatDsName = child.name
+                  repeatDsName.push(child.name)
                 }
                 break
               case 'pg':
@@ -378,13 +378,13 @@ export default {
               case 'oracle':
               case 'db2':
                 if(configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port && configuration.schema == this.form.configuration.schema){
-                  repeatDsName = child.name
+                  repeatDsName.push(child.name)
                   repeat = true
                 }
                 break
               case 'es':
                 if(configuration.url == this.form.configuration.url){
-                  repeatDsName = child.name
+                  repeatDsName.push(child.name)
                   repeat = true
                 }
                 break
@@ -404,7 +404,7 @@ export default {
         form.configuration = JSON.stringify(form.configuration)
         if (this.formType === 'modify' && this.originConfiguration !== form.configuration) {
           if(repeat){
-            $confirm(i18n.t('datasource.repeat_datasource_msg') + '[' + repeatDsName + '], ' + i18n.t('datasource.confirm_save'), () => {
+            $confirm(i18n.t('datasource.repeat_datasource_msg') + '[' + repeatDsName.join(',') + '], ' + i18n.t('datasource.confirm_save'), () => {
               $confirm(i18n.t('datasource.edit_datasource_msg'), () => {
                 this.method(method, form)
               })
@@ -417,7 +417,7 @@ export default {
           return
         }
         if(repeat){
-          $confirm(i18n.t('datasource.repeat_datasource_msg') + '[' + repeatDsName + '], ' + i18n.t('datasource.confirm_save'), () => {
+          $confirm(i18n.t('datasource.repeat_datasource_msg') + '[' + repeatDsName.join(',') + '], ' + i18n.t('datasource.confirm_save'), () => {
             this.method(method, form)
           })
         }else {

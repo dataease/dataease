@@ -325,7 +325,7 @@ export default {
       taskFormRules: {
         name: [
           { required: true, message: this.$t('dataset.required'), trigger: 'change' },
-          { min: 2, max: 50, message: this.$t('datasource.input_limit_0_50', [2, 50]), trigger: 'blur' }
+          { min: 2, max: 50, message: this.$t('datasource.input_limit_2_50', [2, 50]), trigger: 'blur' }
         ],
         type: [
           { required: true, message: this.$t('dataset.required'), trigger: 'change' }
