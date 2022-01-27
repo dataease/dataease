@@ -1,6 +1,5 @@
 
 import { WidgetService } from '../service/WidgetService'
-
 const leftPanel = {
   icon: 'iconfont icon-xialakuang',
   label: 'detextselect.label',
@@ -80,6 +79,16 @@ class TextSelectServiceImpl extends WidgetService {
         text: item
       }
     })
+  }
+
+  getParam(element) {
+    const value = element.options.value
+    const param = {
+      component: element,
+      value: !value ? [] : Array.isArray(value) ? value : value.toString().split(','),
+      operator: element.options.attrs.multiple ? 'in' : 'eq'
+    }
+    return param
   }
 }
 const textSelectServiceImpl = new TextSelectServiceImpl()

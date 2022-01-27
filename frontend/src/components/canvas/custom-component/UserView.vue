@@ -114,11 +114,15 @@ export default {
     terminal: {
       type: String,
       default: 'pc'
+    },
+    filters: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
-      filterInit: false, // 标记是否已经通过watch.filters 进行初始化，如果filterInit=true 则create放弃数据初始化防止数据覆盖
+      isFirstLoad: true, // 是否是第一次加载
       refId: null,
       chart: BASE_CHART_STRING,
       requestStatus: 'success',
@@ -179,7 +183,7 @@ export default {
     },
     filter() {
       const filter = {}
-      filter.filter = this.element.filters
+      filter.filter = this.isFirstLoad ? this.filters : this.cfilters
       filter.linkageFilters = this.element.linkageFilters
       filter.drill = this.drillClickDimensionList
       filter.resultCount = this.resultCount
@@ -187,7 +191,7 @@ export default {
       filter.queryFrom = 'panel'
       return filter
     },
-    filters() {
+    cfilters() {
       // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
       if (!this.element.filters) return []
       return JSON.parse(JSON.stringify(this.element.filters))
@@ -242,11 +246,13 @@ export default {
   },
 
   watch: {
-    'filters': function(val1, val2) {
-      if (isChange(val1, val2)) {
-        this.filterInit = true
-        this.getData(this.element.propValue.viewId)
-      }
+    'cfilters': {
+      handler: function(val1, val2) {
+        if (isChange(val1, val2) && !this.isFirstLoad) {
+          this.getData(this.element.propValue.viewId)
+        }
+      },
+      deep: true
     },
     linkageFilters: {
       handler(newVal, oldVal) {
@@ -318,7 +324,8 @@ export default {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
       // 如果watch.filters 已经进行数据初始化时候，此处放弃数据初始化
-      !this.filterInit && this.getData(this.element.propValue.viewId, false)
+
+      this.getData(this.element.propValue.viewId, false)
     }
   },
   methods: {
@@ -399,6 +406,7 @@ export default {
             this.requestStatus = 'error'
             this.message = response.message
           }
+          this.isFirstLoad = false
           return true
         }).catch(err => {
           this.requestStatus = 'error'
@@ -413,6 +421,7 @@ export default {
               this.message = err
             }
           }
+          this.isFirstLoad = false
           return true
         })
       }

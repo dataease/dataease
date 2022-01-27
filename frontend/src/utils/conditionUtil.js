@@ -1,5 +1,7 @@
 
 import { Condition } from '@/components/widget/bean/Condition'
+import { ApplicationContext } from '@/utils/ApplicationContext'
+
 /**
  * 判断两个conditions数组是否相同
  * @param {*} conditions1
@@ -35,4 +37,37 @@ export const formatLinkageCondition = obj => {
   const { viewIds, fieldId, value, operator } = obj
   const condition = new Condition(null, fieldId, operator, value, viewIds)
   return condition
+}
+
+export const buildFilterMap = panelItems => {
+  const viewIdMatch = (viewIds, viewId) => !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
+  const result = {}
+  panelItems.forEach(element => {
+    if (element.type === 'view') {
+      result[element.propValue.viewId] = []
+    }
+  })
+  panelItems.forEach(element => {
+    if (element.type !== 'custom') {
+      return true
+    }
+    const widget = ApplicationContext.getService(element.serviceName)
+    const param = widget.getParam(element)
+    const condition = formatCondition(param)
+    const vValid = valueValid(condition)
+    const filterComponentId = condition.componentId
+    Object.keys(result).forEach(viewId => {
+      const vidMatch = viewIdMatch(condition.viewIds, viewId)
+      const viewFilters = result[viewId]
+      let j = viewFilters.length
+      while (j--) {
+        const filter = viewFilters[j]
+        if (filter.componentId === filterComponentId) {
+          viewFilters.splice(j, 1)
+        }
+      }
+      vidMatch && vValid && viewFilters.push(condition)
+    })
+  })
+  return result
 }

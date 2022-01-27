@@ -67,6 +67,39 @@ class NumberRangeServiceImpl extends WidgetService {
       return field['deType'] === 2 || field['deType'] === 3
     })
   }
+
+  getParam(element) {
+    if (element.options.value && element.options.value.length > 0) {
+      const values = this.element.options.value
+      const min = values[0]
+      let max = null
+      if (values.length > 1) {
+        max = values[1]
+      }
+      const param = {
+        component: element,
+        value: [min, max],
+        operator: 'between'
+      }
+      if (min && max) {
+        return param
+      }
+      if (!min && !max) {
+        param.value = []
+        return param
+      }
+      if (min) {
+        param.value = [min]
+        param.operator = 'ge'
+        return param
+      }
+      if (max) {
+        param.value = [max]
+        param.operator = 'le'
+        return param
+      }
+    }
+  }
 }
 const numberRangeServiceImpl = new NumberRangeServiceImpl()
 export default numberRangeServiceImpl
