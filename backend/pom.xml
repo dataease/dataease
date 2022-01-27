@@ -284,6 +284,7 @@
                     <exclude>static/**/*.woff</exclude>
                     <exclude>static/**/*.woff2</exclude>
                     <exclude>static/**/*.ttf</exclude>
+                    <exclude>static/**/*.ico</exclude>
                 </excludes>
             </resource>
 
@@ -294,6 +295,7 @@
                     <include>static/**/*.woff</include>
                     <include>static/**/*.woff2</include>
                     <include>static/**/*.ttf</include>
+                    <include>static/**/*.ico</include>
                 </includes>
             </resource>
         </resources>
