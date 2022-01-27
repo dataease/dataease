@@ -1,5 +1,7 @@
 import { WidgetService } from '../service/WidgetService'
-
+import {
+  timeSection
+} from '@/utils'
 const leftPanel = {
   icon: 'iconfont icon-yue',
   label: 'deyearmonth.label',
@@ -117,6 +119,64 @@ class TimeMonthServiceImpl extends WidgetService {
       } else {
         return new Date(nowYear, nowMonth + dynamicPrefix, 1).getTime()
       }
+    }
+  }
+  getParam(element) {
+    let timeArr = []
+    if (element.options.attrs.default.isDynamic) {
+      let value = this.dynamicDateFormNow(element)
+      value = this.formatFilterValue(value)
+      timeArr = this.formatValues(value, element)
+    } else {
+      let value = this.fillValueDerfault(element)
+      value = this.formatFilterValue(value)
+      timeArr = this.formatValues(value, element)
+    }
+    const param = {
+      component: element,
+      value: timeArr,
+      operator: 'between'
+    }
+    return param
+  }
+  fillValueDerfault(element) {
+    const defaultV = element.options.value === null ? '' : element.options.value.toString()
+    if (element.options.attrs.type === 'daterange') {
+      if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV ===
+          '[object Object]') {
+        return []
+      }
+      return defaultV.split(',').map(item => parseFloat(item))
+    } else {
+      if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV ===
+          '[object Object]') {
+        return null
+      }
+      return parseFloat(defaultV.split(',')[0])
+    }
+  }
+  formatFilterValue(values) {
+    if (values === null) return []
+    if (Array.isArray(values)) return values
+    return [values]
+  }
+  formatValues(values, element) {
+    if (!values || values.length === 0) {
+      return []
+    }
+    if (element.options.attrs.type === 'daterange') {
+      if (values.length !== 2) {
+        return null
+      }
+      let start = values[0]
+      let end = values[1]
+      start = timeSection(start, 'date')[0]
+      end = timeSection(end, 'date')[1]
+      const results = [start, end]
+      return results
+    } else {
+      const value = values[0]
+      return timeSection(parseFloat(value), element.options.attrs.type)
     }
   }
 }

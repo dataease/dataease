@@ -42,7 +42,7 @@ export default {
           head: this.$t('wizard.online_document'),
           content: this.$t('wizard.online_document_hint'),
           bottom: '',
-          href: 'https://dataease.io/docs/dev_manual/dev_manual/',
+          href: 'https://dataease.io/docs/index.html',
           component: 'CardDetail'
         },
         {

@@ -101,6 +101,7 @@
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
+        :filters="filterMap[item.propValue.viewId]"
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
         :element="item"
@@ -191,7 +192,7 @@ import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import DragShadow from '@/components/DeDrag/shadow'
 import bus from '@/utils/bus'
 import LinkJumpSet from '@/views/panel/LinkJumpSet'
-
+import { buildFilterMap } from '@/utils/conditionUtil'
 // 挤占式画布
 import _ from 'lodash'
 import $ from 'jquery'
@@ -930,6 +931,7 @@ export default {
     dragComponentInfo() {
       return this.$store.state.dragComponentInfo
     },
+
     ...mapState([
       'componentData',
       'curComponent',
@@ -941,7 +943,10 @@ export default {
       'componentGap',
       'mobileLayoutStatus',
       'curCanvasScale'
-    ])
+    ]),
+    filterMap() {
+      return buildFilterMap(this.componentData)
+    }
   },
   watch: {
     customStyle: {

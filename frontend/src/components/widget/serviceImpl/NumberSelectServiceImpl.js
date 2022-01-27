@@ -82,6 +82,15 @@ class NumberSelectServiceImpl extends WidgetService {
       }
     })
   }
+  getParam(element) {
+    const value = element.options.value
+    const param = {
+      component: element,
+      value: !value ? [] : Array.isArray(value) ? value : value.toString().split(','),
+      operator: element.options.attrs.multiple ? 'in' : 'eq'
+    }
+    return param
+  }
 }
 const numberSelectServiceImpl = new NumberSelectServiceImpl()
 export default numberSelectServiceImpl

@@ -32,6 +32,7 @@
       :search-count="searchCount"
       :h="config.style.height"
       :edit-mode="'preview'"
+      :filters="filters"
       :terminal="terminal"
     />
   </div>
@@ -74,6 +75,10 @@ export default {
     terminal: {
       type: String,
       default: 'pc'
+    },
+    filters: {
+      type: Array,
+      default: () => []
     }
   },
   data() {

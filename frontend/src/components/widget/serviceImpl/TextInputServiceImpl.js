@@ -67,6 +67,15 @@ class TextInputServiceImpl extends WidgetService {
       return field['deType'] === 0
     })
   }
+  getParam(element) {
+    const value = element.options.value
+    const param = {
+      component: element,
+      value: !value ? [] : Array.isArray(value) ? value : [value],
+      operator: 'like'
+    }
+    return param
+  }
 }
 const textInputServiceImpl = new TextInputServiceImpl()
 export default textInputServiceImpl
