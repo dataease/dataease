@@ -426,6 +426,7 @@ export default {
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
           table.isRename = true
+          table.sceneId = table.pid
           alter(table).then(response => {
             this.closeTable()
             this.$message({
