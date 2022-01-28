@@ -101,7 +101,7 @@
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
-        :filters="filterMap[item.propValue.viewId]"
+        :filters="filterMap[item.propValue && item.propValue.viewId]"
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
         :element="item"

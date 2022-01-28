@@ -99,6 +99,11 @@ class NumberRangeServiceImpl extends WidgetService {
         return param
       }
     }
+    return {
+      component: element,
+      value: [],
+      operator: 'eq'
+    }
   }
 }
 const numberRangeServiceImpl = new NumberRangeServiceImpl()

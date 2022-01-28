@@ -550,6 +550,7 @@ export default {
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
           view.title = view.name
+          view.sceneId = view.pid
           post('/chart/view/save', view).then(response => {
             this.closeTable()
             this.$message({
