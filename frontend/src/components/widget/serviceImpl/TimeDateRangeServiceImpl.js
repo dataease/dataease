@@ -125,7 +125,8 @@ class TimeDateRangeServiceImpl extends WidgetService {
   getEndQuarter() {
     var now = new Date()
     var nowMonth = now.getMonth()
-    const endMonth = Math.floor((nowMonth / 3)) * 3 + (nowMonth % 3)
+    const quar = Math.floor(nowMonth / 3)
+    const endMonth = quar * 3 + 2
     const days = (endMonth === 5 || endMonth === 8) ? 30 : 31
     return new Date(now.getFullYear(), endMonth, days)
   }
