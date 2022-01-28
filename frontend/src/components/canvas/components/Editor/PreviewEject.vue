@@ -32,6 +32,11 @@ export default {
       }
     }
   },
+  watch: {
+    '$route.params.reportId': function() {
+      this.restore()
+    }
+  },
   mounted() {
     this.restore()
   },

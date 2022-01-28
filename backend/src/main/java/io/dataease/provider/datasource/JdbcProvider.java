@@ -175,7 +175,13 @@ public class JdbcProvider extends DatasourceProvider {
         } catch (SQLException e) {
             DataEaseException.throwException(e);
         } catch (Exception e) {
-            DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
+            if(datasourceRequest.getDatasource().getType().equalsIgnoreCase("ds_doris")){
+                datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
+                return fetchResultField(datasourceRequest);
+            }else {
+                DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
+            }
+
         }
         return list;
     }
