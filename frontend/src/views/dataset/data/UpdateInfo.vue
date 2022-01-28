@@ -537,12 +537,19 @@ export default {
     getIncrementalConfig() {
       post('/dataset/table/incrementalConfig', { tableId: this.table.id }).then(response => {
         this.incrementalConfig = response.data
-        this.incrementalUpdateType = 'incrementalAdd'
-        if (this.incrementalConfig.incrementalAdd) {
+        if (this.incrementalConfig.incrementalAdd.length === 0 && this.incrementalConfig.incrementalDelete.length === 0 ) {
+          this.incrementalUpdateType = 'incrementalAdd'
+          this.sql = ''
+          return
+        }
+        if (this.incrementalConfig.incrementalAdd.length > 0) {
+          this.incrementalUpdateType = 'incrementalAdd'
           this.sql = this.incrementalConfig.incrementalAdd
         } else {
-          this.sql = ''
+          this.incrementalUpdateType = 'incrementalDelete'
+          this.sql = this.incrementalConfig.incrementalDelete
         }
+
       })
     },
     saveIncrementalConfig() {
