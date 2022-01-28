@@ -18,6 +18,11 @@ export default {
       mainHeight: '100vh!important'
     }
   },
+  watch: {
+    '$route.params.reportId': function() {
+      this.restore()
+    }
+  },
   computed: {
     bgStyle() {
       if (this.backScreenShot) {
