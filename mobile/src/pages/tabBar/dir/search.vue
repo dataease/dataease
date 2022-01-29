@@ -89,7 +89,7 @@ export default {
             const param = {name: val}
             requestDir(param).then(res => {
                 let dataObj = res.data
-                dataObj.map(item => {
+                dataObj && dataObj.map(item => {
                     item.name = item.text
                     return util.dataHandle(item, val);
                 });
