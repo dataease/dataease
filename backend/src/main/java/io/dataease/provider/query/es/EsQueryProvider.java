@@ -942,24 +942,24 @@ public class EsQueryProvider extends QueryProvider {
         }
 
         if (StringUtils.isEmpty(dateStyle)) {
-            return "YYYY-MM-dd HH:mm:ss";
+            return "yyyy-MM-dd HH:mm:ss";
         }
 
         switch (dateStyle) {
             case "y":
-                return "YYYY";
+                return "yyyy";
             case "y_M":
-                return "YYYY" + split + "MM";
+                return "yyyy" + split + "MM";
             case "y_M_d":
-                return "YYYY" + split + "MM" + split + "dd";
+                return "yyyy" + split + "MM" + split + "dd";
             case "H_m_s":
                 return "HH:mm:ss";
             case "y_M_d_H_m":
-                return "YYYY" + split + "MM" + split + "dd" + " HH:mm";
+                return "yyyy" + split + "MM" + split + "dd" + " HH:mm";
             case "y_M_d_H_m_s":
-                return "YYYY" + split + "MM" + split + "dd" + " HH:mm:ss";
+                return "yyyy" + split + "MM" + split + "dd" + " HH:mm:ss";
             default:
-                return "YYYY-MM-dd HH:mm:ss";
+                return "yyyy-MM-dd HH:mm:ss";
         }
     }
 
