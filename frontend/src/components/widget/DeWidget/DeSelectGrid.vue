@@ -196,7 +196,6 @@ export default {
         this.element.options.manualModify = true
       }
       this.setCondition()
-      this.styleChange()
     },
 
     setCondition() {
@@ -221,10 +220,6 @@ export default {
         if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') { return null }
         return defaultV.split(',')[0]
       }
-    },
-
-    styleChange() {
-      this.$store.commit('recordStyleChange')
     },
     optionDatas(datas) {
       if (!datas) return null
