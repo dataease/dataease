@@ -53,6 +53,7 @@ export default {
       }
       // 加载视图数据
       initPanelData(this.panelId, function() {
+        this.dataLoading = false
         // 如果含有跳转参数 进行触发
         const tempParam = localStorage.getItem('jumpInfoParam')
         if (tempParam) {
