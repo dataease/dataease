@@ -1016,7 +1016,11 @@ export default {
     filter_exp: 'Filter Value',
     filter_type: 'Filter Type',
     filter_value_can_not_str: 'Value type can not input string',
-    enum_value_can_not_null: 'Enum Value can not empty.'
+    enum_value_can_not_null: 'Enum Value can not empty.',
+    table_config: 'Table Config',
+    table_column_width_config: 'Column Width',
+    table_column_adapt: 'Adapt',
+    table_column_custom: 'Custom'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
