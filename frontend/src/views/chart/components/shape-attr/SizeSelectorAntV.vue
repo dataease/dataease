@@ -110,8 +110,18 @@
         <el-form-item :label="$t('chart.table_column_width_config')" class="form-item">
           <el-radio-group v-model="sizeForm.tableColumnMode" @change="changeBarSizeCase">
             <el-radio label="adapt"><span>{{ $t('chart.table_column_adapt') }}</span></el-radio>
-            <el-radio label="custom"><span>{{ $t('chart.table_column_custom') }}</span></el-radio>
+            <el-radio label="custom">
+              <span>{{ $t('chart.table_column_custom') }}</span>
+            </el-radio>
           </el-radio-group>
+          <el-tooltip class="item" effect="dark" placement="bottom">
+            <div slot="content">
+              列宽并非任何时候都能生效。
+              <br>
+              容器宽度优先级高于列宽，即(表格容器宽度 / 列数 > 指定列宽)，则列宽优先取(容器宽度 / 列数)。
+            </div>
+            <i class="el-icon-info" style="cursor: pointer;color: #606266;margin-left: 4px;" />
+          </el-tooltip>
         </el-form-item>
         <el-form-item v-show="sizeForm.tableColumnMode === 'custom'" label="" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableColumnWidth" :min="100" :max="500" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
