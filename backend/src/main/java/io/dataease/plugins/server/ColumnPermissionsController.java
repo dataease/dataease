@@ -29,7 +29,7 @@ public class ColumnPermissionsController {
 
     @ApiOperation("保存")
     @PostMapping("save")
-    public void save(@RequestBody DatasetColumnPermissions datasetColumnPermissions) throws Exception {
+    public DatasetColumnPermissions save(@RequestBody DatasetColumnPermissions datasetColumnPermissions) throws Exception {
         ColumnPermissionService columnPermissionService = SpringContextUtil.getBean(ColumnPermissionService.class);
         DataSetColumnPermissionsDTO request = new DataSetColumnPermissionsDTO();
         request.setAuthTargetType(datasetColumnPermissions.getAuthTargetType());
@@ -48,7 +48,7 @@ public class ColumnPermissionsController {
                 throw new Exception(Translator.get("i18n_cp_exist"));
             }
         }
-        columnPermissionService.save(datasetColumnPermissions);
+        return columnPermissionService.save(datasetColumnPermissions);
     }
 
     @ApiOperation("查询")
