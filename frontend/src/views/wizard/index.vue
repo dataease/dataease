@@ -32,7 +32,7 @@ export default {
     return {
       cardList: [
         {
-          head: this.$t('wizard.demo_video'),
+          head: this.$t('wizard.quick_start'),
           content: this.$t('wizard.demo_video_hint'),
           bottom: '',
           href: 'https://www.bilibili.com/video/BV1UB4y1K7jA',
@@ -54,7 +54,7 @@ export default {
         },
         {
           head: this.$t('wizard.teaching_video'),
-          content: '<a href="https://www.bilibili.com/video/BV1pb4y1E7Zg?spm_id_from=333.999.0.0" target="_blank"><span style="line-height: 30px">【DataEase教学视频】视图钻取 </span></a><br><a href="https://www.bilibili.com/video/BV1Xq4y187H9?spm_id_from=333.999.0.0" target="_blank">【DataEase教学视频】移动端布局设置</a>',
+          content: '<a href="https://www.bilibili.com/video/BV1pb4y1E7Zg?spm_id_from=333.999.0.0" target="_blank">【DataEase教学视频】视图钻取</a><br><a href="https://www.bilibili.com/video/BV1rm4y1f7a7?spm_id_from=333.999.0.0" target="_blank">【DataEase教学视频】视图组件联动</a><br><a href="https://www.bilibili.com/video/BV1Xq4y187H9?spm_id_from=333.999.0.0" target="_blank">【DataEase教学视频】移动端布局设置</a>',
           bottom: '',
           href: 'https://space.bilibili.com/510493147/channel/collectiondetail?sid=150431',
           component: 'CardDetail'

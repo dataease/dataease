@@ -158,7 +158,6 @@ export default {
         this.element.options.manualModify = true
       }
       this.setCondition()
-      this.styleChange()
     },
     formatFilterValue() {
       if (this.values === null) return []
@@ -183,9 +182,6 @@ export default {
         const value = values[0]
         return timeSection(parseFloat(value), this.element.options.attrs.type)
       }
-    },
-    styleChange() {
-      this.$store.commit('recordStyleChange')
     },
     fillValueDerfault() {
       const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()

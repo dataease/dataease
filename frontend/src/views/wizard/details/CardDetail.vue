@@ -61,7 +61,7 @@ export default {
   }
   .demo_content{
     margin: auto;
-    padding-left: 15px;
+    padding-left: 8px;
     height: 100%;
     overflow: hidden;
     .head{
@@ -71,7 +71,7 @@ export default {
     .content{
       height: 50%;
       padding-top: 15px;
-      padding-right: 10px;
+      padding-right: 3px;
       color: var(--TextPrimary, #6D6D6D);
       font-size: 12px;
       overflow-y: auto;
