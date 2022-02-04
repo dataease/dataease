@@ -185,7 +185,6 @@ export default {
           }
 
           this.setCondition()
-          this.$store.commit('recordStyleChange')
         })
       })
     },
@@ -218,9 +217,6 @@ export default {
         this.inDraw && this.$store.commit('addViewFilter', param)
         return
       }
-    },
-    styleChange() {
-      this.$store.commit('recordStyleChange')
     },
 
     inputChange(val) {

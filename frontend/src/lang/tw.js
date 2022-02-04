@@ -465,7 +465,7 @@ export default {
     display: '顯示設置',
     ldap: 'LDAP設置',
     oidc: 'OIDC設置',
-    theme: '主题设置'
+    theme: '主題設置'
   },
   license: {
     i18n_no_license_record: '沒有 License 記錄',
@@ -1016,7 +1016,7 @@ export default {
     filter_exp: '過濾值',
     filter_type: '過濾方式',
     filter_value_can_not_str: '數值類型字段過濾值不能包含文本',
-    enum_value_can_not_null: '字段枚舉值不能为空'
+    enum_value_can_not_null: '字段枚舉值不能為空'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
@@ -1460,7 +1460,7 @@ export default {
     linkage: '聯動',
     jump: '跳轉',
     cancel_linkage: '取消聯動',
-    switch_picture: '更换图片',
+    switch_picture: '更換圖片',
     remove_all_linkage: '清除所有聯動',
     exit_un_march_linkage_field: '存在未匹配聯動關繫的字段',
     details: '詳情',
@@ -1549,7 +1549,7 @@ export default {
     themeLight: '淺色',
     themeDark: '深色',
     themeCustom: '自定義',
-    openHomePage: '显示首页'
+    openHomePage: '顯示首頁'
 
   },
   auth: {
@@ -1823,23 +1823,24 @@ export default {
     welcome_title: '歡迎使用DataEase',
     welcome_hint: '人人可用的開源數據可視化分析工具',
     demo_video: '演示視頻',
+    quick_start: '快速入門',
     online_document: '在線文檔',
     latest_developments: '最新動態',
     teaching_video: '教學視頻',
     enterprise_edition: '企業版',
-    contact_us: '聯系我們',
-    demo_video_hint: '如何3分鐘製作一個DataEase 數據看板、並分享給他人',
+    contact_us: '聯繫我們',
+    demo_video_hint: '如何3分鐘製作一個DataEase 數據看闆、並分享給他人',
     online_document_hint: '涵蓋DataEase的安裝步驟、用戶手冊、使用教程、常見問題的解決方案、以及二次開發等',
     teaching_video_bottom_hint: '更多視頻資料',
-    enterprise_edition_hint1: '提供企業級應用場景X-Pack增強包',
+    enterprise_edition_hint1: '提供企業級應用場景 X-Pack 增強包',
     enterprise_edition_hint2: '提供高等級原廠服務支持',
-    enterprise_edition_hint3: '提供DataEase 運維安全最佳實踐',
+    enterprise_edition_hint3: '提供 DataEase 最佳實踐建議',
     open_source_community: '開源社區',
     click_show: '點擊查看',
     show_more: '查看更多',
     click_inner: '點擊進入',
-    email: '邮箱：',
-    tel: '电话：',
-    web: '网址：'
+    email: '郵箱：',
+    tel: '電話：',
+    web: '網址：'
   }
 }
