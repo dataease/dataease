@@ -305,10 +305,10 @@ public class ChartViewService {
                         filterRequest.setFieldId(fId);
 
                         DatasetTableField datasetTableField = dataSetTableFieldsService.get(fId);
-                        if(datasetTableField == null){
+                        if (datasetTableField == null) {
                             continue;
                         }
-                        if(!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())){
+                        if (!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
                             filterRequest.setDatasetTableField(datasetTableField);
                             if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
                                 if (CollectionUtils.isNotEmpty(filterRequest.getViewIds())) {
@@ -329,7 +329,7 @@ public class ChartViewService {
         if (ObjectUtils.isNotEmpty(requestList.getLinkageFilters())) {
             for (ChartExtFilterRequest request : requestList.getLinkageFilters()) {
                 DatasetTableField datasetTableField = dataSetTableFieldsService.get(request.getFieldId());
-                if(!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())){
+                if (!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
                     request.setDatasetTableField(datasetTableField);
                     if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
                         if (CollectionUtils.isNotEmpty(request.getViewIds())) {
@@ -814,34 +814,66 @@ public class ChartViewService {
                 }
             }
 
-            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
-                AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
-                axisChartDataDTO.setField(a.toString());
-                axisChartDataDTO.setName(a.toString());
+            if (StringUtils.containsIgnoreCase(view.getType(), "table")) {
+                for (int i = 0; i < xAxis.size() + yAxis.size(); i++) {
+                    AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
+                    axisChartDataDTO.setField(a.toString());
+                    axisChartDataDTO.setName(a.toString());
 
-                List<ChartDimensionDTO> dimensionList = new ArrayList<>();
-                List<ChartQuotaDTO> quotaList = new ArrayList<>();
+                    List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+                    List<ChartQuotaDTO> quotaList = new ArrayList<>();
 
-                for (int j = 0; j < xAxis.size(); j++) {
-                    ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
-                    chartDimensionDTO.setId(xAxis.get(j).getId());
-                    chartDimensionDTO.setValue(row[j]);
-                    dimensionList.add(chartDimensionDTO);
+                    for (int j = 0; j < xAxis.size(); j++) {
+                        ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                        chartDimensionDTO.setId(xAxis.get(j).getId());
+                        chartDimensionDTO.setValue(row[j]);
+                        dimensionList.add(chartDimensionDTO);
+                    }
+                    axisChartDataDTO.setDimensionList(dimensionList);
+
+                    int j = i - xAxis.size();
+                    if (j > -1) {
+                        ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
+                        chartQuotaDTO.setId(yAxis.get(j).getId());
+                        quotaList.add(chartQuotaDTO);
+                        axisChartDataDTO.setQuotaList(quotaList);
+                        try {
+                            axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
+                        } catch (Exception e) {
+                            axisChartDataDTO.setValue(new BigDecimal(0));
+                        }
+                    }
+                    datas.add(axisChartDataDTO);
                 }
-                axisChartDataDTO.setDimensionList(dimensionList);
+            } else {
+                for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                    AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
+                    axisChartDataDTO.setField(a.toString());
+                    axisChartDataDTO.setName(a.toString());
 
-                int j = i - xAxis.size();
-                ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
-                chartQuotaDTO.setId(yAxis.get(j).getId());
-                quotaList.add(chartQuotaDTO);
-                axisChartDataDTO.setQuotaList(quotaList);
-                try {
-                    axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
-                } catch (Exception e) {
-                    axisChartDataDTO.setValue(new BigDecimal(0));
+                    List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+                    List<ChartQuotaDTO> quotaList = new ArrayList<>();
+
+                    for (int j = 0; j < xAxis.size(); j++) {
+                        ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                        chartDimensionDTO.setId(xAxis.get(j).getId());
+                        chartDimensionDTO.setValue(row[j]);
+                        dimensionList.add(chartDimensionDTO);
+                    }
+                    axisChartDataDTO.setDimensionList(dimensionList);
+
+                    int j = i - xAxis.size();
+                    ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
+                    chartQuotaDTO.setId(yAxis.get(j).getId());
+                    quotaList.add(chartQuotaDTO);
+                    axisChartDataDTO.setQuotaList(quotaList);
+                    try {
+                        axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
+                    } catch (Exception e) {
+                        axisChartDataDTO.setValue(new BigDecimal(0));
+                    }
+                    datas.add(axisChartDataDTO);
                 }
-                axisChartDataDTO.setCategory(yAxis.get(j).getName());
-                datas.add(axisChartDataDTO);
             }
         }
         map.put("datas", datas);

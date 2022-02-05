@@ -565,7 +565,7 @@
                   <el-collapse-item
                     v-show="view.render && view.render === 'antv' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'word-cloud' && chart.type !== 'treemap'"
                     name="size"
-                    :title="$t('chart.size')"
+                    :title="(chart.type && chart.type.includes('table')) ? $t('chart.table_config') : $t('chart.size')"
                   >
                     <size-selector-ant-v
                       :param="param"
@@ -769,8 +769,16 @@
               class="chart-class"
               @onChartClick="chartClick"
             />
+            <chart-component-s2
+              v-if="httpRequest.status && chart.type && chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'"
+              ref="dynamicChart"
+              :chart-id="chart.id"
+              :chart="chart"
+              class="chart-class"
+              @onChartClick="chartClick"
+            />
             <table-normal
-              v-if="httpRequest.status && chart.type && chart.type.includes('table')"
+              v-if="httpRequest.status && chart.type && chart.type.includes('table') && renderComponent() === 'echarts'"
               :show-summary="chart.type === 'table-normal'"
               :chart="chart"
               class="table-class"
@@ -973,10 +981,12 @@ import SizeSelectorAntV from '@/views/chart/components/shape-attr/SizeSelectorAn
 import SplitSelectorAntV from '@/views/chart/components/component-style/SplitSelectorAntV'
 import CompareEdit from '@/views/chart/components/compare/CompareEdit'
 import { compareItem } from '@/views/chart/chart/compare'
+import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 
 export default {
   name: 'ChartEdit',
   components: {
+    ChartComponentS2,
     CompareEdit,
     SplitSelectorAntV,
     SizeSelectorAntV,

@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@antv/g2plot": "^2.3.32",
-    "@antv/s2": "^1.6.0",
+    "@antv/s2": "^1.7.0",
     "@riophae/vue-treeselect": "0.4.0",
     "@tinymce/tinymce-vue": "^3.2.8",
     "axios": "^0.21.1",
