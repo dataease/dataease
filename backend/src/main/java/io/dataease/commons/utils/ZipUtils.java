@@ -6,6 +6,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class ZipUtils {
 
@@ -29,7 +31,7 @@ public class ZipUtils {
             ZipEntry ze = zis.getNextEntry();
             while (ze != null) {
                 String fileName = ze.getName();
-                File newFile = new File(outputFolder + File.separator + fileName);
+                File newFile = protectZipSlip(fileName, outputFolder);
                 //大部分网络上的源码，这里没有判断子目录
                 if (ze.isDirectory()) {
                     if (!newFile.mkdirs()) {
@@ -60,7 +62,7 @@ public class ZipUtils {
 
             while (entry != null) {
 
-                File file = new File(out, entry.getName());
+                File file = protectZipSlip(entry.getName(), out);
 
                 if (entry.isDirectory()) {
                     if (!file.mkdirs()) {
@@ -129,5 +131,18 @@ public class ZipUtils {
             in.close();
 
         }
+    }
+    public static File protectZipSlip(String fileName, String destDir) throws IOException{
+        Path destPath = Paths.get(destDir);
+        Path resolvedDest = destPath.resolve(fileName);
+        Path normalizedPath = resolvedDest.normalize();
+
+        // checking whether zipEntry filename has changed the destination
+        if (!normalizedPath.startsWith(destDir)) {
+            throw new IOException("Malicious zip entry found: " + fileName);
+        }
+
+        File newFile = normalizedPath.toFile();
+        return newFile;
     }
 }
