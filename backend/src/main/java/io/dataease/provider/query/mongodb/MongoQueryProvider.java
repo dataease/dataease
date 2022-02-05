@@ -116,7 +116,7 @@ public class MongoQueryProvider extends QueryProvider {
         st_sql.add("isGroup", isGroup);
         if (CollectionUtils.isNotEmpty(xFields)) {
             st_sql.add("groups", xFields);
-//            st_sql.add("notUseAs", true);
+            st_sql.add("notUseAs", true);
         }
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
@@ -238,7 +238,7 @@ public class MongoQueryProvider extends QueryProvider {
         ST st_sql = stg.getInstanceOf("querySql");
         if (CollectionUtils.isNotEmpty(xFields)) {
             st_sql.add("groups", xFields);
-//            st_sql.add("notUseAs", true);
+            st_sql.add("notUseAs", true);
         }
         if (CollectionUtils.isNotEmpty(yFields)) {
             st_sql.add("aggregators", yFields);
@@ -313,7 +313,7 @@ public class MongoQueryProvider extends QueryProvider {
         st_sql.add("isGroup", false);
         if (CollectionUtils.isNotEmpty(xFields)) {
             st_sql.add("groups", xFields);
-//            st_sql.add("notUseAs", true);
+            st_sql.add("notUseAs", true);
         }
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
@@ -431,7 +431,7 @@ public class MongoQueryProvider extends QueryProvider {
         ST st_sql = stg.getInstanceOf("querySql");
         if (CollectionUtils.isNotEmpty(xFields)) {
             st_sql.add("groups", xFields);
-//            st_sql.add("notUseAs", true);
+            st_sql.add("notUseAs", true);
         }
         if (CollectionUtils.isNotEmpty(yFields)) {
             st_sql.add("aggregators", yFields);
@@ -547,7 +547,7 @@ public class MongoQueryProvider extends QueryProvider {
         ST st_sql = stg.getInstanceOf("querySql");
         if (CollectionUtils.isNotEmpty(xFields)) {
             st_sql.add("groups", xFields);
-//            st_sql.add("notUseAs", true);
+            st_sql.add("notUseAs", true);
         }
         if (CollectionUtils.isNotEmpty(yFields)) {
             st_sql.add("aggregators", yFields);
