@@ -70,7 +70,7 @@ class NumberRangeServiceImpl extends WidgetService {
 
   getParam(element) {
     if (element.options.value && element.options.value.length > 0) {
-      const values = this.element.options.value
+      const values = element.options.value
       const min = values[0]
       let max = null
       if (values.length > 1) {
