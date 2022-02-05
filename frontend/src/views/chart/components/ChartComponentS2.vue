@@ -207,17 +207,32 @@ export default {
     },
 
     antVAction(param) {
-      console.log(param)
-      if (this.chart.type === 'treemap') {
-        this.pointParam = param.data.data
-      } else {
-        this.pointParam = param.data
+      const cell = this.myChart.getCell(param.target)
+      const meta = cell.getMeta()
+      console.log(meta)
+
+      let xAxis = []
+      if (this.chart.xaxis) {
+        xAxis = JSON.parse(this.chart.xaxis)
       }
+      let field = {}
+      if (meta.colIndex < xAxis.length) {
+        field = xAxis[meta.colIndex]
+      }
+      const dimensionList = []
+      dimensionList.push({ id: field.id, value: meta.fieldValue })
+      this.pointParam = {
+        data: {
+          dimensionList: dimensionList
+        }
+      }
+      console.log(this.pointParam)
+
       if (this.trackMenu.length < 2) { // 只有一个事件直接调用
         this.trackClick(this.trackMenu[0])
       } else { // 视图关联多个事件
-        this.trackBarStyle.left = param.x + 'px'
-        this.trackBarStyle.top = (param.y + 10) + 'px'
+        this.trackBarStyle.left = 50 + 'px'
+        this.trackBarStyle.top = (50 + 10) + 'px'
         this.$refs.viewTrack.trackButtonClick()
       }
     },

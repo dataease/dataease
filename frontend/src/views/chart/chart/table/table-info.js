@@ -1,4 +1,4 @@
-import { TableSheet } from '@antv/s2'
+import { TableSheet, S2Event } from '@antv/s2'
 import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table'
 
 export function baseTableInfo(s2, container, chart, action, tableData) {
@@ -46,6 +46,9 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
     s2.destroy()
   }
   s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
+
+  // click
+  s2.on(S2Event.DATA_CELL_CLICK, action)
 
   // theme
   const customTheme = getCustomTheme(chart)
