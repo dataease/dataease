@@ -210,18 +210,6 @@ export default {
       const cell = this.myChart.getCell(param.target)
       const meta = cell.getMeta()
       console.log(meta)
-      // if (this.chart.type === 'treemap') {
-      //   this.pointParam = param.data.data
-      // } else {
-      //   this.pointParam = param.data
-      // }
-      // if (this.trackMenu.length < 2) { // 只有一个事件直接调用
-      //   this.trackClick(this.trackMenu[0])
-      // } else { // 视图关联多个事件
-      //   this.trackBarStyle.left = param.x + 'px'
-      //   this.trackBarStyle.top = (param.y + 10) + 'px'
-      //   this.$refs.viewTrack.trackButtonClick()
-      // }
 
       let xAxis = []
       if (this.chart.xaxis) {

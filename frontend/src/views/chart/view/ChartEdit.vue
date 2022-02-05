@@ -483,7 +483,7 @@
                     </div>
                   </el-row>
                   <el-row
-                    v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud'"
+                    v-if="view.type && !view.type.includes('table') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud'"
                     class="padding-lr"
                     style="margin-top: 6px;"
                   >
@@ -1325,7 +1325,7 @@ export default {
         view.customAttr.label.show = true
       }
       if (view.type === 'liquid' ||
-          (view.type.includes('table') && view.render === 'echarts') ||
+          view.type.includes('table') ||
           view.type.includes('text') ||
           view.type.includes('gauge')) {
         view.drillFields = []
