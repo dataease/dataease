@@ -37,6 +37,16 @@
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
+    <chart-component-s2
+      v-if="charViewS2ShowFlag"
+      :ref="element.propValue.id"
+      class="chart-class"
+      :chart="chart"
+      :track-menu="trackMenu"
+      :search-count="searchCount"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
+    />
     <table-normal
       v-if="tableShowFlag"
       :ref="element.propValue.id"
@@ -71,10 +81,11 @@ import { areaMapping } from '@/api/map/map'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import EditBarView from '@/components/canvas/components/Editor/EditBarView'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/components/canvas/utils/style'
+import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 
 export default {
   name: 'UserView',
-  components: { EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
+  components: { ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
   props: {
     element: {
       type: Object,
@@ -169,8 +180,11 @@ export default {
     charViewG2ShowFlag() {
       return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.renderComponent() === 'antv'
     },
+    charViewS2ShowFlag() {
+      return this.httpRequest.status && this.chart.type && this.chart.type.includes('table') && !this.chart.type.includes('text') && this.renderComponent() === 'antv'
+    },
     tableShowFlag() {
-      return this.httpRequest.status && this.chart.type && this.chart.type.includes('table')
+      return this.httpRequest.status && this.chart.type && this.chart.type.includes('table') && this.renderComponent() === 'echarts'
     },
     labelShowFlag() {
       return this.httpRequest.status && this.chart.type && this.chart.type.includes('text')

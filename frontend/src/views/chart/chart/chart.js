@@ -31,6 +31,8 @@ export const DEFAULT_SIZE = {
   tableTitleHeight: 36,
   tableItemHeight: 36,
   tablePageSize: '20',
+  tableColumnMode: 'adapt',
+  tableColumnWidth: 100,
   gaugeMin: 0,
   gaugeMax: 100,
   gaugeStartAngle: 225,
