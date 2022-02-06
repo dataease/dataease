@@ -842,6 +842,7 @@ public class ChartViewService {
                         } catch (Exception e) {
                             axisChartDataDTO.setValue(new BigDecimal(0));
                         }
+                        axisChartDataDTO.setCategory(yAxis.get(j).getName());
                     }
                     datas.add(axisChartDataDTO);
                 }
@@ -872,6 +873,7 @@ public class ChartViewService {
                     } catch (Exception e) {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
+                    axisChartDataDTO.setCategory(yAxis.get(j).getName());
                     datas.add(axisChartDataDTO);
                 }
             }
