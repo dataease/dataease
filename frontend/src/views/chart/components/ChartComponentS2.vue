@@ -5,8 +5,8 @@
       <p style="padding:6px 10px 0 10px;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;">{{ chart.title }}</p>
     </span>
     <div style="width: 100%;overflow: hidden;padding: 8px;" :style="{height:chartHeight,background:container_bg_class.background}">
-      <div v-if="chart.type === 'table-normal'" :id="chartId" style="width: 100%;overflow: hidden;" class="table-dom-normal" />
-      <div v-if="chart.type === 'table-info'" :id="chartId" style="width: 100%;overflow: hidden;" class="table-dom-info" />
+      <div v-if="chart.type === 'table-normal'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-normal-drill' : 'table-dom-normal'" />
+      <div v-if="chart.type === 'table-info'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-info-drill' : 'table-dom-info'" />
       <el-row v-show="chart.type === 'table-info'" class="table-page">
         <span class="total-style">
           {{ $t('chart.total') }}
@@ -207,18 +207,37 @@ export default {
     },
 
     antVAction(param) {
+      console.log(param, 'param')
       const cell = this.myChart.getCell(param.target)
       const meta = cell.getMeta()
-      console.log(meta)
+      console.log(meta, 'meta')
 
       let xAxis = []
       if (this.chart.xaxis) {
         xAxis = JSON.parse(this.chart.xaxis)
       }
-      let field = {}
-      if (meta.colIndex < xAxis.length) {
-        field = xAxis[meta.colIndex]
+      let drillFields = []
+      if (this.chart.drillFields) {
+        try {
+          drillFields = JSON.parse(this.chart.drillFields)
+        } catch (err) {
+          drillFields = JSON.parse(JSON.stringify(this.chart.drillFields))
+        }
       }
+
+      let field = {}
+      if (this.chart.drill) {
+        field = drillFields[this.chart.drillFilters.length]
+        // check click field is drill?
+        if (field.dataeaseName !== meta.valueField) {
+          return
+        }
+      } else {
+        if (meta.colIndex < xAxis.length) {
+          field = xAxis[meta.colIndex]
+        }
+      }
+
       const dimensionList = []
       dimensionList.push({ id: field.id, value: meta.fieldValue })
       this.pointParam = {
@@ -226,13 +245,13 @@ export default {
           dimensionList: dimensionList
         }
       }
-      console.log(this.pointParam)
+      console.log(this.pointParam, 'pointParam')
 
       if (this.trackMenu.length < 2) { // 只有一个事件直接调用
         this.trackClick(this.trackMenu[0])
       } else { // 视图关联多个事件
-        this.trackBarStyle.left = 50 + 'px'
-        this.trackBarStyle.top = (50 + 10) + 'px'
+        this.trackBarStyle.left = param.x + 'px'
+        this.trackBarStyle.top = (param.y + 10) + 'px'
         this.$refs.viewTrack.trackButtonClick()
       }
     },
@@ -359,6 +378,12 @@ export default {
 }
 .table-dom-normal{
   height:100%;
+}
+.table-dom-info-drill{
+  height:calc(100% - 36px - 12px);
+}
+.table-dom-normal-drill{
+  height:calc(100% - 12px);
 }
 .table-page{
   display: flex;

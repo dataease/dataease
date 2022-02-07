@@ -483,7 +483,7 @@
                     </div>
                   </el-row>
                   <el-row
-                    v-if="view.type && !view.type.includes('table') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud'"
+                    v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud'"
                     class="padding-lr"
                     style="margin-top: 6px;"
                   >
@@ -798,7 +798,7 @@
               </div>
             </div>
           </div>
-          <div style="position: absolute;left: 20px;bottom:10px;">
+          <div style="position: absolute;left: 8px;bottom:8px;">
             <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
           </div>
         </el-row>
@@ -1325,7 +1325,7 @@ export default {
         view.customAttr.label.show = true
       }
       if (view.type === 'liquid' ||
-          view.type.includes('table') ||
+          (view.type.includes('table') && view.render === 'echarts') ||
           view.type.includes('text') ||
           view.type.includes('gauge')) {
         view.drillFields = []
@@ -1346,22 +1346,6 @@ export default {
       view.extBubble = JSON.stringify(view.extBubble)
       delete view.data
       return view
-    },
-    save(getData, trigger, needRefreshGroup = false, switchType = false) {
-      const view = this.buildParam(getData, trigger, needRefreshGroup, switchType)
-      if (!view) return
-      post('/chart/view/save', view).then(response => {
-        if (getData) {
-          this.resetDrill()
-          this.getData(response.data.id)
-        } else {
-          this.getChart(response.data.id)
-        }
-        if (needRefreshGroup) {
-          this.refreshGroup(view)
-        }
-        this.closeChangeChart()
-      })
     },
     calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
       this.hasEdit = true
@@ -1501,14 +1485,7 @@ export default {
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
-
-          response.data.data = this.data
-          this.chart = response.data
-
-          this.chart.drill = this.drill
-          // this.httpRequest.status = true
         }).catch(err => {
-          // this.resetView()
           this.httpRequest.status = err.response.data.success
           this.httpRequest.msg = err.response.data.message
           return true

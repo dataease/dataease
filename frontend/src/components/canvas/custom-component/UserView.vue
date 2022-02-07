@@ -55,7 +55,7 @@
       class="table-class"
     />
     <label-normal v-if="labelShowFlag" :ref="element.propValue.id" :chart="chart" class="table-class" />
-    <div style="position: absolute;left: 20px;bottom:14px;">
+    <div style="position: absolute;left: 8px;bottom:8px;">
       <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
     </div>
   </div>
