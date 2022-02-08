@@ -1284,9 +1284,6 @@ export default {
       })
       if (view.type === 'table-pivot') {
         view.xaxisExt.forEach(function(ele) {
-          // if (!ele.summary || ele.summary === '') {
-          //   ele.summary = 'sum'
-          // }
           if (!ele.dateStyle || ele.dateStyle === '') {
             ele.dateStyle = 'y_M_d'
           }
