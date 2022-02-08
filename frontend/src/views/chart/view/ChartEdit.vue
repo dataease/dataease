@@ -1867,7 +1867,9 @@ export default {
       if (this.view.tableId !== this.changeTable.id) {
         this.view.tableId = this.changeTable.id
         this.view.xaxis = []
+        this.view.xaxisExt = []
         this.view.yaxis = []
+        this.view.yaxisExt = []
         this.view.customFilter = []
         this.view.extStack = []
         this.view.extBubble = []
