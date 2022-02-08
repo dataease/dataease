@@ -3,7 +3,6 @@ package io.dataease.provider.query.mongodb;
 import io.dataease.provider.query.SQLConstants;
 
 import static io.dataease.commons.constants.DatasourceTypes.mongo;
-import static io.dataease.commons.constants.DatasourceTypes.oracle;
 
 /**
  * @Author gin
@@ -14,7 +13,7 @@ public class MongoConstants extends SQLConstants {
 
     public static final String KEYWORD_FIX = "%s." + mongo.getKeywordPrefix() + "%s" + mongo.getKeywordSuffix();
 
-    public static final String ALIAS_FIX = mongo.getAliasPrefix() + "%s" + oracle.getAliasSuffix();
+    public static final String ALIAS_FIX = mongo.getAliasPrefix() + "%s" + mongo.getAliasSuffix();
 
     public static final String toInt32 = "toInt32(%s)";
 
