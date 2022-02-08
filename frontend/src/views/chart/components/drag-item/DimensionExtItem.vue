@@ -104,7 +104,7 @@
 
 <script>
 export default {
-  name: 'DimensionItem',
+  name: 'DimensionExtItem',
   props: {
     param: {
       type: Object,
@@ -170,7 +170,6 @@ export default {
       }
     },
     datePattern(param) {
-      // console.log(param)
       this.item.datePattern = param.type
       this.$emit('onDimensionItemChange', this.item)
     },
@@ -185,12 +184,12 @@ export default {
     },
     showRename() {
       this.item.index = this.index
-      this.item.renameType = 'dimension'
+      this.item.renameType = 'dimensionExt'
       this.$emit('onNameEdit', this.item)
     },
     removeItem() {
       this.item.index = this.index
-      this.item.removeType = 'dimension'
+      this.item.removeType = 'dimensionExt'
       this.$emit('onDimensionItemRemove', this.item)
     }
   }

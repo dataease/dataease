@@ -13,6 +13,8 @@ import lombok.ToString;
 public class ChartViewWithBLOBs extends ChartView implements Serializable {
     @ApiModelProperty("x轴")
     private String xAxis;
+    @ApiModelProperty("x轴(Row)")
+    private String xAxisExt;
     @ApiModelProperty("y轴")
     private String yAxis;
     @ApiModelProperty("副y轴")
