@@ -20,7 +20,16 @@
               <p class="radio-label">{{ $t('chart.chart_table_info') }}</p>
             </el-radio>
           </div>
-          <el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
+          <div style="position: relative;display: block;">
+            <el-radio value="table-pivot" label="table-pivot" border class="radio-style">
+              <span :title="$t('chart.chart_table_pivot')">
+                <svg-icon icon-class="table-pivot" class="chart-icon" />
+              </span>
+              <p class="radio-label">{{ $t('chart.chart_table_pivot') }}</p>
+            </el-radio>
+          </div>
+          <!--如需要，以下用于占位-->
+          <!--<el-radio value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>-->
         </div>
       </div>
 

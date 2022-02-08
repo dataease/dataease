@@ -49,9 +49,6 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <!--          <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">-->
-          <!--            <span>{{ $t('chart.filter') }}...</span>-->
-          <!--          </el-dropdown-item>-->
 
           <el-dropdown-item v-show="item.deType === 1" divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="dateStyle">
@@ -104,7 +101,7 @@
 
 <script>
 export default {
-  name: 'DimensionItem',
+  name: 'DimensionExtItem',
   props: {
     param: {
       type: Object,
@@ -170,7 +167,6 @@ export default {
       }
     },
     datePattern(param) {
-      // console.log(param)
       this.item.datePattern = param.type
       this.$emit('onDimensionItemChange', this.item)
     },
@@ -185,12 +181,12 @@ export default {
     },
     showRename() {
       this.item.index = this.index
-      this.item.renameType = 'dimension'
+      this.item.renameType = 'dimensionExt'
       this.$emit('onNameEdit', this.item)
     },
     removeItem() {
       this.item.index = this.index
-      this.item.removeType = 'dimension'
+      this.item.removeType = 'dimensionExt'
       this.$emit('onDimensionItemRemove', this.item)
     }
   }

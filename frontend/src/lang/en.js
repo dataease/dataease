@@ -1020,7 +1020,9 @@ export default {
     table_config: 'Table Config',
     table_column_width_config: 'Column Width',
     table_column_adapt: 'Adapt',
-    table_column_custom: 'Custom'
+    table_column_custom: 'Custom',
+    chart_table_pivot: 'Pivot Table',
+    table_pivot_row: 'Data Row'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

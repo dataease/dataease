@@ -4,9 +4,10 @@
     <span v-if="chart.type" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
       <p style="padding:6px 10px 0 10px;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;">{{ chart.title }}</p>
     </span>
-    <div style="width: 100%;overflow: hidden;padding: 8px;" :style="{height:chartHeight,background:container_bg_class.background}">
+    <div ref="tableContainer" style="width: 100%;overflow: hidden;padding: 8px;" :style="{background:container_bg_class.background}">
       <div v-if="chart.type === 'table-normal'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-normal-drill' : 'table-dom-normal'" />
       <div v-if="chart.type === 'table-info'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-info-drill' : 'table-dom-info'" />
+      <div v-if="chart.type === 'table-pivot'" :id="chartId" style="width: 100%;overflow: hidden;" class="table-dom-normal" />
       <el-row v-show="chart.type === 'table-info'" class="table-page">
         <span class="total-style">
           {{ $t('chart.total') }}
@@ -34,7 +35,7 @@
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { baseTableInfo, baseTableNormal } from '@/views/chart/chart/table/table-info'
+import { baseTableInfo, baseTableNormal, baseTablePivot } from '@/views/chart/chart/table/table-info'
 
 export default {
   name: 'ChartComponentS2',
@@ -189,6 +190,8 @@ export default {
         this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
       } else if (chart.type === 'table-normal') {
         this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
+      } else if (chart.type === 'table-pivot') {
+        this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false
@@ -338,6 +341,7 @@ export default {
           if (this.$refs.title) {
             const titleHeight = this.$refs.title.offsetHeight
             this.chartHeight = (currentHeight - titleHeight) + 'px'
+            this.$refs.tableContainer.style.height = this.chartHeight
           }
         }
       })

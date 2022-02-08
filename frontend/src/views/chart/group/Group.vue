@@ -768,6 +768,7 @@ export default {
       })
       view.stylePriority = 'view' // 默认样式优先级视图
       view.xaxis = JSON.stringify([])
+      view.xaxisExt = JSON.stringify([])
       view.yaxis = JSON.stringify([])
       view.yaxisExt = JSON.stringify([])
       view.extStack = JSON.stringify([])

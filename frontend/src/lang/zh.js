@@ -1022,7 +1022,9 @@ export default {
     table_config: '表格配置',
     table_column_width_config: '列宽调整',
     table_column_adapt: '自适应',
-    table_column_custom: '自定义'
+    table_column_custom: '自定义',
+    chart_table_pivot: '透视表',
+    table_pivot_row: '数据行'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

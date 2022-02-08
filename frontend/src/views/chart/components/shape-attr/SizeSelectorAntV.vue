@@ -124,7 +124,7 @@
           </el-tooltip>
         </el-form-item>
         <el-form-item v-show="sizeForm.tableColumnMode === 'custom'" label="" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.tableColumnWidth" :min="100" :max="500" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.tableColumnWidth" :min="10" :max="500" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
 

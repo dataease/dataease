@@ -1020,7 +1020,9 @@ export default {
     table_config: '表格配置',
     table_column_width_config: '列寬調整',
     table_column_adapt: '自適應',
-    table_column_custom: '自定義'
+    table_column_custom: '自定義',
+    chart_table_pivot: '透視表',
+    table_pivot_row: '數據行'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
