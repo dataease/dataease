@@ -227,7 +227,7 @@ class TimeDateRangeServiceImpl extends WidgetService {
   }
   getParam(element) {
     let timeArr = []
-    if (element.options.attrs.default.isDynamic) {
+    if (element.options.attrs.default && element.options.attrs.default.isDynamic) {
       let value = this.dynamicDateFormNow(element)
       value = this.formatFilterValue(value)
       timeArr = this.formatValues(value, element)
