@@ -233,6 +233,7 @@
                         :no-children-text="$t('commons.treeselect.no_children_text')"
                         :no-options-text="$t('commons.treeselect.no_options_text')"
                         :no-results-text="$t('commons.treeselect.no_results_text')"
+                        :disabled="!hasDataPermission('manage',param.privileges)"
                         @input="calcData"
                         @deselect="calcData"
                       />
