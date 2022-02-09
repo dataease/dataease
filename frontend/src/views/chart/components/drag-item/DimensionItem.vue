@@ -190,6 +190,7 @@ export default {
     },
     removeItem() {
       this.item.index = this.index
+      this.item.removeType = 'dimension'
       this.$emit('onDimensionItemRemove', this.item)
     }
   }

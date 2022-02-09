@@ -18,6 +18,7 @@
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.ChartViewWithBLOBs">
     <result column="x_axis" jdbcType="LONGVARCHAR" property="xAxis" />
+    <result column="x_axis_ext" jdbcType="LONGVARCHAR" property="xAxisExt" />
     <result column="y_axis" jdbcType="LONGVARCHAR" property="yAxis" />
     <result column="y_axis_ext" jdbcType="LONGVARCHAR" property="yAxisExt" />
     <result column="ext_stack" jdbcType="LONGVARCHAR" property="extStack" />
@@ -91,8 +92,8 @@
     create_by, create_time, update_time, style_priority
   </sql>
   <sql id="Blob_Column_List">
-    x_axis, y_axis, y_axis_ext, ext_stack, ext_bubble, custom_attr, custom_style, custom_filter, 
-    drill_fields, snapshot
+    x_axis, x_axis_ext, y_axis, y_axis_ext, ext_stack, ext_bubble, custom_attr, custom_style, 
+    custom_filter, drill_fields, snapshot
   </sql>
   <select id="selectByExampleWithBLOBs" parameterType="io.dataease.base.domain.ChartViewExample" resultMap="ResultMapWithBLOBs">
     select
@@ -147,18 +148,20 @@
       table_id, `type`, render, 
       result_count, result_mode, title, 
       create_by, create_time, update_time, 
-      style_priority, x_axis, y_axis, 
-      y_axis_ext, ext_stack, ext_bubble, 
-      custom_attr, custom_style, custom_filter, 
-      drill_fields, snapshot)
+      style_priority, x_axis, x_axis_ext, 
+      y_axis, y_axis_ext, ext_stack, 
+      ext_bubble, custom_attr, custom_style, 
+      custom_filter, drill_fields, snapshot
+      )
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{sceneId,jdbcType=VARCHAR}, 
       #{tableId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{render,jdbcType=VARCHAR}, 
       #{resultCount,jdbcType=INTEGER}, #{resultMode,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
       #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
-      #{stylePriority,jdbcType=VARCHAR}, #{xAxis,jdbcType=LONGVARCHAR}, #{yAxis,jdbcType=LONGVARCHAR}, 
-      #{yAxisExt,jdbcType=LONGVARCHAR}, #{extStack,jdbcType=LONGVARCHAR}, #{extBubble,jdbcType=LONGVARCHAR}, 
-      #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR}, #{customFilter,jdbcType=LONGVARCHAR}, 
-      #{drillFields,jdbcType=LONGVARCHAR}, #{snapshot,jdbcType=LONGVARCHAR})
+      #{stylePriority,jdbcType=VARCHAR}, #{xAxis,jdbcType=LONGVARCHAR}, #{xAxisExt,jdbcType=LONGVARCHAR}, 
+      #{yAxis,jdbcType=LONGVARCHAR}, #{yAxisExt,jdbcType=LONGVARCHAR}, #{extStack,jdbcType=LONGVARCHAR}, 
+      #{extBubble,jdbcType=LONGVARCHAR}, #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR}, 
+      #{customFilter,jdbcType=LONGVARCHAR}, #{drillFields,jdbcType=LONGVARCHAR}, #{snapshot,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.ChartViewWithBLOBs">
     insert into chart_view
@@ -204,6 +207,9 @@
       </if>
       <if test="xAxis != null">
         x_axis,
+      </if>
+      <if test="xAxisExt != null">
+        x_axis_ext,
       </if>
       <if test="yAxis != null">
         y_axis,
@@ -275,6 +281,9 @@
       </if>
       <if test="xAxis != null">
         #{xAxis,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="xAxisExt != null">
+        #{xAxisExt,jdbcType=LONGVARCHAR},
       </if>
       <if test="yAxis != null">
         #{yAxis,jdbcType=LONGVARCHAR},
@@ -356,6 +365,9 @@
       <if test="record.xAxis != null">
         x_axis = #{record.xAxis,jdbcType=LONGVARCHAR},
       </if>
+      <if test="record.xAxisExt != null">
+        x_axis_ext = #{record.xAxisExt,jdbcType=LONGVARCHAR},
+      </if>
       <if test="record.yAxis != null">
         y_axis = #{record.yAxis,jdbcType=LONGVARCHAR},
       </if>
@@ -404,6 +416,7 @@
       update_time = #{record.updateTime,jdbcType=BIGINT},
       style_priority = #{record.stylePriority,jdbcType=VARCHAR},
       x_axis = #{record.xAxis,jdbcType=LONGVARCHAR},
+      x_axis_ext = #{record.xAxisExt,jdbcType=LONGVARCHAR},
       y_axis = #{record.yAxis,jdbcType=LONGVARCHAR},
       y_axis_ext = #{record.yAxisExt,jdbcType=LONGVARCHAR},
       ext_stack = #{record.extStack,jdbcType=LONGVARCHAR},
@@ -478,6 +491,9 @@
       <if test="xAxis != null">
         x_axis = #{xAxis,jdbcType=LONGVARCHAR},
       </if>
+      <if test="xAxisExt != null">
+        x_axis_ext = #{xAxisExt,jdbcType=LONGVARCHAR},
+      </if>
       <if test="yAxis != null">
         y_axis = #{yAxis,jdbcType=LONGVARCHAR},
       </if>
@@ -523,6 +539,7 @@
       update_time = #{updateTime,jdbcType=BIGINT},
       style_priority = #{stylePriority,jdbcType=VARCHAR},
       x_axis = #{xAxis,jdbcType=LONGVARCHAR},
+      x_axis_ext = #{xAxisExt,jdbcType=LONGVARCHAR},
       y_axis = #{yAxis,jdbcType=LONGVARCHAR},
       y_axis_ext = #{yAxisExt,jdbcType=LONGVARCHAR},
       ext_stack = #{extStack,jdbcType=LONGVARCHAR},

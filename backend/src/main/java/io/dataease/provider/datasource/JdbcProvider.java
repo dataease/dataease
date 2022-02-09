@@ -282,7 +282,7 @@ public class JdbcProvider extends DatasourceProvider {
             String f = metaData.getColumnName(j + 1);
             String l = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : f;
             String t = metaData.getColumnTypeName(j + 1);
-            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name())) {
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name()) && l.contains("\\.")) {
                 l = l.split("\\.")[1];
             }
             TableFiled field = new TableFiled();

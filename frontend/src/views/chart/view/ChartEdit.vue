@@ -233,11 +233,51 @@
                         :no-children-text="$t('commons.treeselect.no_children_text')"
                         :no-options-text="$t('commons.treeselect.no_options_text')"
                         :no-results-text="$t('commons.treeselect.no_results_text')"
+                        :disabled="!hasDataPermission('manage',param.privileges)"
                         @input="calcData"
                         @deselect="calcData"
                       />
                     </span>
                   </el-row>
+                  <!--xAxisExt-->
+                  <el-row
+                    v-if="view.type === 'table-pivot'"
+                    class="padding-lr"
+                  >
+                    <span style="width: 80px;text-align: right;">
+                      <span>{{ $t('chart.table_pivot_row') }}</span>
+                      /
+                      <span>{{ $t('chart.dimension') }}</span>
+                    </span>
+                    <draggable
+                      v-model="view.xaxisExt"
+                      :disabled="!hasDataPermission('manage',param.privileges)"
+                      group="drag"
+                      animation="300"
+                      :move="onMove"
+                      class="drag-block-style"
+                      @add="addXaxisExt"
+                      @update="calcData(true)"
+                    >
+                      <transition-group class="draggable-group">
+                        <dimension-ext-item
+                          v-for="(item,index) in view.xaxisExt"
+                          :key="item.id"
+                          :param="param"
+                          :index="index"
+                          :item="item"
+                          @onDimensionItemChange="dimensionItemChange"
+                          @onDimensionItemRemove="dimensionItemRemove"
+                          @editItemFilter="showDimensionEditFilter"
+                          @onNameEdit="showRename"
+                        />
+                      </transition-group>
+                    </draggable>
+                    <div v-if="!view.xaxisExt || view.xaxisExt.length === 0" class="drag-placeholder-style">
+                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                    </div>
+                  </el-row>
+                  <!--xAxis-->
                   <el-row
                     v-if="view.type !=='text' && view.type !== 'gauge' && view.type !== 'liquid'"
                     class="padding-lr"
@@ -289,6 +329,7 @@
                       <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
+                  <!--yaxis-->
                   <el-row v-if="view.type !=='table-info'" class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
                       <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
@@ -342,6 +383,7 @@
                       <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
+                  <!--yAxisExt-->
                   <el-row v-if="view.type && view.type === 'chart-mix'" class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
                       <span>{{ $t('chart.drag_block_value_axis_ext') }}</span>
@@ -378,6 +420,7 @@
                       <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
+                  <!--extStack-->
                   <el-row v-if="view.type && view.type.includes('stack')" class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
                       <span>{{ $t('chart.stack_item') }}</span>
@@ -411,6 +454,7 @@
                       <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                     </div>
                   </el-row>
+                  <!--extBubble-->
                   <el-row v-if="view.type && view.type.includes('scatter')" class="padding-lr" style="margin-top: 6px;">
                     <span style="width: 80px;text-align: right;">
                       <span>{{ $t('chart.bubble_size') }}</span>
@@ -483,7 +527,7 @@
                     </div>
                   </el-row>
                   <el-row
-                    v-if="view.type && !view.type.includes('table') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud'"
+                    v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud' && view.type !== 'table-pivot'"
                     class="padding-lr"
                     style="margin-top: 6px;"
                   >
@@ -565,7 +609,7 @@
                   <el-collapse-item
                     v-show="view.render && view.render === 'antv' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'word-cloud' && chart.type !== 'treemap'"
                     name="size"
-                    :title="$t('chart.size')"
+                    :title="(chart.type && chart.type.includes('table')) ? $t('chart.table_config') : $t('chart.size')"
                   >
                     <size-selector-ant-v
                       :param="param"
@@ -769,8 +813,16 @@
               class="chart-class"
               @onChartClick="chartClick"
             />
+            <chart-component-s2
+              v-if="httpRequest.status && chart.type && chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'"
+              ref="dynamicChart"
+              :chart-id="chart.id"
+              :chart="chart"
+              class="chart-class"
+              @onChartClick="chartClick"
+            />
             <table-normal
-              v-if="httpRequest.status && chart.type && chart.type.includes('table')"
+              v-if="httpRequest.status && chart.type && chart.type.includes('table') && renderComponent() === 'echarts' && chart.type !== 'table-pivot'"
               :show-summary="chart.type === 'table-normal'"
               :chart="chart"
               class="table-class"
@@ -790,7 +842,7 @@
               </div>
             </div>
           </div>
-          <div style="position: absolute;left: 20px;bottom:10px;">
+          <div style="position: absolute;left: 8px;bottom:8px;">
             <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
           </div>
         </el-row>
@@ -973,10 +1025,14 @@ import SizeSelectorAntV from '@/views/chart/components/shape-attr/SizeSelectorAn
 import SplitSelectorAntV from '@/views/chart/components/component-style/SplitSelectorAntV'
 import CompareEdit from '@/views/chart/components/compare/CompareEdit'
 import { compareItem } from '@/views/chart/chart/compare'
+import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
+import DimensionExtItem from '@/views/chart/components/drag-item/DimensionExtItem'
 
 export default {
   name: 'ChartEdit',
   components: {
+    DimensionExtItem,
+    ChartComponentS2,
     CompareEdit,
     SplitSelectorAntV,
     SizeSelectorAntV,
@@ -1034,6 +1090,7 @@ export default {
       quotaData: [],
       view: {
         xaxis: [],
+        xaxisExt: [],
         yaxis: [],
         yaxisExt: [],
         extStack: [],
@@ -1226,6 +1283,22 @@ export default {
           ele.filter = []
         }
       })
+      if (view.type === 'table-pivot') {
+        view.xaxisExt.forEach(function(ele) {
+          if (!ele.dateStyle || ele.dateStyle === '') {
+            ele.dateStyle = 'y_M_d'
+          }
+          if (!ele.datePattern || ele.datePattern === '') {
+            ele.datePattern = 'date_sub'
+          }
+          if (!ele.sort || ele.sort === '') {
+            ele.sort = 'none'
+          }
+          if (!ele.filter) {
+            ele.filter = []
+          }
+        })
+      }
       if (view.type === 'map' && view.yaxis.length > 1) {
         view.yaxis = [view.yaxis[0]]
       }
@@ -1315,9 +1388,10 @@ export default {
         view.customAttr.label.show = true
       }
       if (view.type === 'liquid' ||
-          view.type.includes('table') ||
+          (view.type.includes('table') && view.render === 'echarts') ||
           view.type.includes('text') ||
-          view.type.includes('gauge')) {
+          view.type.includes('gauge') ||
+          view.type === 'table-pivot') {
         view.drillFields = []
       }
       view.customFilter.forEach(function(ele) {
@@ -1326,6 +1400,7 @@ export default {
         }
       })
       view.xaxis = JSON.stringify(view.xaxis)
+      view.xaxisExt = JSON.stringify(view.xaxisExt)
       view.yaxis = JSON.stringify(view.yaxis)
       view.yaxisExt = JSON.stringify(view.yaxisExt)
       view.customAttr = JSON.stringify(view.customAttr)
@@ -1336,22 +1411,6 @@ export default {
       view.extBubble = JSON.stringify(view.extBubble)
       delete view.data
       return view
-    },
-    save(getData, trigger, needRefreshGroup = false, switchType = false) {
-      const view = this.buildParam(getData, trigger, needRefreshGroup, switchType)
-      if (!view) return
-      post('/chart/view/save', view).then(response => {
-        if (getData) {
-          this.resetDrill()
-          this.getData(response.data.id)
-        } else {
-          this.getChart(response.data.id)
-        }
-        if (needRefreshGroup) {
-          this.refreshGroup(view)
-        }
-        this.closeChangeChart()
-      })
     },
     calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
       this.hasEdit = true
@@ -1366,6 +1425,7 @@ export default {
       }).then(response => {
         const view = JSON.parse(JSON.stringify(response.data))
         this.view.xaxis = view.xaxis ? JSON.parse(view.xaxis) : []
+        this.view.xaxisExt = view.xaxisExt ? JSON.parse(view.xaxisExt) : []
         this.view.yaxis = view.yaxis ? JSON.parse(view.yaxis) : []
         this.view.yaxisExt = view.yaxisExt ? JSON.parse(view.yaxisExt) : []
         this.view.extStack = view.extStack ? JSON.parse(view.extStack) : []
@@ -1399,6 +1459,7 @@ export default {
       // 将视图传入echart...组件
       const view = JSON.parse(JSON.stringify(this.view))
       view.xaxis = JSON.stringify(this.view.xaxis)
+      view.xaxisExt = JSON.stringify(this.view.xaxisExt)
       view.yaxis = JSON.stringify(this.view.yaxis)
       view.yaxisExt = JSON.stringify(this.view.yaxisExt)
       view.extStack = JSON.stringify(this.view.extStack)
@@ -1440,6 +1501,7 @@ export default {
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
+          this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
           this.view.yaxisExt = this.view.yaxisExt ? JSON.parse(this.view.yaxisExt) : []
           this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
@@ -1483,6 +1545,7 @@ export default {
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
+          this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
           this.view.yaxisExt = this.view.yaxisExt ? JSON.parse(this.view.yaxisExt) : []
           this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
@@ -1491,14 +1554,7 @@ export default {
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
-
-          response.data.data = this.data
-          this.chart = response.data
-
-          this.chart.drill = this.drill
-          // this.httpRequest.status = true
         }).catch(err => {
-          // this.resetView()
           this.httpRequest.status = err.response.data.success
           this.httpRequest.msg = err.response.data.message
           return true
@@ -1520,7 +1576,11 @@ export default {
     },
 
     dimensionItemRemove(item) {
-      this.view.xaxis.splice(item.index, 1)
+      if (item.removeType === 'dimension') {
+        this.view.xaxis.splice(item.index, 1)
+      } else if (item.removeType === 'dimensionExt') {
+        this.view.xaxisExt.splice(item.index, 1)
+      }
       this.calcData(true)
     },
 
@@ -1728,6 +1788,8 @@ export default {
             this.view.xaxis[this.itemForm.index].name = this.itemForm.name
           } else if (this.itemForm.renameType === 'quotaExt') {
             this.view.yaxisExt[this.itemForm.index].name = this.itemForm.name
+          } else if (this.itemForm.renameType === 'dimensionExt') {
+            this.view.xaxisExt[this.itemForm.index].name = this.itemForm.name
           }
           this.calcData(true)
           this.closeRename()
@@ -1806,7 +1868,9 @@ export default {
       if (this.view.tableId !== this.changeTable.id) {
         this.view.tableId = this.changeTable.id
         this.view.xaxis = []
+        this.view.xaxisExt = []
         this.view.yaxis = []
+        this.view.yaxisExt = []
         this.view.customFilter = []
         this.view.extStack = []
         this.view.extBubble = []
@@ -1860,6 +1924,16 @@ export default {
       }
     },
     addXaxis(e) {
+      if (this.view.type !== 'table-info') {
+        this.dragCheckType(this.view.xaxis, 'd')
+      }
+      this.dragMoveDuplicate(this.view.xaxis, e)
+      if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxis.length > 1) {
+        this.view.xaxis = [this.view.xaxis[0]]
+      }
+      this.calcData(true)
+    },
+    addXaxisExt(e) {
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxis, 'd')
       }

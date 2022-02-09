@@ -27,7 +27,11 @@ public class DePermissionAnnotationHandler {
 
     @Around(value = "@annotation(io.dataease.auth.annotation.DePermissions)")
     public Object PermissionsAround(ProceedingJoinPoint point) {
+
         try {
+            if (AuthUtils.getUser().getIsAdmin()) {
+                return point.proceed(point.getArgs());
+            }
             MethodSignature ms = (MethodSignature) point.getSignature();
             Method method = ms.getMethod();
             DePermissions annotation = method.getAnnotation(DePermissions.class);
@@ -47,13 +51,13 @@ public class DePermissionAnnotationHandler {
                 Boolean someAccess = false;
                 for (int i = 0; i < dePermissions.length; i++) {
                     DePermission permission = dePermissions[i];
-                    try{
+                    try {
                         boolean currentAccess = access(args[permission.paramIndex()], permission, 0);
                         if (currentAccess) {
                             someAccess = true;
                             break;
                         }
-                    }catch (Exception e) {
+                    } catch (Exception e) {
                         exceptions.add(e);
                     }
                 }
@@ -71,6 +75,9 @@ public class DePermissionAnnotationHandler {
     @Around(value = "@annotation(io.dataease.auth.annotation.DePermission)")
     public Object PermissionAround(ProceedingJoinPoint point) {
         try {
+            if (AuthUtils.getUser().getIsAdmin()) {
+                return point.proceed(point.getArgs());
+            }
             MethodSignature ms = (MethodSignature) point.getSignature();
             Method method = ms.getMethod();
 
@@ -88,20 +95,22 @@ public class DePermissionAnnotationHandler {
     }
 
     private Boolean access(Object arg, DePermission annotation, int layer) throws Exception {
-        if (ObjectUtils.isEmpty(arg)) return true;
+        if (ObjectUtils.isEmpty(arg))
+            return true;
         String type = annotation.type().name().toLowerCase();
         String value = annotation.value();
         Integer requireLevel = annotation.level().getLevel();
 
         Set<String> resourceIds = AuthUtils.permissionByType(type).stream().filter(
-                item -> item.getLevel() >= requireLevel
-        ).map(AuthItem::getAuthSource).collect(Collectors.toSet());
+                item -> item.getLevel() >= requireLevel).map(AuthItem::getAuthSource).collect(Collectors.toSet());
 
         Class<?> parameterType = arg.getClass();
         if (parameterType.isPrimitive() || isWrapClass(parameterType) || isString(parameterType)) {
             boolean permissionValid = resourceIds.contains(arg);
-            if (permissionValid) return true;
-            throw new UnauthorizedException("Subject does not have permission[" + annotation.level().name() +":"+ annotation.type() + ":" + arg + "]");
+            if (permissionValid)
+                return true;
+            throw new UnauthorizedException("Subject does not have permission[" + annotation.level().name() + ":"
+                    + annotation.type() + ":" + arg + "]");
         } else if (isArray(parameterType)) {
             for (int i = 0; i < Array.getLength(arg); i++) {
                 Object o = Array.get(arg, i);
@@ -124,7 +133,7 @@ public class DePermissionAnnotationHandler {
             Object o = argMap.get(values[layer]);
             return access(o, annotation, ++layer);
         } else {
-            //当作自定义类处理
+            // 当作自定义类处理
             String[] values = value.split("u002E");
             String fieldName = values[layer];
 
@@ -135,7 +144,7 @@ public class DePermissionAnnotationHandler {
         return true;
     }
 
-    private Object getFieldValue(Object o, String fieldName) throws Exception{
+    private Object getFieldValue(Object o, String fieldName) throws Exception {
         Class<?> aClass = o.getClass();
         while (null != aClass.getSuperclass()) {
             Field[] declaredFields = aClass.getDeclaredFields();
@@ -182,6 +191,5 @@ public class DePermissionAnnotationHandler {
     private Boolean isWrapClass(Class clz) {
         return Arrays.stream(wrapClasies).anyMatch(item -> StringUtils.equals(item, clz.getName()));
     }
-
 
 }

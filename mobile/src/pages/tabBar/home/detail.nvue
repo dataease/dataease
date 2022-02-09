@@ -1,9 +1,21 @@
 <template>
 	<view class="page dataease-main">
-        <uni-list>
-            <uni-list-item class="person-title" :title="banner.title" />
-        </uni-list>
-		
+       
+		<uni-nav-bar :title="banner.title" >
+			<view slot="right">
+				<uni-row class="demo-uni-row" >
+					<uni-col :span="12" @click="enshrine">
+						<uni-icons v-if="hasStar" type="star-filled" size="18" color="#007AFF"></uni-icons>
+						<uni-icons v-else type="star" size="18" color="#999"></uni-icons>
+					</uni-col>
+					
+					<uni-col :span="12" @click="refresh" style="margin: 0 10rpx;">
+						<uni-icons type="reload" size="18" color="#999"></uni-icons>
+					</uni-col>
+				</uni-row>
+				
+			</view>
+		</uni-nav-bar>
 		<view class="article-content">
             <view v-if="url">
                 <web-view
@@ -17,19 +29,7 @@
 		<ad v-if="htmlNodes.length > 0" unit-id="adunit-01b7a010bf53d74e"></ad>
 		<!-- #endif -->
 
-        <view  class="card-actions">
-            <view v-if="banner.index === 2" class="card-actions-item">
-
-            </view>
-            <view v-else class="card-actions-item" @click="enshrine">
-                <uni-icons v-if="hasStar" type="star-filled" size="18" color="#007AFF"></uni-icons>
-                <uni-icons v-else type="star" size="18" color="#999"></uni-icons>
-            </view>
-            
-            <view class="card-actions-item" @click="refresh">
-                <uni-icons type="reload" size="18" color="#999"></uni-icons>
-            </view>
-        </view>
+       
 	</view>
 </template>
 
@@ -271,7 +271,7 @@
     
 }
 .article-content {
-    height: calc(100vh - 110px);
+    height: 100vh;
     margin: 5px 0;
     background: #ffffff;
 }

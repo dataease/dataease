@@ -1018,7 +1018,13 @@ export default {
     filter_exp: '过滤值',
     filter_type: '过滤方式',
     filter_value_can_not_str: '数值类型字段过滤值不能包含文本',
-    enum_value_can_not_null: '字段枚举值不能为空'
+    enum_value_can_not_null: '字段枚举值不能为空',
+    table_config: '表格配置',
+    table_column_width_config: '列宽调整',
+    table_column_adapt: '自适应',
+    table_column_custom: '自定义',
+    chart_table_pivot: '透视表',
+    table_pivot_row: '数据行'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
