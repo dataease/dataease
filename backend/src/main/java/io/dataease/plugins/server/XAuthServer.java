@@ -27,35 +27,35 @@ public class XAuthServer {
 
     @PostMapping("/authModels")
     @I18n
-    public List<XpackVAuthModelDTO> authModels(@RequestBody XpackBaseTreeRequest request){
+    public List<XpackVAuthModelDTO> authModels(@RequestBody XpackBaseTreeRequest request) {
         AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
         CurrentUserDto user = AuthUtils.getUser();
         return sysAuthService.searchAuthModelTree(request, user.getUserId(), user.getIsAdmin());
     }
 
     @PostMapping("/authDetails")
-    public Map<String,List<XpackSysAuthDetailDTO>> authDetails(@RequestBody XpackSysAuthRequest request){
+    public Map<String, List<XpackSysAuthDetailDTO>> authDetails(@RequestBody XpackSysAuthRequest request) {
         AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
         return sysAuthService.searchAuthDetails(request);
     }
 
-    @GetMapping("/authDetailsModel/{authType}")
+    @GetMapping("/authDetailsModel/{authType}/{direction}")
     @I18n
-    public List<XpackSysAuthDetail>authDetailsModel(@PathVariable String authType){
+    public List<XpackSysAuthDetail> authDetailsModel(@PathVariable String authType, @PathVariable String direction) {
         AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
-        List<XpackSysAuthDetail> authDetails =  sysAuthService.searchAuthDetailsModel(authType);
-        if(authType.equalsIgnoreCase("dataset")){
+        List<XpackSysAuthDetail> authDetails = sysAuthService.searchAuthDetailsModel(authType);
+        if ("source".equals(direction) && authType.equalsIgnoreCase("dataset")) {
             XpackSysAuthDetail xpackSysAuthDetail = new XpackSysAuthDetail();
             xpackSysAuthDetail.setPrivilegeName("i18n_auth_row_permission");
             xpackSysAuthDetail.setPrivilegeType(20);
             xpackSysAuthDetail.setPrivilegeValue(1);
-            authDetails.add(0,xpackSysAuthDetail);
+            authDetails.add(0, xpackSysAuthDetail);
         }
         return authDetails;
     }
 
     @PostMapping("/authChange")
-    public void authChange(@RequestBody XpackSysAuthRequest request){
+    public void authChange(@RequestBody XpackSysAuthRequest request) {
         AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
         CurrentUserDto user = AuthUtils.getUser();
         sysAuthService.authChange(request, user.getUserId(), user.getUsername(), user.getIsAdmin());

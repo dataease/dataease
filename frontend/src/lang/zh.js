@@ -1562,7 +1562,8 @@ export default {
 
   },
   auth: {
-    authConfig: '权限配置',
+    authConfig: '按用户配置权限',
+    sourceConfig: '按资源配置权限',
     authQuickConfig: '权限快捷配置',
     dept: '组织',
     role: '角色',
