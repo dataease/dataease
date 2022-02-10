@@ -76,7 +76,7 @@ public class DorisQueryProvider extends QueryProvider {
 
     @Override
     public String createSQLPreview(String sql, String orderBy) {
-        return "SELECT * FROM (" + sql + ") AS tmp ORDER BY " + orderBy + " LIMIT 0,1000";
+        return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp LIMIT 0,1000";
     }
 
     @Override
@@ -147,14 +147,6 @@ public class DorisQueryProvider extends QueryProvider {
         if (customWheres != null) wheres.add(customWheres);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
 
-        if ((fields.size() > 0)) {
-            xOrders.add(SQLObj.builder()
-                    .orderDirection("asc")
-                    .orderField(fields.get(0).getDataeaseName())
-                    .orderAlias(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, "0"))
-                    .build());
-            st_sql.add("orders", xOrders);
-        }
         return st_sql.render();
     }
 
