@@ -217,6 +217,11 @@
             <version>1.7</version>
         </dependency>
         <dependency>
+            <groupId>io.dataease</groupId>
+            <artifactId>dataease-plugin-view</artifactId>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.7.4</version>
