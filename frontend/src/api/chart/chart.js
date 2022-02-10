@@ -69,3 +69,10 @@ export function ajaxGetDataOnly(id, data) {
     data
   })
 }
+
+export function pluginTypes() {
+  return request({
+    url: '/plugin/view/types',
+    method: 'post'
+  })
+}

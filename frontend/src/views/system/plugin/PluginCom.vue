@@ -1,7 +1,13 @@
 <template>
   <div>
-    <async-component v-if="showAsync" :url="url" :obj="obj" @execute-axios="executeAxios"
-                     @on-add-languanges="addLanguages" @plugin-call-back="pluginCallBack"/>
+    <async-component
+      v-if="showAsync"
+      :url="url"
+      :obj="obj"
+      @execute-axios="executeAxios"
+      @on-add-languanges="addLanguages"
+      @plugin-call-back="pluginCallBack"
+    />
     <div v-else>
       <h1>未知组件无法展示</h1>
     </div>
@@ -12,7 +18,7 @@
 import AsyncComponent from '@/components/AsyncComponent'
 import i18n from '@/lang'
 import bus from '@/utils/bus'
-import {execute} from '@/api/system/dynamic'
+import { execute } from '@/api/system/dynamic'
 
 export default {
   name: 'PluginCom',
@@ -67,7 +73,7 @@ export default {
     },
 
     pluginCallBack(param) {
-      const {eventName, eventParam} = param
+      const { eventName, eventParam } = param
       bus.$emit(eventName, eventParam)
     }
   }
