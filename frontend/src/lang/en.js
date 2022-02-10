@@ -1550,7 +1550,8 @@ export default {
 
   },
   auth: {
-    authConfig: 'Auth Config',
+    authConfig: 'Configure Permissions By User',
+    sourceConfig: 'Configure Permissions By Source',
     authQuickConfig: 'Auth Quick Config',
     dept: 'Dept',
     role: 'Role',
