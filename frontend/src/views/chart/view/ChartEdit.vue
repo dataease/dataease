@@ -1946,7 +1946,7 @@ export default {
     addYaxis(e) {
       this.dragCheckType(this.view.yaxis, 'q')
       this.dragMoveDuplicate(this.view.yaxis, e)
-      if ((this.view.type === 'map' || this.view.type === 'waterfall' || this.view.type === 'word-cloud' || this.view.type === 'table-pivot') && this.view.yaxis.length > 1) {
+      if ((this.view.type === 'map' || this.view.type === 'waterfall' || this.view.type === 'word-cloud') && this.view.yaxis.length > 1) {
         this.view.yaxis = [this.view.yaxis[0]]
       }
       this.calcData(true)
