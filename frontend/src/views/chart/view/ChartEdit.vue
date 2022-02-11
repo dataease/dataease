@@ -222,29 +222,28 @@
 
                   <plugin-com v-if="isPlugin" :component-name="view.type + '-data'" :obj="{view, param, chart}" />
                   <div v-else>
-                    
 
-                  <el-row v-if="view.type ==='map'" class="padding-lr">
-                    <span style="width: 80px;text-align: right;">
-                      <span>{{ $t('chart.map_range') }}</span>
-                    </span>
-                    <span class="tree-select-span">
-                      <treeselect
-                        ref="mapSelector"
-                        v-model="view.customAttr.areaCode"
-                        :options="places"
-                        :placeholder="$t('chart.select_map_range')"
-                        :normalizer="normalizer"
-                        :no-children-text="$t('commons.treeselect.no_children_text')"
-                        :no-options-text="$t('commons.treeselect.no_options_text')"
-                        :no-results-text="$t('commons.treeselect.no_results_text')"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
-                        @input="calcData"
-                        @deselect="calcData"
-                      />
-                    </span>
-                  </el-row>
-                  
+                    <el-row v-if="view.type ==='map'" class="padding-lr">
+                      <span style="width: 80px;text-align: right;">
+                        <span>{{ $t('chart.map_range') }}</span>
+                      </span>
+                      <span class="tree-select-span">
+                        <treeselect
+                          ref="mapSelector"
+                          v-model="view.customAttr.areaCode"
+                          :options="places"
+                          :placeholder="$t('chart.select_map_range')"
+                          :normalizer="normalizer"
+                          :no-children-text="$t('commons.treeselect.no_children_text')"
+                          :no-options-text="$t('commons.treeselect.no_options_text')"
+                          :no-results-text="$t('commons.treeselect.no_results_text')"
+                          :disabled="!hasDataPermission('manage',param.privileges)"
+                          @input="calcData"
+                          @deselect="calcData"
+                        />
+                      </span>
+                    </el-row>
+
                     <!--xAxisExt-->
                     <el-row
                       v-if="view.type === 'table-pivot'"
