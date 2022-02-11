@@ -44,7 +44,7 @@ public class XAuthServer {
     public List<XpackSysAuthDetail> authDetailsModel(@PathVariable String authType, @PathVariable String direction) {
         AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
         List<XpackSysAuthDetail> authDetails = sysAuthService.searchAuthDetailsModel(authType);
-        if ("source".equals(direction) && authType.equalsIgnoreCase("dataset")) {
+        if (authType.equalsIgnoreCase("dataset")) {
             XpackSysAuthDetail xpackSysAuthDetail = new XpackSysAuthDetail();
             xpackSysAuthDetail.setPrivilegeName("i18n_auth_row_permission");
             xpackSysAuthDetail.setPrivilegeType(20);
