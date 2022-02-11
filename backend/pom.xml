@@ -5,7 +5,7 @@
     <parent>
         <artifactId>dataease-server</artifactId>
         <groupId>io.dataease</groupId>
-        <version>1.7.0</version>
+        <version>1.8.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -214,7 +214,12 @@
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-interface</artifactId>
-            <version>1.7</version>
+            <version>1.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.dataease</groupId>
+            <artifactId>dataease-plugin-view</artifactId>
+            <version>1.8.0</version>
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>

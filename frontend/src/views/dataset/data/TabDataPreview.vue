@@ -58,9 +58,10 @@
         {{ $t('dataset.preview_item') }}
       </span>
       <el-pagination
+        v-show="false"
         :current-page="currentPage.page"
-        :page-sizes="[100]"
-        :page-size="currentPage.pageSize"
+        :page-sizes="[parseInt(form.row)]"
+        :page-size="parseInt(form.row)"
         :pager-count="5"
         layout="sizes, prev, pager, next"
         :total="currentPage.show"
@@ -104,7 +105,7 @@ export default {
       height: 500,
       currentPage: {
         page: 1,
-        pageSize: 100,
+        pageSize: parseInt(this.form.row),
         show: parseInt(this.form.row)
       }
     }
@@ -153,6 +154,7 @@ export default {
         return
       }
       this.currentPage.show = parseInt(this.form.row)
+      this.currentPage.pageSize = parseInt(this.form.row)
       this.currentPage.page = 1
       this.$emit('reSearch', { form: this.form, page: this.currentPage })
     },

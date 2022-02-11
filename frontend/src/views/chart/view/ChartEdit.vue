@@ -219,6 +219,11 @@
                       </el-radio-group>
                     </el-row>
                   </el-row>
+
+                  <plugin-com v-if="isPlugin" :component-name="view.type + '-data'" :obj="{view, param, chart}" />
+                  <div v-else>
+                    
+
                   <el-row v-if="view.type ==='map'" class="padding-lr">
                     <span style="width: 80px;text-align: right;">
                       <span>{{ $t('chart.map_range') }}</span>
@@ -239,329 +244,332 @@
                       />
                     </span>
                   </el-row>
-                  <!--xAxisExt-->
-                  <el-row
-                    v-if="view.type === 'table-pivot'"
-                    class="padding-lr"
-                  >
-                    <span style="width: 80px;text-align: right;">
-                      <span>{{ $t('chart.table_pivot_row') }}</span>
-                      /
-                      <span>{{ $t('chart.dimension') }}</span>
-                    </span>
-                    <draggable
-                      v-model="view.xaxisExt"
-                      :disabled="!hasDataPermission('manage',param.privileges)"
-                      group="drag"
-                      animation="300"
-                      :move="onMove"
-                      class="drag-block-style"
-                      @add="addXaxisExt"
-                      @update="calcData(true)"
+                  
+                    <!--xAxisExt-->
+                    <el-row
+                      v-if="view.type === 'table-pivot'"
+                      class="padding-lr"
                     >
-                      <transition-group class="draggable-group">
-                        <dimension-ext-item
-                          v-for="(item,index) in view.xaxisExt"
-                          :key="item.id"
-                          :param="param"
-                          :index="index"
-                          :item="item"
-                          @onDimensionItemChange="dimensionItemChange"
-                          @onDimensionItemRemove="dimensionItemRemove"
-                          @editItemFilter="showDimensionEditFilter"
-                          @onNameEdit="showRename"
-                        />
-                      </transition-group>
-                    </draggable>
-                    <div v-if="!view.xaxisExt || view.xaxisExt.length === 0" class="drag-placeholder-style">
-                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
-                    </div>
-                  </el-row>
-                  <!--xAxis-->
-                  <el-row
-                    v-if="view.type !=='text' && view.type !== 'gauge' && view.type !== 'liquid'"
-                    class="padding-lr"
-                  >
-                    <span style="width: 80px;text-align: right;">
-                      <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
-                      <span
-                        v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
-                      >{{ $t('chart.drag_block_type_axis') }}</span>
-                      <span
-                        v-else-if="view.type && view.type.includes('pie')"
-                      >{{ $t('chart.drag_block_pie_label') }}</span>
-                      <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_split') }}</span>
-                      <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_label') }}</span>
-                      <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.area') }}</span>
-                      <span v-else-if="view.type && view.type.includes('treemap')">{{ $t('chart.drag_block_treemap_label') }}</span>
-                      <span v-else-if="view.type && view.type === 'word-cloud'">{{ $t('chart.drag_block_word_cloud_label') }}</span>
-                      /
-                      <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
-                      <span
-                        v-else-if="view.type && view.type === 'table-info'"
-                      >{{ $t('chart.dimension_or_quota') }}</span>
-                    </span>
-                    <draggable
-                      v-model="view.xaxis"
-                      :disabled="!hasDataPermission('manage',param.privileges)"
-                      group="drag"
-                      animation="300"
-                      :move="onMove"
-                      class="drag-block-style"
-                      @add="addXaxis"
-                      @update="calcData(true)"
+                      <span style="width: 80px;text-align: right;">
+                        <span>{{ $t('chart.table_pivot_row') }}</span>
+                        /
+                        <span>{{ $t('chart.dimension') }}</span>
+                      </span>
+                      <draggable
+                        v-model="view.xaxisExt"
+                        :disabled="!hasDataPermission('manage',param.privileges)"
+                        group="drag"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-block-style"
+                        @add="addXaxisExt"
+                        @update="calcData(true)"
+                      >
+                        <transition-group class="draggable-group">
+                          <dimension-ext-item
+                            v-for="(item,index) in view.xaxisExt"
+                            :key="item.id"
+                            :param="param"
+                            :index="index"
+                            :item="item"
+                            @onDimensionItemChange="dimensionItemChange"
+                            @onDimensionItemRemove="dimensionItemRemove"
+                            @editItemFilter="showDimensionEditFilter"
+                            @onNameEdit="showRename"
+                          />
+                        </transition-group>
+                      </draggable>
+                      <div v-if="!view.xaxisExt || view.xaxisExt.length === 0" class="drag-placeholder-style">
+                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                      </div>
+                    </el-row>
+                    <!--xAxis-->
+                    <el-row
+                      v-if="view.type !=='text' && view.type !== 'gauge' && view.type !== 'liquid'"
+                      class="padding-lr"
                     >
-                      <transition-group class="draggable-group">
-                        <dimension-item
-                          v-for="(item,index) in view.xaxis"
-                          :key="item.id"
-                          :param="param"
-                          :index="index"
-                          :item="item"
-                          @onDimensionItemChange="dimensionItemChange"
-                          @onDimensionItemRemove="dimensionItemRemove"
-                          @editItemFilter="showDimensionEditFilter"
-                          @onNameEdit="showRename"
-                        />
-                      </transition-group>
-                    </draggable>
-                    <div v-if="!view.xaxis || view.xaxis.length === 0" class="drag-placeholder-style">
-                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
-                    </div>
-                  </el-row>
-                  <!--yaxis-->
-                  <el-row v-if="view.type !=='table-info'" class="padding-lr" style="margin-top: 6px;">
-                    <span style="width: 80px;text-align: right;">
-                      <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
-                      <span
-                        v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'waterfall')"
-                      >{{ $t('chart.drag_block_value_axis') }}</span>
-                      <span
-                        v-else-if="view.type && view.type.includes('pie')"
-                      >{{ $t('chart.drag_block_pie_angel') }}</span>
-                      <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_width') }}</span>
-                      <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_length') }}</span>
-                      <span v-else-if="view.type && view.type.includes('gauge')">{{ $t('chart.drag_block_gauge_angel') }}</span>
-                      <span
-                        v-else-if="view.type && view.type.includes('text')"
-                      >{{ $t('chart.drag_block_label_value') }}</span>
-                      <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.chart_data') }}</span>
-                      <span v-else-if="view.type && view.type.includes('tree')">{{ $t('chart.drag_block_treemap_size') }}</span>
-                      <span v-else-if="view.type && view.type === 'chart-mix'">{{ $t('chart.drag_block_value_axis_main') }}</span>
-                      <span v-else-if="view.type && view.type === 'liquid'">{{ $t('chart.drag_block_progress') }}</span>
-                      <span v-else-if="view.type && view.type === 'word-cloud'">{{ $t('chart.drag_block_word_cloud_size') }}</span>
-                      /
-                      <span>{{ $t('chart.quota') }}</span>
-                    </span>
-                    <draggable
-                      v-model="view.yaxis"
-                      :disabled="!hasDataPermission('manage',param.privileges)"
-                      group="drag"
-                      animation="300"
-                      :move="onMove"
-                      class="drag-block-style"
-                      @add="addYaxis"
-                      @update="calcData(true)"
+                      <span style="width: 80px;text-align: right;">
+                        <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
+                        <span
+                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
+                        >{{ $t('chart.drag_block_type_axis') }}</span>
+                        <span
+                          v-else-if="view.type && view.type.includes('pie')"
+                        >{{ $t('chart.drag_block_pie_label') }}</span>
+                        <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_split') }}</span>
+                        <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_label') }}</span>
+                        <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.area') }}</span>
+                        <span v-else-if="view.type && view.type.includes('treemap')">{{ $t('chart.drag_block_treemap_label') }}</span>
+                        <span v-else-if="view.type && view.type === 'word-cloud'">{{ $t('chart.drag_block_word_cloud_label') }}</span>
+                        /
+                        <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
+                        <span
+                          v-else-if="view.type && view.type === 'table-info'"
+                        >{{ $t('chart.dimension_or_quota') }}</span>
+                      </span>
+                      <draggable
+                        v-model="view.xaxis"
+                        :disabled="!hasDataPermission('manage',param.privileges)"
+                        group="drag"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-block-style"
+                        @add="addXaxis"
+                        @update="calcData(true)"
+                      >
+                        <transition-group class="draggable-group">
+                          <dimension-item
+                            v-for="(item,index) in view.xaxis"
+                            :key="item.id"
+                            :param="param"
+                            :index="index"
+                            :item="item"
+                            @onDimensionItemChange="dimensionItemChange"
+                            @onDimensionItemRemove="dimensionItemRemove"
+                            @editItemFilter="showDimensionEditFilter"
+                            @onNameEdit="showRename"
+                          />
+                        </transition-group>
+                      </draggable>
+                      <div v-if="!view.xaxis || view.xaxis.length === 0" class="drag-placeholder-style">
+                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                      </div>
+                    </el-row>
+                    <!--yaxis-->
+                    <el-row v-if="view.type !=='table-info'" class="padding-lr" style="margin-top: 6px;">
+                      <span style="width: 80px;text-align: right;">
+                        <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
+                        <span
+                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'waterfall')"
+                        >{{ $t('chart.drag_block_value_axis') }}</span>
+                        <span
+                          v-else-if="view.type && view.type.includes('pie')"
+                        >{{ $t('chart.drag_block_pie_angel') }}</span>
+                        <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_width') }}</span>
+                        <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_length') }}</span>
+                        <span v-else-if="view.type && view.type.includes('gauge')">{{ $t('chart.drag_block_gauge_angel') }}</span>
+                        <span
+                          v-else-if="view.type && view.type.includes('text')"
+                        >{{ $t('chart.drag_block_label_value') }}</span>
+                        <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.chart_data') }}</span>
+                        <span v-else-if="view.type && view.type.includes('tree')">{{ $t('chart.drag_block_treemap_size') }}</span>
+                        <span v-else-if="view.type && view.type === 'chart-mix'">{{ $t('chart.drag_block_value_axis_main') }}</span>
+                        <span v-else-if="view.type && view.type === 'liquid'">{{ $t('chart.drag_block_progress') }}</span>
+                        <span v-else-if="view.type && view.type === 'word-cloud'">{{ $t('chart.drag_block_word_cloud_size') }}</span>
+                        /
+                        <span>{{ $t('chart.quota') }}</span>
+                      </span>
+                      <draggable
+                        v-model="view.yaxis"
+                        :disabled="!hasDataPermission('manage',param.privileges)"
+                        group="drag"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-block-style"
+                        @add="addYaxis"
+                        @update="calcData(true)"
+                      >
+                        <transition-group class="draggable-group">
+                          <quota-item
+                            v-for="(item,index) in view.yaxis"
+                            :key="item.id"
+                            :param="param"
+                            :index="index"
+                            :item="item"
+                            :chart="chart"
+                            @onQuotaItemChange="quotaItemChange"
+                            @onQuotaItemRemove="quotaItemRemove"
+                            @editItemFilter="showQuotaEditFilter"
+                            @onNameEdit="showRename"
+                            @editItemCompare="showQuotaEditCompare"
+                          />
+                        </transition-group>
+                      </draggable>
+                      <div v-if="!view.yaxis || view.yaxis.length === 0" class="drag-placeholder-style">
+                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                      </div>
+                    </el-row>
+                    <!--yAxisExt-->
+                    <el-row v-if="view.type && view.type === 'chart-mix'" class="padding-lr" style="margin-top: 6px;">
+                      <span style="width: 80px;text-align: right;">
+                        <span>{{ $t('chart.drag_block_value_axis_ext') }}</span>
+                        /
+                        <span>{{ $t('chart.quota') }}</span>
+                      </span>
+                      <draggable
+                        v-model="view.yaxisExt"
+                        :disabled="!hasDataPermission('manage',param.privileges)"
+                        group="drag"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-block-style"
+                        @add="addYaxisExt"
+                        @update="calcData(true)"
+                      >
+                        <transition-group class="draggable-group">
+                          <quota-ext-item
+                            v-for="(item,index) in view.yaxisExt"
+                            :key="item.id"
+                            :param="param"
+                            :index="index"
+                            :item="item"
+                            :chart="chart"
+                            @onQuotaItemChange="quotaItemChange"
+                            @onQuotaItemRemove="quotaItemRemove"
+                            @editItemFilter="showQuotaEditFilter"
+                            @onNameEdit="showRename"
+                            @editItemCompare="showQuotaEditCompare"
+                          />
+                        </transition-group>
+                      </draggable>
+                      <div v-if="!view.yaxisExt || view.yaxisExt.length === 0" class="drag-placeholder-style">
+                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                      </div>
+                    </el-row>
+                    <!--extStack-->
+                    <el-row v-if="view.type && view.type.includes('stack')" class="padding-lr" style="margin-top: 6px;">
+                      <span style="width: 80px;text-align: right;">
+                        <span>{{ $t('chart.stack_item') }}</span>
+                        /
+                        <span>{{ $t('chart.dimension') }}</span>
+                      </span>
+                      <draggable
+                        v-model="view.extStack"
+                        :disabled="!hasDataPermission('manage',param.privileges)"
+                        group="drag"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-block-style"
+                        @add="addStack"
+                        @update="calcData(true)"
+                      >
+                        <transition-group class="draggable-group">
+                          <chart-drag-item
+                            v-for="(item,index) in view.extStack"
+                            :key="item.id"
+                            :conf="'sort'"
+                            :param="param"
+                            :index="index"
+                            :item="item"
+                            @onItemChange="stackItemChange"
+                            @onItemRemove="stackItemRemove"
+                          />
+                        </transition-group>
+                      </draggable>
+                      <div v-if="!view.extStack || view.extStack.length === 0" class="drag-placeholder-style">
+                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                      </div>
+                    </el-row>
+                    <!--extBubble-->
+                    <el-row v-if="view.type && view.type.includes('scatter')" class="padding-lr" style="margin-top: 6px;">
+                      <span style="width: 80px;text-align: right;">
+                        <span>{{ $t('chart.bubble_size') }}</span>
+                        /
+                        <span>{{ $t('chart.quota') }}</span>
+                        <el-tooltip class="item" effect="dark" placement="bottom">
+                          <div slot="content">
+                            该指标生效时，样式大小中的气泡大小属性将失效
+                          </div>
+                          <i class="el-icon-info" style="cursor: pointer;color: #606266;" />
+                        </el-tooltip>
+                      </span>
+                      <draggable
+                        v-model="view.extBubble"
+                        :disabled="!hasDataPermission('manage',param.privileges)"
+                        group="drag"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-block-style"
+                        @add="addBubble"
+                        @update="calcData(true)"
+                      >
+                        <transition-group class="draggable-group">
+                          <chart-drag-item
+                            v-for="(item,index) in view.extBubble"
+                            :key="item.id"
+                            :conf="'summary'"
+                            :param="param"
+                            :index="index"
+                            :item="item"
+                            @onItemChange="bubbleItemChange"
+                            @onItemRemove="bubbleItemRemove"
+                          />
+                        </transition-group>
+                      </draggable>
+                      <div v-if="!view.extBubble || view.extBubble.length === 0" class="drag-placeholder-style">
+                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                      </div>
+                    </el-row>
+                    <el-row class="padding-lr" style="margin-top: 6px;">
+                      <span>{{ $t('chart.result_filter') }}</span>
+                      <!--                    <el-button :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="filter-btn-class" @click="showResultFilter">-->
+                      <!--                      {{ $t('chart.filter_condition') }}<i class="el-icon-setting el-icon&#45;&#45;right" />-->
+                      <!--                    </el-button>-->
+                      <draggable
+                        v-model="view.customFilter"
+                        :disabled="!hasDataPermission('manage',param.privileges)"
+                        group="drag"
+                        animation="300"
+                        :move="onMove"
+                        class="theme-item-class"
+                        style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
+                        @add="addCustomFilter"
+                        @update="calcData(true)"
+                      >
+                        <transition-group class="draggable-group">
+                          <filter-item
+                            v-for="(item,index) in view.customFilter"
+                            :key="item.id"
+                            :param="param"
+                            :index="index"
+                            :item="item"
+                            @onFilterItemRemove="filterItemRemove"
+                            @editItemFilter="showEditFilter"
+                          />
+                        </transition-group>
+                      </draggable>
+                      <div v-if="!view.customFilter || view.customFilter.length === 0" class="drag-placeholder-style">
+                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                      </div>
+                    </el-row>
+                    <el-row
+                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud' && view.type !== 'table-pivot'"
+                      class="padding-lr"
+                      style="margin-top: 6px;"
                     >
-                      <transition-group class="draggable-group">
-                        <quota-item
-                          v-for="(item,index) in view.yaxis"
-                          :key="item.id"
-                          :param="param"
-                          :index="index"
-                          :item="item"
-                          :chart="chart"
-                          @onQuotaItemChange="quotaItemChange"
-                          @onQuotaItemRemove="quotaItemRemove"
-                          @editItemFilter="showQuotaEditFilter"
-                          @onNameEdit="showRename"
-                          @editItemCompare="showQuotaEditCompare"
-                        />
-                      </transition-group>
-                    </draggable>
-                    <div v-if="!view.yaxis || view.yaxis.length === 0" class="drag-placeholder-style">
-                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
-                    </div>
-                  </el-row>
-                  <!--yAxisExt-->
-                  <el-row v-if="view.type && view.type === 'chart-mix'" class="padding-lr" style="margin-top: 6px;">
-                    <span style="width: 80px;text-align: right;">
-                      <span>{{ $t('chart.drag_block_value_axis_ext') }}</span>
-                      /
-                      <span>{{ $t('chart.quota') }}</span>
-                    </span>
-                    <draggable
-                      v-model="view.yaxisExt"
-                      :disabled="!hasDataPermission('manage',param.privileges)"
-                      group="drag"
-                      animation="300"
-                      :move="onMove"
-                      class="drag-block-style"
-                      @add="addYaxisExt"
-                      @update="calcData(true)"
-                    >
-                      <transition-group class="draggable-group">
-                        <quota-ext-item
-                          v-for="(item,index) in view.yaxisExt"
-                          :key="item.id"
-                          :param="param"
-                          :index="index"
-                          :item="item"
-                          :chart="chart"
-                          @onQuotaItemChange="quotaItemChange"
-                          @onQuotaItemRemove="quotaItemRemove"
-                          @editItemFilter="showQuotaEditFilter"
-                          @onNameEdit="showRename"
-                          @editItemCompare="showQuotaEditCompare"
-                        />
-                      </transition-group>
-                    </draggable>
-                    <div v-if="!view.yaxisExt || view.yaxisExt.length === 0" class="drag-placeholder-style">
-                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
-                    </div>
-                  </el-row>
-                  <!--extStack-->
-                  <el-row v-if="view.type && view.type.includes('stack')" class="padding-lr" style="margin-top: 6px;">
-                    <span style="width: 80px;text-align: right;">
-                      <span>{{ $t('chart.stack_item') }}</span>
-                      /
-                      <span>{{ $t('chart.dimension') }}</span>
-                    </span>
-                    <draggable
-                      v-model="view.extStack"
-                      :disabled="!hasDataPermission('manage',param.privileges)"
-                      group="drag"
-                      animation="300"
-                      :move="onMove"
-                      class="drag-block-style"
-                      @add="addStack"
-                      @update="calcData(true)"
-                    >
-                      <transition-group class="draggable-group">
-                        <chart-drag-item
-                          v-for="(item,index) in view.extStack"
-                          :key="item.id"
-                          :conf="'sort'"
-                          :param="param"
-                          :index="index"
-                          :item="item"
-                          @onItemChange="stackItemChange"
-                          @onItemRemove="stackItemRemove"
-                        />
-                      </transition-group>
-                    </draggable>
-                    <div v-if="!view.extStack || view.extStack.length === 0" class="drag-placeholder-style">
-                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
-                    </div>
-                  </el-row>
-                  <!--extBubble-->
-                  <el-row v-if="view.type && view.type.includes('scatter')" class="padding-lr" style="margin-top: 6px;">
-                    <span style="width: 80px;text-align: right;">
-                      <span>{{ $t('chart.bubble_size') }}</span>
-                      /
-                      <span>{{ $t('chart.quota') }}</span>
-                      <el-tooltip class="item" effect="dark" placement="bottom">
-                        <div slot="content">
-                          该指标生效时，样式大小中的气泡大小属性将失效
-                        </div>
-                        <i class="el-icon-info" style="cursor: pointer;color: #606266;" />
-                      </el-tooltip>
-                    </span>
-                    <draggable
-                      v-model="view.extBubble"
-                      :disabled="!hasDataPermission('manage',param.privileges)"
-                      group="drag"
-                      animation="300"
-                      :move="onMove"
-                      class="drag-block-style"
-                      @add="addBubble"
-                      @update="calcData(true)"
-                    >
-                      <transition-group class="draggable-group">
-                        <chart-drag-item
-                          v-for="(item,index) in view.extBubble"
-                          :key="item.id"
-                          :conf="'summary'"
-                          :param="param"
-                          :index="index"
-                          :item="item"
-                          @onItemChange="bubbleItemChange"
-                          @onItemRemove="bubbleItemRemove"
-                        />
-                      </transition-group>
-                    </draggable>
-                    <div v-if="!view.extBubble || view.extBubble.length === 0" class="drag-placeholder-style">
-                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
-                    </div>
-                  </el-row>
-                  <el-row class="padding-lr" style="margin-top: 6px;">
-                    <span>{{ $t('chart.result_filter') }}</span>
-                    <!--                    <el-button :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="filter-btn-class" @click="showResultFilter">-->
-                    <!--                      {{ $t('chart.filter_condition') }}<i class="el-icon-setting el-icon&#45;&#45;right" />-->
-                    <!--                    </el-button>-->
-                    <draggable
-                      v-model="view.customFilter"
-                      :disabled="!hasDataPermission('manage',param.privileges)"
-                      group="drag"
-                      animation="300"
-                      :move="onMove"
-                      class="theme-item-class"
-                      style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
-                      @add="addCustomFilter"
-                      @update="calcData(true)"
-                    >
-                      <transition-group class="draggable-group">
-                        <filter-item
-                          v-for="(item,index) in view.customFilter"
-                          :key="item.id"
-                          :param="param"
-                          :index="index"
-                          :item="item"
-                          @onFilterItemRemove="filterItemRemove"
-                          @editItemFilter="showEditFilter"
-                        />
-                      </transition-group>
-                    </draggable>
-                    <div v-if="!view.customFilter || view.customFilter.length === 0" class="drag-placeholder-style">
-                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
-                    </div>
-                  </el-row>
-                  <el-row
-                    v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud' && view.type !== 'table-pivot'"
-                    class="padding-lr"
-                    style="margin-top: 6px;"
-                  >
-                    <span style="width: 80px;text-align: right;">
-                      <span>{{ $t('chart.drill') }}</span>
-                      /
-                      <span>{{ $t('chart.dimension') }}</span>
-                    </span>
-                    <draggable
-                      v-model="view.drillFields"
-                      :disabled="!hasDataPermission('manage',param.privileges)"
-                      group="drag"
-                      animation="300"
-                      :move="onMove"
-                      class="drag-block-style"
-                      @add="addDrill"
-                      @update="calcData(true)"
-                    >
-                      <transition-group class="draggable-group">
-                        <drill-item
-                          v-for="(item,index) in view.drillFields"
-                          :key="item.id"
-                          :param="param"
-                          :index="index"
-                          :item="item"
-                          @onDimensionItemChange="drillItemChange"
-                          @onDimensionItemRemove="drillItemRemove"
-                        />
-                      </transition-group>
-                    </draggable>
-                    <div v-if="!view.drillFields || view.drillFields.length === 0" class="drag-placeholder-style">
-                      <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
-                    </div>
-                  </el-row>
+                      <span style="width: 80px;text-align: right;">
+                        <span>{{ $t('chart.drill') }}</span>
+                        /
+                        <span>{{ $t('chart.dimension') }}</span>
+                      </span>
+                      <draggable
+                        v-model="view.drillFields"
+                        :disabled="!hasDataPermission('manage',param.privileges)"
+                        group="drag"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-block-style"
+                        @add="addDrill"
+                        @update="calcData(true)"
+                      >
+                        <transition-group class="draggable-group">
+                          <drill-item
+                            v-for="(item,index) in view.drillFields"
+                            :key="item.id"
+                            :param="param"
+                            :index="index"
+                            :item="item"
+                            @onDimensionItemChange="drillItemChange"
+                            @onDimensionItemRemove="drillItemRemove"
+                          />
+                        </transition-group>
+                      </draggable>
+                      <div v-if="!view.drillFields || view.drillFields.length === 0" class="drag-placeholder-style">
+                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                      </div>
+                    </el-row>
+                  </div>
+
                 </el-row>
               </div>
             </el-col>
@@ -797,8 +805,14 @@
       <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <div ref="imageWrapper" style="height: 100%">
+            <plugin-com
+              v-if="httpRequest.status && chart.type && isPlugin"
+              :component-name="chart.type + '-view'"
+              :obj="{chart}"
+              class="chart-class"
+            />
             <chart-component
-              v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'"
+              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -806,7 +820,7 @@
               @onChartClick="chartClick"
             />
             <chart-component-g2
-              v-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'"
+              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -814,7 +828,7 @@
               @onChartClick="chartClick"
             />
             <chart-component-s2
-              v-if="httpRequest.status && chart.type && chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'"
+              v-else-if="httpRequest.status && chart.type && chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -822,13 +836,13 @@
               @onChartClick="chartClick"
             />
             <table-normal
-              v-if="httpRequest.status && chart.type && chart.type.includes('table') && renderComponent() === 'echarts' && chart.type !== 'table-pivot'"
+              v-else-if="httpRequest.status && chart.type && chart.type.includes('table') && renderComponent() === 'echarts' && chart.type !== 'table-pivot'"
               :show-summary="chart.type === 'table-normal'"
               :chart="chart"
               class="table-class"
             />
             <label-normal
-              v-if="httpRequest.status && chart.type && chart.type.includes('text')"
+              v-else-if="httpRequest.status && chart.type && chart.type.includes('text')"
               :chart="chart"
               class="table-class"
             />
@@ -967,7 +981,6 @@
 
 <script>
 import { ajaxGetDataOnly, post } from '@/api/chart/chart'
-import draggable from 'vuedraggable'
 import DimensionItem from '../components/drag-item/DimensionItem'
 import QuotaItem from '../components/drag-item/QuotaItem'
 import FilterItem from '../components/drag-item/FilterItem'
@@ -1027,7 +1040,8 @@ import CompareEdit from '@/views/chart/components/compare/CompareEdit'
 import { compareItem } from '@/views/chart/chart/compare'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import DimensionExtItem from '@/views/chart/components/drag-item/DimensionExtItem'
-
+import PluginCom from '@/views/system/plugin/PluginCom'
+import { pluginTypes } from '@/api/chart/chart'
 export default {
   name: 'ChartEdit',
   components: {
@@ -1069,10 +1083,10 @@ export default {
     ChartComponent,
     QuotaItem,
     DimensionItem,
-    draggable,
     ChartDragItem,
     DrillItem,
-    DrillPath
+    DrillPath,
+    PluginCom
   },
   props: {
     param: {
@@ -1162,7 +1176,9 @@ export default {
       drill: false,
       hasEdit: false,
       quotaItemCompare: {},
-      showEditQuotaCompare: false
+      showEditQuotaCompare: false,
+      plugins: [],
+      isPlugin: false
     }
   },
   computed: {
@@ -1183,6 +1199,7 @@ export default {
       this.fieldFilter(val)
     },
     'chartType': function(newVal, oldVal) {
+      this.isPlugin = this.plugins.some(plugin => plugin.value === this.chart.type)
       if (newVal === 'map' && newVal !== oldVal) {
         this.initAreas()
       }
@@ -1194,13 +1211,27 @@ export default {
     // this.initAreas()
   },
   mounted() {
+    this.bindPluginEvent()
     // this.get(this.$store.state.chart.viewId);
     this.getData(this.param.id)
     // this.myEcharts();
   },
   activated() {
   },
+  beforeCreate() {
+    pluginTypes().then(res => {
+      this.plugins = res.data
+      this.isPlugin = this.plugins.some(plugin => plugin.value === this.chart.type)
+    })
+  },
   methods: {
+    bindPluginEvent() {
+      bus.$on('show-dimension-edit-filter', this.showDimensionEditFilter)
+      bus.$on('show-rename', this.showRename)
+      bus.$on('show-quota-edit-filter', this.showQuotaEditFilter)
+      bus.$on('show-quota-edit-compare', this.showQuotaEditCompare)
+      bus.$on('calc-data', this.calcData)
+    },
     initTableData(id) {
       if (id != null) {
         post('/dataset/table/getWithPermission/' + id, null).then(response => {
