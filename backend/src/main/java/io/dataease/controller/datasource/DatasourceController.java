@@ -3,7 +3,11 @@ package io.dataease.controller.datasource;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.DePermission;
+import io.dataease.auth.annotation.DePermissions;
 import io.dataease.base.domain.Datasource;
+import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
@@ -15,6 +19,8 @@ import io.dataease.service.datasource.DatasourceService;
 import io.dataease.dto.DatasourceDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -31,18 +37,24 @@ public class DatasourceController {
     @Resource
     private DatasourceService datasourceService;
 
+    @RequiresPermissions("datasource:add")
+    @DePermission(type = DePermissionType.DATASOURCE, value = "id")
     @ApiOperation("新增数据源")
     @PostMapping("/add")
     public Datasource addDatasource(@RequestBody Datasource datasource) throws Exception{
         return datasourceService.addDatasource(datasource);
     }
 
+    @RequiresPermissions("datasource:read")
+    @DePermission(type = DePermissionType.DATASOURCE, value = "id")
     @ApiOperation("验证数据源")
     @PostMapping("/validate")
     public ResultHolder validate(@RequestBody Datasource datasource) throws Exception {
         return datasourceService.validate(datasource);
     }
 
+    @RequiresPermissions("datasource:read")
+    @DePermission(type = DePermissionType.DATASOURCE)
     @ApiOperation("验证数据源")
     @GetMapping("/validate/{datasourceId}")
     public ResultHolder validate(@PathVariable String datasourceId) {
@@ -64,6 +76,7 @@ public class DatasourceController {
         return getDatasourceList().stream().filter(datasourceDTO -> datasourceDTO.getType().equalsIgnoreCase(type)).collect(Collectors.toList());
     }
 
+    @RequiresPermissions("datasource:read")
     @ApiIgnore
     @PostMapping("/list/{goPage}/{pageSize}")
     public Pager<List<DatasourceDTO>> getDatasourceList(@RequestBody BaseGridRequest request, @PathVariable int goPage, @PathVariable int pageSize) throws Exception {
@@ -71,12 +84,15 @@ public class DatasourceController {
         return PageUtils.setPageInfo(page, datasourceService.gridQuery(request));
     }
 
+    @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.LINK_LEVEL_MANAGE)
     @ApiOperation("删除数据源")
     @PostMapping("/delete/{datasourceID}")
     public void deleteDatasource(@PathVariable(value = "datasourceID") String datasourceID) throws Exception {
         datasourceService.deleteDatasource(datasourceID);
     }
 
+    @RequiresPermissions("datasource:add")
+    @DePermission(type = DePermissionType.DATASOURCE, value = "id", level = ResourceAuthLevel.LINK_LEVEL_MANAGE)
     @ApiOperation("更新数据源")
     @PostMapping("/update")
     public void updateDatasource(@RequestBody Datasource Datasource) {

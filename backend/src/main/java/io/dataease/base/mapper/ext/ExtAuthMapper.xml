@@ -40,7 +40,7 @@
             sys_auth a
         LEFT JOIN sys_auth_detail d on d.auth_id = a.id
         WHERE
-            auth_source_type = 'datasource'
+            auth_source_type = 'link'
             AND auth_target_type = 'user'
             AND auth_target = #{userId}
             AND d.privilege_value = 1
@@ -80,7 +80,7 @@
             sys_auth a
         LEFT JOIN sys_auth_detail d on d.auth_id = a.id
         WHERE
-            auth_source_type = 'datasource'
+            auth_source_type = 'link'
             AND auth_target_type = 'role'
             AND auth_target = #{roleId}
             AND d.privilege_value = 1
@@ -119,7 +119,7 @@
             sys_auth a
         LEFT JOIN sys_auth_detail d on d.auth_id = a.id
         WHERE
-            auth_source_type = 'datasource'
+            auth_source_type = 'link'
             AND auth_target_type = 'dept'
             AND auth_target = #{deptId}
             AND d.privilege_value = 1

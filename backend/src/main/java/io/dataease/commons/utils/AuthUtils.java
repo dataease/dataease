@@ -4,6 +4,7 @@ import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.entity.AuthItem;
 import io.dataease.auth.service.ExtAuthService;
+import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.model.AuthURD;
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +57,7 @@ public class AuthUtils {
         Long deptId = user.getDeptId();
         List<CurrentRoleDto> roles = user.getRoles();
         Set<AuthItem> result = new HashSet<>();
-        if (StringUtils.equals("link", type)) {
+        if (StringUtils.equals(DePermissionType.DATASOURCE.name().toLowerCase(), type)) {
             Set<AuthItem> userSet = extAuthService.dataSourceIdByUser(userId).stream().collect(Collectors.toSet());
             Set<AuthItem> roleSet = roles.stream().map(role -> extAuthService.dataSourceIdByRole(role.getId())).flatMap(Collection::stream).collect(Collectors.toSet());
             Set<AuthItem> deptSet = extAuthService.dataSourceIdByDept(deptId).stream().collect(Collectors.toSet());
@@ -69,7 +70,7 @@ public class AuthUtils {
             return result;
         }
 
-        else if (StringUtils.equals("dataset", type)) {
+        else if (StringUtils.equals(DePermissionType.DATASET.name().toLowerCase(), type)) {
             Set<AuthItem> userSet = extAuthService.dataSetIdByUser(userId).stream().collect(Collectors.toSet());
             Set<AuthItem> roleSet = roles.stream().map(role -> extAuthService.dataSetIdByRole(role.getId())).flatMap(Collection::stream).collect(Collectors.toSet());
             Set<AuthItem> deptSet = extAuthService.dataSetIdByDept(deptId).stream().collect(Collectors.toSet());
@@ -81,7 +82,7 @@ public class AuthUtils {
             });
             return result;
         }
-        else if (StringUtils.equals("panel", type)) {
+        else if (StringUtils.equals(DePermissionType.PANEL.name().toLowerCase(), type)) {
             Set<AuthItem> userSet = extAuthService.panelIdByUser(userId).stream().collect(Collectors.toSet());
             Set<AuthItem> roleSet = roles.stream().map(role -> extAuthService.panelIdByRole(role.getId())).flatMap(Collection::stream).collect(Collectors.toSet());
             Set<AuthItem> deptSet = extAuthService.panelIdByDept(deptId).stream().collect(Collectors.toSet());
