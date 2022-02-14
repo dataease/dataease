@@ -1,10 +1,12 @@
 package io.dataease.service.panel;
 
+import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.base.mapper.PanelGroupMapper;
 import io.dataease.base.mapper.ext.ExtPanelGroupMapper;
 import io.dataease.base.mapper.ext.ExtPanelLinkJumpMapper;
+import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.TreeUtils;
@@ -75,6 +77,7 @@ public class PanelGroupService {
         return TreeUtils.mergeTree(panelGroupDTOList, "default_panel");
     }
 
+    @DeCleaner(DePermissionType.PANEL)
     @Transactional
     public PanelGroup saveOrUpdate(PanelGroupRequest request) {
         try {

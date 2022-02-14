@@ -2,10 +2,12 @@ package io.dataease.service.datasource;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSourceMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.AuthUtils;
@@ -51,6 +53,7 @@ public class DatasourceService {
     @Resource
     private CommonThreadPool commonThreadPool;
 
+    @DeCleaner(DePermissionType.DATASOURCE)
     public Datasource addDatasource(Datasource datasource) throws Exception{
         checkName(datasource);
         long currentTimeMillis = System.currentTimeMillis();
