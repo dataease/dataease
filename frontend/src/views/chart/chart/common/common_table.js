@@ -106,7 +106,7 @@ export function getSize(chart) {
       size.cellCfg = {
         height: s.tableItemHeight
       }
-      if (!s.tableColumnMode || s.tableColumnMode === 'adapt') {
+      if (s.tableColumnMode && s.tableColumnMode === 'adapt') {
         delete size.cellCfg.width
         size.layoutWidthType = 'compact'
       } else {
