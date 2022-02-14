@@ -271,6 +271,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
+                            :dimension-data="dimensionData"
+                            :quota-data="quotaData"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
@@ -323,6 +325,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
+                            :dimension-data="dimensionData"
+                            :quota-data="quotaData"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
@@ -376,6 +380,8 @@
                             :index="index"
                             :item="item"
                             :chart="chart"
+                            :dimension-data="dimensionData"
+                            :quota-data="quotaData"
                             @onQuotaItemChange="quotaItemChange"
                             @onQuotaItemRemove="quotaItemRemove"
                             @editItemFilter="showQuotaEditFilter"
@@ -413,6 +419,8 @@
                             :index="index"
                             :item="item"
                             :chart="chart"
+                            :dimension-data="dimensionData"
+                            :quota-data="quotaData"
                             @onQuotaItemChange="quotaItemChange"
                             @onQuotaItemRemove="quotaItemRemove"
                             @editItemFilter="showQuotaEditFilter"
@@ -450,6 +458,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
+                            :dimension-data="dimensionData"
+                            :quota-data="quotaData"
                             @onItemChange="stackItemChange"
                             @onItemRemove="stackItemRemove"
                           />
@@ -490,6 +500,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
+                            :dimension-data="dimensionData"
+                            :quota-data="quotaData"
                             @onItemChange="bubbleItemChange"
                             @onItemRemove="bubbleItemRemove"
                           />
@@ -522,6 +534,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
+                            :dimension-data="dimensionData"
+                            :quota-data="quotaData"
                             @onFilterItemRemove="filterItemRemove"
                             @editItemFilter="showEditFilter"
                           />
@@ -558,6 +572,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
+                            :dimension-data="dimensionData"
+                            :quota-data="quotaData"
                             @onDimensionItemChange="drillItemChange"
                             @onDimensionItemRemove="drillItemRemove"
                           />
@@ -568,7 +584,6 @@
                       </div>
                     </el-row>
                   </div>
-
                 </el-row>
               </div>
             </el-col>

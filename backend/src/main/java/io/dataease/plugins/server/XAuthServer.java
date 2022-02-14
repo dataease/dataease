@@ -14,6 +14,7 @@ import io.dataease.plugins.xpack.auth.dto.response.XpackSysAuthDetailDTO;
 import io.dataease.plugins.xpack.auth.dto.response.XpackVAuthModelDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import io.dataease.plugins.xpack.auth.service.AuthXpackService;
 
@@ -25,6 +26,7 @@ public class XAuthServer {
 
     private static final Set<String> cacheTypes = new HashSet<>();
 
+    @RequiresPermissions("auth:read")
     @PostMapping("/authModels")
     @I18n
     public List<XpackVAuthModelDTO> authModels(@RequestBody XpackBaseTreeRequest request) {
@@ -33,12 +35,14 @@ public class XAuthServer {
         return sysAuthService.searchAuthModelTree(request, user.getUserId(), user.getIsAdmin());
     }
 
+    @RequiresPermissions("auth:read")
     @PostMapping("/authDetails")
     public Map<String, List<XpackSysAuthDetailDTO>> authDetails(@RequestBody XpackSysAuthRequest request) {
         AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
         return sysAuthService.searchAuthDetails(request);
     }
 
+    @RequiresPermissions("auth:read")
     @GetMapping("/authDetailsModel/{authType}/{direction}")
     @I18n
     public List<XpackSysAuthDetail> authDetailsModel(@PathVariable String authType, @PathVariable String direction) {
@@ -54,6 +58,7 @@ public class XAuthServer {
         return authDetails;
     }
 
+    @RequiresPermissions("auth:read")
     @PostMapping("/authChange")
     public void authChange(@RequestBody XpackSysAuthRequest request) {
         AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);

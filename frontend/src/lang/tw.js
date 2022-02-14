@@ -1022,7 +1022,8 @@ export default {
     table_column_adapt: '自適應',
     table_column_custom: '自定義',
     chart_table_pivot: '透視表',
-    table_pivot_row: '數據行'
+    table_pivot_row: '數據行',
+    field_error_tips: '該字段所對應的數據集原始字段發生變更（包括維度、指標，字段類型，字段被刪除等），建議重新編輯'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

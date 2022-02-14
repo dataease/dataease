@@ -20,6 +20,7 @@ import io.dataease.service.ScheduleService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,7 @@ public class XEmailTaskServer {
     @Resource
     private PriorityThreadPoolExecutor priorityExecutor;
 
+    @RequiresPermissions("task-email:read")
     @PostMapping("/queryTasks/{goPage}/{pageSize}")
     public Pager<List<XpackTaskGridDTO>> queryTask(@PathVariable int goPage, @PathVariable int pageSize,
             @RequestBody XpackGridRequest request) {
@@ -71,6 +73,7 @@ public class XEmailTaskServer {
         return listPager;
     }
 
+    @RequiresPermissions("task-email:add")
     @PostMapping("/save")
     public void save(@RequestBody XpackEmailCreate param) throws Exception {
         XpackEmailTaskRequest request = param.fillContent();
@@ -81,6 +84,7 @@ public class XEmailTaskServer {
         scheduleService.addSchedule(globalTask);
     }
 
+    @RequiresPermissions("task-email:read")
     @PostMapping("/queryForm/{taskId}")
     public XpackEmailCreate queryForm(@PathVariable Long taskId) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
@@ -141,6 +145,7 @@ public class XEmailTaskServer {
 
     }
 
+    @RequiresPermissions("task-email:del")
     @PostMapping("/delete/{taskId}")
     public void delete(@PathVariable Long taskId) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);

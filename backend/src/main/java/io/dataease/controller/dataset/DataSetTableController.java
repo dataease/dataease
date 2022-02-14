@@ -1,9 +1,13 @@
 package io.dataease.controller.dataset;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.DePermission;
+import io.dataease.auth.annotation.DePermissions;
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.DatasetTableIncrementalConfig;
+import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.response.DataSetDetail;
 import io.dataease.dto.datasource.TableFiled;
@@ -11,6 +15,8 @@ import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.ExcelFileData;
 import io.dataease.service.dataset.DataSetTableService;
 import io.swagger.annotations.*;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,12 +36,24 @@ public class DataSetTableController {
     @Resource
     private DataSetTableService dataSetTableService;
 
+    @RequiresPermissions("data:read")
+    @DePermissions(value = {
+        @DePermission(type = DePermissionType.DATASET, value = "id"),
+        @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
+        @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASET_LEVEL_USE)
+    }, logical = Logical.AND)
     @ApiOperation("批量保存")
     @PostMapping("batchAdd")
     public void batchAdd(@RequestBody List<DataSetTableRequest> datasetTable) throws Exception {
         dataSetTableService.batchInsert(datasetTable);
     }
 
+    @RequiresPermissions("data:read")
+    @DePermissions(value = {
+            @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
+            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
+            @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASET_LEVEL_USE)
+    }, logical = Logical.AND)
     @ApiOperation("更新")
     @PostMapping("update")
     public void save(@RequestBody DataSetTableRequest datasetTable) throws Exception {
@@ -46,12 +64,19 @@ public class DataSetTableController {
         }
     }
 
+    @RequiresPermissions("data:read")
+    @DePermissions(value = {
+            @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
+            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
+            @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASET_LEVEL_USE)
+    }, logical = Logical.AND)
     @ApiOperation("修改")
     @PostMapping("alter")
     public void alter(@RequestBody DataSetTableRequest request) throws Exception {
         dataSetTableService.alter(request);
     }
 
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("删除")
     @PostMapping("delete/{id}")
     public void delete(@ApiParam(name = "id", value = "数据集ID", required = true) @PathVariable String id) throws Exception {
@@ -70,6 +95,7 @@ public class DataSetTableController {
         return dataSetTableService.listAndGroup(dataSetTableRequest);
     }
 
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE)
     @ApiOperation("详息")
     @PostMapping("get/{id}")
     public DatasetTable get(@ApiParam(name = "id", value = "数据集ID", required = true) @PathVariable String id) {

@@ -1,6 +1,6 @@
 <template>
   <span>
-    <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis" :type="item.groupType === 'q'?'success':''">
+    <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis" :type="tagType">
       <span style="float: left">
         <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
         <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
@@ -13,13 +13,14 @@
         <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
       </span>
       <span class="item-span-style" :title="item.name">{{ item.name }}</span>
+      <field-error-tips v-if="tagType === 'danger'" />
       <span v-if="chart.type !== 'table-info' && item.summary" class="summary-span">
         {{ $t('chart.' + item.summary) }}<span v-if="item.compareCalc && item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
       </span>
     </el-tag>
     <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
-        <el-tag size="small" class="item-axis" :type="item.groupType === 'q'?'success':''">
+        <el-tag size="small" class="item-axis" :type="tagType">
           <span style="float: left">
             <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
             <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
@@ -32,6 +33,7 @@
             <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
           </span>
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
+          <field-error-tips v-if="tagType === 'danger'" />
           <span v-if="chart.type !== 'table-info' && item.summary" class="summary-span">
             {{ $t('chart.' + item.summary) }}<span v-if="item.compareCalc && item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
           </span>
@@ -75,22 +77,6 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <!-- 快速计算先隐藏-->
-          <!--          <el-dropdown-item v-if="item.id !== 'count'">-->
-          <!--            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="quickCalc">-->
-          <!--              <span class="el-dropdown-link inner-dropdown-menu">-->
-          <!--                <span>-->
-          <!--                  <i class="el-icon-s-grid" />-->
-          <!--                  <span>{{ $t('chart.quick_calc') }}</span>-->
-          <!--                  <span class="summary-span-item">(无)</span>-->
-          <!--                </span>-->
-          <!--                <i class="el-icon-arrow-right el-icon&#45;&#45;right" />-->
-          <!--              </span>-->
-          <!--              <el-dropdown-menu slot="dropdown">-->
-          <!--                <el-dropdown-item :command="beforeQuickCalc('none')">无</el-dropdown-item>-->
-          <!--              </el-dropdown-menu>-->
-          <!--            </el-dropdown>-->
-          <!--          </el-dropdown-item>-->
 
           <!--同比/环比-->
           <el-dropdown-item v-show="chart.type !== 'table-info'">
@@ -144,9 +130,12 @@
 
 <script>
 import { compareItem } from '@/views/chart/chart/compare'
+import { getItemType } from '@/views/chart/components/drag-item/utils'
+import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
 
 export default {
   name: 'QuotaExtItem',
+  components: { FieldErrorTips },
   props: {
     param: {
       type: Object,
@@ -163,12 +152,21 @@ export default {
     chart: {
       type: Object,
       required: true
+    },
+    dimensionData: {
+      type: Array,
+      required: true
+    },
+    quotaData: {
+      type: Array,
+      required: true
     }
   },
   data() {
     return {
       compareItem: compareItem,
-      disableEditCompare: false
+      disableEditCompare: false,
+      tagType: getItemType(this.dimensionData, this.quotaData, this.item)
     }
   },
   watch: {
@@ -177,6 +175,12 @@ export default {
     },
     'chart.extStack': function() {
       this.isEnableCompare()
+    },
+    quotaData: function() {
+      this.getItemTagType()
+    },
+    item: function() {
+      this.getItemTagType()
     }
   },
   mounted() {
@@ -296,6 +300,9 @@ export default {
       this.item.index = this.index
       this.item.calcType = 'quotaExt'
       this.$emit('editItemCompare', this.item)
+    },
+    getItemTagType() {
+      this.tagType = getItemType(this.dimensionData, this.quotaData, this.item)
     }
   }
 }
