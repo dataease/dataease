@@ -2,7 +2,7 @@
   <el-col v-loading="loading">
     <el-row style="margin-top: 5px">
       <el-row style="margin-left: 5px;margin-right: 5px">
-        <el-col :span="selectModel ? 23 : 16">
+        <el-col :span="23">
           <el-input
             v-model="templateFilterText"
             :placeholder="$t('panel.filter_keywords')"
@@ -11,9 +11,9 @@
             prefix-icon="el-icon-search"
           />
         </el-col>
-        <el-col v-if="!selectModel" :span="7">
-          <el-button type="primary" size="mini" style="float: right" @click="newChart">新建 </el-button>
-        </el-col>
+        <!--        <el-col v-if="!selectModel" :span="7">-->
+        <!--          <el-button type="primary" size="mini" style="float: right" @click="newChart">新建 </el-button>-->
+        <!--        </el-col>-->
 
       </el-row>
       <el-row style="margin-top: 5px">
@@ -31,46 +31,35 @@
           :filter-node-method="filterNode"
           :highlight-current="true"
           @node-drag-start="handleDragStart"
-          @node-click="nodeClick"
-
           @check="checkChanged"
-
           @node-drag-end="dragEnd"
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>
-              <span v-if="data.type==='scene'||data.type==='group'">
+              <span v-if="data.modelType==='panel'|| data.nodeType === 'spine'">
                 <el-button
                   icon="el-icon-folder"
                   type="text"
                 />
               </span>
               <span v-else>
-                <svg-icon :icon-class="data.type" style="width: 14px;height: 14px" />
+                <svg-icon :icon-class="data.modelInnerType" style="width: 14px;height: 14px" />
               </span>
               <span style="margin-left: 6px;font-size: 14px">{{ data.name }}</span>
             </span>
           </span>
         </el-tree>
       </el-row>
-      <!--      <el-row v-if="detailItem&&detailItem.snapshot" class="detail-class">-->
-      <!--        <el-card class="filter-card-class">-->
-      <!--          <div slot="header" class="button-div-class">-->
-      <!--            <span>{{ detailItem.name }}</span>-->
-      <!--          </div>-->
-      <!--          <img draggable="false" class="view-list-thumbnails" :src="detailItem.snapshot" alt="">-->
-      <!--        </el-card>-->
-      <!--      </el-row>-->
     </el-row>
   </el-col>
 </template>
 
 <script>
-import { tree, findOne } from '@/api/panel/view'
 import componentList from '@/components/canvas/custom-component/component-list'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
+import { queryPanelViewTree } from '@/api/panel/panel'
 
 export default {
   name: 'ViewSelect',
@@ -113,15 +102,9 @@ export default {
       if (!value) return true
       return data.name.indexOf(value) !== -1
     },
-    nodeClick(data, node) {
-      findOne(data.id).then(res => {
-        this.detailItem = res.data
-      })
-    },
     loadData() {
-      const param = {}
       this.loading = true
-      tree(param).then(res => {
+      queryPanelViewTree().then(res => {
         const nodeDatas = res.data
         if (this.selectModel) {
           this.setParentDisable(nodeDatas)
@@ -135,7 +118,7 @@ export default {
       ev.dataTransfer.effectAllowed = 'copy'
       const dataTrans = {
         type: 'view',
-        id: node.data.id
+        id: node.data.innerId
       }
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
       eventBus.$emit('startMoveIn')
@@ -146,7 +129,7 @@ export default {
     },
     // 判断节点能否被拖拽
     allowDrag(draggingNode) {
-      if (draggingNode.data.type === 'scene' || draggingNode.data.type === 'group') {
+      if (draggingNode.data.modelType === 'panel' || draggingNode.data.nodeType === 'spine') {
         return false
       } else {
         return true
@@ -171,7 +154,7 @@ export default {
     },
     setParentDisable(nodes) {
       nodes.forEach(node => {
-        if (node.type === 'group') {
+        if (node.modelType === 'panel' || node.nodeType === 'spine') {
           node.disabled = true
         }
         if (node.children && node.children.length > 0) {

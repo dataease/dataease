@@ -154,3 +154,11 @@ export function initPanelData(panelId, callback) {
     callback(response)
   })
 }
+
+export function queryPanelViewTree() {
+  return request({
+    url: '/panel/group/queryPanelViewTree',
+    method: 'post'
+  })
+}
+

@@ -28,11 +28,11 @@ export function getChartTree(data) {
   })
 }
 
-export function chartCopy(id) {
+export function chartCopy(id, panelId) {
   return request({
-    url: '/chart/view/chartCopy/' + id,
+    url: '/chart/view/chartCopy/' + id + '/' + panelId,
     method: 'post',
-    loading: true
+    loading: false
   })
 }
 export function chartGroupTree(data) {

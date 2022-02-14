@@ -1684,9 +1684,9 @@ public class ChartViewService {
         return chartViewMapper.selectByPrimaryKey(id);
     }
 
-    public String chartCopy(String id) {
+    public String chartCopy(String id,String panelId) {
         String newChartId = UUID.randomUUID().toString();
-        extChartViewMapper.chartCopy(newChartId, id);
+        extChartViewMapper.chartCopy(newChartId, id,panelId);
         return newChartId;
     }
 

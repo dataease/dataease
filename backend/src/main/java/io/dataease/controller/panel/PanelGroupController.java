@@ -9,6 +9,7 @@ import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.controller.request.panel.PanelGroupRequest;
+import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.service.panel.PanelGroupService;
 import io.swagger.annotations.Api;
@@ -70,5 +71,11 @@ public class PanelGroupController {
         return panelGroupService.findOne(id);
     }
 
+    @ApiOperation("仪表板视图信息")
+    @PostMapping("/queryPanelViewTree")
+    @I18n
+    public List<VAuthModelDTO> queryPanelViewTree(){
+        return panelGroupService.queryPanelViewTree();
+    }
 
 }
