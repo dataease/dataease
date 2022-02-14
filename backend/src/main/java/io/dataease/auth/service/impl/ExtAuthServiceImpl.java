@@ -1,12 +1,15 @@
 package io.dataease.auth.service.impl;
 
+import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.entity.AuthItem;
 import io.dataease.auth.service.ExtAuthService;
 import io.dataease.base.domain.SysAuth;
 import io.dataease.base.mapper.ext.ExtAuthMapper;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.model.AuthURD;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.listener.util.CacheUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -146,4 +149,7 @@ public class ExtAuthServiceImpl implements ExtAuthService {
     public void clearRoleResource(Long roleId) {
         LogUtil.info("all permission resource of role {} is cleanning...", roleId);
     }
+
+
+
 }
