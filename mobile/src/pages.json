@@ -27,19 +27,9 @@
             "style": {
                 "navigationBarTitleText": "",
                 "app-plus": {
-                    "titleNView": {
-                        "type": "transparent",
-                        "buttons": [{
-                            "type": "share"
-                        }]
-                    }
-                },
-                "h5": {
-                    "titleNView": {
-                        "type": "transparent",
-                        "buttons": []
-                    }
-                }
+					"titleNView": false,
+					"bounce": "none"
+				}
             }
         },
         {

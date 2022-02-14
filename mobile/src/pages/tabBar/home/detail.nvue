@@ -1,33 +1,36 @@
 <template>
 	<view class="page dataease-main">
        
-		<uni-nav-bar :title="banner.title" >
-			<view slot="right">
+		<uni-nav-bar :fixed="false" left-icon="arrowleft"  @clickLeft="back" :title="banner.title" >
+			<block slot="right">
 				<uni-row class="demo-uni-row" >
-					<uni-col :span="12" @click="enshrine">
-						<uni-icons v-if="hasStar" type="star-filled" size="18" color="#007AFF"></uni-icons>
-						<uni-icons v-else type="star" size="18" color="#999"></uni-icons>
+					<uni-col :span="12">
+						<view @click="enshrine">
+						<uni-icons v-if="hasStar"  type="star-filled" size="18" color="#007AFF"></uni-icons>
+						<uni-icons v-else type="star"  size="18" color="#999"></uni-icons>
+						</view>
 					</uni-col>
 					
-					<uni-col :span="12" @click="refresh" style="margin: 0 10rpx;">
-						<uni-icons type="reload" size="18" color="#999"></uni-icons>
+					<uni-col :span="12"  style="margin: 0 10rpx;">
+						<view @click="refresh">
+						<uni-icons type="reload" size="18" color="#999" ></uni-icons>
+						</view>
 					</uni-col>
 				</uni-row>
 				
-			</view>
+			</block>
+			
 		</uni-nav-bar>
-		<view class="article-content">
+		<view class="article-content" style="height: 100% !important;">
             <view v-if="url">
                 <web-view
                 :webview-styles="webViewStyles"
-                style="height: calc(100vh - 112px);"
+                style="height: 100vh;"
                 >
                 </web-view>
             </view>
 		</view>
-		<!-- #ifdef MP-WEIXIN || MP-QQ -->
-		<ad v-if="htmlNodes.length > 0" unit-id="adunit-01b7a010bf53d74e"></ad>
-		<!-- #endif -->
+		
 
        
 	</view>
@@ -271,7 +274,7 @@
     
 }
 .article-content {
-    height: 100vh;
+    
     margin: 5px 0;
     background: #ffffff;
 }
@@ -295,6 +298,36 @@
     margin-left: 5px;
 }
 
+.input-view {
+		/* #ifndef APP-PLUS-NVUE */
+		display: flex;
+		/* #endif */
+		flex-direction: row;
+		// width: 500rpx;
+		flex: 1;
+		background-color: #f8f8f8;
+		height: $nav-height;
+		border-radius: 15px;
+		padding: 0 15px;
+		flex-wrap: nowrap;
+		margin: 7px 0;
+		line-height: $nav-height;
+	}
+
+	.input-uni-icon {
+		line-height: $nav-height;
+	}
+
+	.nav-bar-input {
+		height: $nav-height;
+		line-height: $nav-height;
+		/* #ifdef APP-PLUS-NVUE */
+		width: 370rpx;
+		/* #endif */
+		padding: 0 5px;
+		font-size: 14px;
+		background-color: #f8f8f8;
+	}
 
 
 </style>
