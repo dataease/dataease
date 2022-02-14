@@ -14,6 +14,7 @@ import io.dataease.plugins.xpack.dept.dto.response.XpackSysDept;
 import io.dataease.plugins.xpack.dept.service.DeptXpackService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -66,6 +67,7 @@ public class XDeptServer {
         return nodes;
     }
 
+    @RequiresPermissions("dept:add")
     @ApiOperation("创建")
     @PostMapping("/create")
     public int create(@RequestBody XpackCreateDept dept){
@@ -73,6 +75,7 @@ public class XDeptServer {
         return deptService.add(dept);
     }
 
+    @RequiresPermissions("dept:del")
     @ApiOperation("删除")
     @PostMapping("/delete")
     public void delete(@RequestBody List<XpackDeleteDept> requests){
@@ -83,6 +86,7 @@ public class XDeptServer {
         deptService.batchDelete(requests);
     }
 
+    @RequiresPermissions("dept:edit")
     @ApiOperation("更新")
     @PostMapping("/update")
     public int update(@RequestBody XpackCreateDept dept){
@@ -91,6 +95,7 @@ public class XDeptServer {
     }
 
 
+    @RequiresPermissions("dept:del")
     @ApiIgnore
     @ApiOperation("删除")
     @PostMapping("/nodesByDeptId/{deptId}")

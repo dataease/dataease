@@ -4,6 +4,7 @@ package io.dataease.plugins.server;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
 import io.dataease.plugins.xpack.display.service.DisplayXpackService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
@@ -22,6 +23,7 @@ public class XDisplayServer {
         return disPlayXpackService.systemSettings();
     }
 
+    @RequiresPermissions("sysparam:read")
     @PostMapping(value="/save", consumes = {"multipart/form-data"})
     public void saveUIInfo(@RequestPart("request") Map<String,List<SysSettingDto>> systemParameterMap, @RequestPart(value = "files", required = false) List<MultipartFile> bodyFiles) throws Exception {
         DisplayXpackService disPlayXpackService = SpringContextUtil.getBean(DisplayXpackService.class);

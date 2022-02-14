@@ -11,6 +11,7 @@ import io.dataease.service.FileService;
 import io.dataease.service.system.EmailService;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,11 +40,13 @@ public class SystemParameterController {
     private EmailService emailService;
 
 
+    @RequiresPermissions("sysparam:read")
     @GetMapping("/mail/info")
     public MailInfo mailInfo() {
         return emailService.mailInfo();
     }
 
+    @RequiresPermissions("sysparam:read")
     @GetMapping("/basic/info")
     public BasicInfo basicInfo() {
         return systemParameterService.basicInfo();
@@ -55,11 +58,13 @@ public class SystemParameterController {
         return StringUtils.isNotBlank(basicInfo.getFrontTimeOut()) ? Integer.parseInt(basicInfo.getFrontTimeOut()) : 10;
     }
 
+    @RequiresPermissions("sysparam:read")
     @PostMapping("/edit/email")
     public void editMail(@RequestBody List<SystemParameter> systemParameter) {
         emailService.editMail(systemParameter);
     }
 
+    @RequiresPermissions("sysparam:read")
     @PostMapping("/edit/basic")
     public void editBasic(@RequestBody List<SystemParameter> systemParameter) {
         systemParameterService.editBasic(systemParameter);
@@ -76,6 +81,7 @@ public class SystemParameterController {
     }
 
 
+    @RequiresPermissions("sysparam:read")
     @GetMapping("/base/info")
     public List<SystemParameterDTO> getBaseInfo() {
         return systemParameterService.getSystemParameterInfo(ParamConstants.Classify.BASE.getValue());
