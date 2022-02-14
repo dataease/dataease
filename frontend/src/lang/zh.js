@@ -1024,7 +1024,8 @@ export default {
     table_column_adapt: '自适应',
     table_column_custom: '自定义',
     chart_table_pivot: '透视表',
-    table_pivot_row: '数据行'
+    table_pivot_row: '数据行',
+    field_error_tips: '该字段所对应的数据集原始字段发生变更（包括维度、指标，字段类型，字段被删除等），建议重新编辑'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
