@@ -238,7 +238,9 @@ public class PanelLinkService {
         example.createCriteria().andUuidEqualTo(uuid);
         List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
         if (CollectionUtils.isEmpty(mappings)) {
-            DEException.throwException("link is not exist");
+            PanelLink panelLink = new PanelLink();
+            panelLink.setResourceId("error-resource-id");
+            return BASEURL + buildLinkParam(panelLink);
         }
         PanelLinkMapping mapping = mappings.get(0);
         String resourceId = mapping.getResourceId();
