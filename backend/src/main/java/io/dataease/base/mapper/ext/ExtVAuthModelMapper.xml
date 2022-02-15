@@ -119,8 +119,8 @@
         'leaf' AS node_type,
         'view' AS model_type
         FROM
-        panel_view
-        LEFT JOIN chart_view ON panel_view.chart_view_id = chart_view.id
+        chart_view
+        LEFT JOIN panel_view ON panel_view.chart_view_id = chart_view.id
         <where>
 
             <if test="record.pids != null and record.pids.size() > 0">
@@ -151,7 +151,8 @@
             UNION ALL
 
         SELECT
-            panel_view.id,
+            distinct
+            chart_view.id,
             chart_view.id AS 'inner_id',
             chart_view.NAME,
             chart_view.NAME AS 'label',
@@ -160,8 +161,8 @@
             'leaf' AS node_type,
             'view' AS model_type
         FROM
-            panel_view
-            LEFT JOIN chart_view ON panel_view.chart_view_id = chart_view.id
+            chart_view
+            LEFT JOIN panel_view ON panel_view.chart_view_id = chart_view.id
         <where>
             chart_view.chart_type ='public'
             <if test="record.pids != null and record.pids.size() > 0">

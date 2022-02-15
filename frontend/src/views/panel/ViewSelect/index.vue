@@ -36,11 +36,14 @@
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>
-              <span v-if="data.modelType==='panel'|| data.nodeType === 'spine'">
-                <el-button
-                  icon="el-icon-folder"
-                  type="text"
-                />
+              <span v-if="data.modelInnerType==='history'">
+                <i class="el-icon-collection" />
+              </span>
+              <span v-else-if="data.nodeType === 'spine'">
+                <i class="el-icon-folder" />
+              </span>
+              <span v-else-if="data.modelType==='panel'&& data.nodeType === 'leaf'">
+                <svg-icon icon-class="panel" class="ds-icon-scene" />
               </span>
               <span v-else>
                 <svg-icon :icon-class="data.modelInnerType" style="width: 14px;height: 14px" />

@@ -2,7 +2,7 @@ ALTER TABLE `chart_view` ADD COLUMN `x_axis_ext` LONGTEXT COMMENT 'table-row' AF
 UPDATE `chart_view` SET `x_axis_ext` = '[]';
 
 
-INSERT INTO `chart_group` (`id`, `name`, `pid`, `level`, `type`, `create_by`, `create_time`) VALUES ('0', 'i18n_public_chart', 'public_chart', -1, 'group', 'admin', NULL);
+INSERT INTO `chart_group` (`id`, `name`, `pid`, `level`, `type`, `create_by`, `create_time`) VALUES ('0', 'i18n_public_chart', 'public_chart', -1, 'history', 'admin', NULL);
 
 ALTER TABLE `chart_view`
 MODIFY COLUMN `scene_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '场景ID chart_type为privat的时候 是仪表板id' AFTER `title`,
