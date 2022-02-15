@@ -1023,7 +1023,8 @@ export default {
     table_column_custom: 'Custom',
     chart_table_pivot: 'Pivot Table',
     table_pivot_row: 'Data Row',
-    field_error_tips: 'This field is changed(Include dimension、quota，field type，deleted),please edit again.'
+    field_error_tips: 'This field is changed(Include dimension、quota，field type，deleted),please edit again.',
+    table_border_color: 'Border Color'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

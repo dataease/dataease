@@ -230,7 +230,7 @@ export default {
         valid: value
       }
       switchValid(param).then(res => {
-
+        this.requestShort()
       })
     },
     requestShort() {
