@@ -45,11 +45,19 @@ public class PanelLinkService {
     @Resource
     private PanelLinkMappingMapper panelLinkMappingMapper;
 
+    @Transactional
     public void changeValid(LinkRequest request) {
         PanelLink po = new PanelLink();
         po.setResourceId(request.getResourceId());
         po.setValid(request.isValid());
-        mapper.updateByExampleSelective(po, example(request.getResourceId(), AuthUtils.getUser().getUserId()));
+        Long userId = AuthUtils.getUser().getUserId();
+        mapper.updateByExampleSelective(po, example(request.getResourceId(), userId));
+
+        PanelLinkMappingExample example = new PanelLinkMappingExample();
+        example.createCriteria().andResourceIdEqualTo(request.getResourceId()).andUserIdEqualTo(userId);
+        PanelLinkMapping mapping = new PanelLinkMapping();
+        mapping.setUuid(CodingUtil.shortUuid());
+        panelLinkMappingMapper.updateByExampleSelective(mapping, example);
     }
 
     private PanelLinkExample example(String panelLinkId, Long userId){
@@ -118,11 +126,6 @@ public class PanelLinkService {
             mapping.setUserId(AuthUtils.getUser().getUserId());
             mapping.setUuid(CodingUtil.shortUuid());
             panelLinkMappingMapper.insert(mapping);
-        }else {
-            mappings.stream().filter(mapping -> StringUtils.isBlank(mapping.getUuid())).forEach(item -> {
-                item.setUuid(CodingUtil.shortUuid());
-                panelLinkMappingMapper.updateByPrimaryKey(item);
-            });
         }
         return convertDto(one);
     }
@@ -214,14 +217,19 @@ public class PanelLinkService {
         example.createCriteria().andResourceIdEqualTo(resourceId).andUserIdEqualTo(AuthUtils.getUser().getUserId());
         List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
         PanelLinkMapping mapping = mappings.get(0);
-        return SHORT_URL_PREFIX + mapping.getUuid();
+        String uuid = mapping.getUuid();
+        return SHORT_URL_PREFIX + (StringUtils.isBlank(uuid) ? mapping.getId() : uuid);
     }
 
     public String getUrlByIndex(Long index) {
         PanelLinkMapping mapping = panelLinkMappingMapper.selectByPrimaryKey(index);
+
         String resourceId = mapping.getResourceId();
         Long userId = mapping.getUserId();
         PanelLink one = findOne(resourceId, userId);
+        if (StringUtils.isNotBlank(mapping.getUuid())) {
+            one.setResourceId("error-resource-id");
+        }
         return convertDto(one).getUri();
     }
 
