@@ -40,6 +40,8 @@ export default {
           id: res.data.id,
           name: res.data.name
         })
+        // 设置浏览器title为当前仪表板名称
+        document.title = res.data.name
         // 刷新联动信息
         getPanelAllLinkageInfo(this.resourceId).then(rsp => {
           this.$store.commit('setNowPanelTrackInfo', rsp.data)
