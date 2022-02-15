@@ -34,9 +34,10 @@
     </delete>
 
     <select id="query" resultMap="treeNodeMap">
-        select distinct s.panel_group_id as id, IFNULL(s.granter,g.create_by) as creator, g.name
+        select distinct s.panel_group_id as id, u.nick_name as creator, g.name
         from panel_share s
         left join panel_group g on g.id = s.panel_group_id
+        left join sys_user u on u.username = IFNULL(s.granter,g.create_by)
         where
         ( s.target_id = #{userId} and s.type = 0 ) or
         ( s.target_id = #{deptId} and s.type = 2 ) or

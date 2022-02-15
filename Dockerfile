@@ -2,18 +2,18 @@ FROM registry.cn-qingdao.aliyuncs.com/dataease/fabric8-java-alpine-openjdk8-jre:
 
 RUN echo -e 'http://mirrors.aliyun.com/alpine/edge/main/\nhttp://mirrors.aliyun.com/alpine/edge/community/' > /etc/apk/repositories 
 
-RUN apk add chromium chromium-chromedriver fontconfig --no-cache --allow-untrusted
+#RUN apk add chromium chromium-chromedriver fontconfig --no-cache --allow-untrusted
 
-RUN mkdir -p /usr/local/sbin/ \
-    && cp /usr/bin/chromedriver /usr/local/sbin/ \
-    && chmod a+x /usr/local/sbin/chromedriver
+#RUN mkdir -p /usr/local/sbin/ \
+#    && cp /usr/bin/chromedriver /usr/local/sbin/ \
+#    && chmod a+x /usr/local/sbin/chromedriver
 
 ADD simsun.ttc /usr/share/fonts/
 
-RUN cd /usr/share/fonts/ \
-    && mkfontscale \
-    && mkfontdir \
-    && fc-cache -fv
+#RUN cd /usr/share/fonts/ \
+#    && mkfontscale \
+#    && mkfontdir \
+#    && fc-cache -fv
 
 ARG IMAGE_TAG
 
