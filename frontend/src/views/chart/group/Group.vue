@@ -188,20 +188,6 @@
               <el-input v-model="chartName" style="height: 34px" size="mini" />
             </el-form-item>
           </el-col>
-          <el-col v-if="optFrom==='panel'" :span="12">
-            <el-form-item :label="$t('chart.belong_group')">
-              <treeselect
-                v-model="currGroup.id"
-                :clearable="false"
-                :options="chartGroupTreeAvailable"
-                :normalizer="normalizer"
-                :placeholder="$t('chart.select_group')"
-                :no-children-text="$t('commons.treeselect.no_children_text')"
-                :no-options-text="$t('commons.treeselect.no_options_text')"
-                :no-results-text="$t('commons.treeselect.no_results_text')"
-              />
-            </el-form-item>
-          </el-col>
         </el-form>
       </el-row>
 

@@ -244,7 +244,7 @@ public class PanelGroupService {
             if(CollectionUtils.isNotEmpty(viewResult)){
                 result.addAll(viewResult);
             }
-            result = TreeUtils.mergeTree(panelResult,"panel_list");
+            result = TreeUtils.mergeTree(result,"panel_list");
             // 原有视图的目录结构
             List<VAuthModelDTO> viewOriginal = extVAuthModelMapper.queryAuthViewsOriginal(viewRequest);
             if(CollectionUtils.isNotEmpty(viewOriginal) && viewOriginal.size()>1){

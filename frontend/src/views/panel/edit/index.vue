@@ -801,12 +801,9 @@ export default {
       }
     },
     newChart() {
-      this.adviceGroupId = null
+      this.adviceGroupId = this.panelInfo.id
       this.show = false
-      searchAdviceSceneId(this.panelInfo.id).then(res => {
-        this.adviceGroupId = res.data
-        this.$refs['chartGroup'].selectTable()
-      })
+      this.$refs['chartGroup'].selectTable()
     },
     newViewInfo(newViewInfo) {
       let component

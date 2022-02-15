@@ -23,7 +23,7 @@ public class VAuthModelDTO extends VAuthModelWithBLOBs  implements ITreeBase<VAu
     private String innerId;
 
     public String toString(){
-        return this.getId();
+        return this.getName();
     }
 
 }
