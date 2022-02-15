@@ -135,7 +135,7 @@ export default {
   methods: {
     initData() {
       let datas = []
-      if (this.chart.data) {
+      if (this.chart.data && this.chart.data.fields) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
         this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)

@@ -63,6 +63,9 @@
           <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_item_font_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
+          <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_border_color')" class="form-item">
+            <el-color-picker v-model="colorForm.tableBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
           <!--              暂时不支持该功能-->
           <!--              <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.stripe')" class="form-item">-->
           <!--                <el-checkbox v-model="colorForm.tableStripe" @change="changeColorCase">{{ $t('chart.stripe') }}</el-checkbox>-->
@@ -240,6 +243,8 @@ export default {
             this.customColor = this.colorForm.colors[0]
             this.colorIndex = 0
           }
+
+          this.colorForm.tableBorderColor = this.colorForm.tableBorderColor ? this.colorForm.tableBorderColor : DEFAULT_COLOR_CASE.tableBorderColor
         }
       }
     },
