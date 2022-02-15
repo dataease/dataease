@@ -8,7 +8,9 @@ import io.dataease.base.mapper.PanelGroupMapper;
 import io.dataease.base.mapper.PanelLinkMapper;
 import io.dataease.base.mapper.PanelLinkMappingMapper;
 import io.dataease.base.mapper.ext.ExtPanelLinkMapper;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
+import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
 import io.dataease.controller.request.panel.link.LinkRequest;
@@ -114,7 +116,13 @@ public class PanelLinkService {
             PanelLinkMapping mapping = new PanelLinkMapping();
             mapping.setResourceId(resourceId);
             mapping.setUserId(AuthUtils.getUser().getUserId());
+            mapping.setUuid(CodingUtil.shortUuid());
             panelLinkMappingMapper.insert(mapping);
+        }else {
+            mappings.stream().filter(mapping -> StringUtils.isBlank(mapping.getUuid())).forEach(item -> {
+                item.setUuid(CodingUtil.shortUuid());
+                panelLinkMappingMapper.updateByPrimaryKey(item);
+            });
         }
         return convertDto(one);
     }
@@ -206,11 +214,25 @@ public class PanelLinkService {
         example.createCriteria().andResourceIdEqualTo(resourceId).andUserIdEqualTo(AuthUtils.getUser().getUserId());
         List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
         PanelLinkMapping mapping = mappings.get(0);
-        return SHORT_URL_PREFIX + mapping.getId();
+        return SHORT_URL_PREFIX + mapping.getUuid();
     }
 
     public String getUrlByIndex(Long index) {
         PanelLinkMapping mapping = panelLinkMappingMapper.selectByPrimaryKey(index);
+        String resourceId = mapping.getResourceId();
+        Long userId = mapping.getUserId();
+        PanelLink one = findOne(resourceId, userId);
+        return convertDto(one).getUri();
+    }
+
+    public String getUrlByUuid(String uuid) {
+        PanelLinkMappingExample example = new PanelLinkMappingExample();
+        example.createCriteria().andUuidEqualTo(uuid);
+        List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(mappings)) {
+            DEException.throwException("link is not exist");
+        }
+        PanelLinkMapping mapping = mappings.get(0);
         String resourceId = mapping.getResourceId();
         Long userId = mapping.getUserId();
         PanelLink one = findOne(resourceId, userId);
