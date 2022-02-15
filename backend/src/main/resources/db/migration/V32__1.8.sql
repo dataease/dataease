@@ -197,3 +197,6 @@ SELECT
 						`plugin_sys_menu`.`i_frame` <> 1
 					)
 	OR isnull( `plugin_sys_menu`.`i_frame` ));
+
+ALTER TABLE `panel_link_mapping`
+ADD COLUMN `uuid` varchar(8) NULL COMMENT 'uuid' AFTER `user_id`;
