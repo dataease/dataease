@@ -308,7 +308,7 @@ delete from chart_group where id in (
 '5a8e8b0a-2f64-4d1b-aac1-d284b2b8436f',
 'bc7542d8-2b7e-4909-81ff-3627b0227501',
 'bfa7d87f-c76f-4406-9f19-0adccb7c568d'
-)
+);
 
 ALTER TABLE `panel_link_mapping`
 ADD COLUMN `uuid` varchar(8) NULL COMMENT 'uuid' AFTER `user_id`;
