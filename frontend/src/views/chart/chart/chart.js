@@ -2,12 +2,13 @@ export const DEFAULT_COLOR_CASE = {
   value: 'default',
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
   alpha: 100,
-  tableHeaderBgColor: '#c1d1f6',
-  tableItemBgColor: '#e2eafe',
+  tableHeaderBgColor: '#e1eaff',
+  tableItemBgColor: '#ffffff',
   tableFontColor: '#000000',
   tableStripe: true,
   dimensionColor: '#000000',
-  quotaColor: '#000000'
+  quotaColor: '#000000',
+  tableBorderColor: '#cfdaf4'
 }
 export const DEFAULT_SIZE = {
   barDefault: true,

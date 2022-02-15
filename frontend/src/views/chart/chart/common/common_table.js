@@ -2,13 +2,22 @@ import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '@/views/chart/chart/chart'
 
 export function getCustomTheme(chart) {
+  const headerColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableHeaderBgColor, DEFAULT_COLOR_CASE.alpha)
+  const itemColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableItemBgColor, DEFAULT_COLOR_CASE.alpha)
+  const borderColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableBorderColor, DEFAULT_COLOR_CASE.alpha)
   const theme = {
     background: {
       color: '#00000000'
     },
+    splitLine: {
+      horizontalBorderColor: borderColor,
+      verticalBorderColor: borderColor
+    },
     cornerCell: {
       cell: {
-        backgroundColor: hexColorToRGBA(DEFAULT_COLOR_CASE.tableHeaderBgColor, DEFAULT_COLOR_CASE.alpha)
+        backgroundColor: headerColor,
+        horizontalBorderColor: borderColor,
+        verticalBorderColor: borderColor
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
@@ -21,7 +30,9 @@ export function getCustomTheme(chart) {
     },
     rowCell: {
       cell: {
-        backgroundColor: hexColorToRGBA(DEFAULT_COLOR_CASE.tableHeaderBgColor, DEFAULT_COLOR_CASE.alpha)
+        backgroundColor: headerColor,
+        horizontalBorderColor: borderColor,
+        verticalBorderColor: borderColor
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
@@ -34,7 +45,9 @@ export function getCustomTheme(chart) {
     },
     colCell: {
       cell: {
-        backgroundColor: hexColorToRGBA(DEFAULT_COLOR_CASE.tableHeaderBgColor, DEFAULT_COLOR_CASE.alpha)
+        backgroundColor: headerColor,
+        horizontalBorderColor: borderColor,
+        verticalBorderColor: borderColor
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
@@ -47,7 +60,9 @@ export function getCustomTheme(chart) {
     },
     dataCell: {
       cell: {
-        backgroundColor: hexColorToRGBA(DEFAULT_COLOR_CASE.tableItemBgColor, DEFAULT_COLOR_CASE.alpha)
+        backgroundColor: itemColor,
+        horizontalBorderColor: borderColor,
+        verticalBorderColor: borderColor
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
@@ -62,17 +77,33 @@ export function getCustomTheme(chart) {
     // color
     if (customAttr.color) {
       const c = JSON.parse(JSON.stringify(customAttr.color))
-      theme.cornerCell.cell.backgroundColor = hexColorToRGBA(c.tableHeaderBgColor, c.alpha)
+      const h_c = hexColorToRGBA(c.tableHeaderBgColor, c.alpha)
+      const i_c = hexColorToRGBA(c.tableItemBgColor, c.alpha)
+      const b_c = c.tableBorderColor ? hexColorToRGBA(c.tableBorderColor, c.alpha) : hexColorToRGBA(DEFAULT_COLOR_CASE.tableBorderColor, c.alpha)
+      theme.splitLine.horizontalBorderColor = b_c
+      theme.splitLine.verticalBorderColor = b_c
+
+      theme.cornerCell.cell.backgroundColor = h_c
+      theme.cornerCell.cell.horizontalBorderColor = b_c
+      theme.cornerCell.cell.verticalBorderColor = b_c
       theme.cornerCell.bolderText.fill = c.tableFontColor
       theme.cornerCell.text.fill = c.tableFontColor
-      theme.rowCell.cell.backgroundColor = hexColorToRGBA(c.tableHeaderBgColor, c.alpha)
+
+      theme.rowCell.cell.backgroundColor = h_c
+      theme.rowCell.cell.horizontalBorderColor = b_c
+      theme.rowCell.cell.verticalBorderColor = b_c
       theme.rowCell.bolderText.fill = c.tableFontColor
       theme.rowCell.text.fill = c.tableFontColor
-      theme.colCell.cell.backgroundColor = hexColorToRGBA(c.tableHeaderBgColor, c.alpha)
+
+      theme.colCell.cell.backgroundColor = h_c
+      theme.colCell.cell.horizontalBorderColor = b_c
+      theme.colCell.cell.verticalBorderColor = b_c
       theme.colCell.bolderText.fill = c.tableFontColor
       theme.colCell.text.fill = c.tableFontColor
 
-      theme.dataCell.cell.backgroundColor = hexColorToRGBA(c.tableItemBgColor, c.alpha)
+      theme.dataCell.cell.backgroundColor = i_c
+      theme.dataCell.cell.horizontalBorderColor = b_c
+      theme.dataCell.cell.verticalBorderColor = b_c
       theme.dataCell.text.fill = c.tableFontColor
     }
     // size
