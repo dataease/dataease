@@ -8,7 +8,6 @@ import io.dataease.base.mapper.PanelGroupMapper;
 import io.dataease.base.mapper.PanelLinkMapper;
 import io.dataease.base.mapper.PanelLinkMappingMapper;
 import io.dataease.base.mapper.ext.ExtPanelLinkMapper;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.ServletUtils;
@@ -20,6 +19,7 @@ import io.dataease.dto.panel.link.GenerateDto;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +27,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PanelLinkService {
@@ -35,6 +34,9 @@ public class PanelLinkService {
     private static final String BASEURL = "/link.html?link=";
     private static final String USERPARAM = "&user=";
     private static final String SHORT_URL_PREFIX = "/link/";
+
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
 
     @Resource
     private PanelLinkMapper mapper;
@@ -60,7 +62,7 @@ public class PanelLinkService {
         panelLinkMappingMapper.updateByExampleSelective(mapping, example);
     }
 
-    private PanelLinkExample example(String panelLinkId, Long userId){
+    private PanelLinkExample example(String panelLinkId, Long userId) {
         PanelLinkExample example = new PanelLinkExample();
         example.createCriteria().andResourceIdEqualTo(panelLinkId).andUserIdEqualTo(userId);
         return example;
@@ -88,18 +90,18 @@ public class PanelLinkService {
     private PanelLink findOne(String resourceId) {
         PanelLinkExample example = new PanelLinkExample();
         example.createCriteria().andResourceIdEqualTo(resourceId).andUserIdIsNull();
-        List<PanelLink> list =  mapper.selectByExample(example);
+        List<PanelLink> list = mapper.selectByExample(example);
         return CollectionUtils.isNotEmpty(list) ? list.get(0) : null;
     }
 
     public PanelLink findOne(String resourceId, Long userId) {
-        if(userId == null){
+        if (userId == null) {
             return findOne(resourceId);
         }
         List<PanelLink> panelLinks = mapper.selectByExample(example(resourceId, userId));
-        if(CollectionUtils.isNotEmpty(panelLinks)){
+        if (CollectionUtils.isNotEmpty(panelLinks)) {
             return panelLinks.get(0);
-        }else {
+        } else {
             return null;
         }
     }
@@ -152,8 +154,8 @@ public class PanelLinkService {
 
     private String buildLinkParam(PanelLink link) {
         String linkParam = encrypt(link.getResourceId());
-        if(link.getUserId() != null){
-            linkParam = linkParam+ USERPARAM + link.getUserId().toString();
+        if (link.getUserId() != null) {
+            linkParam = linkParam + USERPARAM + link.getUserId().toString();
         }
         return linkParam;
     }
@@ -172,7 +174,8 @@ public class PanelLinkService {
     public Boolean validateHeads(PanelLink panelLink) throws Exception {
         HttpServletRequest request = ServletUtils.request();
         String token = request.getHeader("LINK-PWD-TOKEN");
-        if (!panelLink.getEnablePwd() || StringUtils.isEmpty(token) || StringUtils.equals("undefined", token) || StringUtils.equals("null", token)) {
+        if (!panelLink.getEnablePwd() || StringUtils.isEmpty(token) || StringUtils.equals("undefined", token)
+                || StringUtils.equals("null", token)) {
             String resourceId = panelLink.getResourceId();
             String pwd = "dataease";
             String tk = JWTUtils.signLink(resourceId, panelLink.getUserId(), pwd);
@@ -181,7 +184,8 @@ public class PanelLinkService {
             httpServletResponse.setHeader("LINK-PWD-TOKEN", tk);
             return false;
         }
-        if (StringUtils.isEmpty(panelLink.getPwd())) return false;
+        if (StringUtils.isEmpty(panelLink.getPwd()))
+            return false;
         return JWTUtils.verifyLink(token, panelLink.getResourceId(), panelLink.getUserId(), panelLink.getPwd());
     }
 
@@ -218,7 +222,7 @@ public class PanelLinkService {
         List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
         PanelLinkMapping mapping = mappings.get(0);
         String uuid = mapping.getUuid();
-        return SHORT_URL_PREFIX + (StringUtils.isBlank(uuid) ? mapping.getId() : uuid);
+        return contextPath + SHORT_URL_PREFIX + (StringUtils.isBlank(uuid) ? mapping.getId() : uuid);
     }
 
     public String getUrlByIndex(Long index) {
