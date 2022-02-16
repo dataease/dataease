@@ -5,6 +5,9 @@ export function getCustomTheme(chart) {
   const headerColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableHeaderBgColor, DEFAULT_COLOR_CASE.alpha)
   const itemColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableItemBgColor, DEFAULT_COLOR_CASE.alpha)
   const borderColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableBorderColor, DEFAULT_COLOR_CASE.alpha)
+  const headerAlign = DEFAULT_SIZE.tableHeaderAlign
+  const itemAlign = DEFAULT_SIZE.tableItemAlign
+
   const theme = {
     background: {
       color: '#00000000'
@@ -21,11 +24,13 @@ export function getCustomTheme(chart) {
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize
+        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        textAlign: headerAlign
       },
       bolderText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize
+        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        textAlign: headerAlign
       }
     },
     rowCell: {
@@ -36,11 +41,13 @@ export function getCustomTheme(chart) {
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize
+        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        textAlign: headerAlign
       },
       bolderText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize
+        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        textAlign: headerAlign
       }
     },
     colCell: {
@@ -51,11 +58,13 @@ export function getCustomTheme(chart) {
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize
+        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        textAlign: headerAlign
       },
       bolderText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize
+        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        textAlign: headerAlign
       }
     },
     dataCell: {
@@ -66,7 +75,8 @@ export function getCustomTheme(chart) {
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
-        fontSize: DEFAULT_SIZE.tableItemFontSize
+        fontSize: DEFAULT_SIZE.tableItemFontSize,
+        textAlign: itemAlign
       }
     }
   }
@@ -109,14 +119,26 @@ export function getCustomTheme(chart) {
     // size
     if (customAttr.size) {
       const s = JSON.parse(JSON.stringify(customAttr.size))
+      const h_a = s.tableHeaderAlign ? s.tableHeaderAlign : DEFAULT_SIZE.tableHeaderAlign
+      const i_a = s.tableItemAlign ? s.tableItemAlign : DEFAULT_SIZE.tableItemAlign
+
       theme.cornerCell.bolderText.fontSize = parseInt(s.tableTitleFontSize)
+      theme.cornerCell.bolderText.textAlign = h_a
       theme.cornerCell.text.fontSize = parseInt(s.tableTitleFontSize)
+      theme.cornerCell.text.textAlign = h_a
+
       theme.rowCell.bolderText.fontSize = parseInt(s.tableTitleFontSize)
+      theme.rowCell.bolderText.textAlign = h_a
       theme.rowCell.text.fontSize = parseInt(s.tableTitleFontSize)
+      theme.rowCell.text.textAlign = h_a
+
       theme.colCell.bolderText.fontSize = parseInt(s.tableTitleFontSize)
+      theme.colCell.bolderText.textAlign = h_a
       theme.colCell.text.fontSize = parseInt(s.tableTitleFontSize)
+      theme.colCell.text.textAlign = h_a
 
       theme.dataCell.text.fontSize = parseInt(s.tableItemFontSize)
+      theme.dataCell.text.textAlign = i_a
     }
   }
 

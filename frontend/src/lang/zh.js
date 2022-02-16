@@ -1026,7 +1026,12 @@ export default {
     chart_table_pivot: '透视表',
     table_pivot_row: '数据行',
     field_error_tips: '该字段所对应的数据集原始字段发生变更（包括维度、指标，字段类型，字段被删除等），建议重新编辑',
-    table_border_color: '边框颜色'
+    table_border_color: '边框颜色',
+    table_header_align: '表头对齐方式',
+    table_item_align: '表格对齐方式',
+    table_align_left: '左对齐',
+    table_align_center: '居中',
+    table_align_right: '右对齐'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
