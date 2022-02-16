@@ -34,6 +34,8 @@ export const DEFAULT_SIZE = {
   tablePageSize: '20',
   tableColumnMode: 'custom',
   tableColumnWidth: 100,
+  tableHeaderAlign: 'left',
+  tableItemAlign: 'right',
   gaugeMin: 0,
   gaugeMax: 100,
   gaugeStartAngle: 225,

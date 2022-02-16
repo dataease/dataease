@@ -1024,7 +1024,12 @@ export default {
     chart_table_pivot: 'Pivot Table',
     table_pivot_row: 'Data Row',
     field_error_tips: 'This field is changed(Include dimension、quota，field type，deleted),please edit again.',
-    table_border_color: 'Border Color'
+    table_border_color: 'Border Color',
+    table_header_align: 'Header Align',
+    table_item_align: 'Body Align',
+    table_align_left: 'Left',
+    table_align_center: 'Center',
+    table_align_right: 'Right'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

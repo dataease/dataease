@@ -101,6 +101,16 @@
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
+        <el-form-item :label="$t('chart.table_header_align')" class="form-item">
+          <el-select v-model="sizeForm.tableHeaderAlign" :placeholder="$t('chart.table_header_align')" @change="changeBarSizeCase">
+            <el-option v-for="option in alignOptions" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('chart.table_item_align')" class="form-item">
+          <el-select v-model="sizeForm.tableItemAlign" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase">
+            <el-option v-for="option in alignOptions" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
         <el-form-item :label="$t('chart.table_title_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableTitleHeight" :min="20" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
@@ -302,7 +312,12 @@ export default {
         { name: '50' + this.$t('chart.table_page_size_unit'), value: '50' },
         { name: '100' + this.$t('chart.table_page_size_unit'), value: '100' }
       ],
-      fontSize: []
+      fontSize: [],
+      alignOptions: [
+        { name: this.$t('chart.table_align_left'), value: 'left' },
+        { name: this.$t('chart.table_align_center'), value: 'center' },
+        { name: this.$t('chart.table_align_right'), value: 'right' }
+      ]
     }
   },
   watch: {
@@ -344,6 +359,9 @@ export default {
 
           this.sizeForm.tableColumnMode = this.sizeForm.tableColumnMode ? this.sizeForm.tableColumnMode : DEFAULT_SIZE.tableColumnMode
           this.sizeForm.tableColumnWidth = this.sizeForm.tableColumnWidth ? this.sizeForm.tableColumnWidth : DEFAULT_SIZE.tableColumnWidth
+
+          this.sizeForm.tableHeaderAlign = this.sizeForm.tableHeaderAlign ? this.sizeForm.tableHeaderAlign : DEFAULT_SIZE.tableHeaderAlign
+          this.sizeForm.tableItemAlign = this.sizeForm.tableItemAlign ? this.sizeForm.tableItemAlign : DEFAULT_SIZE.tableItemAlign
         }
       }
     },

@@ -1024,7 +1024,12 @@ export default {
     chart_table_pivot: '透視表',
     table_pivot_row: '數據行',
     field_error_tips: '該字段所對應的數據集原始字段發生變更（包括維度、指標，字段類型，字段被刪除等），建議重新編輯',
-    table_border_color: '邊框顏色'
+    table_border_color: '邊框顏色',
+    table_header_align: '表頭對齊方式',
+    table_item_align: '表格對齊方式',
+    table_align_left: '左對齊',
+    table_align_center: '居中',
+    table_align_right: '右對齊'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
