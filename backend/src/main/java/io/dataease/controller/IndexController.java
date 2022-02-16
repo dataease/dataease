@@ -53,7 +53,7 @@ public class IndexController {
         String url;
         if (CodingUtil.isNumeric(index)) {
             url = panelLinkService.getUrlByIndex(Long.parseLong(index));
-        }else {
+        } else {
             url = panelLinkService.getUrlByUuid(index);
         }
         HttpServletResponse response = ServletUtils.response();
@@ -64,8 +64,6 @@ public class IndexController {
             DEException.throwException(e);
         }
     }
-
-
 
     @GetMapping("/tempMobileLink/{id}/{token}")
     public void tempMobileLink(@PathVariable("id") String id, @PathVariable("token") String token) {

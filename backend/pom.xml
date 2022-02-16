@@ -407,47 +407,73 @@
                 </dependencies>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <?m2e execute onConfiguration?>
-                        <id>main-class-placement</id>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <target>
-                                <move todir="src/main/resources/static">
-                                    <fileset dir="../frontend/dist">
-                                        <exclude name="*.html"/>
-                                    </fileset>
-                                </move>
-                                <move todir="src/main/resources/templates">
-                                    <fileset dir="../frontend/dist">
-                                        <include name="*.html"/>
-                                    </fileset>
-                                </move>
-
-                                <copy todir="src/main/resources/static/de-app">
-                                    <fileset dir="../mobile/dist">
-                                        <exclude name="*.html"/>
-                                    </fileset>
-                                </copy>
-
-
-                                <copy file="../mobile/dist/index.html" tofile="src/main/resources/templates/app.html" />
-
-
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+            
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>whole</id>
+            <properties>
+                <profiles.active>whole</profiles.active>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <?m2e execute onConfiguration?>
+                                <id>main-class-placement</id>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <target>
+                                        <move todir="src/main/resources/static">
+                                            <fileset dir="../frontend/dist">
+                                                <exclude name="*.html"/>
+                                            </fileset>
+                                        </move>
+                                        <move todir="src/main/resources/templates">
+                                            <fileset dir="../frontend/dist">
+                                                <include name="*.html"/>
+                                            </fileset>
+                                        </move>
+
+                                        <copy todir="src/main/resources/static/de-app">
+                                            <fileset dir="../mobile/dist">
+                                                <exclude name="*.html"/>
+                                            </fileset>
+                                        </copy>
+
+
+                                        <copy file="../mobile/dist/index.html" tofile="src/main/resources/templates/app.html" />
+
+
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>stage</id>
+            <properties>
+                <profiles.active>stage</profiles.active>
+            </properties>
+        </profile>
+    </profiles>
+    
 
     <repositories>
         <repository>
