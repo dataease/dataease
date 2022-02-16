@@ -5,10 +5,10 @@ UPDATE `chart_view` SET `x_axis_ext` = '[]';
 INSERT INTO `chart_group` (`id`, `name`, `pid`, `level`, `type`, `create_by`, `create_time`) VALUES ('0', 'i18n_public_chart', 'public_chart', -1, 'history', 'admin', NULL);
 
 ALTER TABLE `chart_view`
-MODIFY COLUMN `scene_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '场景ID chart_type为privat的时候 是仪表板id' AFTER `title`,
+MODIFY COLUMN `scene_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '场景ID chart_type为private的时候 是仪表板id' AFTER `title`,
 ADD COLUMN `chart_type` varchar(255) NULL DEFAULT 'public' COMMENT '视图类型 public 公共 历史可复用的视图，private 私有 专属某个仪表板' AFTER `style_priority`;
 
-delete  from sys_auth_detail where auth_id in(select id  from sys_auth where auth_source_type = 'chart');
+delete from sys_auth_detail where auth_id in(select id from sys_auth where auth_source_type = 'chart');
 delete from sys_auth where auth_source_type = 'chart';
 
 DROP TRIGGER `new_auth_chart_view`;
@@ -16,9 +16,7 @@ DROP TRIGGER `delete_auth_chart_view`;
 
 delete from sys_menu where menu_id ='10';
 
-DROP VIEW
-IF
-	EXISTS `v_auth_model`;
+DROP VIEW IF EXISTS `v_auth_model`;
 CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `v_auth_model` AS SELECT
 `sys_user`.`user_id` AS `id`,
 `sys_user`.`username` AS `name`,
