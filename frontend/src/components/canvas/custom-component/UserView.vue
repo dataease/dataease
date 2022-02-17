@@ -17,7 +17,7 @@
       </div>
     </div>
     <plugin-com
-      v-if="isPlugin"
+      v-if="chart.isPlugin"
       :ref="element.propValue.id"
       :component-name="chart.type + '-view'"
       :obj="{chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
@@ -89,7 +89,6 @@ import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import EditBarView from '@/components/canvas/components/Editor/EditBarView'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/components/canvas/utils/style'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
-import { pluginTypes } from '@/api/chart/chart'
 import PluginCom from '@/views/system/plugin/PluginCom'
 export default {
   name: 'UserView',
@@ -162,9 +161,7 @@ export default {
       pre: null,
       preCanvasPanel: null,
       sourceCustomAttrStr: null,
-      sourceCustomStyleStr: null,
-      isPlugin: false,
-      plugins: []
+      sourceCustomStyleStr: null
     }
   },
   computed: {
@@ -332,7 +329,7 @@ export default {
       }
     },
     'chartType': function(newVal, oldVal) {
-      this.isPlugin = this.plugins.some(plugin => plugin.value === this.chart.type)
+      // this.isPlugin = this.plugins.some(plugin => plugin.value === this.chart.type)
       if (newVal === 'map' && newVal !== oldVal) {
         this.initAreas()
       }
@@ -347,12 +344,7 @@ export default {
       deep: true
     }
   },
-  beforeCreate() {
-    pluginTypes().then(res => {
-      this.plugins = res.data
-      this.isPlugin = this.plugins.some(plugin => plugin.value === this.chart.type)
-    })
-  },
+
   created() {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {

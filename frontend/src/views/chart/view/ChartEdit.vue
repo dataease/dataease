@@ -160,7 +160,7 @@
                                 :disabled="!hasDataPermission('manage',param.privileges)"
                                 @change="changeChartType()"
                               >
-                                <chart-type :chart="view" style="height: 480px" />
+                                <chart-type ref="cu-chart-type" :chart="view" style="height: 480px" />
                               </el-radio-group>
                             </div>
                           </el-row>
@@ -220,7 +220,7 @@
                     </el-row>
                   </el-row>
 
-                  <plugin-com v-if="isPlugin" :component-name="view.type + '-data'" :obj="{view, param, chart}" />
+                  <plugin-com v-if="view.isPlugin" :component-name="view.type + '-data'" :obj="{view, param, chart}" />
                   <div v-else>
 
                     <el-row v-if="view.type ==='map'" class="padding-lr">
@@ -820,7 +820,7 @@
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <div ref="imageWrapper" style="height: 100%">
             <plugin-com
-              v-if="httpRequest.status && chart.type && isPlugin"
+              v-if="httpRequest.status && chart.type && view.isPlugin"
               :component-name="chart.type + '-view'"
               :obj="{chart}"
               class="chart-class"
@@ -1055,7 +1055,6 @@ import { compareItem } from '@/views/chart/chart/compare'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import DimensionExtItem from '@/views/chart/components/drag-item/DimensionExtItem'
 import PluginCom from '@/views/system/plugin/PluginCom'
-import { pluginTypes } from '@/api/chart/chart'
 export default {
   name: 'ChartEdit',
   components: {
@@ -1143,7 +1142,8 @@ export default {
           split: DEFAULT_SPLIT
         },
         customFilter: [],
-        render: 'antv'
+        render: 'antv',
+        isPlugin: false
       },
       moveId: -1,
       chart: {
@@ -1190,9 +1190,8 @@ export default {
       drill: false,
       hasEdit: false,
       quotaItemCompare: {},
-      showEditQuotaCompare: false,
-      plugins: [],
-      isPlugin: false
+      showEditQuotaCompare: false
+
     }
   },
   computed: {
@@ -1213,7 +1212,7 @@ export default {
       this.fieldFilter(val)
     },
     'chartType': function(newVal, oldVal) {
-      this.isPlugin = this.plugins.some(plugin => plugin.value === this.chart.type)
+      this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal)
       if (newVal === 'map' && newVal !== oldVal) {
         this.initAreas()
       }
@@ -1232,12 +1231,7 @@ export default {
   },
   activated() {
   },
-  beforeCreate() {
-    pluginTypes().then(res => {
-      this.plugins = res.data
-      this.isPlugin = this.plugins.some(plugin => plugin.value === this.chart.type)
-    })
-  },
+
   methods: {
     bindPluginEvent() {
       bus.$on('show-dimension-edit-filter', this.showDimensionEditFilter)

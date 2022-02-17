@@ -1,5 +1,5 @@
 <template>
-  <div class="chart-type">
+  <div v-if="loadFinish" class="chart-type">
     <div v-for="(renderItem, category) in renderMap[chart.render]" :key="category">
       <el-divider class="chart-type-divider">{{ $t(category) }}</el-divider>
 
@@ -38,21 +38,38 @@ export default {
   data() {
     return {
       defaultTypes: TYPE_CONFIGS,
-      allTypes: [],
-      renderMap: {}
+      renderMap: {},
+      loadFinish: false
     }
   },
-  beforeCreate() {
-    pluginTypes().then(res => {
-      const plugins = res.data
+  created() {
+    const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views'))
+    if (plugins) {
+      this.initTypes(plugins)
+    } else {
+      pluginTypes().then(res => {
+        const plugins = res.data
+        localStorage.setItem('plugin-views', JSON.stringify(plugins))
+        this.initTypes(plugins)
+      }).catch(e => {
+        localStorage.setItem('plugin-views', null)
+        this.initTypes([])
+      })
+    }
+  },
+  methods: {
+    currentIsPlugin(type) {
+      const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
+      return plugins.some(plugin => plugin.value === type)
+    },
+    initTypes(plugins) {
       plugins.forEach(plugin => {
         plugin.isPlugin = true
       })
       this.pluginTypes = [...this.defaultTypes, ...plugins]
       this.formatTypes()
-    })
-  },
-  methods: {
+      this.loadFinish = true
+    },
     formatTypes() {
       this.pluginTypes.forEach(item => {
         const { render, category } = item
