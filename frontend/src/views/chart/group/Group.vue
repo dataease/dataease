@@ -218,7 +218,7 @@
                 v-model="view.type"
                 style="width: 100%"
               >
-                <chart-type :chart="view" style="height: 350px;" />
+                <chart-type ref="cu-chart-type" :chart="view" style="height: 350px;" />
               </el-radio-group>
             </div>
           </el-row>
@@ -420,6 +420,11 @@ export default {
       currentKey: null
     }
   },
+  computed: {
+    chartType() {
+      return this.view.type
+    }
+  },
   watch: {
     saveStatus() {
     },
@@ -436,6 +441,9 @@ export default {
     searchType(val) {
       this.searchPids = []
       this.$refs.chartTreeRef.filter(this.filterText)
+    },
+    chartType(val) {
+      this.view.isPlugin = val && this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(val)
     }
 
   },
@@ -733,6 +741,7 @@ export default {
       view.sceneId = this.currGroup.id
       view.tableId = this.table.id
       view.type = this.view.type
+      view.isPlugin = this.view.isPlugin
       view.render = this.view.render
       view.resultMode = 'custom'
       view.resultCount = 1000

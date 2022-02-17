@@ -310,3 +310,6 @@ delete from chart_group where id in (
 
 ALTER TABLE `panel_link_mapping`
 ADD COLUMN `uuid` varchar(8) NULL COMMENT 'uuid' AFTER `user_id`;
+
+ALTER TABLE `chart_view`
+ADD COLUMN `is_plugin` bit(1) NULL COMMENT '是否插件' AFTER `chart_type`;
