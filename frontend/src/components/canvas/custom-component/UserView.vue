@@ -76,7 +76,7 @@ import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 import { uuid } from 'vue-uuid'
-
+import bus from '@/utils/bus'
 import { mapState } from 'vuex'
 import { isChange } from '@/utils/conditionUtil'
 import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
@@ -163,6 +163,9 @@ export default {
       sourceCustomAttrStr: null,
       sourceCustomStyleStr: null
     }
+  },
+  mounted() {
+    this.bindPluginEvent()
   },
   computed: {
     scaleCoefficient() {
@@ -354,6 +357,10 @@ export default {
     }
   },
   methods: {
+    bindPluginEvent() {
+      bus.$on('plugin-chart-click', this.chartClick)
+      bus.$on('plugin-jump-click', this.jumpClick)
+    },
     // 根据仪表板的缩放比例，修改视图内部参数
     mergeScale() {
       const scale = Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient

@@ -220,7 +220,7 @@
                     </el-row>
                   </el-row>
 
-                  <plugin-com v-if="view.isPlugin" :component-name="view.type + '-data'" :obj="{view, param, chart}" />
+                  <plugin-com v-if="view.isPlugin" :component-name="view.type + '-data'" :obj="{view, param, chart, dimensionData, quotaData}" />
                   <div v-else>
 
                     <el-row v-if="view.type ==='map'" class="padding-lr">
@@ -591,7 +591,15 @@
         </el-tab-pane>
         <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 360px;">
           <el-row class="view-panel">
+            <plugin-com
+              v-if="view.isPlugin"
+              style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
+              class="attr-style theme-border-class"
+              :component-name="view.type + '-style'"
+              :obj="{view, param, chart}"
+            />
             <div
+              v-else
               style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
               class="attr-style theme-border-class"
             >
@@ -1238,7 +1246,9 @@ export default {
       bus.$on('show-rename', this.showRename)
       bus.$on('show-quota-edit-filter', this.showQuotaEditFilter)
       bus.$on('show-quota-edit-compare', this.showQuotaEditCompare)
+      bus.$on('show-edit-filter', this.showEditFilter)
       bus.$on('calc-data', this.calcData)
+      bus.$on('plugins-calc-style', this.calcStyle)
     },
     initTableData(id) {
       if (id != null) {
