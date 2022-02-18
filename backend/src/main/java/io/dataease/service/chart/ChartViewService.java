@@ -242,9 +242,9 @@ public class ChartViewService {
 
         //列权限
         List<String> desensitizationList = new ArrayList<>();
-        fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), requestList.getUser());
+        List<DatasetTableField> columnPermissionFields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), requestList.getUser());
         //将没有权限的列删掉
-        List<String> dataeaseNames = fields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList());
+        List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList());
         dataeaseNames.add("*");
         fieldCustomFilter = fieldCustomFilter.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
         extStack = extStack.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
@@ -253,8 +253,8 @@ public class ChartViewService {
 
 
         //行权限
-        List<ChartFieldCustomFilterDTO> permissionFields = permissionService.getCustomFilters(fields, datasetTable, requestList.getUser());
-        fieldCustomFilter.addAll(permissionFields);
+        List<ChartFieldCustomFilterDTO> rowPermissionFields = permissionService.getCustomFilters(columnPermissionFields, datasetTable, requestList.getUser());
+        fieldCustomFilter.addAll(rowPermissionFields);
 
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
             ele.setField(dataSetTableFieldsService.get(ele.getId()));
@@ -485,7 +485,7 @@ public class ChartViewService {
             // 仪表板有参数不实用缓存
             if (!cache || CollectionUtils.isNotEmpty(requestList.getFilter())
                     || CollectionUtils.isNotEmpty(requestList.getLinkageFilters())
-                    || CollectionUtils.isNotEmpty(requestList.getDrill())) {
+                    || CollectionUtils.isNotEmpty(requestList.getDrill()) || CollectionUtils.isNotEmpty(rowPermissionFields) || fields.size() != columnPermissionFields.size()) {
                 data = datasourceProvider.getData(datasourceRequest);
             } else {
                 try {

@@ -9,6 +9,7 @@ import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.DatasourceUnionRequest;
+import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.datasource.DBTableDTO;
 import io.dataease.service.datasource.DatasourceService;
@@ -93,6 +94,12 @@ public class DatasourceController {
     @PostMapping("/getSchema")
     public List<String> getSchema(@RequestBody Datasource datasource) throws Exception {
        return datasourceService.getSchema(datasource);
+    }
+
+    @ApiOperation("校验API数据源")
+    @PostMapping("/checkApiDatasource")
+    public ApiDefinition checkApiDatasource(@RequestBody ApiDefinition apiDefinition) throws Exception {
+        return datasourceService.checkApiDatasource(apiDefinition);
     }
 
 

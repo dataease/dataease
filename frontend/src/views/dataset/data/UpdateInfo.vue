@@ -263,7 +263,7 @@
 
       <el-divider />
 
-      <el-row style="height: 26px;">
+      <el-row style="height: 26px;" v-if="table.type !== 'api'">
         <el-row>
           <el-col :span="4"><span>{{ $t('dataset.incremental_update_type') }}:</span></el-col>
           <el-col :span="18">
@@ -275,7 +275,7 @@
         </el-row>
       </el-row>
 
-      <el-row style="height: 26px;">
+      <el-row style="height: 26px;" v-if="table.type !== 'api'">
         <el-row>
           <el-col :span="4" style="height: 26px;"><span style="display: inline-block;height: 26px;line-height: 26px;">{{ $t('dataset.param') }}:</span></el-col>
           <el-col :span="18">
@@ -285,7 +285,7 @@
         </el-row>
       </el-row>
 
-      <el-row>
+      <el-row v-if="table.type !== 'api'">
         <el-col style="min-width: 200px;">
           <codemirror
             ref="myCm"

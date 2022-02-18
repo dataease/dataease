@@ -138,12 +138,12 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     @Override
-    public List<TableFiled> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
+    public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
         if(datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")){
             datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
             return fetchResultField(datasourceRequest);
         }
-        List<TableFiled> list = new LinkedList<>();
+        List<TableField> list = new LinkedList<>();
         try (Connection connection = getConnectionFromPool(datasourceRequest)) {
             if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")) {
                 Method setRemarksReporting = extendedJdbcClassLoader.loadClass("oracle.jdbc.driver.OracleConnection").getMethod("setRemarksReporting",boolean.class);
@@ -161,13 +161,13 @@ public class JdbcProvider extends DatasourceProvider {
                 }
                 if (database != null) {
                     if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
-                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
-                        list.add(tableFiled);
+                        TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                        list.add(tableField);
                     }
                 } else {
                     if (tableName.equals(datasourceRequest.getTable())) {
-                        TableFiled tableFiled = getTableFiled(resultSet, datasourceRequest);
-                        list.add(tableFiled);
+                        TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                        list.add(tableField);
                     }
                 }
             }
@@ -186,40 +186,40 @@ public class JdbcProvider extends DatasourceProvider {
         return list;
     }
 
-    private TableFiled getTableFiled(ResultSet resultSet, DatasourceRequest datasourceRequest) throws SQLException {
-        TableFiled tableFiled = new TableFiled();
+    private TableField getTableFiled(ResultSet resultSet, DatasourceRequest datasourceRequest) throws SQLException {
+        TableField tableField = new TableField();
         String colName = resultSet.getString("COLUMN_NAME");
-        tableFiled.setFieldName(colName);
+        tableField.setFieldName(colName);
         String remarks = resultSet.getString("REMARKS");
         if (remarks == null || remarks.equals("")) {
             remarks = colName;
         }
-        tableFiled.setRemarks(remarks);
+        tableField.setRemarks(remarks);
         String dbType = resultSet.getString("TYPE_NAME").toUpperCase();
-        tableFiled.setFieldType(dbType);
+        tableField.setFieldType(dbType);
         if (dbType.equalsIgnoreCase("LONG")) {
-            tableFiled.setFieldSize(65533);
+            tableField.setFieldSize(65533);
         }
-        if (StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableFiled.getFieldSize() < 50) {
-            tableFiled.setFieldSize(50);
+        if (StringUtils.isNotEmpty(dbType) && dbType.toLowerCase().contains("date") && tableField.getFieldSize() < 50) {
+            tableField.setFieldSize(50);
         }
 
         if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())) {
             QueryProvider qp = ProviderFactory.getQueryProvider(datasourceRequest.getDatasource().getType());
-            tableFiled.setFieldSize(qp.transFieldSize(dbType));
+            tableField.setFieldSize(qp.transFieldSize(dbType));
         } else {
-            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name()) && tableFiled.getFieldType().equalsIgnoreCase("BOOLEAN")) {
-                tableFiled.setFieldSize(1);
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name()) && tableField.getFieldType().equalsIgnoreCase("BOOLEAN")) {
+                tableField.setFieldSize(1);
             } else {
                 String size = resultSet.getString("COLUMN_SIZE");
                 if (size == null) {
-                    tableFiled.setFieldSize(1);
+                    tableField.setFieldSize(1);
                 } else {
-                    tableFiled.setFieldSize(Integer.valueOf(size));
+                    tableField.setFieldSize(Integer.valueOf(size));
                 }
             }
         }
-        return tableFiled;
+        return tableField;
     }
 
     private String getDatabase(DatasourceRequest datasourceRequest) {
@@ -244,7 +244,7 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     @Override
-    public List<TableFiled> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
+    public List<TableField> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
         try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
             return fetchResultField(rs, datasourceRequest);
         } catch (SQLException e) {
@@ -259,7 +259,7 @@ public class JdbcProvider extends DatasourceProvider {
     public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
         Map<String, List> result = new HashMap<>();
         List<String[]> dataList;
-        List<TableFiled> fieldList;
+        List<TableField> fieldList;
         try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
             fieldList = fetchResultField(rs, datasourceRequest);
             result.put("fieldList", fieldList);
@@ -274,8 +274,8 @@ public class JdbcProvider extends DatasourceProvider {
         return new HashMap<>();
     }
 
-    private List<TableFiled> fetchResultField(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
-        List<TableFiled> fieldList = new ArrayList<>();
+    private List<TableField> fetchResultField(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
+        List<TableField> fieldList = new ArrayList<>();
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
         for (int j = 0; j < columnCount; j++) {
@@ -285,7 +285,7 @@ public class JdbcProvider extends DatasourceProvider {
             if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name()) && l.contains("\\.")) {
                 l = l.split("\\.")[1];
             }
-            TableFiled field = new TableFiled();
+            TableField field = new TableField();
             field.setFieldName(l);
             field.setRemarks(l);
             field.setFieldType(t);
@@ -362,14 +362,15 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     @Override
-    public void checkStatus(DatasourceRequest datasourceRequest) throws Exception {
+    public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         String queryStr = getTablesSql(datasourceRequest);
         try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)) {
-
+            return "Success";
         } catch (Exception e) {
             e.printStackTrace();
             DataEaseException.throwException(e.getMessage());
         }
+        return "Error";
     }
 
     @Override

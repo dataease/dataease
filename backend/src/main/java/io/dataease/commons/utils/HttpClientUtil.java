@@ -2,6 +2,7 @@ package io.dataease.commons.utils;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -90,10 +91,10 @@ public class HttpClientUtil {
 
             HttpResponse response = httpClient.execute(httpGet);
             HttpEntity entity = response.getEntity();
-            return EntityUtils.toString(entity, config.getCharset());
+            return getResponseStr(response, entity, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
-            throw new RuntimeException("HttpClient查询失败", e);
+            throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
         } finally {
             try {
                 httpClient.close();
@@ -136,10 +137,10 @@ public class HttpClientUtil {
 
             HttpResponse response = httpClient.execute(httpPost);
             HttpEntity entity = response.getEntity();
-            return EntityUtils.toString(entity, config.getCharset());
+            return getResponseStr(response, entity, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
-            throw new RuntimeException("HttpClient查询失败", e);
+            throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
         } finally {
             try {
                 httpClient.close();
@@ -198,10 +199,10 @@ public class HttpClientUtil {
 
             HttpResponse response = httpClient.execute(httpPost);
             HttpEntity entity = response.getEntity();
-            return EntityUtils.toString(entity, config.getCharset());
+            return getResponseStr(response, entity, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
-            throw new RuntimeException("HttpClient查询失败", e);
+            throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
         } finally {
             try {
                 httpClient.close();
@@ -211,5 +212,10 @@ public class HttpClientUtil {
         }
     }
 
-
+    private static String getResponseStr(HttpResponse response, HttpEntity entity, HttpClientConfig config) throws Exception{
+        if(response.getStatusLine().getStatusCode() >= 400){
+            throw new Exception(EntityUtils.toString(entity, config.getCharset()));
+        }
+        return EntityUtils.toString(entity, config.getCharset());
+    }
 }

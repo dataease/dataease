@@ -39,23 +39,35 @@
           >
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
               <span style="display: flex;flex: 1;width: 0;">
-                <span v-if="data.type !== 'folder' && data.status !== 'Error'">
+                <span v-if="data.type !== 'folder' && data.status !== 'Error' && data.status !== 'Warning'">
                   <svg-icon icon-class="datasource" class="ds-icon-scene"/>
                 </span>
                 <span v-if="data.status === 'Error'">
                   <svg-icon icon-class="exclamationmark" class="ds-icon-scene"/>
                 </span>
+                <span v-if="data.status === 'Warning'">
+                  <svg-icon icon-class="exclamationmark2" class="ds-icon-scene"/>
+                </span>
                 <span v-if="data.type === 'folder'">
                   <i class="el-icon-folder"/>
                 </span>
-                <span v-if=" data.status === 'Error'" style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                <span v-if=" data.status === 'Error'"
+                      style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                   <el-tooltip effect="dark" :content="$t('datasource.in_valid')" placement="right">
                     <span>
                       {{ data.name }}
                     </span>
                   </el-tooltip>
                 </span>
-                <span v-if=" data.status !== 'Error'"
+                <span v-if=" data.status === 'Warning'"
+                      style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                  <el-tooltip effect="dark" :content="$t('datasource.warning')" placement="right">
+                    <span>
+                      {{ data.name }}
+                    </span>
+                  </el-tooltip>
+                </span>
+                <span v-if="data.status !== 'Error' && data.status !== 'Warning'"
                       style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                   {{ data.name }}
                 </span>
@@ -140,14 +152,14 @@ export default {
       let typeData = []
       listDatasourceByType(datasource.type).then(res => {
         typeData = this.buildTree(res.data)
-        if(typeData.length === 0){
+        if (typeData.length === 0) {
           let index = this.tData.findIndex(item => {
-            if ( item.id === datasource.type) {
+            if (item.id === datasource.type) {
               return true;
             }
           })
-          this.tData.splice(index,1)
-        }else {
+          this.tData.splice(index, 1)
+        } else {
           let find = false;
           for (let index = 0; index < this.tData.length; index++) {
             if (typeData[0].id === this.tData[index].id) {
@@ -155,7 +167,7 @@ export default {
               find = true
             }
           }
-          if(!find){
+          if (!find) {
             this.tData.push(typeData[0])
           }
         }
@@ -212,6 +224,8 @@ export default {
         return 'Apache Hive'
       } else if (type === 'db2') {
         return 'Db2'
+      } else if (type === 'api') {
+        return 'API'
       }
     },
 
@@ -268,7 +282,6 @@ export default {
       })
     },
     switchMain(component, componentParam, tData) {
-      console.log(tData)
       this.$emit('switch-main', {
         component,
         componentParam,

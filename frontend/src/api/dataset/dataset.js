@@ -77,6 +77,14 @@ export function listDatasource() {
   })
 }
 
+export function listApiDatasource() {
+  return request({
+    url: '/datasource/list/api',
+    loading: true,
+    method: 'get'
+  })
+}
+
 export function getTable(id, hideMsg = false) {
   return request({
     url: '/dataset/table/get/' + id,

@@ -1,5 +1,5 @@
 package io.dataease.commons.utils;
-import io.dataease.dto.datasource.TableFiled;
+import io.dataease.dto.datasource.TableField;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.i18n.Translator;
 import org.apache.commons.collections4.CollectionUtils;
@@ -111,7 +111,7 @@ public class ExcelXlsxReader extends DefaultHandler {
      */
     private StylesTable stylesTable;
 
-    public List<TableFiled> fields = new ArrayList<>();
+    public List<TableField> fields = new ArrayList<>();
     public List<List<String>> data = new ArrayList<>();
     public List<ExcelSheetData> totalSheets = new ArrayList<>();
     /**
@@ -120,11 +120,11 @@ public class ExcelXlsxReader extends DefaultHandler {
     private boolean isDateFormat = false;
 
 
-    public List<TableFiled> getFields() {
+    public List<TableField> getFields() {
         return fields;
     }
 
-    public void setFields(List<TableFiled> fields) {
+    public void setFields(List<TableField> fields) {
         this.fields = fields;
     }
 
@@ -238,12 +238,12 @@ public class ExcelXlsxReader extends DefaultHandler {
             //将单元格内容加入rowlist中，在这之前先去掉字符串前后的空白符
             String value = lastIndex.trim();
             if(curRow==1){
-                TableFiled tableFiled = new TableFiled();
-                tableFiled.setFieldType("TEXT");
-                tableFiled.setFieldSize(65533);
-                tableFiled.setFieldName(value);
-                tableFiled.setRemarks(value);
-                this.fields.add(tableFiled);
+                TableField tableField = new TableField();
+                tableField.setFieldType("TEXT");
+                tableField.setFieldSize(65533);
+                tableField.setFieldName(value);
+                tableField.setRemarks(value);
+                this.fields.add(tableField);
             }
             cellList.add(curCol, value);
             curCol++;
@@ -451,15 +451,15 @@ public class ExcelXlsxReader extends DefaultHandler {
     }
 
     private void addField(String columeName, Integer index){
-        TableFiled tableFiled = new TableFiled();
-        tableFiled.setFieldType("TEXT");
-        tableFiled.setFieldSize(65533);
-        tableFiled.setFieldName(columeName);
-        tableFiled.setRemarks(columeName);
+        TableField tableField = new TableField();
+        tableField.setFieldType("TEXT");
+        tableField.setFieldSize(65533);
+        tableField.setFieldName(columeName);
+        tableField.setRemarks(columeName);
         if(index != null){
-            this.fields.add(index, tableFiled);
+            this.fields.add(index, tableField);
         }else {
-            this.fields.add(tableFiled);
+            this.fields.add(tableField);
         }
     }
     private String getType(String thisStr){

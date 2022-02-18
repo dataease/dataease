@@ -30,6 +30,7 @@
             class="select-width"
             :disabled="formType=='modify' || (formType==='add' && params && !!params.type)"
             @change="changeType()"
+            filterable
           >
             <el-option
               v-for="item in allTypes"
@@ -40,104 +41,210 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          v-if="form.configuration.dataSourceType=='jdbc'"
-          :label="$t('datasource.host')"
-          prop="configuration.host"
-        >
+        <el-form-item v-if="form.type == 'api'" :label="$t('datasource.data_table')">
+          <el-col>
+            <el-button size="mini" icon="el-icon-plus" type="text" @click="addApiItem(undefined)"/>
+            <el-table :data="form.apiConfiguration" class="my_table" max-height="300" height="300">
+              <el-table-column prop="name" :label="$t('datasource.data_table_name')" width="150" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="method" :label="$t('datasource.method')" width="150" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="url" :label="$t('datasource.url')" width="150" show-overflow-tooltip></el-table-column>
+              <el-table-column :label="$t('dataset.operate')">
+                <template slot-scope="scope" style="float: right">
+                  <el-button size="mini" type="primary" icon="el-icon-edit" circle @click="addApiItem(scope.row)"/>
+                  <el-button size="mini" type="danger" icon="el-icon-delete" circle @click="deleteItem(scope.row)"/>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-col>
+        </el-form-item>
+
+        <el-dialog v-dialogDrag :title="api_table_title" :visible="edit_api_item" :before-close="closeEditItem" width="70%" class="dialog-css" append-to-body>
+          <el-steps :active="active" align-center>
+            <el-step title="步骤 1"></el-step>
+            <el-step title="步骤 2"></el-step>
+          </el-steps>
+
+          <el-row  v-show="active === 1">
+            <el-form ref="apiItem" :model="apiItem" label-width="100px" :rules="rule">
+              <p class="tip">{{ $t('datasource.base_info') }} </p>
+
+              <el-form-item :label="$t('commons.name')" prop="name">
+                <el-input v-model="apiItem.name" autocomplete="off"/>
+              </el-form-item>
+
+              <el-form-item :label="$t('datasource.request')" prop="url">
+                <el-input :placeholder="$t('datasource.path_all_info')" v-model="apiItem.url" class="ms-http-input" size="small"  >
+                  <el-select v-model="apiItem.method" slot="prepend" style="width: 100px" size="small">
+                    <el-option v-for="item in reqOptions" :key="item.id" :label="item.label" :value="item.id"/>
+                  </el-select>
+                </el-input>
+              </el-form-item>
+
+              <div v-loading="loading">
+                <p class="tip">{{ $t('datasource.req_param') }} </p>
+                <!-- HTTP 请求参数 -->
+                <el-form-item>
+                  <api-http-request-form  :headers="apiItem.request.headers" :request="apiItem.request" :response="responseData"/>
+                </el-form-item>
+              </div>
+
+              <el-form-item :label="$t('datasource.data_path')" pprop="dataPath">
+                <el-input :placeholder="$t('datasource.data_path_desc')" v-model="apiItem.dataPath" autocomplete="off"/>
+              </el-form-item>
+              <el-button style="margin-top: 12px;" @click="validateApi(undefined)" v-show="active === 1">{{ $t('commons.validate') }}</el-button>
+            </el-form>
+          </el-row>
+          <el-row  v-show="active === 2">
+            <el-tabs v-model="api_step2_active_name" @tab-click="handleClick">
+              <el-tab-pane label="数据预览" name="first">
+                <ux-grid ref="plxTable" size="mini" style="width: 100%;" :height="height" :checkbox-config="{highlight: true}" :width-resize="true" >
+                  <ux-table-column v-for="field in apiItem.fields" :key="field.originName" min-width="200px" :field="field.originName" :resizable="true">
+                    <template slot="header">
+                      <svg-icon v-if="field.deExtractType === 0" icon-class="field_text" class="field-icon-text" />
+                      <svg-icon v-if="field.deExtractType === 1" icon-class="field_time" class="field-icon-time" />
+                      <svg-icon v-if="field.deExtractType === 2 || field.deExtractType === 3" icon-class="field_value" class="field-icon-value" />
+                      <svg-icon v-if="field.deExtractType === 5" icon-class="field_location" class="field-icon-location" />
+                      <span>{{ field.name }}</span>
+                    </template>
+                  </ux-table-column>
+                </ux-grid>
+              </el-tab-pane>
+              <el-tab-pane label="字段管理" name="second">
+                <el-table :data="apiItem.fields" size="mini">
+                  <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
+                    <template slot-scope="scope">
+                      <el-input v-model="scope.row.name" size="mini"/>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="100">
+                    <template slot-scope="scope">
+                      <span v-if="scope.row.extField === 0" :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                        <span style="font-size: 12px;">{{ scope.row.originName }}</span>
+                      </span>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column property="deExtractType" :label="$t('dataset.field_type')" width="140">
+                    <template slot-scope="scope">
+                      <el-select v-model="scope.row.deExtractType" size="mini" style="display: inline-block;width: 26px;">
+                        <el-option v-for="item in fieldTypes" :key="item.value" :label="item.label" :value="item.value">
+                        <span style="float: left">
+                          <svg-icon v-if="item.value === 0" icon-class="field_text" class="field-icon-text" />
+                          <svg-icon v-if="item.value === 1" icon-class="field_time" class="field-icon-time" />
+                          <svg-icon v-if="item.value === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />
+                          <svg-icon v-if="item.value === 5" icon-class="field_location" class="field-icon-location" />
+                        </span>
+                          <span style="float: left; color: #8492a6; font-size: 12px">{{ item.label }}</span>
+                        </el-option>
+                      </el-select>
+                      <span style="margin-left: 8px;">
+                      <span v-if="scope.row.deExtractType === 0">
+                        <svg-icon icon-class="field_text" class="field-icon-text" />
+                        <span class="field-class">{{ $t('dataset.text') }}</span>
+                      </span>
+                      <span v-if="scope.row.deExtractType === 1">
+                        <svg-icon v-if="scope.row.deExtractType === 1" icon-class="field_time" class="field-icon-time" />
+                        <span class="field-class">{{ $t('dataset.time') }}</span>
+                      </span>
+                      <span v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3">
+                        <svg-icon v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3" icon-class="field_value" class="field-icon-value" />
+                        <span v-if="scope.row.deExtractType === 2" class="field-class">{{ $t('dataset.value') }}</span>
+                        <span v-if="scope.row.deExtractType === 3" class="field-class">{{ $t('dataset.value') + '(' + $t('dataset.float') + ')' }}</span>
+                      </span>
+                      <span v-if="scope.row.deExtractType === 5">
+                        <svg-icon v-if="scope.row.deExtractType === 5" icon-class="field_location" class="field-icon-location" />
+                        <span class="field-class">{{ $t('dataset.location') }}</span>
+                      </span>
+                    </span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-tab-pane>
+            </el-tabs>
+          </el-row>
+          <div slot="footer" class="dialog-footer">
+            <el-button style="margin-top: 12px;" @click="next" v-show="active === 1">{{ $t('fu.steps.next') }}</el-button>
+            <el-button style="margin-top: 12px;" @click="before" v-show="active === 2">{{ $t('fu.steps.prev') }}</el-button>
+            <el-button style="margin-top: 12px;" @click="saveItem" v-show="active === 2">{{ $t('commons.save') }}</el-button>
+          </div>
+
+        </el-dialog>
+
+
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
+                      :label="$t('datasource.host')" prop="configuration.host">
           <el-input v-model="form.configuration.host" autocomplete="off"/>
         </el-form-item>
-        <el-form-item
-          v-if="form.configuration.dataSourceType=='es'"
-          :label="$t('datasource.datasource_url')"
-          prop="configuration.url"
-        >
-          <el-input
-            v-model="form.configuration.url"
-            :placeholder="$t('datasource.please_input_datasource_url')"
-            autocomplete="off"
-          />
+
+        <el-form-item v-if="form.configuration.dataSourceType=='es' && form.type !== 'api'"
+                      :label="$t('datasource.datasource_url')" prop="configuration.url">
+          <el-input v-model="form.configuration.url" :placeholder="$t('datasource.please_input_datasource_url')"
+                    autocomplete="off"/>
         </el-form-item>
-        <el-form-item
-          v-if="form.configuration.dataSourceType=='jdbc'"
-          :label="$t('datasource.data_base')"
-          prop="configuration.dataBase"
-        >
+
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
+                      :label="$t('datasource.data_base')" prop="configuration.dataBase">
           <el-input v-model="form.configuration.dataBase" autocomplete="off"/>
         </el-form-item>
 
-        <el-form-item
-          v-if="form.type=='oracle'"
-          :label="$t('datasource.oracle_connection_type')"
-          prop="configuration.connectionType"
-        >
+        <el-form-item v-if="form.type=='oracle' && form.type !== 'api'" :label="$t('datasource.oracle_connection_type')"
+                      prop="configuration.connectionType">
           <el-radio v-model="form.configuration.connectionType" label="sid">{{ $t('datasource.oracle_sid') }}</el-radio>
           <el-radio v-model="form.configuration.connectionType" label="serviceName">
             {{ $t('datasource.oracle_service_name') }}
           </el-radio>
         </el-form-item>
 
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.user_name')">
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
+                      :label="$t('datasource.user_name')">
           <el-input v-model="form.configuration.username" autocomplete="off"/>
         </el-form-item>
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc'" :label="$t('datasource.password')">
+
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
+                      :label="$t('datasource.password')">
           <el-input v-model="form.configuration.password" autocomplete="off" show-password/>
         </el-form-item>
-        <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.user_name')">
+
+        <el-form-item v-if="form.configuration.dataSourceType=='es' && form.type !== 'api'"
+                      :label="$t('datasource.user_name')">
           <el-input v-model="form.configuration.esUsername" autocomplete="off"/>
         </el-form-item>
-        <el-form-item v-if="form.configuration.dataSourceType=='es'" :label="$t('datasource.password')">
+
+        <el-form-item v-if="form.configuration.dataSourceType=='es' && form.type !== 'api'"
+                      :label="$t('datasource.password')">
           <el-input v-model="form.configuration.esPassword" autocomplete="off" show-password/>
         </el-form-item>
 
-        <el-form-item
-          v-if="form.configuration.dataSourceType=='jdbc' && form.type!=='oracle'"
-          :label="$t('datasource.extra_params')"
-        >
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type!=='oracle' && form.type !== 'api'"
+                      :label="$t('datasource.extra_params')">
           <el-input v-model="form.configuration.extraParams" autocomplete="off"/>
         </el-form-item>
 
-        <el-form-item
-          v-if="form.configuration.dataSourceType=='jdbc'"
-          :label="$t('datasource.port')"
-          prop="configuration.port"
-        >
+        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
+                      :label="$t('datasource.port')" prop="configuration.port">
           <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0"/>
         </el-form-item>
-        <el-form-item v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'">
-          <el-button icon="el-icon-plus" size="mini" @click="getSchema()">
-            {{ $t('datasource.get_schema') }}
-          </el-button>
+
+        <el-form-item
+          v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'">
+          <el-button icon="el-icon-plus" size="mini" @click="getSchema()">{{ $t('datasource.get_schema') }}</el-button>
         </el-form-item>
 
         <el-form-item
           v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'"
-          :label="$t('datasource.schema')"
-        >
-          <el-select
-            v-model="form.configuration.schema"
-            filterable
-            :placeholder="$t('datasource.please_choose_schema')"
-            class="select-width"
-          >
-            <el-option
-              v-for="item in schemas"
-              :key="item"
-              :label="item"
-              :value="item"
-            />
+          :label="$t('datasource.schema')">
+          <el-select v-model="form.configuration.schema" filterable :placeholder="$t('datasource.please_choose_schema')"
+                     class="select-width">
+            <el-option v-for="item in schemas" :key="item" :label="item" :value="item"/>
           </el-select>
         </el-form-item>
-        <el-collapse v-if="form.configuration.dataSourceType=='jdbc'">
+
+        <el-collapse v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'">
           <el-collapse-item :title="$t('datasource.priority')" name="1">
             <el-form-item :label="$t('datasource.initial_pool_size')" prop="configuration.initialPoolSize">
-              <el-input
-                v-model="form.configuration.initialPoolSize"
-                autocomplete="off"
-                type="number"
-                min="0"
-                size="small"
-              />
+              <el-input v-model="form.configuration.initialPoolSize" autocomplete="off" type="number" min="0"
+                        size="small"/>
             </el-form-item>
             <el-form-item :label="$t('datasource.min_pool_size')" prop="configuration.minPoolSize">
               <el-input v-model="form.configuration.minPoolSize" autocomplete="off" type="number" min="0"/>
@@ -145,34 +252,23 @@
             <el-form-item :label="$t('datasource.max_pool_size')" prop="configuration.maxPoolSize">
               <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0"/>
             </el-form-item>
-
           </el-collapse-item>
         </el-collapse>
       </el-form>
       <div v-if="canEdit" slot="footer" class="dialog-footer">
-        <el-button
-          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
-          @click="validaDatasource"
-        >{{ $t('commons.validate') }}
+        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+                   @click="validaDatasource">{{ $t('commons.validate') }}
         </el-button>
-        <el-button
-          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
-          type="primary"
-          @click="save"
-        >{{ $t('commons.save') }}
+        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" type="primary"
+                   @click="save">{{ $t('commons.save') }}
         </el-button>
       </div>
       <div v-else slot="footer" class="dialog-footer">
-        <el-button
-          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
-          @click="validaDatasource"
-        >{{ $t('commons.validate') }}
+        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+                   @click="validaDatasource">{{ $t('commons.validate') }}
         </el-button>
-        <el-button
-          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
-          type="primary"
-          @click="changeEdit"
-        >{{ $t('commons.edit') }}
+        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" type="primary"
+                   @click="changeEdit">{{ $t('commons.edit') }}
         </el-button>
       </div>
     </div>
@@ -181,13 +277,17 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import {addDs, editDs, getSchema, validateDs, validateDsById} from '@/api/system/datasource'
+import {addDs, editDs, getSchema, validateDs, validateDsById, checkApiDatasource} from '@/api/system/datasource'
 import {$confirm} from '@/utils/message'
 import i18n from '@/lang/index'
+import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
 
 export default {
   name: 'DsForm',
-  components: {LayoutContent},
+  components: {
+    LayoutContent,
+    ApiHttpRequestForm
+  },
   props: {
     params: {
       type: Object,
@@ -210,7 +310,8 @@ export default {
           acquireIncrement: 5,
           idleConnectionTestPeriod: 5,
           connectTimeout: 5
-        }
+        },
+        apiConfiguration: []
       },
       rule: {
         name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
@@ -269,26 +370,81 @@ export default {
           required: true,
           message: i18n.t('datasource.please_input_connect_timeout'),
           trigger: 'change'
-        }]
+        }],
+        'url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'change'}],
+        'dataPath': [{required: true, message: i18n.t('datasource.please_input_dataPath'), trigger: 'change'}]
       },
       allTypes: [
-        {name: 'mysql', label: 'MySQL', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
+        {
+          name: 'mysql',
+          label: 'MySQL',
+          type: 'jdbc',
+          extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
         },
         {name: 'hive', label: 'Apache Hive', type: 'jdbc', extraParams: ''},
         {name: 'oracle', label: 'Oracle', type: 'jdbc'},
         {name: 'sqlServer', label: 'SQL Server', type: 'jdbc', extraParams: ''},
         {name: 'pg', label: 'PostgreSQL', type: 'jdbc', extraParams: ''},
         {name: 'es', label: 'Elasticsearch', type: 'es'},
-        {name: 'mariadb', label: 'MariaDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
-        {name: 'ds_doris', label: 'Doris', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
+        {
+          name: 'mariadb',
+          label: 'MariaDB',
+          type: 'jdbc',
+          extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
+        },
+        {
+          name: 'ds_doris',
+          label: 'Doris',
+          type: 'jdbc',
+          extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
+        },
         {name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: ''},
         {name: 'redshift', label: 'AWS Redshift', type: 'jdbc'},
         {name: 'mongo', label: 'MongoDB', type: 'jdbc', extraParams: ''},
-        {name: 'db2', label: 'Db2', type: 'jdbc', extraParams: ''}
+        {name: 'db2', label: 'Db2', type: 'jdbc', extraParams: ''},
+        {name: 'api', label: 'API', type: 'api', extraParams: ''}
       ],
       schemas: [],
       canEdit: false,
-      originConfiguration: {}
+      originConfiguration: {},
+      edit_api_item: false,
+      add_api_item: false,
+      active: 0,
+      defaultApiItem: {
+        name: '',
+        url: '',
+        method: 'GET',
+        request: {
+          headers: [],
+          body: {}
+        },
+        fields: []
+      },
+      apiItem: {
+        name: '',
+        url: '',
+        method: 'GET',
+        dataPath: '',
+        request: {
+          headers: [],
+          body: {},
+          authManager: {}
+        },
+        fields: []
+      },
+      reqOptions: [{id: 'GET', label: 'GET'}, {id: 'POST', label: 'POST'}],
+      loading: false,
+      responseData: {type: 'HTTP', responseResult: {}, subRequestResults: []},
+      api_table_title: '',
+      api_step2_active_name: 'first',
+      fieldTypes: [
+        { label: this.$t('dataset.text'), value: 0 },
+        { label: this.$t('dataset.time'), value: 1 },
+        { label: this.$t('dataset.value'), value: 2 },
+        { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3 },
+        { label: this.$t('dataset.location'), value: 5 }
+      ],
+      height: 500
     }
   },
 
@@ -330,9 +486,13 @@ export default {
     },
     edit(row) {
       this.formType = 'modify'
-      this.form = Object.assign({}, row)
+      this.form = JSON.parse(JSON.stringify(row))
+
       this.originConfiguration = this.form.configuration
-      this.form.configuration = JSON.parse(this.form.configuration)
+      if(row.type === 'api'){
+      }else {
+        this.form.configuration = JSON.parse(this.form.configuration)
+      }
     },
     reset() {
       this.$refs.dsForm.resetFields()
@@ -353,9 +513,9 @@ export default {
       let repeat = false
       let repeatDsName = []
       this.tData.forEach(item => {
-        if(item.id === this.form.type){
+        if (item.id === this.form.type) {
           item.children.forEach(child => {
-            if(this.formType === 'modify' && child.id===this.form.id){
+            if (this.formType === 'modify' && child.id === this.form.id) {
               return
             }
             let configuration = JSON.parse(child.configuration)
@@ -367,7 +527,7 @@ export default {
               case 'ck':
               case 'mongo':
               case 'mariadb':
-                if(configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port){
+                if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port) {
                   repeat = true
                   repeatDsName.push(child.name)
                 }
@@ -377,13 +537,13 @@ export default {
               case 'redshift':
               case 'oracle':
               case 'db2':
-                if(configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port && configuration.schema == this.form.configuration.schema){
+                if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port && configuration.schema == this.form.configuration.schema) {
                   repeatDsName.push(child.name)
                   repeat = true
                 }
                 break
               case 'es':
-                if(configuration.url == this.form.configuration.url){
+                if (configuration.url == this.form.configuration.url) {
                   repeatDsName.push(child.name)
                   repeat = true
                 }
@@ -401,31 +561,36 @@ export default {
         }
         const method = this.formType === 'add' ? addDs : editDs
         const form = JSON.parse(JSON.stringify(this.form))
-        form.configuration = JSON.stringify(form.configuration)
+        if(form.type === 'api'){
+          form.configuration = JSON.stringify(form.apiConfiguration)
+        }else {
+          form.configuration = JSON.stringify(form.configuration)
+        }
+
         if (this.formType === 'modify' && this.originConfiguration !== form.configuration) {
-          if(repeat){
+          if (repeat) {
             $confirm(i18n.t('datasource.repeat_datasource_msg') + '[' + repeatDsName.join(',') + '], ' + i18n.t('datasource.confirm_save'), () => {
               $confirm(i18n.t('datasource.edit_datasource_msg'), () => {
                 this.method(method, form)
               })
             })
-          }else {
+          } else {
             $confirm(i18n.t('datasource.edit_datasource_msg'), () => {
               this.method(method, form)
             })
           }
           return
         }
-        if(repeat){
+        if (repeat) {
           $confirm(i18n.t('datasource.repeat_datasource_msg') + '[' + repeatDsName.join(',') + '], ' + i18n.t('datasource.confirm_save'), () => {
             this.method(method, form)
           })
-        }else {
+        } else {
           this.method(method, form)
         }
       })
     },
-    method(method, form){
+    method(method, form) {
       method(form).then(res => {
         this.$success(i18n.t('commons.save_success'))
         this.refreshType(form)
@@ -464,10 +629,10 @@ export default {
               if (res.success) {
                 this.$success(i18n.t('datasource.validate_success'))
               } else {
-                if(res.message.length < 2500){
+                if (res.message.length < 2500) {
                   this.$error(res.message)
-                }else {
-                  this.$error(res.message.substring(0,2500) + '......')
+                } else {
+                  this.$error(res.message.substring(0, 2500) + '......')
                 }
               }
               this.refreshType(data)
@@ -477,10 +642,10 @@ export default {
               if (res.success) {
                 this.$success(i18n.t('datasource.validate_success'))
               } else {
-                if(res.message.length < 2500){
+                if (res.message.length < 2500) {
                   this.$error(res.message)
-                }else {
-                  this.$error(res.message.substring(0,2500) + '......')
+                } else {
+                  this.$error(res.message.substring(0, 2500) + '......')
                 }
               }
             }).catch(res => {
@@ -505,6 +670,104 @@ export default {
     },
     refreshType(form) {
       this.$emit('refresh-type', form)
+    },
+    next() {
+      if(this.active === 1){
+        this.$refs.apiItem.validate(valid => {
+          if (valid) {
+            console.log(this.apiItem)
+            const data = JSON.parse(JSON.stringify(this.apiItem))
+            data.request = JSON.stringify(data.request)
+            this.loading = true
+            checkApiDatasource(data).then(res => {
+              this.loading = false
+              console.log(res)
+              this.$success(i18n.t('commons.success'))
+              this.active++
+              this.apiItem.fields = res.data.fields
+              this.$refs.plxTable.reloadData(res.data.datas)
+            }).catch(res => {
+              this.apiItem.fields = []
+              this.loading = false
+            })
+          } else {
+            this.apiItem.fields = []
+            return false
+          }
+        })
+      }
+    },
+    before() {
+      this.active--
+    },
+    closeEditItem() {
+      this.active = 0
+      this.edit_api_item = false
+    },
+    saveItem() {
+      this.active = 0
+      this.edit_api_item = false
+      if(!this.add_api_item){
+        this.form.apiConfiguration.push(this.apiItem)
+      }
+    },
+    addApiItem(item) {
+      if (item) {
+        this.add_api_item = true
+        this.api_table_title = this.$t('datasource.edit_api_table')
+        this.apiItem = item
+      }else {
+        this.add_api_item = false
+        this.apiItem = JSON.parse(JSON.stringify(this.defaultApiItem))
+        this.api_table_title = this.$t('datasource.add_api_table')
+      }
+      this.active = 1
+      this.edit_api_item = true
+    },
+    deleteItem(item) {
+      this.form.apiConfiguration.splice(this.form.apiConfiguration.indexOf(item), 1)
+    },
+    runDebug() {
+      this.$refs['debugForm'].validate((valid) => {
+        if (valid) {
+          this.loading = true;
+          this.isStop = true;
+          this.request.url = this.debugForm.url;
+          this.request.method = this.debugForm.method;
+          this.request.name = getUUID().substring(0, 8);
+          this.runData = [];
+          this.runData.push(this.request);
+          /*触发执行操作*/
+          this.reportId = getUUID().substring(0, 8);
+        }
+      })
+    },
+    validateApi(item) {
+      if(undefined){
+
+      }else {
+        this.$refs.apiItem.validate(valid => {
+          if (valid) {
+            const data = JSON.parse(JSON.stringify(this.apiItem))
+            data.request = JSON.stringify(data.request)
+            this.loading = true
+            checkApiDatasource(data).then(res => {
+              this.loading = false
+              console.log(res)
+              this.$success(i18n.t('commons.success'))
+              this.apiItem.fields = res.data.fields
+              this.$refs.plxTable.reloadData(res.data.datas)
+            }).catch(res => {
+              this.loading = false
+            })
+          } else {
+            return false
+          }
+        })
+      }
+    },
+    handleClick(tab, event) {
+      console.log(tab, event);
     }
   }
 }
@@ -520,12 +783,27 @@ export default {
     transform: scale(0.85);
   }
 }
-
 .el-input {
   width: 300px;
 }
-
 .el-select {
   width: 300px;
+}
+.ms-http-input {
+  width: 500px;
+  margin-top: 5px;
+}
+.tip {
+  padding: 3px 5px;
+  font-size: 16px;
+  border-radius: 0;
+  border-left: 4px solid #783887;
+  margin: 5px 5px 10px 5px;
+}
+.el-select>>>input{
+  padding-right: 10px;
+}
+.el-select>>>.el-input__suffix{
+  right: 0;
 }
 </style>
