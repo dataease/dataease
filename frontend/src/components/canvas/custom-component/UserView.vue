@@ -16,8 +16,15 @@
         {{ $t('chart.chart_error_tips') }}
       </div>
     </div>
+    <plugin-com
+      v-if="chart.isPlugin"
+      :ref="element.propValue.id"
+      :component-name="chart.type + '-view'"
+      :obj="{chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
+      class="chart-class"
+    />
     <chart-component
-      v-if="charViewShowFlag"
+      v-else-if="charViewShowFlag"
       :ref="element.propValue.id"
       class="chart-class"
       :chart="chart"
@@ -28,7 +35,7 @@
       @onJumpClick="jumpClick"
     />
     <chart-component-g2
-      v-if="charViewG2ShowFlag"
+      v-else-if="charViewG2ShowFlag"
       :ref="element.propValue.id"
       class="chart-class"
       :chart="chart"
@@ -38,7 +45,7 @@
       @onJumpClick="jumpClick"
     />
     <chart-component-s2
-      v-if="charViewS2ShowFlag"
+      v-else-if="charViewS2ShowFlag"
       :ref="element.propValue.id"
       class="chart-class"
       :chart="chart"
@@ -48,13 +55,13 @@
       @onJumpClick="jumpClick"
     />
     <table-normal
-      v-if="tableShowFlag"
+      v-else-if="tableShowFlag"
       :ref="element.propValue.id"
       :show-summary="chart.type === 'table-normal'"
       :chart="chart"
       class="table-class"
     />
-    <label-normal v-if="labelShowFlag" :ref="element.propValue.id" :chart="chart" class="table-class" />
+    <label-normal v-else-if="labelShowFlag" :ref="element.propValue.id" :chart="chart" class="table-class" />
     <div style="position: absolute;left: 8px;bottom:8px;">
       <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
     </div>
@@ -69,7 +76,7 @@ import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 import { uuid } from 'vue-uuid'
-
+import bus from '@/utils/bus'
 import { mapState } from 'vuex'
 import { isChange } from '@/utils/conditionUtil'
 import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
@@ -82,10 +89,10 @@ import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import EditBarView from '@/components/canvas/components/Editor/EditBarView'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/components/canvas/utils/style'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
-
+import PluginCom from '@/views/system/plugin/PluginCom'
 export default {
   name: 'UserView',
-  components: { ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
+  components: { PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
   props: {
     element: {
       type: Object,
@@ -108,6 +115,7 @@ export default {
       required: false,
       default: false
     },
+    // eslint-disable-next-line vue/require-default-prop
     componentIndex: {
       type: Number,
       required: false
@@ -155,6 +163,9 @@ export default {
       sourceCustomAttrStr: null,
       sourceCustomStyleStr: null
     }
+  },
+  mounted() {
+    this.bindPluginEvent()
   },
   computed: {
     scaleCoefficient() {
@@ -260,6 +271,7 @@ export default {
   },
 
   watch: {
+
     'cfilters': {
       handler: function(val1, val2) {
         if (isChange(val1, val2) && !this.isFirstLoad) {
@@ -286,7 +298,9 @@ export default {
         }
         // 如果gap有变化刷新
         if (this.preCanvasPanel && this.preCanvasPanel.gap !== newVal.panel.gap) {
-          this.$refs[this.element.propValue.id].chartResize()
+          this.chart.isPlugin
+            ? this.$refs[this.element.propValue.id].callPluginInner({ methodName: 'chartResize' })
+            : this.$refs[this.element.propValue.id].chartResize()
         }
         this.preCanvasPanel = deepCopy(newVal.panel)
       },
@@ -301,7 +315,9 @@ export default {
             this.changeIndex++
             this.chartResize(this.changeIndex)
           } else {
-            this.$refs[this.element.propValue.id].chartResize()
+            this.chart.isPlugin
+              ? this.$refs[this.element.propValue.id].callPluginInner({ methodName: 'chartResize' })
+              : this.$refs[this.element.propValue.id].chartResize()
           }
         }
       },
@@ -320,7 +336,8 @@ export default {
       }
     },
     'chartType': function(newVal, oldVal) {
-      if (newVal === 'map' && newVal !== oldVal) {
+      // this.isPlugin = this.plugins.some(plugin => plugin.value === this.chart.type)
+      if ((newVal === 'map' || newVal === 'buddle-map') && newVal !== oldVal) {
         this.initAreas()
       }
     },
@@ -334,6 +351,7 @@ export default {
       deep: true
     }
   },
+
   created() {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
@@ -343,6 +361,14 @@ export default {
     }
   },
   methods: {
+    bindPluginEvent() {
+      bus.$on('plugin-chart-click', this.chartClick)
+      bus.$on('plugin-jump-click', this.jumpClick)
+      bus.$on('plugin-add-view-track-filter', this.addViewTrackFilter)
+    },
+    addViewTrackFilter(linkageParam) {
+      this.$store.commit('addViewTrackFilter', linkageParam)
+    },
     // 根据仪表板的缩放比例，修改视图内部参数
     mergeScale() {
       const scale = Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient
@@ -459,7 +485,7 @@ export default {
 
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.chart.drillFields.length - 1) {
-        this.chart.type === 'map' && this.sendToChildren(param)
+        (this.chart.type === 'map' || this.chart.type === 'buddle-map') && this.sendToChildren(param)
         this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
         this.getData(this.element.propValue.viewId)
       } else if (this.chart.drillFields.length > 0) {
@@ -529,17 +555,22 @@ export default {
     resetDrill() {
       const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = []
-      if (this.chart.type === 'map') {
+      if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
         this.backToParent(0, length)
         const current = this.$refs[this.element.propValue.id]
-        current && current.registerDynamicMap && current.registerDynamicMap(null)
+
+        if (this.chart.isPlugin) {
+          current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
+        } else {
+          current && current.registerDynamicMap && current.registerDynamicMap(null)
+        }
       }
     },
 
     drillJump(index) {
       const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = this.drillClickDimensionList.slice(0, index)
-      if (this.chart.type === 'map') {
+      if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
         this.backToParent(index, length)
       }
       this.getData(this.element.propValue.viewId)
@@ -558,7 +589,11 @@ export default {
 
       this.currentAcreaNode = tempNode
       const current = this.$refs[this.element.propValue.id]
-      current && current.registerDynamicMap && current.registerDynamicMap(this.currentAcreaNode.code)
+      if (this.chart.isPlugin) {
+        current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: this.currentAcreaNode.code })
+      } else {
+        current && current.registerDynamicMap && current.registerDynamicMap(this.currentAcreaNode.code)
+      }
     },
 
     // 切换下一级地图
@@ -575,7 +610,11 @@ export default {
         const nextNode = currentNode.children.find(item => item.name === name)
         this.currentAcreaNode = nextNode
         const current = this.$refs[this.element.propValue.id]
-        nextNode && current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
+        if (this.chart.isPlugin) {
+          nextNode && current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: nextNode.code })
+        } else {
+          nextNode && current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
+        }
       }
     },
 
@@ -604,7 +643,12 @@ export default {
       const areaNode = this.findEntityByname(name, [])
       if (!areaNode) return
       const current = this.$refs[this.element.propValue.id]
-      current && current.registerDynamicMap && current.registerDynamicMap(areaNode.code)
+
+      if (this.chart.isPlugin) {
+        current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: areaNode.code })
+      } else {
+        current && current.registerDynamicMap && current.registerDynamicMap(areaNode.code)
+      }
     },
     // 根据地名获取areaCode
     findEntityByname(name, array) {
@@ -632,7 +676,9 @@ export default {
       if (this.$refs[this.element.propValue.id]) {
         this.timeMachine = setTimeout(() => {
           if (index === this.changeIndex) {
-            this.$refs[this.element.propValue.id].chartResize()
+            this.chart.isPlugin
+              ? this.$refs[this.element.propValue.id].callPluginInner({ methodName: 'chartResize' })
+              : this.$refs[this.element.propValue.id].chartResize()
           }
           this.destroyTimeMachine()
         }, 50)

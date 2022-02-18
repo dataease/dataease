@@ -93,7 +93,7 @@ export default {
       data: [],
       page: {
         page: 1,
-        pageSize: 100,
+        pageSize: 1000,
         show: 1000
       },
       tabActive: 'dataPreview',
@@ -160,7 +160,7 @@ export default {
           this.data = []
           this.page = {
             page: 1,
-            pageSize: 100,
+            pageSize: 1000,
             show: 0
           }
         })
@@ -218,7 +218,7 @@ export default {
     resetPage() {
       this.page = {
         page: 1,
-        pageSize: 100,
+        pageSize: 1000,
         show: 1000
       }
     },

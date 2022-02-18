@@ -3,6 +3,7 @@ package io.dataease.controller;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.license.DefaultLicenseService;
 import io.dataease.commons.license.F2CLicenseResponse;
+import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.service.panel.PanelLinkService;
@@ -48,8 +49,13 @@ public class IndexController {
     }
 
     @GetMapping("/link/{index}")
-    public void link(@PathVariable(value = "index", required = true) Long index) {
-        String url = panelLinkService.getUrlByIndex(index);
+    public void link(@PathVariable(value = "index", required = true) String index) {
+        String url;
+        if (CodingUtil.isNumeric(index)) {
+            url = panelLinkService.getUrlByIndex(Long.parseLong(index));
+        } else {
+            url = panelLinkService.getUrlByUuid(index);
+        }
         HttpServletResponse response = ServletUtils.response();
         try {
             response.sendRedirect(url);

@@ -3,6 +3,7 @@ package io.dataease.plugins.server;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +37,7 @@ public class ThemeServer {
         return themeXpackService.queryItems(themeId);
     }
 
+    @RequiresPermissions("sysparam:read")
     @PostMapping("/save")
     public void save(@RequestPart("request") ThemeRequest request,
             @RequestPart(value = "file", required = false) MultipartFile bodyFile) {
@@ -55,6 +57,7 @@ public class ThemeServer {
 
     }
 
+    @RequiresPermissions("sysparam:read")
     @PostMapping("/delete/{themeId}")
     public void delete(@PathVariable("themeId") int themeId) {
         ThemeXpackService themeXpackService = SpringContextUtil.getBean(ThemeXpackService.class);

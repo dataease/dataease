@@ -1,14 +1,13 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini" :disabled="param && !hasDataPermission('manage',param.privileges)">
+      <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini">
         <div v-if="sourceType==='view' || sourceType==='panelEchart'">
           <el-form-item v-show="chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :label="$t('chart.color_case')" class="form-item">
             <el-popover
               placement="bottom"
               width="400"
               trigger="click"
-              :disabled="param && !hasDataPermission('manage',param.privileges)"
             >
               <div style="padding: 6px 10px;">
                 <div>
@@ -62,6 +61,9 @@
           </el-form-item>
           <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_item_font_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
+          <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_border_color')" class="form-item">
+            <el-color-picker v-model="colorForm.tableBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
           <!--              暂时不支持该功能-->
           <!--              <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.stripe')" class="form-item">-->
@@ -240,6 +242,8 @@ export default {
             this.customColor = this.colorForm.colors[0]
             this.colorIndex = 0
           }
+
+          this.colorForm.tableBorderColor = this.colorForm.tableBorderColor ? this.colorForm.tableBorderColor : DEFAULT_COLOR_CASE.tableBorderColor
         }
       }
     },

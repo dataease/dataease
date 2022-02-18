@@ -19,5 +19,7 @@ public interface ExtPanelGroupMapper {
 
     void copyPanelView(@Param("pid") String panelId);
 
+    //移除未使用的视图
+    void removeUselessViews(@Param("panelId") String panelId);
 
 }

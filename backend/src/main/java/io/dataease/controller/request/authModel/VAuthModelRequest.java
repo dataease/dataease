@@ -14,9 +14,15 @@ import java.util.List;
 public class VAuthModelRequest extends VAuthModelDTO {
 
     private String userId;
+
     private String privileges;
+
     private Integer datasetMode;
+
     private boolean clearEmptyDir;
+
     private List<String> modelInnerTypeArray;
+
+    private List<String> pids;
 
 }

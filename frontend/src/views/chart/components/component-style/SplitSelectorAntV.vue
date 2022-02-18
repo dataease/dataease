@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="splitForm" :model="splitForm" label-width="80px" size="mini" :disabled="!hasDataPermission('manage',param.privileges)">
+      <el-form ref="splitForm" :model="splitForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.name')" class="form-item">
           <el-checkbox v-model="splitForm.name.show" @change="changeSplitStyle">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>

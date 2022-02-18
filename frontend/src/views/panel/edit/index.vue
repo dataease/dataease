@@ -25,7 +25,7 @@
           <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px">
             <!-- 视图图表 start -->
             <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
-              <el-button :class="show&&showIndex===0? 'button-show':'button-closed'" circle class="el-icon-circle-plus-outline" size="mini" @click="showPanel(0)" />
+              <el-button circle class="el-icon-circle-plus-outline" size="mini" @click="newChart()" />
             </div>
             <div class="button-text" style="position: relative; margin: 18px auto 16px;">
               <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
@@ -66,6 +66,21 @@
               <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
             </div>
             <!-- 其他组件 end -->
+
+            <!-- 视图复用 start -->
+            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
+              <el-button :class="show&&showIndex===0? 'button-show':'button-closed'" circle class="el-icon-copy-document" size="mini" @click="showPanel(0)" />
+            </div>
+            <div class="button-text" style="position: relative; margin: 18px auto 16px;">
+              <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+                <!--                {{ $t('panel.view') }}-->
+                复用
+              </div>
+            </div>
+            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
+            </div>
+            <!-- 视图复用 end -->
           </div>
         </div>
       </de-aside-container>
@@ -228,7 +243,7 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
 import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
 import ChartGroup from '@/views/chart/group/Group'
-import { searchAdviceSceneId } from '@/api/chart/chart'
+import { chartCopy, searchAdviceSceneId } from '@/api/chart/chart'
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
 import '@/components/canvas/styles/animate.css'
@@ -628,8 +643,18 @@ export default {
       component.id = newComponentId
       // 新拖入的组件矩阵状态 和仪表板当前的矩阵状态 保持一致
       component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
-      this.$store.commit('addComponent', { component })
-      this.$store.commit('recordSnapshot', 'handleDrop')
+
+      // 视图统一调整为复制
+      if (componentInfo.type === 'view') {
+        chartCopy(component.propValue.viewId, this.panelInfo.id).then(res => {
+          component.propValue.viewId = res.data
+          this.$store.commit('addComponent', { component })
+          this.$store.commit('recordSnapshot', 'handleDrop')
+        })
+      } else {
+        this.$store.commit('addComponent', { component })
+        this.$store.commit('recordSnapshot', 'handleDrop')
+      }
       this.clearCurrentInfo()
     },
     clearCurrentInfo() {
@@ -776,12 +801,9 @@ export default {
       }
     },
     newChart() {
-      this.adviceGroupId = null
+      this.adviceGroupId = this.panelInfo.id
       this.show = false
-      searchAdviceSceneId(this.panelInfo.id).then(res => {
-        this.adviceGroupId = res.data
-        this.$refs['chartGroup'].selectTable()
-      })
+      this.$refs['chartGroup'].selectTable()
     },
     newViewInfo(newViewInfo) {
       let component

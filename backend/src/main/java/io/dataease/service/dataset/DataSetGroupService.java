@@ -1,9 +1,11 @@
 package io.dataease.service.dataset;
 
+import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.DatasetGroup;
 import io.dataease.base.domain.DatasetGroupExample;
 import io.dataease.base.mapper.DatasetGroupMapper;
 import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
+import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.TreeUtils;
@@ -39,6 +41,7 @@ public class DataSetGroupService {
     @Resource
     private SysAuthService sysAuthService;
 
+    @DeCleaner(DePermissionType.DATASET)
     public DataSetGroupDTO save(DatasetGroup datasetGroup) {
         checkName(datasetGroup);
         if (StringUtils.isEmpty(datasetGroup.getId())) {

@@ -5,6 +5,8 @@
   "scripts": {
     "serve": "npm run dev:h5",
     "build": "npm run build:h5",
+    "build:stage": "npm run build:h5:stage",
+    "build:h5:stage": "cross-env NODE_ENV=production UNI_PLATFORM=h5 UNI_OUTPUT_DIR=dist vue-cli-service uni-build --mode staging",
     "build:app-plus": "cross-env NODE_ENV=production UNI_PLATFORM=app-plus vue-cli-service uni-build",
     "build:custom": "cross-env NODE_ENV=production uniapp-cli custom",
     "build:h5": "cross-env NODE_ENV=production UNI_PLATFORM=h5 UNI_OUTPUT_DIR=dist vue-cli-service uni-build",

@@ -178,4 +178,21 @@
         panel_id = #{panelId}
     </insert>
 
+    <delete id="removeUselessViews">
+        DELETE
+        FROM
+            chart_view
+        WHERE
+            chart_view.chart_type = 'private'
+            AND chart_view.scene_id = #{panelId}
+            AND id NOT IN (
+            SELECT
+                panel_view.chart_view_id
+            FROM
+                panel_view
+            WHERE
+                panel_view.panel_id = #{panelId}
+            )
+    </delete>
+
 </mapper>

@@ -109,11 +109,12 @@
             `y_axis_ext`,
             `render`,
             `result_count`,
-            `result_mode`
+            `result_mode`,
+            `chart_type`
         ) SELECT
         #{newChartId},
         GET_CHART_VIEW_COPY_NAME ( #{oldChartId} ),
-        `scene_id`,
+        #{panelId},
         `table_id`,
         `type`,
         GET_CHART_VIEW_COPY_NAME ( #{oldChartId} ),
@@ -133,7 +134,8 @@
         `y_axis_ext`,
         `render`,
         `result_count`,
-        `result_mode`
+        `result_mode`,
+        'private'
         FROM
             chart_view
         WHERE

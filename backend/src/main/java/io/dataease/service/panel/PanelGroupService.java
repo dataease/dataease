@@ -1,14 +1,20 @@
 package io.dataease.service.panel;
 
+import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.base.mapper.PanelGroupMapper;
+import io.dataease.base.mapper.VAuthModelMapper;
 import io.dataease.base.mapper.ext.ExtPanelGroupMapper;
 import io.dataease.base.mapper.ext.ExtPanelLinkJumpMapper;
+import io.dataease.base.mapper.ext.ExtVAuthModelMapper;
+import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.TreeUtils;
+import io.dataease.controller.request.authModel.VAuthModelRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
+import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.exception.DataEaseException;
@@ -28,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Author: wangjiahao
@@ -59,7 +66,10 @@ public class PanelGroupService {
     private PanelViewService panelViewService;
     @Resource
     private ExtPanelLinkJumpMapper extPanelLinkJumpMapper;
-
+    @Resource
+    private ExtVAuthModelMapper extVAuthModelMapper;
+    @Resource
+    private VAuthModelMapper vAuthModelMapper;
 
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
@@ -75,6 +85,7 @@ public class PanelGroupService {
         return TreeUtils.mergeTree(panelGroupDTOList, "default_panel");
     }
 
+    @DeCleaner(DePermissionType.PANEL)
     @Transactional
     public PanelGroup saveOrUpdate(PanelGroupRequest request) {
         try {
@@ -157,6 +168,9 @@ public class PanelGroupService {
         if (!CollectionUtils.isNotEmpty(panelGroupDTOList)) {
             DataEaseException.throwException("未查询到用户对应的资源权限，请尝试刷新重新保存");
         }
+
+        //移除没有用到的仪表板私有视图
+        extPanelGroupMapper.removeUselessViews(panelId);
         return panelGroupDTOList.get(0);
     }
 
@@ -212,6 +226,33 @@ public class PanelGroupService {
             }
         });
         return chartViewDTOList;
+    }
+
+    public List<VAuthModelDTO> queryPanelViewTree(){
+        List<VAuthModelDTO> result = new ArrayList<>();
+        VAuthModelRequest panelRequest = new VAuthModelRequest();
+        panelRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        panelRequest.setModelType("panel");
+        List<VAuthModelDTO> panelResult =  extVAuthModelMapper.queryAuthModel(panelRequest);
+        // 获取仪表板下面的视图
+        if(CollectionUtils.isNotEmpty(panelResult)){
+            result.addAll(panelResult);
+            List<String> panelIds = panelResult.stream().map(VAuthModelDTO::getId).collect(Collectors.toList());
+            VAuthModelRequest viewRequest = new VAuthModelRequest();
+            viewRequest.setPids(panelIds);
+            List<VAuthModelDTO> viewResult = extVAuthModelMapper.queryAuthModelViews(viewRequest);
+            if(CollectionUtils.isNotEmpty(viewResult)){
+                result.addAll(viewResult);
+            }
+            result = TreeUtils.mergeTree(result,"panel_list");
+            // 原有视图的目录结构
+            List<VAuthModelDTO> viewOriginal = extVAuthModelMapper.queryAuthViewsOriginal(viewRequest);
+            if(CollectionUtils.isNotEmpty(viewOriginal) && viewOriginal.size()>1){
+                result.addAll(TreeUtils.mergeTree(viewOriginal,"public_chart"));
+            }
+        }
+
+        return result;
     }
 
 }

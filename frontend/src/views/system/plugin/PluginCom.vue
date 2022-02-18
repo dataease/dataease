@@ -1,7 +1,14 @@
 <template>
   <div>
-    <async-component v-if="showAsync" :url="url" :obj="obj" @execute-axios="executeAxios"
-                     @on-add-languanges="addLanguages" @plugin-call-back="pluginCallBack"/>
+    <async-component
+      v-if="showAsync"
+      :ref="refId"
+      :url="url"
+      :obj="obj"
+      @execute-axios="executeAxios"
+      @on-add-languanges="addLanguages"
+      @plugin-call-back="pluginCallBack"
+    />
     <div v-else>
       <h1>未知组件无法展示</h1>
     </div>
@@ -12,8 +19,8 @@
 import AsyncComponent from '@/components/AsyncComponent'
 import i18n from '@/lang'
 import bus from '@/utils/bus'
-import {execute} from '@/api/system/dynamic'
-
+import { execute } from '@/api/system/dynamic'
+import { uuid } from 'vue-uuid'
 export default {
   name: 'PluginCom',
   components: {
@@ -33,10 +40,12 @@ export default {
     return {
       showAsync: false,
       baseUrl: '/api/pluginCommon/component/',
-      url: null
+      url: null,
+      refId: null
     }
   },
   created() {
+    this.refId = uuid.v1
     if (this.componentName) {
       this.showAsync = true
       this.url = this.baseUrl + this.componentName
@@ -67,8 +76,14 @@ export default {
     },
 
     pluginCallBack(param) {
-      const {eventName, eventParam} = param
+      const { eventName, eventParam } = param
       bus.$emit(eventName, eventParam)
+    },
+    /* chartResize() {
+      this.$refs[this.refId] && this.$refs[this.refId].chartResize && this.$refs[this.refId].chartResize()
+    }, */
+    callPluginInner(param) {
+      this.$refs[this.refId] && this.$refs[this.refId].callPluginInner && this.$refs[this.refId].callPluginInner(param)
     }
   }
 }

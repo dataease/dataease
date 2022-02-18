@@ -14,7 +14,7 @@ public interface ExtChartViewMapper {
 
     ChartViewDTO searchOne(ChartViewRequest request);
 
-    void chartCopy(@Param("newChartId")String newChartId,@Param("oldChartId")String oldChartId);
+    void chartCopy(@Param("newChartId")String newChartId,@Param("oldChartId")String oldChartId,@Param("panelId")String panelId);
 
     @Select("select id from chart_view where table_id = #{tableId}")
     List<String> allViewIds(@Param("tableId") String tableId);

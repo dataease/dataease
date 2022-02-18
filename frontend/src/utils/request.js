@@ -14,7 +14,7 @@ import Cookies from 'js-cookie'
 
 const getTimeOut = () => {
   let time = 10
-  const url = '/system/requestTimeOut'
+  const url = process.env.VUE_APP_BASE_API + 'system/requestTimeOut'
   const xhr = new XMLHttpRequest()
   xhr.onreadystatechange = () => {
     if (xhr.readyState === 4 && xhr.status === 200) {

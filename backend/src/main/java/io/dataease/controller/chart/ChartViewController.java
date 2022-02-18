@@ -72,9 +72,9 @@ public class ChartViewController {
     }
 
     @ApiOperation("复制")
-    @PostMapping("chartCopy/{id}")
-    public String chartCopy(@PathVariable String id) {
-        return chartViewService.chartCopy(id);
+    @PostMapping("chartCopy/{id}/{panelId}")
+    public String chartCopy(@PathVariable String id, @PathVariable String panelId) {
+        return chartViewService.chartCopy(id,panelId);
     }
 
     @ApiIgnore

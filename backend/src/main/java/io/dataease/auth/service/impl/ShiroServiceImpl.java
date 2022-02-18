@@ -45,6 +45,7 @@ public class ShiroServiceImpl implements ShiroService {
         // 获取主题信息
         filterChainDefinitionMap.put("/plugin/theme/themes", ANON);
         filterChainDefinitionMap.put("/plugin/theme/items/**", ANON);
+        filterChainDefinitionMap.put("/plugin/view/types", ANON);
 
         // 验证链接
         filterChainDefinitionMap.put("/api/link/validate**", ANON);

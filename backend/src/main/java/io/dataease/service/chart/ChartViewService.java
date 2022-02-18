@@ -219,6 +219,11 @@ public class ChartViewService {
         }
         List<ChartViewFieldDTO> xAxis = new Gson().fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
+        if (StringUtils.equalsIgnoreCase(view.getType(), "table-pivot")) {
+            List<ChartViewFieldDTO> xAxisExt = new Gson().fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
+            }.getType());
+            xAxis.addAll(xAxisExt);
+        }
         List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
         if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")) {
@@ -1679,9 +1684,9 @@ public class ChartViewService {
         return chartViewMapper.selectByPrimaryKey(id);
     }
 
-    public String chartCopy(String id) {
+    public String chartCopy(String id,String panelId) {
         String newChartId = UUID.randomUUID().toString();
-        extChartViewMapper.chartCopy(newChartId, id);
+        extChartViewMapper.chartCopy(newChartId, id,panelId);
         return newChartId;
     }
 

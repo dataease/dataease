@@ -1,18 +1,18 @@
 package io.dataease.service.datasource;
 
-import cn.hutool.json.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.jayway.jsonpath.JsonPath;
+import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSourceMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.CommonThreadPool;
-import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.DatasourceUnionRequest;
@@ -20,7 +20,6 @@ import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.commons.constants.DatasourceTypes;
-import io.dataease.exception.ExcelException;
 import io.dataease.provider.datasource.ApiProvider;
 import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.provider.ProviderFactory;
@@ -57,6 +56,7 @@ public class DatasourceService {
     @Resource
     private CommonThreadPool commonThreadPool;
 
+    @DeCleaner(DePermissionType.DATASOURCE)
     public Datasource addDatasource(Datasource datasource) throws Exception{
         checkName(datasource);
         long currentTimeMillis = System.currentTimeMillis();

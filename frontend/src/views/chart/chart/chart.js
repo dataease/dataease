@@ -2,12 +2,13 @@ export const DEFAULT_COLOR_CASE = {
   value: 'default',
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
   alpha: 100,
-  tableHeaderBgColor: '#4e81bb',
-  tableItemBgColor: '#c6d9f0',
+  tableHeaderBgColor: '#e1eaff',
+  tableItemBgColor: '#ffffff',
   tableFontColor: '#000000',
   tableStripe: true,
   dimensionColor: '#000000',
-  quotaColor: '#000000'
+  quotaColor: '#000000',
+  tableBorderColor: '#cfdaf4'
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
@@ -31,8 +32,10 @@ export const DEFAULT_SIZE = {
   tableTitleHeight: 36,
   tableItemHeight: 36,
   tablePageSize: '20',
-  tableColumnMode: 'adapt',
+  tableColumnMode: 'custom',
   tableColumnWidth: 100,
+  tableHeaderAlign: 'left',
+  tableItemAlign: 'right',
   gaugeMin: 0,
   gaugeMax: 100,
   gaugeStartAngle: 225,
