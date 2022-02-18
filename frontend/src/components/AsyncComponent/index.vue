@@ -65,8 +65,12 @@ export default {
     this.refId = uuid.v1
   },
   methods: {
-    chartResize() {
+    /* chartResize() {
       this.$refs[this.refId] && this.$refs[this.refId].chartResize && this.$refs[this.refId].chartResize()
+    }, */
+    callPluginInner(param) {
+      const { methodName, methodParam } = param
+      this.$refs[this.refId] && this.$refs[this.refId][methodName] && this.$refs[this.refId][methodName](methodParam)
     }
   }
 }
