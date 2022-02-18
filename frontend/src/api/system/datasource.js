@@ -74,4 +74,13 @@ export function getSchema(data) {
   })
 }
 
+export function checkApiDatasource(data){
+  return request({
+    url: 'datasource/checkApiDatasource',
+    method: 'post',
+    loading: false,
+    data
+  })
+}
+
 export default { dsGrid, addDs, editDs, delDs, validateDs, listDatasource, getSchema }

@@ -99,6 +99,10 @@
                               <svg-icon icon-class="ds-union" class="ds-icon-union" />
                               {{ $t('dataset.union_data') }}
                             </el-dropdown-item>
+                            <el-dropdown-item :command="beforeClickAddData('api',data)">
+                              <svg-icon icon-class="ds-union" class="ds-icon-union" />
+                              {{ $t('dataset.union_data') }}
+                            </el-dropdown-item>
                           </el-dropdown-menu>
                         </el-dropdown>
                       </el-dropdown-item>
@@ -561,6 +565,9 @@ export default {
           break
         case 'union':
           this.addData('AddUnion')
+          break
+        case 'api':
+          this.addData('AddApi')
           break
       }
     },

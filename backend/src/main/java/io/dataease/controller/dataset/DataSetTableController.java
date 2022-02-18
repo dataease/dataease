@@ -10,7 +10,7 @@ import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.response.DataSetDetail;
-import io.dataease.dto.datasource.TableFiled;
+import io.dataease.dto.datasource.TableField;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.ExcelFileData;
 import io.dataease.service.dataset.DataSetTableService;
@@ -110,7 +110,7 @@ public class DataSetTableController {
 
     @ApiOperation("查询原始字段")
     @PostMapping("getFields")
-    public List<TableFiled> getFields(@RequestBody DatasetTable datasetTable) throws Exception {
+    public List<TableField> getFields(@RequestBody DatasetTable datasetTable) throws Exception {
         return dataSetTableService.getFields(datasetTable);
     }
 

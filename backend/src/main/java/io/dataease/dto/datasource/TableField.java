@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class TableFiled {
+public class TableField {
     @ApiModelProperty("字段名称")
     private String fieldName;
     @ApiModelProperty("重新标记")

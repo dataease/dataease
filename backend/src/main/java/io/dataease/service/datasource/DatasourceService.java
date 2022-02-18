@@ -2,6 +2,7 @@ package io.dataease.service.datasource;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.jayway.jsonpath.JsonPath;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
@@ -15,9 +16,11 @@ import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.DatasourceUnionRequest;
+import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.commons.constants.DatasourceTypes;
+import io.dataease.provider.datasource.ApiProvider;
 import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.controller.request.datasource.DatasourceRequest;
@@ -105,6 +108,9 @@ public class DatasourceService {
                         break;
                     case ck:
                         datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), CHConfiguration.class)) );
+                        break;
+                    case api:
+                        datasourceDTO.setApiConfiguration(JSONObject.parseArray(datasourceDTO.getConfiguration()));
                         break;
                     default:
                         break;
@@ -263,13 +269,45 @@ public class DatasourceService {
         datasources.forEach(datasource -> checkAndUpdateDatasourceStatus(datasource, true));
     }
 
+    public ApiDefinition checkApiDatasource(ApiDefinition apiDefinition) throws Exception {
+        String response = ApiProvider.execHttpRequest(apiDefinition);
+
+        List<LinkedHashMap> datas = JsonPath.read(response,apiDefinition.getDataPath());
+        List<JSONObject> dataList = new ArrayList<>();
+        for (LinkedHashMap data : datas) {
+            JSONObject jsonObject = new JSONObject();
+            Iterator it = data.entrySet().iterator();
+            while (it.hasNext()){
+                Map.Entry entry = (Map.Entry)it.next();
+                jsonObject.put((String) entry.getKey(), entry.getValue());
+            }
+            dataList.add(jsonObject);
+        }
+        List<DatasetTableField> fields = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(dataList)){
+            for (Map.Entry<String, Object> stringObjectEntry : dataList.get(0).entrySet()) {
+                DatasetTableField tableField = new DatasetTableField();
+                tableField.setOriginName(stringObjectEntry.getKey());
+                tableField.setName(stringObjectEntry.getKey());
+                tableField.setSize(65535);
+                tableField.setDeExtractType(0);
+                tableField.setDeType(0);
+                tableField.setExtField(0);
+                fields.add(tableField);
+            }
+        }
+        apiDefinition.setDatas(dataList);
+        apiDefinition.setFields(fields);
+        return apiDefinition;
+    }
+
     private void checkAndUpdateDatasourceStatus(Datasource datasource){
         try {
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
-            datasourceProvider.checkStatus(datasourceRequest);
-            datasource.setStatus("Success");
+            String status = datasourceProvider.checkStatus(datasourceRequest);
+            datasource.setStatus(status);
         } catch (Exception e) {
             datasource.setStatus("Error");
         }
@@ -280,8 +318,8 @@ public class DatasourceService {
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
-            datasourceProvider.checkStatus(datasourceRequest);
-            datasource.setStatus("Success");
+            String status = datasourceProvider.checkStatus(datasourceRequest);
+            datasource.setStatus(status);
             datasourceMapper.updateByPrimaryKeySelective(datasource);
         } catch (Exception e) {
             Datasource temp = datasourceMapper.selectByPrimaryKey(datasource.getId());
