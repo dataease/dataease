@@ -1284,16 +1284,10 @@ export default {
     buildParam(getData, trigger, needRefreshGroup = false, switchType = false) {
       if (!this.view.resultCount ||
           this.view.resultCount === '' ||
-          this.view.resultCount.length > 4 ||
           isNaN(Number(this.view.resultCount)) ||
           String(this.view.resultCount).includes('.') ||
           parseInt(this.view.resultCount) < 1) {
-        this.$message({
-          message: this.$t('dataset.pls_input_less_5'),
-          type: 'error',
-          showClose: true
-        })
-        return
+        this.view.resultCount = '1000'
       }
       if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
         this.$message({
