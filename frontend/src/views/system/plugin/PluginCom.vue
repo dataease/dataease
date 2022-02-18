@@ -79,8 +79,11 @@ export default {
       const { eventName, eventParam } = param
       bus.$emit(eventName, eventParam)
     },
-    chartResize() {
+    /* chartResize() {
       this.$refs[this.refId] && this.$refs[this.refId].chartResize && this.$refs[this.refId].chartResize()
+    }, */
+    callPluginInner(param) {
+      this.$refs[this.refId] && this.$refs[this.refId].callPluginInner && this.$refs[this.refId].callPluginInner(param)
     }
   }
 }

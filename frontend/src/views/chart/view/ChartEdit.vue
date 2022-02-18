@@ -829,6 +829,7 @@
           <div ref="imageWrapper" style="height: 100%">
             <plugin-com
               v-if="httpRequest.status && chart.type && view.isPlugin"
+              ref="dynamicChart"
               :component-name="chart.type + '-view'"
               :obj="{chart}"
               class="chart-class"
@@ -1221,7 +1222,7 @@ export default {
     },
     'chartType': function(newVal, oldVal) {
       this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal)
-      if (newVal === 'map' && newVal !== oldVal) {
+      if ((newVal === 'map' || newVal === 'buddle-map') && newVal !== oldVal) {
         this.initAreas()
       }
       this.$emit('typeChange', newVal)
@@ -1249,6 +1250,7 @@ export default {
       bus.$on('show-edit-filter', this.showEditFilter)
       bus.$on('calc-data', this.calcData)
       bus.$on('plugins-calc-style', this.calcStyle)
+      bus.$on('plugin-chart-click', this.chartClick)
     },
     initTableData(id) {
       if (id != null) {
@@ -2096,7 +2098,7 @@ export default {
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.view.drillFields.length - 1) {
         // const isSwitch = (this.chart.type === 'map' && this.sendToChildren(param))
-        if (this.chart.type === 'map') {
+        if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
           if (this.sendToChildren(param)) {
             this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
             // this.getData(this.param.id)
@@ -2119,16 +2121,22 @@ export default {
     resetDrill() {
       const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = []
-      if (this.chart.type === 'map') {
+      if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
         this.backToParent(0, length)
         this.currentAcreaNode = null
-        this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(null)
+        const current = this.$refs.dynamicChart
+        if (this.view.isPlugin) {
+          current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
+        } else {
+          current && current.registerDynamicMap && current.registerDynamicMap(null)
+        }
+        // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(null)
       }
     },
     drillJump(index) {
       const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = this.drillClickDimensionList.slice(0, index)
-      if (this.chart.type === 'map') {
+      if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
         this.backToParent(index, length)
       }
 
@@ -2148,7 +2156,13 @@ export default {
       }
 
       this.currentAcreaNode = tempNode
-      this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(this.currentAcreaNode.code)
+      // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(this.currentAcreaNode.code)
+      const current = this.$refs.dynamicChart
+      if (this.view.isPlugin) {
+        current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: this.currentAcreaNode.code })
+      } else {
+        current && current.registerDynamicMap && current.registerDynamicMap(this.currentAcreaNode.code)
+      }
     },
 
     // 切换下一级地图
@@ -2166,22 +2180,17 @@ export default {
         if (!nextNode || !nextNode.code) return null
         // this.view.customAttr.areaCode = nextNode.code
         this.currentAcreaNode = nextNode
-        this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(nextNode.code)
+        // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(nextNode.code)
+        const current = this.$refs.dynamicChart
+        if (this.view.isPlugin) {
+          nextNode && current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: nextNode.code })
+        } else {
+          nextNode && current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
+        }
         return nextNode
       }
     },
-    // 根据地名获取areaCode
-    // findEntityByname(name, array) {
-    //   if (array === null || array.length === 0) array = this.places
-    //   for (let index = 0; index < array.length; index++) {
-    //     const node = array[index]
-    //     if (node.name === name) return node
-    //     if (node.children && node.children.length > 0) {
-    //       const temp = this.findEntityByname(name, node.children)
-    //       if (temp) return temp
-    //     }
-    //   }
-    // }
+
     findEntityByCode(code, array) {
       if (array === null || array.length === 0) array = this.places
       for (let index = 0; index < array.length; index++) {
