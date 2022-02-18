@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%;">
     <el-col>
-      <el-form v-show="chart.type && !chart.type.includes('gauge')" ref="labelForm" :disabled="!hasDataPermission('manage',param.privileges)" :model="labelForm" label-width="80px" size="mini">
+      <el-form v-show="chart.type && !chart.type.includes('gauge')" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.show')" class="form-item">
           <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
@@ -25,7 +25,7 @@
         </div>
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('gauge')" ref="labelForm" :disabled="!hasDataPermission('manage',param.privileges)" :model="labelForm" label-width="80px" size="mini">
+      <el-form v-show="chart.type && chart.type.includes('gauge')" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.show')" class="form-item">
           <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
