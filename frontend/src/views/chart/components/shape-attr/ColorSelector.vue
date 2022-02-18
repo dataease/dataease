@@ -1,14 +1,13 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini" :disabled="param && !hasDataPermission('manage',param.privileges)">
+      <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini">
         <div v-if="sourceType==='view' || sourceType==='panelEchart'">
           <el-form-item v-show="chart.type && !chart.type.includes('table') && !chart.type.includes('text')" :label="$t('chart.color_case')" class="form-item">
             <el-popover
               placement="bottom"
               width="400"
               trigger="click"
-              :disabled="param && !hasDataPermission('manage',param.privileges)"
             >
               <div style="padding: 6px 10px;">
                 <div>

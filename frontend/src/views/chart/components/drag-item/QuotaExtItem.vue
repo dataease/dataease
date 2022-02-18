@@ -1,24 +1,6 @@
 <template>
   <span>
-    <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis" :type="tagType">
-      <span style="float: left">
-        <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-        <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-        <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
-        <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-        <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'bar'" icon-class="bar" class-name="field-icon-sort" />
-        <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'line'" icon-class="line" class-name="field-icon-sort" />
-        <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'scatter'" icon-class="scatter" class-name="field-icon-sort" />
-        <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
-        <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
-      </span>
-      <span class="item-span-style" :title="item.name">{{ item.name }}</span>
-      <field-error-tips v-if="tagType === 'danger'" />
-      <span v-if="chart.type !== 'table-info' && item.summary" class="summary-span">
-        {{ $t('chart.' + item.summary) }}<span v-if="item.compareCalc && item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
-      </span>
-    </el-tag>
-    <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
+    <el-dropdown trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis" :type="tagType">
           <span style="float: left">

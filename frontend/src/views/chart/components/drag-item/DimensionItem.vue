@@ -1,21 +1,6 @@
 <template>
   <span>
-    <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis" :type="tagType">
-      <span style="float: left">
-        <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-        <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-        <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
-        <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-        <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
-        <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
-      </span>
-      <span class="item-span-style" :title="item.name">{{ item.name }}</span>
-      <field-error-tips v-if="tagType === 'danger'" />
-      <span v-if="item.deType === 1" class="summary-span">
-        {{ $t('chart.' + item.dateStyle) }}
-      </span>
-    </el-tag>
-    <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
+    <el-dropdown trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis" :type="tagType">
           <span style="float: left">

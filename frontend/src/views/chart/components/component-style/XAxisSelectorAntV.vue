@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="axisForm" :model="axisForm" label-width="80px" size="mini" :disabled="!hasDataPermission('manage',param.privileges)">
+      <el-form ref="axisForm" :model="axisForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.show')" class="form-item">
           <el-checkbox v-model="axisForm.show" @change="changeXAxisStyle">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
