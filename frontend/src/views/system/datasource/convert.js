@@ -189,18 +189,5 @@ class Convert {
 
     return objectTemplate;
   }
-
-  /**
-   *  后台转换
-   * @param callback
-   */
-  // schemaToJsonStr(schema, callback) {
-  //   post('/api/definition/preview', schema, (response) => {
-  //     if (callback) {
-  //       callback(response.data);
-  //     }
-  //   });
-  // }
 }
 
-module.exports = Convert;

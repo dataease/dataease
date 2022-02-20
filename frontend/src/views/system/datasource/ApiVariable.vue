@@ -36,32 +36,14 @@
                     highlight-first-item
                     @select="change">
           </el-input>
-<!--          <el-autocomplete-->
-<!--            :disabled="isReadOnly"-->
-<!--            size="small"-->
-<!--            class="input-with-autocomplete"-->
-<!--            v-model="item.value"-->
-<!--            placeholder="valueText"-->
-<!--            value-key="name"-->
-<!--            highlight-first-item-->
-<!--            @select="change">-->
-<!--          </el-autocomplete>-->
         </el-col>
 
         <el-col class="item">
           <el-input v-model="item.description" size="small" maxlength="200"
                     :placeholder="$t('commons.description')" show-word-limit>
           </el-input>
-
           <el-autocomplete :disabled="isReadOnly" v-if="suggestions" v-model="item.name" size="small"
                            :fetch-suggestions="querySearch" @change="change" :placeholder="keyText" show-word-limit/>
-
-        </el-col>
-
-        <el-col v-if="type === 'body'" class="item kv-select">
-          <el-input :disabled="isReadOnly" v-model="item.contentType" size="small"
-                    @change="change" :placeholder="$t('api_test.request.content_type')" show-word-limit>
-          </el-input>
         </el-col>
 
         <el-col class="item kv-delete">
@@ -114,10 +96,6 @@ export default {
   data() {
     return {
       currentItem: null,
-      requireds: [
-        {name: this.$t('commons.selector.required'), id: true},
-        {name: this.$t('commons.selector.not_required'), id: false}
-      ],
       isSelectAll: true,
       isActive: true,
     }

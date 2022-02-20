@@ -20,6 +20,7 @@ public class ShiroServiceImpl implements ShiroService {
         // ----------------------------------------------------------
         // 放行Swagger2页面，需要放行这些
 
+        filterChainDefinitionMap.put("/api/data/demo", ANON);
         filterChainDefinitionMap.put("/doc.html**", "doc");
         filterChainDefinitionMap.put("/deApi**", ANON);
         filterChainDefinitionMap.put("/swagger-ui.html", ANON);

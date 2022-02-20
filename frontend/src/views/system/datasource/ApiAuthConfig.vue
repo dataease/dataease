@@ -59,7 +59,6 @@ export default {
   data() {
     return {
       options: [{name: "No Auth"}, {name: "Basic Auth"}],
-      encryptOptions: [{id: false, name: this.$t('commons.encrypted')}],
       activeName: "verified",
       rule: {},
       authConfig: {}
