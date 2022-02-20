@@ -1253,7 +1253,8 @@ export default {
     union_error: '關聯關繫與關聯字段不能為空',
     union_repeat: '當前數據集已被關聯，請勿重復關聯',
     preview_result: '預覽結果',
-    sql_ds_union_error: '直連模式下SQL數據集，不支持關聯'
+    sql_ds_union_error: '直連模式下SQL數據集，不支持關聯',
+    api_data: 'API 數據集'
   },
   datasource: {
     datasource: '數據源',

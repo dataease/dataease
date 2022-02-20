@@ -97,6 +97,7 @@
                   <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
                   <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
                   <svg-icon v-if="data.type === 'union'" icon-class="ds-union" class="ds-icon-union" />
+                  <svg-icon v-if="data.type === 'api'" icon-class="ds-api" class="ds-icon-api" />
                 </span>
                 <span v-if="data.type === 'db' || data.type === 'sql'">
                   <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>

@@ -1253,7 +1253,8 @@ export default {
     union_error: 'Union relation and field can not be empty',
     union_repeat: 'This dataset is already union，do not union repeat',
     preview_result: 'Preview',
-    sql_ds_union_error: 'Direct connect SQL dataset can not be union'
+    sql_ds_union_error: 'Direct connect SQL dataset can not be union',
+    api_data: 'API dataset'
   },
   datasource: {
     datasource: 'Data Source',

@@ -1256,7 +1256,8 @@ export default {
     union_error: '关联关系与关联字段不能为空',
     union_repeat: '当前数据集已被关联，请勿重复关联',
     preview_result: '预览结果',
-    sql_ds_union_error: '直连模式下SQL数据集，不支持关联'
+    sql_ds_union_error: '直连模式下SQL数据集，不支持关联',
+    api_data: 'API 数据集'
   },
   datasource: {
     datasource: '数据源',

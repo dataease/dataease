@@ -447,8 +447,8 @@ public class ExtractDataService {
         bw.close();
 
         File scriptFile = new File(root_path + datasetTable.getId() + ".sh");
-        scriptFile.setExecutable(true);
         scriptFile.createNewFile();
+        scriptFile.setExecutable(true);
 
         BufferedWriter scriptFileBw = new BufferedWriter(new FileWriter(root_path + datasetTable.getId() + ".sh"));
         scriptFileBw.write("#!/bin/sh");
