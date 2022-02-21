@@ -8,62 +8,64 @@
       'rect-shape'
     ]"
   >
-    <EditBarView v-if="editBarViewShowFlag" :is-edit="isEdit" :view-id="element.propValue.viewId" @showViewDetails="openChartDetailsDialog" />
-    <div v-if="requestStatus==='error'" class="chart-error-class">
-      <div class="chart-error-message-class">
-        {{ message }},{{ $t('chart.chart_show_error') }}
-        <br>
-        {{ $t('chart.chart_error_tips') }}
+    <div :style="componentBackGround">
+      <EditBarView v-if="editBarViewShowFlag" :is-edit="isEdit" :view-id="element.propValue.viewId" @showViewDetails="openChartDetailsDialog" />
+      <div v-if="requestStatus==='error'" class="chart-error-class">
+        <div class="chart-error-message-class">
+          {{ message }},{{ $t('chart.chart_show_error') }}
+          <br>
+          {{ $t('chart.chart_error_tips') }}
+        </div>
       </div>
-    </div>
-    <plugin-com
-      v-if="chart.isPlugin"
-      :ref="element.propValue.id"
-      :component-name="chart.type + '-view'"
-      :obj="{chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
-      class="chart-class"
-    />
-    <chart-component
-      v-else-if="charViewShowFlag"
-      :ref="element.propValue.id"
-      class="chart-class"
-      :chart="chart"
-      :track-menu="trackMenu"
-      :search-count="searchCount"
-      :terminal-type="scaleCoefficientType"
-      @onChartClick="chartClick"
-      @onJumpClick="jumpClick"
-    />
-    <chart-component-g2
-      v-else-if="charViewG2ShowFlag"
-      :ref="element.propValue.id"
-      class="chart-class"
-      :chart="chart"
-      :track-menu="trackMenu"
-      :search-count="searchCount"
-      @onChartClick="chartClick"
-      @onJumpClick="jumpClick"
-    />
-    <chart-component-s2
-      v-else-if="charViewS2ShowFlag"
-      :ref="element.propValue.id"
-      class="chart-class"
-      :chart="chart"
-      :track-menu="trackMenu"
-      :search-count="searchCount"
-      @onChartClick="chartClick"
-      @onJumpClick="jumpClick"
-    />
-    <table-normal
-      v-else-if="tableShowFlag"
-      :ref="element.propValue.id"
-      :show-summary="chart.type === 'table-normal'"
-      :chart="chart"
-      class="table-class"
-    />
-    <label-normal v-else-if="labelShowFlag" :ref="element.propValue.id" :chart="chart" class="table-class" />
-    <div style="position: absolute;left: 8px;bottom:8px;">
-      <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
+      <plugin-com
+        v-if="chart.isPlugin"
+        :ref="element.propValue.id"
+        :component-name="chart.type + '-view'"
+        :obj="{chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
+        class="chart-class"
+      />
+      <chart-component
+        v-else-if="charViewShowFlag"
+        :ref="element.propValue.id"
+        class="chart-class"
+        :chart="chart"
+        :track-menu="trackMenu"
+        :search-count="searchCount"
+        :terminal-type="scaleCoefficientType"
+        @onChartClick="chartClick"
+        @onJumpClick="jumpClick"
+      />
+      <chart-component-g2
+        v-else-if="charViewG2ShowFlag"
+        :ref="element.propValue.id"
+        class="chart-class"
+        :chart="chart"
+        :track-menu="trackMenu"
+        :search-count="searchCount"
+        @onChartClick="chartClick"
+        @onJumpClick="jumpClick"
+      />
+      <chart-component-s2
+        v-else-if="charViewS2ShowFlag"
+        :ref="element.propValue.id"
+        class="chart-class"
+        :chart="chart"
+        :track-menu="trackMenu"
+        :search-count="searchCount"
+        @onChartClick="chartClick"
+        @onJumpClick="jumpClick"
+      />
+      <table-normal
+        v-else-if="tableShowFlag"
+        :ref="element.propValue.id"
+        :show-summary="chart.type === 'table-normal'"
+        :chart="chart"
+        class="table-class"
+      />
+      <label-normal v-else-if="labelShowFlag" :ref="element.propValue.id" :chart="chart" class="table-class" />
+      <div style="position: absolute;left: 8px;bottom:8px;">
+        <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
+      </div>
     </div>
   </div>
 </template>
@@ -90,6 +92,7 @@ import EditBarView from '@/components/canvas/components/Editor/EditBarView'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/components/canvas/utils/style'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 export default {
   name: 'UserView',
   components: { PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
@@ -168,6 +171,31 @@ export default {
     this.bindPluginEvent()
   },
   computed: {
+    // 视图
+    componentBackGround() {
+      const customStyle = JSON.parse(this.chart.customStyle)
+      let style = {
+        height: '100%',
+        width: '100%',
+        backgroundSize: '100% 100% !important',
+        borderRadius: '0px'
+      }
+      if (customStyle && customStyle.background) {
+        style.borderRadius = customStyle.background.borderRadius + 'px!important'
+        if (customStyle.background.backgroundType === 'outImage' && typeof (customStyle.background.outImage) === 'string') {
+          style = {
+            background: `url(${customStyle.background.outImage}) no-repeat`,
+            ...style
+          }
+        } else if (!customStyle.background.backgroundType || customStyle.background.backgroundType === 'color') {
+          style = {
+            background: hexColorToRGBA(customStyle.background.color, customStyle.background.alpha),
+            ...style
+          }
+        }
+      }
+      return style
+    },
     scaleCoefficient() {
       if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
         return 1.1

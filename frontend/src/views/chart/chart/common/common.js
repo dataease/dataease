@@ -174,7 +174,7 @@ export function componentStyle(chart_option, chart) {
       chart_option.radar.splitArea = customStyle.split.splitArea
     }
     if (customStyle.background) {
-      chart_option.backgroundColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
+      // chart_option.backgroundColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
     }
   }
 }
