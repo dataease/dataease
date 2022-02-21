@@ -387,11 +387,28 @@ export default {
       return roots
     },
     loadViews() {
-      const viewIds = this.componentData
+      /* const viewIds = this.componentData
         .filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
-        .map(item => item.propValue.viewId)
+        .map(item => item.propValue.viewId) */
+      let viewIds = []; let tabViewIds = []
+      for (let index = 0; index < this.componentData.length; index++) {
+        const element = this.componentData[index]
+        if (element.type && element.propValue && element.propValue.viewId && element.type === 'view') {
+          viewIds.push(element.propValue.viewId)
+        }
+
+        if (element.type && element.type === 'de-tabs') {
+          tabViewIds = element.options.tabList.filter(item => item.content && item.content.type === 'view' && item.content.propValue && item.content.propValue.viewId).map(item => item.content.propValue.viewId)
+        }
+        viewIds = [...viewIds, ...tabViewIds]
+      }
       viewIds && viewIds.length > 0 && viewsWithIds(viewIds).then(res => {
         const datas = res.data
+        /* datas.forEach(item => {
+          if (tabViewIds.includes(item.id)) {
+            item.name = 'tabs(' + item.name + ')'
+          }
+        }) */
         this.viewInfos = datas
         this.childViews.viewInfos = datas
       })
