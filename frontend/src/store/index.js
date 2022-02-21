@@ -203,20 +203,35 @@ const data = {
 
       for (let index = 0; index < state.componentData.length; index++) {
         const element = state.componentData[index]
+        if (element.type && element.type === 'de-tabs') {
+          for (let idx = 0; idx < element.options.tabList.length; idx++) {
+            const ele = element.options.tabList[idx].content
+            if (!ele.type || ele.type !== 'view') continue
+            const currentFilters = ele.filters || []
+            const vidMatch = viewIdMatch(condition.viewIds, ele.propValue.viewId)
+
+            let jdx = currentFilters.length
+            while (jdx--) {
+              const filter = currentFilters[jdx]
+              if (filter.componentId === filterComponentId) {
+                currentFilters.splice(jdx, 1)
+              }
+            }
+            // 不存在该条件 且 条件有效 直接保存该条件
+            // !filterExist && vValid && currentFilters.push(condition)
+            vidMatch && vValid && currentFilters.push(condition)
+            ele.filters = currentFilters
+          }
+          state.componentData[index] = element
+        }
         if (!element.type || element.type !== 'view') continue
         const currentFilters = element.filters || []
         const vidMatch = viewIdMatch(condition.viewIds, element.propValue.viewId)
 
         let j = currentFilters.length
-        // let filterExist = false
         while (j--) {
           const filter = currentFilters[j]
           if (filter.componentId === filterComponentId) {
-            // filterExist = true
-            // 已存在该条件 且 条件值有效 直接替换原体检
-            // vidMatch && vValid && (currentFilters[j] = condition)
-            // 已存在该条件 且 条件值无效 直接删除原条件
-            // vidMatch && !vValid && (currentFilters.splice(j, 1))
             currentFilters.splice(j, 1)
           }
         }
