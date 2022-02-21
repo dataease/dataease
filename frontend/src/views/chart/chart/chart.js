@@ -190,7 +190,10 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
   }
 }
 export const DEFAULT_BACKGROUND_COLOR = {
+  backgroundType: 'color',
   color: '#ffffff',
+  img: null,
+  inner: null,
   alpha: 100,
   borderRadius: 5
 }

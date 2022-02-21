@@ -23,9 +23,9 @@
       <el-tooltip v-if="canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.matrix')">
         <el-button class="icon iconfont-tb icon-shujujuzhen" size="mini" circle @click="auxiliaryMatrixChange" />
       </el-tooltip>
-      <el-tooltip :content="$t('panel.style')">
-        <el-button class="el-icon-magic-stick" size="mini" circle @click="showPanel" />
-      </el-tooltip>
+<!--      <el-tooltip :content="$t('panel.style')">-->
+<!--        <el-button class="el-icon-magic-stick" size="mini" circle @click="showPanel" />-->
+<!--      </el-tooltip>-->
       <el-tooltip :content="$t('panel.undo') ">
         <el-button class="el-icon-refresh-right" size="mini" circle @click="undo" />
       </el-tooltip>

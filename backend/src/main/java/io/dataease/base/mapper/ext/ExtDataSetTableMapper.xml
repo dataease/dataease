@@ -100,4 +100,27 @@
         ORDER BY CONVERT(`name` using gbk)
     </select>
 
+
+    <select id="searchDataSetTableWithPanelId" resultMap="BaseResultMapDTO">
+        select
+        id, `name`, scene_id, data_source_id, `type`, `mode`,`info`, create_by, create_time,
+        get_auths(id,'dataset',#{userId}) as `privileges`
+        from dataset_table
+        where id in (
+        SELECT
+            table_id
+        FROM
+            chart_view
+        WHERE
+            id IN (
+            SELECT
+                chart_view_id
+            FROM
+                panel_view
+            WHERE
+            panel_id = #{panelId}
+            )
+        )
+    </select>
+
 </mapper>

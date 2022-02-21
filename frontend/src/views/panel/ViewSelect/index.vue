@@ -2,7 +2,7 @@
   <el-col v-loading="loading">
     <el-row style="margin-top: 5px">
       <el-row style="margin-left: 5px;margin-right: 5px">
-        <el-col :span="23">
+        <el-col :span="17">
           <el-input
             v-model="templateFilterText"
             :placeholder="$t('panel.filter_keywords')"
@@ -11,9 +11,9 @@
             prefix-icon="el-icon-search"
           />
         </el-col>
-        <!--        <el-col v-if="!selectModel" :span="7">-->
-        <!--          <el-button type="primary" size="mini" style="float: right" @click="newChart">新建 </el-button>-->
-        <!--        </el-col>-->
+        <el-col v-if="!selectModel" :span="7">
+          <el-button type="primary" class="el-icon-circle-plus-outline" size="mini" style="float: right" @click="newChart">新建 </el-button>
+        </el-col>
 
       </el-row>
       <el-row style="margin-top: 5px">

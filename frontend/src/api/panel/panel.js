@@ -155,10 +155,26 @@ export function initPanelData(panelId, callback) {
   })
 }
 
+export function initPanelComponentsData(panelId, callback) {
+  // 加载仪表板组件视图数据
+  queryPanelComponents(panelId).then(rep => {
+    store.commit('initPanelComponents', rep.data)
+    callback(rep)
+  })
+}
+
 export function queryPanelViewTree() {
   return request({
     url: '/panel/group/queryPanelViewTree',
     method: 'post'
+  })
+}
+
+export function queryPanelComponents(id) {
+  return request({
+    url: 'panel/group/queryPanelComponents/' + id,
+    method: 'get',
+    loading: false
   })
 }
 

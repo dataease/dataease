@@ -1,17 +1,18 @@
 <template>
   <el-row v-loading="loading" style="height: 100%;overflow-y: hidden;width: 100%;">
     <el-row style="height: 40px;" class="padding-lr">
-      <span class="title-text" style="line-height: 40px;">{{ view.name }}</span>
       <el-popover
+        style="margin-top: 5px"
         placement="right-start"
-        width="400"
+        width="250"
         trigger="click"
         @show="showTab"
         @hide="hideTab"
       >
         <dataset-chart-detail type="chart" :data="view" :tab-status="tabStatus" />
-        <i slot="reference" class="el-icon-warning icon-class" style="margin-left: 4px;cursor: pointer;" />
+        <i slot="reference" class="el-icon-warning icon-class" style="position:absolute; margin-left: 4px; top:14px;cursor: pointer;" />
       </el-popover>
+      <span class="title-text view-title-name" style="line-height: 40px;">{{ view.name }}</span>
       <span style="float: right;line-height: 40px;">
         <el-button size="mini" :disabled="!hasEdit" @click="reset">
           {{ $t('chart.recover') }}
@@ -23,7 +24,7 @@
     </el-row>
     <el-row class="view-panel">
       <el-tabs :stretch="true" class="tab-header">
-        <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 360px">
+        <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 300px">
           <el-row class="view-panel">
             <el-col class="theme-border-class" style="width: 180px;border-right: 1px solid #E6E6E6;">
               <div style="display: flex;align-items: center;justify-content: center;padding: 6px;">
@@ -816,7 +817,7 @@
         </el-tab-pane>
       </el-tabs>
 
-      <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
+      <el-col v-if="editFrom==='view'" style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <div ref="imageWrapper" style="height: 100%">
             <plugin-com
@@ -1106,6 +1107,11 @@ export default {
     param: {
       type: Object,
       required: true
+    },
+    editFrom: {
+      type: String,
+      required: false,
+      default: 'view'
     }
   },
   data() {
@@ -1205,8 +1211,9 @@ export default {
       if (this.param.optType === 'new') {
         //
       } else {
-        this.resetDrill()
-        this.getData(this.param.id)
+        // this.resetDrill()
+        this.getChart(this.param.id)
+        // this.getData(this.param.id)
       }
     },
     searchField(val) {
@@ -1585,6 +1592,7 @@ export default {
       }
     },
     getChart(id) {
+      debugger
       if (id) {
         post('/chart/view/get/' + id, {}).then(response => {
           this.initTableData(response.data.tableId)
@@ -2560,6 +2568,16 @@ export default {
 
   .radio-span > > > .el-radio__label {
     margin-left: 4px;
+  }
+
+  .view-title-name{
+    display:-moz-inline-box;
+    display:inline-block;
+    width:130px;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    overflow: hidden;
+    margin-left: 20px;
   }
 
 </style>

@@ -375,6 +375,11 @@ const data = {
     },
     setScrollAutoMove(state, offset) {
       state.scrollAutoMove = offset
+    },
+    initPanelComponents(state, panelComponents) {
+      if (panelComponents) {
+        state.canvasStyleData['panelComponents'] = panelComponents
+      }
     }
   },
   modules: {

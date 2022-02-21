@@ -20,71 +20,97 @@
     </el-header>
     <de-container>
       <!--左侧导航栏-->
-      <de-aside-container class="ms-aside-container">
-        <div v-if="showAside" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
-          <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px">
-            <!-- 视图图表 start -->
-            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
-              <el-button circle class="el-icon-circle-plus-outline" size="mini" @click="newChart()" />
-            </div>
-            <div class="button-text" style="position: relative; margin: 18px auto 16px;">
-              <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                {{ $t('panel.view') }}
-              </div>
-            </div>
-            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
-              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
-            </div>
-            <!-- 视图图表 end -->
-            <!-- 过滤组件 start -->
+      <!--      <de-aside-container class="ms-aside-container">-->
+      <!--        <div v-if="showAside" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">-->
+      <!--          <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px">-->
+      <!--            &lt;!&ndash; 视图图表 start &ndash;&gt;-->
+      <!--            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">-->
+      <!--              <el-button circle class="el-icon-circle-plus-outline" size="mini" @click="newChart()" />-->
+      <!--            </div>-->
+      <!--            <div class="button-text" style="position: relative; margin: 18px auto 16px;">-->
+      <!--              <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">-->
+      <!--                {{ $t('panel.view') }}-->
+      <!--              </div>-->
+      <!--            </div>-->
+      <!--            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">-->
+      <!--              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />-->
+      <!--            </div>-->
+      <!--            &lt;!&ndash; 视图图表 end &ndash;&gt;-->
+      <!--            &lt;!&ndash; 过滤组件 start &ndash;&gt;-->
 
-            <div class="button-div-class" style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; ">
-              <el-button circle :class="show&&showIndex===1? 'button-show':'button-closed'" class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
-            </div>
-            <div class="button-text" style=" position: relative; margin: 18px auto 16px;">
-              <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                {{ $t('panel.module') }}
-              </div>
-            </div>
+      <!--            <div class="button-div-class" style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; ">-->
+      <!--              <el-button circle :class="show&&showIndex===1? 'button-show':'button-closed'" class="el-icon-s-tools" size="mini" @click="showPanel(1)" />-->
+      <!--            </div>-->
+      <!--            <div class="button-text" style=" position: relative; margin: 18px auto 16px;">-->
+      <!--              <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">-->
+      <!--                {{ $t('panel.module') }}-->
+      <!--              </div>-->
+      <!--            </div>-->
 
-            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
-              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
-            </div>
-            <!-- 过滤组件 end -->
-            <!-- 其他组件 start -->
+      <!--            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">-->
+      <!--              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />-->
+      <!--            </div>-->
+      <!--            &lt;!&ndash; 过滤组件 end &ndash;&gt;-->
+      <!--            &lt;!&ndash; 其他组件 start &ndash;&gt;-->
 
-            <div class="button-div-class" style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; ">
-              <el-button circle :class="show&&showIndex===3? 'button-show':'button-closed'" class="el-icon-brush" size="mini" @click="showPanel(3)" />
-            </div>
-            <div class="button-text" style=" position: relative; margin: 18px auto 16px;">
-              <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                {{ $t('panel.other_module') }}
-              </div>
-            </div>
+      <!--            <div class="button-div-class" style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; ">-->
+      <!--              <el-button circle :class="show&&showIndex===3? 'button-show':'button-closed'" class="el-icon-brush" size="mini" @click="showPanel(3)" />-->
+      <!--            </div>-->
+      <!--            <div class="button-text" style=" position: relative; margin: 18px auto 16px;">-->
+      <!--              <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">-->
+      <!--                {{ $t('panel.other_module') }}-->
+      <!--              </div>-->
+      <!--            </div>-->
 
-            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
-              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
-            </div>
-            <!-- 其他组件 end -->
+      <!--            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">-->
+      <!--              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />-->
+      <!--            </div>-->
+      <!--            &lt;!&ndash; 其他组件 end &ndash;&gt;-->
 
-            <!-- 视图复用 start -->
-            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
-              <el-button :class="show&&showIndex===0? 'button-show':'button-closed'" circle class="el-icon-copy-document" size="mini" @click="showPanel(0)" />
-            </div>
-            <div class="button-text" style="position: relative; margin: 18px auto 16px;">
-              <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
-                <!--                {{ $t('panel.view') }}-->
-                复用
-              </div>
-            </div>
-            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
-              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
-            </div>
-            <!-- 视图复用 end -->
-          </div>
+      <!--            &lt;!&ndash; 视图复用 start &ndash;&gt;-->
+      <!--            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">-->
+      <!--              <el-button :class="show&&showIndex===0? 'button-show':'button-closed'" circle class="el-icon-copy-document" size="mini" @click="showPanel(0)" />-->
+      <!--            </div>-->
+      <!--            <div class="button-text" style="position: relative; margin: 18px auto 16px;">-->
+      <!--              <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">-->
+      <!--                &lt;!&ndash;                {{ $t('panel.view') }}&ndash;&gt;-->
+      <!--                复用-->
+      <!--              </div>-->
+      <!--            </div>-->
+      <!--            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">-->
+      <!--              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />-->
+      <!--            </div>-->
+      <!--            &lt;!&ndash; 视图复用 end &ndash;&gt;-->
+      <!--          </div>-->
+      <!--        </div>-->
+      <!--      </de-aside-container>-->
+      <div v-show="!this.mobileLayoutStatus" class="tools-window-main">
+        <!-- 仪表板组件 -->
+        <div v-show="showPanelToolsAside">
+          <el-tabs v-model="activeToolsName">
+            <el-tab-pane name="view" class="tools-window-tabs">
+              <span slot="label"><i class="el-icon-s-data tablepanel-i" />视图</span>
+              <view-select style="height:100%;overflow-y: auto" @newChart="newChart" />
+            </el-tab-pane>
+            <el-tab-pane name="component">
+              <span slot="label"><i class="el-icon-s-tools tablepanel-i" />组件</span>
+              <filter-group />
+            </el-tab-pane>
+            <el-tab-pane name="others">
+              <span slot="label"><i class="el-icon-brush tablepanel-i" />其他</span>
+              <assist-component />
+            </el-tab-pane>
+            <el-tab-pane name="style">
+              <span slot="label"><i class="el-icon-magic-stick tablepanel-i" />样式</span>
+              <subject-setting />
+            </el-tab-pane>
+          </el-tabs>
         </div>
-      </de-aside-container>
+        <div v-show="showViewToolsAside">
+          <chart-edit v-if="this.curComponent" :edit-from="'panel'" :param="chartEditParam" />
+        </div>
 
+      </div>
       <!--画布区域-->
       <de-main-container id="canvasInfo-main">
         <!--左侧抽屉-->
@@ -97,7 +123,7 @@
           :size="drawerSize"
           :wrapper-closable="false"
           :close-on-press-escape="false"
-          :modal-append-to-body="true"
+          :modal-append-to-body="false"
         >
           <view-select v-show=" show && showIndex===0" @newChart="newChart" />
           <filter-group v-show=" show &&showIndex===1" />
@@ -160,6 +186,7 @@
           </el-col>
         </el-row>
       </de-main-container>
+
     </de-container>
 
     <el-dialog
@@ -236,7 +263,7 @@ import componentList, { BASE_MOBILE_STYLE, HYPERLINKS } from '@/components/canva
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
-import { initPanelData } from '@/api/panel/panel'
+import { initPanelComponentsData, initPanelData } from '@/api/panel/panel'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
@@ -255,10 +282,12 @@ import generateID from '@/components/canvas/utils/generateID'
 import TextAttr from '@/components/canvas/components/TextAttr'
 import ComponentWait from '@/views/panel/edit/ComponentWait'
 import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
+import ChartEdit from '@/views/chart/view/ChartEdit'
 
 export default {
   name: 'PanelEdit',
   components: {
+    ChartEdit,
     ComponentWait,
     DeMainContainer,
     DeContainer,
@@ -328,14 +357,27 @@ export default {
         'de-video'
       ],
       enableSureButton: false,
-      filterFromDrag: false
+      filterFromDrag: false,
+      activeToolsName: 'view'
     }
   },
 
   computed: {
     // 侧边显示控制
+    chartEditParam() {
+      return this.curComponent ? { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' } : {}
+    },
+    // 侧边显示控制
     showAside() {
       return !this.linkageSettingStatus && !this.mobileLayoutStatus
+    },
+    // 显示仪表板工具栏
+    showPanelToolsAside() {
+      return !this.curComponent
+    },
+    // 显示视图工具栏
+    showViewToolsAside() {
+      return this.curComponent
     },
     showAttr() {
       if (this.mobileLayoutStatus) {
@@ -489,7 +531,10 @@ export default {
         _this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
       } else if (panelId) {
         initPanelData(panelId, function() {
-          _this.$store.commit('recordSnapshot', 'init')// 记录快照
+          initPanelComponentsData(panelId, function(rsp) {
+            _this.$store.commit('initPanelComponents', rsp)// 初始化仪表板组件视图数据
+            _this.$store.commit('recordSnapshot', 'init')// 记录快照
+          })
         })
       }
     },
@@ -1134,4 +1179,20 @@ export default {
   height: 2px!important;
 }
 
+.tools-window-main {
+  width: 300px;
+  background-color: #FFFFFF;
+  transition: 1s;
+}
+
+.tools-window-tabs {
+  height: calc(100vh - 100px);
+  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+  >>> .el-tabs__item{
+    padding: 0 15px;
+  }
 </style>

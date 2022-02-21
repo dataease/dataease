@@ -160,4 +160,17 @@
     <select id="checkSameDataSet" resultType="int">
        select count(DISTINCT table_id)  from chart_view where id = #{viewIdSource} or id = #{viewIdTarget}
     </select>
+
+    <select id="searchViewsWithPanelId"  resultMap="BaseResultMapDTO">
+        SELECT * FROM chart_view
+        WHERE
+            id IN (
+            SELECT
+                chart_view_id
+            FROM
+                panel_view
+            WHERE
+            panel_id = #{panelId}
+            )
+    </select>
 </mapper>
