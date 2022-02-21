@@ -161,7 +161,7 @@ export default {
           this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
         }
         if (customStyle.background) {
-          this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
+          // this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
     },

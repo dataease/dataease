@@ -1,5 +1,5 @@
 <template>
-  <div ref="tableContainer" :style="bg_class" style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
+  <div ref="tableContainer"  style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
     <el-row style="height: 100%;">
       <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
       <ux-grid
@@ -124,8 +124,6 @@ export default {
   computed: {
     bg_class() {
       return {
-        background: hexColorToRGBA('#ffffff', 0),
-        borderRadius: this.borderRadius
       }
     }
   },

@@ -825,8 +825,8 @@
       </el-tabs>
 
       <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
-        <el-row style="width: 100%;height: 100%;" class="padding-lr">
-          <div ref="imageWrapper" style="height: 100%">
+        <el-row :style="componentBackGround" class="padding-lr">
+          <div ref="imageWrapper" style="height: 100%;">
             <plugin-com
               v-if="httpRequest.status && chart.type && view.isPlugin"
               ref="dynamicChart"
@@ -1064,6 +1064,7 @@ import { compareItem } from '@/views/chart/chart/compare'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import DimensionExtItem from '@/views/chart/components/drag-item/DimensionExtItem'
 import PluginCom from '@/views/system/plugin/PluginCom'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 export default {
   name: 'ChartEdit',
   components: {
@@ -1206,6 +1207,32 @@ export default {
   computed: {
     chartType() {
       return this.chart.type
+    },
+    // 视图
+    componentBackGround() {
+      const customStyle = JSON.parse(JSON.stringify(this.view.customStyle))
+      let style = {
+        height: '100%',
+        width: '100%',
+        backgroundSize: '100% 100% !important'
+      }
+      debugger
+      if (customStyle && customStyle.background) {
+        style['borderRadius'] = customStyle.background.borderRadius + 'px'
+        if (customStyle.background.backgroundType === 'outImage' && typeof (customStyle.background.outImage) === 'string') {
+          style = {
+            background: `url(${customStyle.background.outImage}) no-repeat`,
+            ...style
+          }
+        } else if (!customStyle.background.backgroundType || customStyle.background.backgroundType === 'color') {
+          style = {
+            background: hexColorToRGBA(customStyle.background.color, customStyle.background.alpha),
+            ...style
+          }
+        }
+      }
+
+      return style
     }
   },
   watch: {
@@ -1233,6 +1260,7 @@ export default {
     // this.initAreas()
   },
   mounted() {
+    debugger
     this.bindPluginEvent()
     // this.get(this.$store.state.chart.viewId);
     this.getData(this.param.id)
@@ -1531,6 +1559,7 @@ export default {
         this.closeChangeChart()
         // 从仪表板入口关闭
         if (this.$route.path.indexOf('panel') > -1) {
+          this.$store.commit('recordSnapshot')
           bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
         }
         this.$success(this.$t('commons.save_success'))

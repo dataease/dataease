@@ -7,7 +7,7 @@
       :style="trackBarStyleTime"
       @trackClick="trackClick"
     />
-    <div :id="chartId" style="width: 100%;height: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius}" />
+    <div :id="chartId" style="width: 100%;height: 100%;overflow: hidden;" />
     <div v-if="chart.type === 'map'" class="map-zoom-box">
       <div style="margin-bottom: 0.5em;">
         <el-button size="mini" icon="el-icon-plus" circle @click="roamMap(true)" />
