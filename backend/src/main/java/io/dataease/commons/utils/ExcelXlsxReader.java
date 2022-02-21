@@ -142,6 +142,9 @@ public class ExcelXlsxReader extends DefaultHandler {
         stylesTable = xssfReader.getStylesTable();
         SharedStringsTable sst = xssfReader.getSharedStringsTable();
         XMLReader parser = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+        parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        parser.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        parser.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         this.sst = sst;
         parser.setContentHandler(this);
         XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) xssfReader.getSheetsData();
