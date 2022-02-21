@@ -313,3 +313,7 @@ ADD COLUMN `uuid` varchar(8) NULL COMMENT 'uuid' AFTER `user_id`;
 
 ALTER TABLE `chart_view`
 ADD COLUMN `is_plugin` bit(1) NULL COMMENT '是否插件' AFTER `chart_type`;
+
+
+INSERT INTO `my_plugin` VALUES (2, '视图默认插件', 'default', 0, 20000, 'view', '默认视图插件', '1.0-SNAPSHOT', NULL, 'fit2cloud-chenyw', 0, NULL, NULL, 'deplugin-view-backend', NULL);
+

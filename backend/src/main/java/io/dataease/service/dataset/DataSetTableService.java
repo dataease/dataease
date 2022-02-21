@@ -2000,30 +2000,7 @@ public class DataSetTableService {
                     data.add(r);
                 }
             }
-        } else if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            String s = reader.readLine();// first line
-            String[] split = s.split(",");
-            for (String s1 : split) {
-                TableField tableField = new TableField();
-                tableField.setFieldName(s1);
-                tableField.setRemarks(s1);
-                tableField.setFieldType("TEXT");
-                fields.add(tableField);
-            }
-            int num = 1;
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (isPreview) {
-                    if (num > 100) {
-                        break;
-                    }
-                }
-                data.add(line.split(","));
-                num++;
-            }
         }
-
         String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
 
         // 校验excel字段是否重名

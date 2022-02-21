@@ -167,9 +167,7 @@ export default {
       sourceCustomStyleStr: null
     }
   },
-  mounted() {
-    this.bindPluginEvent()
-  },
+
   computed: {
     // 视图
     componentBackGround() {
@@ -379,6 +377,9 @@ export default {
       deep: true
     }
   },
+  mounted() {
+    this.bindPluginEvent()
+  },
 
   created() {
     this.refId = uuid.v1
@@ -390,10 +391,17 @@ export default {
   },
   methods: {
     bindPluginEvent() {
-      bus.$on('plugin-chart-click', this.chartClick)
-      bus.$on('plugin-jump-click', this.jumpClick)
-      bus.$on('plugin-add-view-track-filter', this.addViewTrackFilter)
+      bus.$on('plugin-chart-click', param => {
+        param.viewId && param.viewId === this.element.propValue.viewId && this.chartClick(param)
+      })
+      bus.$on('plugin-jump-click', param => {
+        param.viewId && param.viewId === this.element.propValue.viewId && this.jumpClick(param)
+      })
+      bus.$on('plugin-add-view-track-filter', param => {
+        param.viewId && param.viewId === this.element.propValue.viewId && this.addViewTrackFilter(param)
+      })
     },
+
     addViewTrackFilter(linkageParam) {
       this.$store.commit('addViewTrackFilter', linkageParam)
     },
