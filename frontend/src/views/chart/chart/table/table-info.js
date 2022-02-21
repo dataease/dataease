@@ -116,7 +116,12 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
 
   // add drill list
   if (chart.drill) {
-    const drillFields = JSON.parse(chart.drillFields)
+    let drillFields = []
+    try {
+      drillFields = JSON.parse(chart.drillFields)
+    } catch (err) {
+      drillFields = JSON.parse(JSON.stringify(chart.drillFields))
+    }
     const drillField = drillFields[chart.drillFilters.length]
 
     const drillFilters = JSON.parse(JSON.stringify(chart.drillFilters))
