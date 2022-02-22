@@ -1,3 +1,8 @@
+import {ApplicationContext} from "@/utils/ApplicationContext";
+import {BASE_MOBILE_STYLE, HYPERLINKS} from "@/components/canvas/custom-component/component-list";
+import store from "@/store";
+import {deepCopy, resetID} from "@/components/canvas/utils/utils";
+
 export const DEFAULT_COLOR_CASE = {
   value: 'default',
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
@@ -192,7 +197,10 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
   }
 }
 export const DEFAULT_BACKGROUND_COLOR = {
+  backgroundType: 'color',
   color: '#ffffff',
+  outImage: null,
+  innerImage: null,
   alpha: 100,
   borderRadius: 5
 }

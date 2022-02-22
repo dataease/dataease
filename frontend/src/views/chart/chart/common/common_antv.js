@@ -40,7 +40,7 @@ export function getTheme(chart) {
     customStyle = JSON.parse(chart.customStyle)
     // bg
     if (customStyle.background) {
-      bgColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
+      // bgColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
     }
     // legend
     if (customStyle.legend) {

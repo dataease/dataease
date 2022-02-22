@@ -46,7 +46,6 @@
                 />
                 <el-button
                   :title="$t('chart.change_ds')"
-                  :disabled="!hasDataPermission('manage',param.privileges)"
                   icon="el-icon-refresh"
                   type="text"
                   size="mini"
@@ -62,7 +61,6 @@
                   animation="300"
                   :move="onMove"
                   class="drag-list"
-                  :disabled="!hasDataPermission('manage',param.privileges)"
                   @add="moveToDimension"
                 >
                   <transition-group>
@@ -88,7 +86,6 @@
                   animation="300"
                   :move="onMove"
                   class="drag-list"
-                  :disabled="!hasDataPermission('manage',param.privileges)"
                   @add="moveToQuota"
                 >
                   <transition-group>
@@ -157,7 +154,6 @@
                               <el-radio-group
                                 v-model="view.type"
                                 style="width: 100%"
-                                :disabled="!hasDataPermission('manage',param.privileges)"
                                 @change="changeChartType()"
                               >
                                 <chart-type ref="cu-chart-type" :chart="view" style="height: 480px" />
@@ -182,7 +178,6 @@
                           slot="reference"
                           size="mini"
                           style="padding: 6px;"
-                          :disabled="!hasDataPermission('manage',param.privileges)"
                         >
                           {{ $t('chart.change_chart_type') }}
                           <i class="el-icon-caret-bottom" />
@@ -202,7 +197,6 @@
                       <el-radio-group
                         v-model="view.resultMode"
                         class="radio-span"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         size="mini"
                         @change="calcData"
                       >
@@ -212,7 +206,6 @@
                             v-model="view.resultCount"
                             class="result-count"
                             size="mini"
-                            :disabled="!hasDataPermission('manage',param.privileges)"
                             @change="calcData"
                           />
                         </el-radio>
@@ -237,7 +230,6 @@
                           :no-children-text="$t('commons.treeselect.no_children_text')"
                           :no-options-text="$t('commons.treeselect.no_options_text')"
                           :no-results-text="$t('commons.treeselect.no_results_text')"
-                          :disabled="!hasDataPermission('manage',param.privileges)"
                           @input="calcData"
                           @deselect="calcData"
                         />
@@ -256,7 +248,6 @@
                       </span>
                       <draggable
                         v-model="view.xaxisExt"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -310,7 +301,6 @@
                       </span>
                       <draggable
                         v-model="view.xaxis"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -364,7 +354,6 @@
                       </span>
                       <draggable
                         v-model="view.yaxis"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -403,7 +392,6 @@
                       </span>
                       <draggable
                         v-model="view.yaxisExt"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -442,7 +430,6 @@
                       </span>
                       <draggable
                         v-model="view.extStack"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -484,7 +471,6 @@
                       </span>
                       <draggable
                         v-model="view.extBubble"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -518,7 +504,6 @@
                       <!--                    </el-button>-->
                       <draggable
                         v-model="view.customFilter"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -557,7 +542,6 @@
                       </span>
                       <draggable
                         v-model="view.drillFields"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -609,7 +593,6 @@
                   <el-radio-group
                     v-model="view.stylePriority"
                     class="radio-span"
-                    :disabled="!hasDataPermission('manage',param.privileges)"
                     size="mini"
                     @change="calcStyle"
                   >
@@ -825,8 +808,8 @@
       </el-tabs>
 
       <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
-        <el-row style="width: 100%;height: 100%;" class="padding-lr">
-          <div ref="imageWrapper" style="height: 100%">
+        <el-row :style="componentBackGround" class="padding-lr">
+          <div ref="imageWrapper" style="height: 100%;">
             <plugin-com
               v-if="httpRequest.status && chart.type && view.isPlugin"
               ref="dynamicChart"
@@ -1064,6 +1047,7 @@ import { compareItem } from '@/views/chart/chart/compare'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import DimensionExtItem from '@/views/chart/components/drag-item/DimensionExtItem'
 import PluginCom from '@/views/system/plugin/PluginCom'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 export default {
   name: 'ChartEdit',
   components: {
@@ -1206,6 +1190,32 @@ export default {
   computed: {
     chartType() {
       return this.chart.type
+    },
+    // 视图
+    componentBackGround() {
+      const customStyle = JSON.parse(JSON.stringify(this.view.customStyle))
+      let style = {
+        height: '100%',
+        width: '100%',
+        backgroundSize: '100% 100% !important'
+      }
+      debugger
+      if (customStyle && customStyle.background) {
+        style['borderRadius'] = customStyle.background.borderRadius + 'px'
+        if (customStyle.background.backgroundType === 'outImage' && typeof (customStyle.background.outImage) === 'string') {
+          style = {
+            background: `url(${customStyle.background.outImage}) no-repeat`,
+            ...style
+          }
+        } else if (!customStyle.background.backgroundType || customStyle.background.backgroundType === 'color') {
+          style = {
+            background: hexColorToRGBA(customStyle.background.color, customStyle.background.alpha),
+            ...style
+          }
+        }
+      }
+
+      return style
     }
   },
   watch: {
@@ -1233,6 +1243,7 @@ export default {
     // this.initAreas()
   },
   mounted() {
+    debugger
     this.bindPluginEvent()
     // this.get(this.$store.state.chart.viewId);
     this.getData(this.param.id)
@@ -1531,6 +1542,7 @@ export default {
         this.closeChangeChart()
         // 从仪表板入口关闭
         if (this.$route.path.indexOf('panel') > -1) {
+          this.$store.commit('recordSnapshot')
           bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
         }
         this.$success(this.$t('commons.save_success'))

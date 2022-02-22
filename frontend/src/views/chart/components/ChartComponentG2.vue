@@ -87,7 +87,7 @@ export default {
     },
     bg_class() {
       return {
-        borderRadius: this.borderRadius
+        // borderRadius: this.borderRadius
       }
     }
   },
