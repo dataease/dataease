@@ -317,3 +317,36 @@ ADD COLUMN `is_plugin` bit(1) NULL COMMENT '是否插件' AFTER `chart_type`;
 
 INSERT INTO `my_plugin` VALUES (2, '视图默认插件', 'default', 0, 20000, 'view', '默认视图插件', '1.0-SNAPSHOT', NULL, 'fit2cloud-chenyw', 0, NULL, NULL, 'deplugin-view-backend', NULL);
 
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for sys_background_image
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_background_image`;
+CREATE TABLE `sys_background_image` (
+  `id` varchar(64)  NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `classification` varchar(255) NOT NULL,
+  `content` longtext,
+  `remark` varchar(255) DEFAULT NULL,
+  `sort` int(8) DEFAULT NULL,
+  `upload_time` bigint(13) DEFAULT NULL,
+  `base_url` varchar(255) DEFAULT NULL,
+  `url` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of sys_background_image
+-- ----------------------------
+BEGIN;
+INSERT INTO `sys_background_image` VALUES ('blue_1', '边框1', '蓝色调', '', NULL, NULL, NULL, 'img/board', 'board/blue_1.svg');
+INSERT INTO `sys_background_image` VALUES ('blue_2', '边框2', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_2.svg');
+INSERT INTO `sys_background_image` VALUES ('blue_3', '边框3', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_3.svg');
+INSERT INTO `sys_background_image` VALUES ('blue_4', '边框4', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_4.svg');
+INSERT INTO `sys_background_image` VALUES ('blue_5', '边框5', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_5.svg');
+COMMIT;
+
+SET FOREIGN_KEY_CHECKS = 1;
