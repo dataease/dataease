@@ -55,6 +55,7 @@
       @amRemoveItem="removeItem(item._dragId)"
       @amAddItem="addItemBox(item)"
       @linkJumpSet="linkJumpSet(item)"
+      @boardSet="boardSet(item)"
       @canvasDragging="canvasDragging"
     >
       <component
@@ -167,6 +168,18 @@
     >
       <LinkJumpSet v-if="linkJumpSetVisible" :view-id="linkJumpSetViewId" @closeJumpSetDialog="closeJumpSetDialog" />
     </el-dialog>
+
+    <el-dialog
+      :visible.sync="boardSetVisible"
+      width="750px"
+      :title="$t('panel.choose_border')"
+      class="dialog-css"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <background />
+    </el-dialog>
   </div>
 </template>
 
@@ -196,6 +209,7 @@ import { buildFilterMap } from '@/utils/conditionUtil'
 // 挤占式画布
 import _ from 'lodash'
 import $ from 'jquery'
+import Background from '@/views/background/index'
 
 let positionBox = []
 let coordinates = [] // 坐标点集合
@@ -762,7 +776,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -827,6 +841,7 @@ export default {
   },
   data() {
     return {
+      boardSetVisible: false,
       psDebug: false, // 定位调试模式
       editorX: 0,
       editorY: 0,
@@ -1009,10 +1024,16 @@ export default {
         _this.positionBoxInfoArray = positionBox
       }, 500)
     }
+    eventBus.$on('backgroundSetClose', () => {
+      this.boardSetVisible = false
+    })
   },
   created() {
   },
   methods: {
+    boardSet(item) {
+      this.boardSetVisible = true
+    },
     changeStyleWithScale,
     handleMouseDown(e) {
       // 如果没有选中组件 在画布上点击时需要调用 e.preventDefault() 防止触发 drop 事件

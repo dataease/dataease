@@ -6,7 +6,7 @@
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
     </div>
     <div v-if="normalAreaShow">
-      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet">
+      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
         <span slot="icon" :title="$t('panel.setting')">
           <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
         </span>
@@ -242,6 +242,9 @@ export default {
       }
 
       reader.readAsDataURL(file)
+    },
+    boardSet() {
+      this.$emit('boardSet')
     }
   }
 }

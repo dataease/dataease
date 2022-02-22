@@ -1556,7 +1556,8 @@ export default {
     public_link_tips: '當前是公共鏈接模式，目標儀錶闆未設置公共鏈接，無法跳轉',
     input_title: '請輸入標題',
     show_title: '顯示標題',
-    default_settings: '默認值設置'
+    default_settings: '默認值設置',
+    choose_border: '选择边框'
   },
   plugin: {
     local_install: '本地安裝',

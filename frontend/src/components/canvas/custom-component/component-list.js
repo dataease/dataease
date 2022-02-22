@@ -16,6 +16,15 @@ export const BASE_MOBILE_STYLE = {
   auxiliaryMatrix: true
 }
 
+// 公共背景
+export const COMMON_BACKGROUND = {
+  enable: false,
+  backgroundType: 'color',
+  color: '#FFFFFF',
+  innerImage: null,
+  outerImage: null
+}
+
 // 公共样式
 export const commonStyle = {
   rotate: 0,
