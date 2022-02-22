@@ -274,27 +274,28 @@ public class DatasourceService {
 
         List<LinkedHashMap> datas = JsonPath.read(response,apiDefinition.getDataPath());
         List<JSONObject> dataList = new ArrayList<>();
+        List<DatasetTableField> fields = new ArrayList<>();
+        Boolean getFileds = true;
+
         for (LinkedHashMap data : datas) {
             JSONObject jsonObject = new JSONObject();
             Iterator it = data.entrySet().iterator();
             while (it.hasNext()){
                 Map.Entry entry = (Map.Entry)it.next();
                 jsonObject.put((String) entry.getKey(), entry.getValue());
+                if(getFileds) {
+                    DatasetTableField tableField = new DatasetTableField();
+                    tableField.setOriginName((String) entry.getKey());
+                    tableField.setName((String) entry.getKey());
+                    tableField.setSize(65535);
+                    tableField.setDeExtractType(0);
+                    tableField.setDeType(0);
+                    tableField.setExtField(0);
+                    fields.add(tableField);
+                }
             }
+            getFileds = false;
             dataList.add(jsonObject);
-        }
-        List<DatasetTableField> fields = new ArrayList<>();
-        if(CollectionUtils.isNotEmpty(dataList)){
-            for (Map.Entry<String, Object> stringObjectEntry : dataList.get(0).entrySet()) {
-                DatasetTableField tableField = new DatasetTableField();
-                tableField.setOriginName(stringObjectEntry.getKey());
-                tableField.setName(stringObjectEntry.getKey());
-                tableField.setSize(65535);
-                tableField.setDeExtractType(0);
-                tableField.setDeType(0);
-                tableField.setExtField(0);
-                fields.add(tableField);
-            }
         }
         apiDefinition.setDatas(dataList);
         apiDefinition.setFields(fields);
