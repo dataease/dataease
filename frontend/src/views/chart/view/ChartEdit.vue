@@ -46,7 +46,6 @@
                 />
                 <el-button
                   :title="$t('chart.change_ds')"
-                  :disabled="!hasDataPermission('manage',param.privileges)"
                   icon="el-icon-refresh"
                   type="text"
                   size="mini"
@@ -62,7 +61,6 @@
                   animation="300"
                   :move="onMove"
                   class="drag-list"
-                  :disabled="!hasDataPermission('manage',param.privileges)"
                   @add="moveToDimension"
                 >
                   <transition-group>
@@ -88,7 +86,6 @@
                   animation="300"
                   :move="onMove"
                   class="drag-list"
-                  :disabled="!hasDataPermission('manage',param.privileges)"
                   @add="moveToQuota"
                 >
                   <transition-group>
@@ -157,7 +154,6 @@
                               <el-radio-group
                                 v-model="view.type"
                                 style="width: 100%"
-                                :disabled="!hasDataPermission('manage',param.privileges)"
                                 @change="changeChartType()"
                               >
                                 <chart-type ref="cu-chart-type" :chart="view" style="height: 480px" />
@@ -182,7 +178,6 @@
                           slot="reference"
                           size="mini"
                           style="padding: 6px;"
-                          :disabled="!hasDataPermission('manage',param.privileges)"
                         >
                           {{ $t('chart.change_chart_type') }}
                           <i class="el-icon-caret-bottom" />
@@ -202,7 +197,6 @@
                       <el-radio-group
                         v-model="view.resultMode"
                         class="radio-span"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         size="mini"
                         @change="calcData"
                       >
@@ -212,7 +206,6 @@
                             v-model="view.resultCount"
                             class="result-count"
                             size="mini"
-                            :disabled="!hasDataPermission('manage',param.privileges)"
                             @change="calcData"
                           />
                         </el-radio>
@@ -237,7 +230,6 @@
                           :no-children-text="$t('commons.treeselect.no_children_text')"
                           :no-options-text="$t('commons.treeselect.no_options_text')"
                           :no-results-text="$t('commons.treeselect.no_results_text')"
-                          :disabled="!hasDataPermission('manage',param.privileges)"
                           @input="calcData"
                           @deselect="calcData"
                         />
@@ -256,7 +248,6 @@
                       </span>
                       <draggable
                         v-model="view.xaxisExt"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -310,7 +301,6 @@
                       </span>
                       <draggable
                         v-model="view.xaxis"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -364,7 +354,6 @@
                       </span>
                       <draggable
                         v-model="view.yaxis"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -403,7 +392,6 @@
                       </span>
                       <draggable
                         v-model="view.yaxisExt"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -442,7 +430,6 @@
                       </span>
                       <draggable
                         v-model="view.extStack"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -484,7 +471,6 @@
                       </span>
                       <draggable
                         v-model="view.extBubble"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -518,7 +504,6 @@
                       <!--                    </el-button>-->
                       <draggable
                         v-model="view.customFilter"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -557,7 +542,6 @@
                       </span>
                       <draggable
                         v-model="view.drillFields"
-                        :disabled="!hasDataPermission('manage',param.privileges)"
                         group="drag"
                         animation="300"
                         :move="onMove"
@@ -609,7 +593,6 @@
                   <el-radio-group
                     v-model="view.stylePriority"
                     class="radio-span"
-                    :disabled="!hasDataPermission('manage',param.privileges)"
                     size="mini"
                     @change="calcStyle"
                   >
