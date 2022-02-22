@@ -88,7 +88,7 @@
                 </el-form-item>
               </div>
 
-              <el-form-item :label="$t('datasource.data_path')" pprop="dataPath">
+              <el-form-item :label="$t('datasource.data_path')" prop="dataPath">
                 <el-input :placeholder="$t('datasource.data_path_desc')" v-model="apiItem.dataPath" autocomplete="off"/>
               </el-form-item>
               <el-button style="margin-top: 12px;" @click="validateApi(undefined)" v-show="active === 1">{{ $t('commons.validate') }}</el-button>
