@@ -1656,10 +1656,6 @@ public class ChartViewService {
         if (StringUtils.isNotEmpty(chartView.getName())) {
             criteria.andNameEqualTo(chartView.getName());
         }
-        List<ChartViewWithBLOBs> list = chartViewMapper.selectByExampleWithBLOBs(chartViewExample);
-        if (list.size() > 0) {
-            throw new RuntimeException(Translator.get("i18n_name_cant_repeat_same_group"));
-        }
     }
 
     public ChartDetail getChartDetail(String id) {
