@@ -13,7 +13,7 @@ public class ApiDefinitionRequest {
 
 
     @Data
-    public class AuthManager{
+    public static class AuthManager{
         private String password;
         private String username;
         private String verification = "";

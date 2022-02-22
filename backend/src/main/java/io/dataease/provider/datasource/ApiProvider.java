@@ -124,7 +124,6 @@ public class ApiProvider extends DatasourceProvider{
         String response = "";
         HttpClientConfig httpClientConfig = new HttpClientConfig();
         ApiDefinitionRequest apiDefinitionRequest = JSONObject.parseObject(apiDefinition.getRequest(), ApiDefinitionRequest.class);
-        System.out.println(new Gson().toJson(apiDefinitionRequest.getAuthManager()));
         //headers
         for (JSONObject header : apiDefinitionRequest.getHeaders()) {
             if(StringUtils.isNotEmpty(header.getString("name")) && StringUtils.isNotEmpty(header.getString("value"))){
@@ -174,7 +173,6 @@ public class ApiProvider extends DatasourceProvider{
             default:
                 break;
         }
-        System.out.println("response: " + response);
         return response;
     }
 
@@ -187,7 +185,7 @@ public class ApiProvider extends DatasourceProvider{
             int i = 0;
             while (it.hasNext()){
                 Map.Entry entry = (Map.Entry)it.next();
-                row[i] = entry.getValue().toString();
+                row[i] = Optional.ofNullable(entry.getValue()).orElse("").toString();
                 i++;
             }
             dataList.add(row);
