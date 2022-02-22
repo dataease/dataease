@@ -1,5 +1,5 @@
 import {
-  BASE_MOBILE_STYLE,
+  BASE_MOBILE_STYLE, COMMON_BACKGROUND,
   HYPERLINKS
 } from '@/components/canvas/custom-component/component-list'
 
@@ -93,6 +93,7 @@ export function panelInit(componentData, componentStyle) {
     if (item.type === 'picture-add') {
       item.hyperlinks = (item.hyperlinks || HYPERLINKS)
     }
+    item.commonBackground = item.commonBackground || deepCopy(COMMON_BACKGROUND)
   })
   // style初始化
   componentStyle.refreshTime = (componentStyle.refreshTime || 5)

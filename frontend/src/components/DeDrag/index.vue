@@ -30,7 +30,7 @@
       ]"
       :style="mainSlotStyle"
     >
-      <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" />
+      <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet"  @boardSet="boardSet" />
       <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
       <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
       <div
@@ -530,6 +530,10 @@ export default {
       const style = {
         width: this.computedMainSlotWidth,
         height: this.computedMainSlotHeight
+      }
+      if (this.element.commonBackground.enable) {
+        style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat`
+        style['background-size'] = `100% 100%`
       }
       return style
     },
@@ -1744,6 +1748,10 @@ export default {
     // 跳转设置
     linkJumpSet() {
       this.$emit('linkJumpSet')
+    },
+    // 跳转设置
+    boardSet() {
+      this.$emit('boardSet')
     }
   }
 

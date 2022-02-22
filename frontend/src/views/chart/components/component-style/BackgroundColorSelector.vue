@@ -9,6 +9,14 @@
           <el-color-picker v-model="colorForm.color" :predefine="predefineColors" size="mini" style="cursor: pointer;z-index: 1004;" @change="changeBackgroundStyle" />
         </el-col>
       </el-row>
+<!--      <el-row>-->
+<!--        <el-col :span="5" class="col-label-item">-->
+<!--          <el-radio v-model="colorForm.backgroundType" label="innerImage" @change="changeBackgroundStyle"><span class="label-item">边框</span></el-radio>-->
+<!--        </el-col>-->
+<!--        <el-col :span="19">-->
+<!--          <el-button @click="openBoardDialog"> 选择边框</el-button>-->
+<!--        </el-col>-->
+<!--      </el-row>-->
       <el-row style="height: 60px;margin-top:10px;overflow: hidden">
         <el-col :span="5" class="col-label-item">
           <el-radio v-model="colorForm.backgroundType" label="outImage" @change="changeBackgroundStyle"><span class="label-item">{{ $t('panel.photo') }}</span></el-radio>
@@ -150,6 +158,9 @@ export default {
       reader.readAsDataURL(file.raw)
     },
     upload(file) {
+      // console.log('this is upload')
+    },
+    openBoardDialog() {
       // console.log('this is upload')
     }
   }

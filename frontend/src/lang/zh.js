@@ -1565,7 +1565,8 @@ export default {
     public_link_tips: '当前是公共链接模式，目标仪表板未设置公共链接，无法跳转',
     input_title: '请输入标题',
     show_title: '显示标题',
-    default_settings: '默认值设置'
+    default_settings: '默认值设置',
+    choose_border: '选择边框'
   },
   plugin: {
     local_install: '本地安装',

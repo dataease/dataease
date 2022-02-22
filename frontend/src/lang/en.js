@@ -1555,7 +1555,8 @@ export default {
     public_link_tips: 'Currently in public link mode, the target panel does not have a public link and cannot jump to it',
     input_title: 'Input Title',
     show_title: 'Show Title',
-    default_settings: 'Default Settings'
+    default_settings: 'Default Settings',
+    choose_border: 'Choose Border'
   },
   plugin: {
     local_install: 'Local installation',

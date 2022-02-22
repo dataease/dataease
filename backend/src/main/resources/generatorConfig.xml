@@ -60,6 +60,6 @@
         </javaClientGenerator>
 
         <!--要生成的数据库表 -->
-        <table tableName="chart_view"/>
+        <table tableName="sys_background_image"/>
     </context>
 </generatorConfiguration>
