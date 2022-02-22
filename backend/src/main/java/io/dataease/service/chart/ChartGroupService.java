@@ -130,9 +130,5 @@ public class ChartGroupService {
         if (ObjectUtils.isNotEmpty(chartGroup.getLevel())) {
             criteria.andLevelEqualTo(chartGroup.getLevel());
         }
-        List<ChartGroup> list = chartGroupMapper.selectByExample(chartGroupExample);
-        if (list.size() > 0) {
-            throw new RuntimeException(Translator.get("i18n_name_cant_repeat_same_group"));
-        }
     }
 }
