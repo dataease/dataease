@@ -74,11 +74,12 @@ public class PanelViewService {
 
     @Transactional(propagation=Propagation.REQUIRES_NEW)
     public Boolean syncPanelViews(PanelGroupWithBLOBs panelGroup){
-        Boolean mobileLayout = false;
+        Boolean mobileLayout = null;
         String panelId = panelGroup.getId();
         Assert.notNull(panelId, "panelId cannot be null");
         String panelData = panelGroup.getPanelData();
         if(StringUtils.isNotEmpty(panelData)){
+            mobileLayout = false;
             JSONArray dataArray = JSON.parseArray(panelData);
             List<PanelViewInsertDTO> panelViewInsertDTOList = new ArrayList<>();
             for(int i=0;i<dataArray.size();i++){
