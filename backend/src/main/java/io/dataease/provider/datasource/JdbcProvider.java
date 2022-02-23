@@ -367,7 +367,6 @@ public class JdbcProvider extends DatasourceProvider {
         try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)) {
             return "Success";
         } catch (Exception e) {
-            e.printStackTrace();
             DataEaseException.throwException(e.getMessage());
         }
         return "Error";

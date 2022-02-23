@@ -96,7 +96,7 @@
           </el-row>
           <el-row  v-show="active === 2">
             <el-tabs v-model="api_step2_active_name" @tab-click="handleClick">
-              <el-tab-pane label="数据预览" name="first">
+              <el-tab-pane :label="$t('dataset.data_preview')" name="first">
                 <ux-grid ref="plxTable" size="mini" style="width: 100%;" :height="height" :checkbox-config="{highlight: true}" :width-resize="true" >
                   <ux-table-column v-for="field in apiItem.fields" :key="field.originName" min-width="200px" :field="field.originName" :resizable="true">
                     <template slot="header">
@@ -109,58 +109,59 @@
                   </ux-table-column>
                 </ux-grid>
               </el-tab-pane>
-              <el-tab-pane label="字段管理" name="second">
-                <el-table :data="apiItem.fields" size="mini">
-                  <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
-                    <template slot-scope="scope">
-                      <el-input v-model="scope.row.name" size="mini"/>
-                    </template>
-                  </el-table-column>
+<!--              暂时屏蔽掉字段管理-->
+<!--              <el-tab-pane label="字段管理" name="second">-->
+<!--                <el-table :data="apiItem.fields" size="mini">-->
+<!--                  <el-table-column property="name" :label="$t('dataset.field_name')" width="180">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <el-input v-model="scope.row.name" size="mini"/>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
 
-                  <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="100">
-                    <template slot-scope="scope">
-                      <span v-if="scope.row.extField === 0" :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
-                        <span style="font-size: 12px;">{{ scope.row.originName }}</span>
-                      </span>
-                    </template>
-                  </el-table-column>
+<!--                  <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="100">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <span v-if="scope.row.extField === 0" :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">-->
+<!--                        <span style="font-size: 12px;">{{ scope.row.originName }}</span>-->
+<!--                      </span>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
 
-                  <el-table-column property="deExtractType" :label="$t('dataset.field_type')" width="140">
-                    <template slot-scope="scope">
-                      <el-select v-model="scope.row.deExtractType" size="mini" style="display: inline-block;width: 26px;">
-                        <el-option v-for="item in fieldTypes" :key="item.value" :label="item.label" :value="item.value">
-                        <span style="float: left">
-                          <svg-icon v-if="item.value === 0" icon-class="field_text" class="field-icon-text" />
-                          <svg-icon v-if="item.value === 1" icon-class="field_time" class="field-icon-time" />
-                          <svg-icon v-if="item.value === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />
-                          <svg-icon v-if="item.value === 5" icon-class="field_location" class="field-icon-location" />
-                        </span>
-                          <span style="float: left; color: #8492a6; font-size: 12px">{{ item.label }}</span>
-                        </el-option>
-                      </el-select>
-                      <span style="margin-left: 8px;">
-                      <span v-if="scope.row.deExtractType === 0">
-                        <svg-icon icon-class="field_text" class="field-icon-text" />
-                        <span class="field-class">{{ $t('dataset.text') }}</span>
-                      </span>
-                      <span v-if="scope.row.deExtractType === 1">
-                        <svg-icon v-if="scope.row.deExtractType === 1" icon-class="field_time" class="field-icon-time" />
-                        <span class="field-class">{{ $t('dataset.time') }}</span>
-                      </span>
-                      <span v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3">
-                        <svg-icon v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3" icon-class="field_value" class="field-icon-value" />
-                        <span v-if="scope.row.deExtractType === 2" class="field-class">{{ $t('dataset.value') }}</span>
-                        <span v-if="scope.row.deExtractType === 3" class="field-class">{{ $t('dataset.value') + '(' + $t('dataset.float') + ')' }}</span>
-                      </span>
-                      <span v-if="scope.row.deExtractType === 5">
-                        <svg-icon v-if="scope.row.deExtractType === 5" icon-class="field_location" class="field-icon-location" />
-                        <span class="field-class">{{ $t('dataset.location') }}</span>
-                      </span>
-                    </span>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </el-tab-pane>
+<!--                  <el-table-column property="deExtractType" :label="$t('dataset.field_type')" width="140">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <el-select v-model="scope.row.deExtractType" size="mini" style="display: inline-block;width: 26px;">-->
+<!--                        <el-option v-for="item in fieldTypes" :key="item.value" :label="item.label" :value="item.value">-->
+<!--                        <span style="float: left">-->
+<!--                          <svg-icon v-if="item.value === 0" icon-class="field_text" class="field-icon-text" />-->
+<!--                          <svg-icon v-if="item.value === 1" icon-class="field_time" class="field-icon-time" />-->
+<!--                          <svg-icon v-if="item.value === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />-->
+<!--                          <svg-icon v-if="item.value === 5" icon-class="field_location" class="field-icon-location" />-->
+<!--                        </span>-->
+<!--                          <span style="float: left; color: #8492a6; font-size: 12px">{{ item.label }}</span>-->
+<!--                        </el-option>-->
+<!--                      </el-select>-->
+<!--                      <span style="margin-left: 8px;">-->
+<!--                      <span v-if="scope.row.deExtractType === 0">-->
+<!--                        <svg-icon icon-class="field_text" class="field-icon-text" />-->
+<!--                        <span class="field-class">{{ $t('dataset.text') }}</span>-->
+<!--                      </span>-->
+<!--                      <span v-if="scope.row.deExtractType === 1">-->
+<!--                        <svg-icon v-if="scope.row.deExtractType === 1" icon-class="field_time" class="field-icon-time" />-->
+<!--                        <span class="field-class">{{ $t('dataset.time') }}</span>-->
+<!--                      </span>-->
+<!--                      <span v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3">-->
+<!--                        <svg-icon v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3" icon-class="field_value" class="field-icon-value" />-->
+<!--                        <span v-if="scope.row.deExtractType === 2" class="field-class">{{ $t('dataset.value') }}</span>-->
+<!--                        <span v-if="scope.row.deExtractType === 3" class="field-class">{{ $t('dataset.value') + '(' + $t('dataset.float') + ')' }}</span>-->
+<!--                      </span>-->
+<!--                      <span v-if="scope.row.deExtractType === 5">-->
+<!--                        <svg-icon v-if="scope.row.deExtractType === 5" icon-class="field_location" class="field-icon-location" />-->
+<!--                        <span class="field-class">{{ $t('dataset.location') }}</span>-->
+<!--                      </span>-->
+<!--                    </span>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
+<!--                </el-table>-->
+<!--              </el-tab-pane>-->
             </el-tabs>
           </el-row>
           <div slot="footer" class="dialog-footer">
@@ -416,7 +417,11 @@ export default {
         method: 'GET',
         request: {
           headers: [],
-          body: {}
+          body: {
+            "type": "",
+            "raw": "",
+            "kvs": []
+          }
         },
         fields: []
       },
@@ -427,7 +432,11 @@ export default {
         dataPath: '',
         request: {
           headers: [],
-          body: {},
+          body: {
+            "type": "",
+            "raw": "",
+            "kvs": []
+          },
           authManager: {}
         },
         fields: []
@@ -623,7 +632,11 @@ export default {
       this.$refs.dsForm.validate(valid => {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
-          data.configuration = JSON.stringify(data.configuration)
+          if(data.type === 'api') {
+            data.configuration = JSON.stringify(data.apiConfiguration)
+          }else {
+            data.configuration = JSON.stringify(data.configuration)
+          }
           if (data.showModel === 'show' && !this.canEdit) {
             validateDsById(data.id).then(res => {
               if (res.success) {
@@ -675,13 +688,11 @@ export default {
       if(this.active === 1){
         this.$refs.apiItem.validate(valid => {
           if (valid) {
-            console.log(this.apiItem)
             const data = JSON.parse(JSON.stringify(this.apiItem))
             data.request = JSON.stringify(data.request)
             this.loading = true
             checkApiDatasource(data).then(res => {
               this.loading = false
-              console.log(res)
               this.$success(i18n.t('commons.success'))
               this.active++
               this.apiItem.fields = res.data.fields
@@ -753,7 +764,6 @@ export default {
             this.loading = true
             checkApiDatasource(data).then(res => {
               this.loading = false
-              console.log(res)
               this.$success(i18n.t('commons.success'))
               this.apiItem.fields = res.data.fields
               this.$refs.plxTable.reloadData(res.data.datas)
@@ -767,7 +777,6 @@ export default {
       }
     },
     handleClick(tab, event) {
-      console.log(tab, event);
     }
   }
 }

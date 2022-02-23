@@ -1310,7 +1310,7 @@ export default {
     port_no_less_then_0: 'Port cannot be less than zero',
     priority: 'Advanced setting',
     extra_params: 'Extra JDBC connection string',
-    please_input_dataPath: '请输入 JsonPath 数据路径',
+    please_input_dataPath: 'Please enter the JsonPath data path',
     warning: 'Contains invalid datasets',
     data_table: 'Dataset Table',
     data_table_name: 'Dataset Table name',

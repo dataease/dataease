@@ -161,7 +161,16 @@ public class DatasourceService {
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
-            datasourceProvider.checkStatus(datasourceRequest);
+            String status = datasourceProvider.checkStatus(datasourceRequest);
+            if (status.equalsIgnoreCase("Success")) {
+                return ResultHolder.success("Success");
+            }
+            if (status.equalsIgnoreCase("Warning")) {
+                return ResultHolder.error("Datasource has invalid items");
+            }
+            if (status.equalsIgnoreCase("Error")) {
+                return ResultHolder.error("Datasource is invalid");
+            }
             return ResultHolder.success("Success");
         }catch (Exception e){
             return ResultHolder.error("Datasource is invalid: " + e.getMessage());
@@ -178,8 +187,17 @@ public class DatasourceService {
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
-            datasourceProvider.checkStatus(datasourceRequest);
-            datasource.setStatus("Success");
+            String status = datasourceProvider.checkStatus(datasourceRequest);
+            datasource.setStatus(status);
+            if (status.equalsIgnoreCase("Success")) {
+                return ResultHolder.success("Success");
+            }
+            if (status.equalsIgnoreCase("Warning")) {
+                return ResultHolder.error("Datasource has invalid items");
+            }
+            if (status.equalsIgnoreCase("Error")) {
+                return ResultHolder.error("Datasource is invalid");
+            }
             return ResultHolder.success("Success");
         }catch (Exception e){
             datasource.setStatus("Error");
@@ -206,7 +224,8 @@ public class DatasourceService {
 
         // 获取当前数据源下的db类型数据集
         DatasetTableExample datasetTableExample = new DatasetTableExample();
-        datasetTableExample.createCriteria().andTypeEqualTo("db").andDataSourceIdEqualTo(datasource.getId());
+
+        datasetTableExample.createCriteria().andTypeIn(Arrays.asList("db","api")).andDataSourceIdEqualTo(datasource.getId());
         List<DatasetTable> datasetTables = datasetTableMapper.selectByExampleWithBLOBs(datasetTableExample);
         List<DBTableDTO> list = new ArrayList<>();
         for (TableDesc tableDesc : tables) {
@@ -256,6 +275,7 @@ public class DatasourceService {
         DatasourceExample example = new DatasourceExample();
         DatasourceExample.Criteria criteria = example.createCriteria();
         criteria.andNameEqualTo(datasource.getName());
+        criteria.andTypeEqualTo(datasource.getType());
         if (StringUtils.isNotEmpty(datasource.getId())) {
             criteria.andIdNotEqualTo(datasource.getId());
         }
@@ -271,8 +291,16 @@ public class DatasourceService {
 
     public ApiDefinition checkApiDatasource(ApiDefinition apiDefinition) throws Exception {
         String response = ApiProvider.execHttpRequest(apiDefinition);
+        if(StringUtils.isEmpty(response)){
+            throw new Exception("该请求返回数据为空");
+        }
+        List<LinkedHashMap> datas = new ArrayList<>();
+        try {
+            datas = JsonPath.read(response,apiDefinition.getDataPath());
+        }catch (Exception e){
+            throw new Exception("jsonPath 路径错误：" + e.getMessage());
+        }
 
-        List<LinkedHashMap> datas = JsonPath.read(response,apiDefinition.getDataPath());
         List<JSONObject> dataList = new ArrayList<>();
         List<DatasetTableField> fields = new ArrayList<>();
         Boolean getFileds = true;

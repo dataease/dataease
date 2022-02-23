@@ -125,7 +125,7 @@ export default {
   methods: {
     initDataSource() {
       listDatasource().then(response => {
-        this.options = response.data
+        this.options = response.data.filter(item => item.type !== 'api')
       })
     },
     kettleState() {

@@ -467,6 +467,10 @@ public class ExtractDataService {
                 while ((line = input.readLine()) != null) {
                     errMsg = errMsg + line + System.getProperty("line.separator");
                 }
+                input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                while ((line = input.readLine()) != null) {
+                    errMsg = errMsg + line + System.getProperty("line.separator");
+                }
                 throw new Exception(errMsg);
             }
         }catch (Exception e){

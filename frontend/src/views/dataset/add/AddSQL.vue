@@ -3,7 +3,7 @@
     <el-row>
       <el-row style="height: 26px;" class="title-text">
         <span style="line-height: 26px;">
-          {{ param.tableId?$t('dataset.edit_sql'):$t('dataset.add_sql_table') }}
+          {{ param.tableId ? $t('dataset.edit_sql') : $t('dataset.add_sql_table') }}
         </span>
         <el-row style="float: right">
           <el-button size="mini" @click="cancel">
@@ -14,11 +14,12 @@
           </el-button>
         </el-row>
       </el-row>
-      <el-divider />
+      <el-divider/>
       <el-row>
         <el-form :inline="true">
           <el-form-item class="form-item">
-            <el-select v-model="dataSource" filterable :placeholder="$t('dataset.pls_slc_data_source')" size="mini" @change="changeDatasource()">
+            <el-select v-model="dataSource" filterable :placeholder="$t('dataset.pls_slc_data_source')" size="mini"
+                       @change="changeDatasource()">
               <el-option
                 v-for="item in options"
                 :key="item.id"
@@ -28,19 +29,20 @@
             </el-select>
           </el-form-item>
           <el-form-item class="form-item">
-            <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" />
+            <el-input v-model="name" size="mini" :placeholder="$t('commons.name')"/>
           </el-form-item>
           <el-form-item v-if="!param.tableId" class="form-item">
             <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
-              <el-option :label="$t('dataset.direct_connect')" value="0" />
-              <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning || selectedDatasource.type==='es' || selectedDatasource.type==='ck'|| selectedDatasource.type==='mongo'|| selectedDatasource.type==='redshift' || selectedDatasource.type==='hive'" />
+              <el-option :label="$t('dataset.direct_connect')" value="0"/>
+              <el-option :label="$t('dataset.sync_data')" value="1"
+                         :disabled="!kettleRunning || selectedDatasource.type==='es' || selectedDatasource.type==='ck'|| selectedDatasource.type==='mongo'|| selectedDatasource.type==='redshift' || selectedDatasource.type==='hive'"/>
             </el-select>
           </el-form-item>
 
           <el-form-item v-if="mode === '1'" class="form-item">
             <el-select v-model="syncType" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
-              <el-option :label="$t('dataset.sync_now')" value="sync_now" />
-              <el-option :label="$t('dataset.sync_latter')" value="sync_latter" />
+              <el-option :label="$t('dataset.sync_now')" value="sync_now"/>
+              <el-option :label="$t('dataset.sync_latter')" value="sync_latter"/>
             </el-select>
           </el-form-item>
         </el-form>
@@ -62,7 +64,9 @@
         <el-card class="box-card dataPreview" shadow="never">
           <div slot="header" class="clearfix">
             <span>{{ $t('dataset.data_preview') }}</span>
-            <el-button style="float: right; padding: 3px 0" type="text" size="mini" @click="getSQLPreview">{{ $t('dataset.preview') }}</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" size="mini" @click="getSQLPreview">
+              {{ $t('dataset.preview') }}
+            </el-button>
           </div>
           <div class="text item">
             <ux-grid
@@ -95,9 +99,9 @@
 </template>
 
 <script>
-import { post, listDatasource, isKettleRunning } from '@/api/dataset/dataset'
-import { codemirror } from 'vue-codemirror'
-import { getTable } from '@/api/dataset/dataset'
+import {post, listDatasource, isKettleRunning} from '@/api/dataset/dataset'
+import {codemirror} from 'vue-codemirror'
+import {getTable} from '@/api/dataset/dataset'
 // 核心样式
 import 'codemirror/lib/codemirror.css'
 // 引入主题后还需要在 options 中指定主题才会生效
@@ -123,7 +127,7 @@ import 'codemirror/addon/hint/show-hint'
 
 export default {
   name: 'AddSQL',
-  components: { codemirror },
+  components: {codemirror},
   props: {
     param: {
       type: Object,
@@ -163,7 +167,7 @@ export default {
   },
   watch: {
     'param.tableId': {
-      handler: function() {
+      handler: function () {
         this.resetComponent()
         this.initTableInfo()
       }
@@ -199,14 +203,14 @@ export default {
     },
     calHeight() {
       const that = this
-      setTimeout(function() {
+      setTimeout(function () {
         const currentHeight = document.documentElement.clientHeight
         that.height = currentHeight - 56 - 30 - 26 - 25 - 43 - 160 - 10 - 37 - 20 - 10 - 16
       }, 10)
     },
     initDataSource() {
       listDatasource().then(response => {
-        this.options = response.data
+        this.options = response.data.filter(item => item.type !== 'api')
       })
     },
 
@@ -237,7 +241,7 @@ export default {
         dataSourceId: this.dataSource,
         type: 'sql',
         // info: '{"sql":"' + this.sql + '"}',
-        info: JSON.stringify({ sql: this.sql.trim() })
+        info: JSON.stringify({sql: this.sql.trim()})
       }).then(response => {
         this.fields = response.data.fields
         this.data = response.data.data
@@ -280,7 +284,7 @@ export default {
         syncType: this.syncType,
         mode: parseInt(this.mode),
         // info: '{"sql":"' + this.sql + '"}',
-        info: JSON.stringify({ sql: this.sql.trim() })
+        info: JSON.stringify({sql: this.sql.trim()})
       }
       post('/dataset/table/update', table).then(response => {
         // this.$store.dispatch('dataset/setSceneData', new Date().getTime())
@@ -292,9 +296,9 @@ export default {
     cancel() {
       // this.dataReset()
       if (this.param.tableId) {
-        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.table })
+        this.$emit('switchComponent', {name: 'ViewTable', param: this.param.table})
       } else {
-        this.$emit('switchComponent', { name: '' })
+        this.$emit('switchComponent', {name: ''})
       }
     },
 
@@ -327,48 +331,51 @@ export default {
 </script>
 
 <style scoped>
-  .el-divider--horizontal {
-    margin: 12px 0;
-  }
+.el-divider--horizontal {
+  margin: 12px 0;
+}
 
-  .form-item {
-    margin-bottom: 6px;
-  }
+.form-item {
+  margin-bottom: 6px;
+}
 
-  .el-checkbox {
-    margin-bottom: 14px;
-    margin-left: 0;
-    margin-right: 14px;
-  }
+.el-checkbox {
+  margin-bottom: 14px;
+  margin-left: 0;
+  margin-right: 14px;
+}
 
-  .el-checkbox.is-bordered + .el-checkbox.is-bordered {
-    margin-left: 0;
-  }
+.el-checkbox.is-bordered + .el-checkbox.is-bordered {
+  margin-left: 0;
+}
 
-  .codemirror {
-    height: 160px;
-    overflow-y: auto;
-  }
-  .codemirror >>> .CodeMirror-scroll {
-    height: 160px;
-    overflow-y: auto;
-  }
+.codemirror {
+  height: 160px;
+  overflow-y: auto;
+}
 
-  .dataPreview>>>.el-card__header{
-    padding: 6px 8px;
-  }
+.codemirror >>> .CodeMirror-scroll {
+  height: 160px;
+  overflow-y: auto;
+}
 
-  .dataPreview>>>.el-card__body{
-    padding:10px;
-  }
+.dataPreview >>> .el-card__header {
+  padding: 6px 8px;
+}
 
-  span{
-    font-size: 14px;
-  }
-  .span-number{
-    color: #0a7be0;
-  }
-  .table-count{
-    color: #606266;
-  }
+.dataPreview >>> .el-card__body {
+  padding: 10px;
+}
+
+span {
+  font-size: 14px;
+}
+
+.span-number {
+  color: #0a7be0;
+}
+
+.table-count {
+  color: #606266;
+}
 </style>
