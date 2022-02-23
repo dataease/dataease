@@ -19,6 +19,8 @@ public class PanelView implements Serializable {
 
     private Long updateTime;
 
+    private String position;
+
     private byte[] content;
 
     private static final long serialVersionUID = 1L;

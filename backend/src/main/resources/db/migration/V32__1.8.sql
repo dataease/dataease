@@ -350,3 +350,6 @@ INSERT INTO `sys_background_image` VALUES ('blue_5', '边框5', '蓝色调', NUL
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+ALTER TABLE `panel_view`
+ADD COLUMN `position` varchar(255) NULL DEFAULT 'panel' COMMENT '视图位置 panel 仪表板中，tab Tab页中' AFTER `update_time`;
