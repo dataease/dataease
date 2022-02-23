@@ -232,7 +232,11 @@ import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
 import { deepCopy, panelInit } from '@/components/canvas/utils/utils'
-import componentList, { BASE_MOBILE_STYLE, HYPERLINKS } from '@/components/canvas/custom-component/component-list' // 左侧列表数据
+import componentList, {
+  BASE_MOBILE_STYLE,
+  COMMON_BACKGROUND,
+  HYPERLINKS
+} from '@/components/canvas/custom-component/component-list' // 左侧列表数据
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
@@ -615,6 +619,8 @@ export default {
         this.currentFilterCom.id = newComponentId
         this.currentFilterCom.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
         this.currentFilterCom.mobileStyle = BASE_MOBILE_STYLE
+        this.currentFilterCom.commonBackground || deepCopy(COMMON_BACKGROUND)
+
 
         if (this.currentWidget.filterDialog) {
           this.show = false
@@ -643,6 +649,8 @@ export default {
       component.id = newComponentId
       // 新拖入的组件矩阵状态 和仪表板当前的矩阵状态 保持一致
       component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
+      // 统一设置背景信息
+      component.commonBackground || deepCopy(COMMON_BACKGROUND)
 
       // 视图统一调整为复制
       if (componentInfo.type === 'view') {
