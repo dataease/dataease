@@ -95,7 +95,11 @@ export default {
         height: '100%'
       }
       if (this.config.commonBackground.enable) {
-        style['background'] = `url(${this.config.commonBackground.innerImage}) no-repeat`
+        if (this.config.commonBackground.backgroundType === 'innerImage') {
+          style['background'] = `url(${this.config.commonBackground.innerImage}) no-repeat`
+        } else if (this.config.commonBackground.backgroundType === 'outerImage') {
+          style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat`
+        }
         style['background-size'] = `100% 100%`
       }
       return style

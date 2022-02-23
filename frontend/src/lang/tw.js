@@ -1557,7 +1557,8 @@ export default {
     input_title: '請輸入標題',
     show_title: '顯示標題',
     default_settings: '默認值設置',
-    choose_border: '选择边框'
+    choose_background: '选择组件背景',
+    choose_background_tips: '组件自有的背景设置会覆盖当前设置'
   },
   plugin: {
     local_install: '本地安裝',

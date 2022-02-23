@@ -1556,7 +1556,8 @@ export default {
     input_title: 'Input Title',
     show_title: 'Show Title',
     default_settings: 'Default Settings',
-    choose_border: 'Choose Border'
+    choose_background: 'Choose Component Background',
+    choose_background_tips: 'The component`s own background settings will overwrite the current settings'
   },
   plugin: {
     local_install: 'Local installation',

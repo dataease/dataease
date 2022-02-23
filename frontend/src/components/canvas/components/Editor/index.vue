@@ -172,7 +172,6 @@
     <el-dialog
       :visible.sync="boardSetVisible"
       width="750px"
-      :title="$t('panel.choose_border')"
       class="dialog-css"
       :show-close="false"
       :destroy-on-close="true"

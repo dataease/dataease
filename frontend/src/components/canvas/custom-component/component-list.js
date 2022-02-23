@@ -19,10 +19,12 @@ export const BASE_MOBILE_STYLE = {
 // 公共背景
 export const COMMON_BACKGROUND = {
   enable: false,
-  backgroundType: 'color',
+  backgroundType: 'innerImage',
   color: '#FFFFFF',
   innerImage: null,
-  outerImage: null
+  outerImage: null,
+  alpha: 100,
+  borderRadius: 5
 }
 
 // 公共样式
