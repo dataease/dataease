@@ -58,14 +58,14 @@
           </el-col>
         </el-form-item>
 
-        <el-dialog v-dialogDrag :title="api_table_title" :visible="edit_api_item" :before-close="closeEditItem" width="70%" class="dialog-css" append-to-body>
+        <el-dialog :title="api_table_title" :visible="edit_api_item" :before-close="closeEditItem" width="60%" class="dialog-css" append-to-body>
           <el-steps :active="active" align-center>
             <el-step title="步骤 1"></el-step>
             <el-step title="步骤 2"></el-step>
           </el-steps>
 
           <el-row  v-show="active === 1">
-            <el-form ref="apiItem" :model="apiItem" label-width="100px" :rules="rule">
+            <el-form ref="apiItem" size="small" :model="apiItem" label-width="100px" :rules="rule">
               <p class="tip">{{ $t('datasource.base_info') }} </p>
 
               <el-form-item :label="$t('commons.name')" prop="name">
@@ -91,7 +91,7 @@
               <el-form-item :label="$t('datasource.data_path')" prop="dataPath">
                 <el-input :placeholder="$t('datasource.data_path_desc')" v-model="apiItem.dataPath" autocomplete="off"/>
               </el-form-item>
-              <el-button style="margin-top: 12px;" @click="validateApi(undefined)" v-show="active === 1">{{ $t('commons.validate') }}</el-button>
+<!--              <el-button style="margin-top: 12px;" @click="validateApi(undefined)" v-show="active === 1">{{ $t('commons.validate') }}</el-button>-->
             </el-form>
           </el-row>
           <el-row  v-show="active === 2">
@@ -165,9 +165,9 @@
             </el-tabs>
           </el-row>
           <div slot="footer" class="dialog-footer">
-            <el-button style="margin-top: 12px;" @click="next" v-show="active === 1">{{ $t('fu.steps.next') }}</el-button>
-            <el-button style="margin-top: 12px;" @click="before" v-show="active === 2">{{ $t('fu.steps.prev') }}</el-button>
-            <el-button style="margin-top: 12px;" @click="saveItem" v-show="active === 2">{{ $t('commons.save') }}</el-button>
+            <el-button @click="next" v-show="active === 1">{{ $t('fu.steps.next') }}</el-button>
+            <el-button @click="before" v-show="active === 2">{{ $t('fu.steps.prev') }}</el-button>
+            <el-button @click="saveItem" v-show="active === 2">{{ $t('commons.save') }}</el-button>
           </div>
 
         </el-dialog>
@@ -315,8 +315,8 @@ export default {
         apiConfiguration: []
       },
       rule: {
-        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
-          {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
+        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'change'},
+          {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'change'}],
         desc: [{min: 2, max: 50, message: i18n.t('datasource.input_limit_2_50'), trigger: 'blur'}],
         type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'change'}],
         'configuration.dataBase': [{
@@ -416,7 +416,7 @@ export default {
         url: '',
         method: 'GET',
         request: {
-          headers: [],
+          headers: [{}],
           body: {
             "type": "",
             "raw": "",
@@ -781,38 +781,41 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-
-.back-button {
-  cursor: pointer;
-  margin-right: 10px;
-  font-weight: 600;
-
-  &:active {
-    transform: scale(0.85);
+<style  scoped>
+  .el-input {
+    width: 300px;
   }
-}
-.el-input {
-  width: 300px;
-}
-.el-select {
-  width: 300px;
-}
-.ms-http-input {
-  width: 500px;
-  margin-top: 5px;
-}
-.tip {
-  padding: 3px 5px;
-  font-size: 16px;
-  border-radius: 0;
-  border-left: 4px solid #783887;
-  margin: 5px 5px 10px 5px;
-}
-.el-select>>>input{
-  padding-right: 10px;
-}
-.el-select>>>.el-input__suffix{
-  right: 0;
-}
+  .el-select {
+    width: 300px;
+  }
+  .ms-http-input {
+    width: 500px;
+    margin-top: 5px;
+  }
+  .tip {
+    padding: 3px 5px;
+    font-size: 16px;
+    border-radius: 0;
+    border-left: 4px solid #409EFF;
+    margin: 5px 5px 10px 5px;
+  }
+  .el-select>>>input{
+    padding-right: 10px;
+  }
+  .el-select>>>.el-input__suffix{
+    right: 0;
+  }
+
+  .dialog-css>>>.el-dialog__header {
+    padding: 10px 20px 0px;
+  }
+
+  .dialog-css>>>.el-dialog__body {
+    padding: 10px 20px 10px;
+  }
+
+  .dialog-footer>>> .el-dialog__footer {
+    padding: 10px 10px 10px;
+  }
+
 </style>
