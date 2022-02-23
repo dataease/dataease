@@ -1,7 +1,9 @@
 package io.dataease.controller.panel.api;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.DePermission;
 import io.dataease.base.domain.PanelShare;
+import io.dataease.commons.constants.DePermissionType;
 import io.dataease.controller.request.panel.PanelShareFineDto;
 import io.dataease.controller.request.panel.PanelShareRemoveRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
@@ -47,6 +49,7 @@ public interface ShareApi {
     List<PanelShareOutDTO> queryTargets(@PathVariable("panelId") String panelId);
 
 
+    @DePermission(type = DePermissionType.PANEL, value = "resourceId")
     @ApiOperation("创建分享")
     @PostMapping("/fineSave")
     void fineSave(PanelShareFineDto panelShareFineDto);
