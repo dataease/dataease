@@ -1696,11 +1696,13 @@ public class ChartViewService {
 
     // check permission
     private void checkPermission(String needPermission, DataSetTableDTO table) {
-        if (ObjectUtils.isEmpty(table) || ObjectUtils.isEmpty(table.getPrivileges())) {
-            throw new RuntimeException(Translator.get("i18n_dataset_delete_or_no_permission"));
+        if (ObjectUtils.isEmpty(table)) {
+            throw new RuntimeException(Translator.get("i18n_dataset_delete"));
         }
-        if (!AuthUtils.getUser().getIsAdmin() && !table.getPrivileges().contains(needPermission)) {
-            throw new RuntimeException(Translator.get("i18n_dataset_delete_or_no_permission"));
+        if (!AuthUtils.getUser().getIsAdmin()) {
+            if (ObjectUtils.isEmpty(table.getPrivileges()) || !table.getPrivileges().contains(needPermission)) {
+                throw new RuntimeException(Translator.get("i18n_dataset_no_permission"));
+            }
         }
     }
 }

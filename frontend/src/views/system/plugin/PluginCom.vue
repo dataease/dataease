@@ -1,18 +1,18 @@
 <template>
-  <div>
-    <async-component
-      v-if="showAsync"
-      :ref="refId"
-      :url="url"
-      :obj="obj"
-      @execute-axios="executeAxios"
-      @on-add-languanges="addLanguages"
-      @plugin-call-back="pluginCallBack"
-    />
-    <div v-else>
-      <h1>未知组件无法展示</h1>
-    </div>
+
+  <async-component
+    v-if="showAsync"
+    :ref="refId"
+    :url="url"
+    :obj="obj"
+    @execute-axios="executeAxios"
+    @on-add-languanges="addLanguages"
+    @plugin-call-back="pluginCallBack"
+  />
+  <div v-else>
+    <h1>未知组件无法展示</h1>
   </div>
+
 </template>
 
 <script>
