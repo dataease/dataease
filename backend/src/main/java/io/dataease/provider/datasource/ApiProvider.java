@@ -185,7 +185,7 @@ public class ApiProvider extends DatasourceProvider{
             int i = 0;
             while (it.hasNext()){
                 Map.Entry entry = (Map.Entry)it.next();
-                row[i] = Optional.ofNullable(entry.getValue()).orElse("").toString();
+                row[i] = Optional.ofNullable(entry.getValue()).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " ");
                 i++;
             }
             dataList.add(row);

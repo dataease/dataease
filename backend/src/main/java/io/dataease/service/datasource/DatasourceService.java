@@ -310,7 +310,7 @@ public class DatasourceService {
             Iterator it = data.entrySet().iterator();
             while (it.hasNext()){
                 Map.Entry entry = (Map.Entry)it.next();
-                jsonObject.put((String) entry.getKey(), entry.getValue());
+                jsonObject.put((String) entry.getKey(), Optional.ofNullable(entry.getValue()).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
                 if(getFileds) {
                     DatasetTableField tableField = new DatasetTableField();
                     tableField.setOriginName((String) entry.getKey());
