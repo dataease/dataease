@@ -30,7 +30,7 @@
       ]"
       :style="mainSlotStyle"
     >
-      <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet"  @boardSet="boardSet" />
+      <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" @boardSet="boardSet" />
       <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
       <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
       <div
@@ -531,8 +531,12 @@ export default {
         width: this.computedMainSlotWidth,
         height: this.computedMainSlotHeight
       }
-      if (this.element.commonBackground.enable) {
-        style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat`
+      if (this.element.commonBackground && this.element.commonBackground.enable) {
+        if (this.element.commonBackground.backgroundType === 'innerImage') {
+          style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat`
+        } else if (this.element.commonBackground.backgroundType === 'outerImage') {
+          style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat`
+        }
         style['background-size'] = `100% 100%`
       }
       return style

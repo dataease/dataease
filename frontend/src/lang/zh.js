@@ -1566,7 +1566,10 @@ export default {
     input_title: '请输入标题',
     show_title: '显示标题',
     default_settings: '默认值设置',
-    choose_border: '选择边框'
+    choose_background: '选择组件背景',
+    choose_background_tips: '组件自有的背景设置会覆盖当前设置',
+    setting_background: '设置背景',
+    setting_jump: '跳转设置'
   },
   plugin: {
     local_install: '本地安装',

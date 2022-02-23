@@ -126,8 +126,7 @@ export default {
       'targetLinkageInfo',
       'mobileLayoutStatus',
       'mobileComponentData',
-      'componentDataCache',
-      'styleChangeTimes'
+      'componentDataCache'
     ])
   },
   created() {

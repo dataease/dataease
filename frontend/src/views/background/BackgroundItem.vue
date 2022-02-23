@@ -10,9 +10,7 @@
       :style="classBackground"
       @click.stop="setBoard"
     />
-    <el-tooltip class="item" effect="light" :content="template.name" placement="bottom">
       <span class="demonstration">{{ template.name }}</span>
-    </el-tooltip>
   </div>
 </template>
 
@@ -59,25 +57,25 @@ export default {
 
   .testcase-template {
     display: inline-block;
-    margin: 10px 30px;
-    width: 150px;
+    margin: 10px 0px;
+    width: 90px;
   }
 
   .demonstration {
     display: block;
-    font-size: 14px;
+    font-size: 8px;
     color: gray;
     text-align: center;
     margin: 10px auto;
-    width: 150px;
+    width: 130px;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
   }
 
   .template-img {
-    height: 112px;
-    width: 200px;
+    height: 80px;
+    width: 130px;
     margin: 0 auto;
     box-shadow: 0 0 2px 0 rgba(31,31,31,0.15), 0 1px 2px 0 rgba(31,31,31,0.15);
     border: solid 2px #fff;
