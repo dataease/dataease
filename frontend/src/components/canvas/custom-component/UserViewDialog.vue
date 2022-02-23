@@ -1,9 +1,16 @@
 <template>
   <de-container>
     <de-aside-container v-if="!chart.type.includes('table')" :style="customStyle">
-      <chart-component v-if="!chart.type.includes('text') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
-      <chart-component-g2 v-if="!chart.type.includes('text') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
-      <label-normal v-if="chart.type.includes('text')" :chart="chart" class="table-class" />
+      <plugin-com
+        v-if="chart.isPlugin"
+
+        :component-name="chart.type + '-view'"
+        :obj="{chart}"
+        class="chart-class"
+      />
+      <chart-component v-else-if="!chart.type.includes('text') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
+      <chart-component-g2 v-else-if="!chart.type.includes('text') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
+      <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
     </de-aside-container>
     <de-main-container>
       <table-normal :chart="chartTable" :show-summary="false" class="table-class" />
@@ -22,10 +29,10 @@ import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import { export_json_to_excel } from '@/plugins/Export2Excel'
 import { mapState } from 'vuex'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
-
+import PluginCom from '@/views/system/plugin/PluginCom'
 export default {
   name: 'UserView',
-  components: { ChartComponentG2, DeMainContainer, DeContainer, DeAsideContainer, ChartComponent, TableNormal, LabelNormal },
+  components: { ChartComponentG2, DeMainContainer, DeContainer, DeAsideContainer, ChartComponent, TableNormal, LabelNormal, PluginCom },
   props: {
     chart: {
       type: Object,
