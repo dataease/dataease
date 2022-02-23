@@ -18,6 +18,7 @@ import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.controller.response.ChartDetail;
 import io.dataease.controller.response.DataSetDetail;
 import io.dataease.dto.chart.*;
+import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.i18n.Translator;
@@ -42,8 +43,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-
-import static io.dataease.commons.constants.ColumnPermissionConstants.Desensitization_desc;
 
 /**
  * @Author gin
@@ -243,11 +242,13 @@ public class ChartViewService {
 
         DatasetTableField datasetTableFieldObj = DatasetTableField.builder().tableId(view.getTableId()).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableFieldObj);
-        DatasetTable datasetTable = dataSetTableService.get(view.getTableId());
+        // 获取数据集,需校验权限
+        DataSetTableDTO table = dataSetTableService.getWithPermission(view.getTableId());
+        checkPermission("use", table);
 
         //列权限
         List<String> desensitizationList = new ArrayList<>();
-        List<DatasetTableField> columnPermissionFields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), requestList.getUser());
+        List<DatasetTableField> columnPermissionFields = permissionService.filterColumnPermissons(fields, desensitizationList, table.getId(), requestList.getUser());
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList());
         dataeaseNames.add("*");
@@ -258,7 +259,7 @@ public class ChartViewService {
 
 
         //行权限
-        List<ChartFieldCustomFilterDTO> rowPermissionFields = permissionService.getCustomFilters(columnPermissionFields, datasetTable, requestList.getUser());
+        List<ChartFieldCustomFilterDTO> rowPermissionFields = permissionService.getCustomFilters(columnPermissionFields, table, requestList.getUser());
         fieldCustomFilter.addAll(rowPermissionFields);
 
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
@@ -390,11 +391,6 @@ public class ChartViewService {
             }
         }
 
-        // 获取数据集,需校验权限
-        DatasetTable table = dataSetTableService.get(view.getTableId());
-        if (ObjectUtils.isEmpty(table)) {
-            throw new RuntimeException(Translator.get("i18n_dataset_delete_or_no_permission"));
-        }
         // 判断连接方式，直连或者定时抽取 table.mode
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         List<String[]> data = new ArrayList<>();
@@ -1680,9 +1676,9 @@ public class ChartViewService {
         return chartViewMapper.selectByPrimaryKey(id);
     }
 
-    public String chartCopy(String id,String panelId) {
+    public String chartCopy(String id, String panelId) {
         String newChartId = UUID.randomUUID().toString();
-        extChartViewMapper.chartCopy(newChartId, id,panelId);
+        extChartViewMapper.chartCopy(newChartId, id, panelId);
         return newChartId;
     }
 
@@ -1695,6 +1691,16 @@ public class ChartViewService {
             return "YES";
         } else {
             return "NO";
+        }
+    }
+
+    // check permission
+    private void checkPermission(String needPermission, DataSetTableDTO table) {
+        if (ObjectUtils.isEmpty(table) || ObjectUtils.isEmpty(table.getPrivileges())) {
+            throw new RuntimeException(Translator.get("i18n_dataset_delete_or_no_permission"));
+        }
+        if (!AuthUtils.getUser().getIsAdmin() && !table.getPrivileges().contains(needPermission)) {
+            throw new RuntimeException(Translator.get("i18n_dataset_delete_or_no_permission"));
         }
     }
 }

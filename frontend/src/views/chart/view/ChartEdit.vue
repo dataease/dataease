@@ -56,6 +56,7 @@
               <div class="padding-lr field-height">
                 <span>{{ $t('chart.dimension') }}</span>
                 <draggable
+                  v-if="table && hasDataPermission('use',table.privileges)"
                   v-model="dimensionData"
                   :options="{group:{name: 'drag',pull:'clone'},sort: true}"
                   animation="300"
@@ -81,6 +82,7 @@
               <div class="padding-lr field-height">
                 <span>{{ $t('chart.quota') }}</span>
                 <draggable
+                  v-if="table && hasDataPermission('use',table.privileges)"
                   v-model="quotaData"
                   :options="{group:{name: 'drag',pull:'clone'},sort: true}"
                   animation="300"
