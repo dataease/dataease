@@ -1698,8 +1698,12 @@ public class DataSetTableService {
         if (datasetTableIncrementalConfig == null || StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())) {
             return;
         }
-        datasetTableIncrementalConfig.setIncrementalAdd(datasetTableIncrementalConfig.getIncrementalAdd().trim());
-        datasetTableIncrementalConfig.setIncrementalDelete(datasetTableIncrementalConfig.getIncrementalDelete().trim());
+        if(StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd())){
+            datasetTableIncrementalConfig.setIncrementalAdd(datasetTableIncrementalConfig.getIncrementalAdd().trim());
+        }
+        if(StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete())){
+            datasetTableIncrementalConfig.setIncrementalDelete(datasetTableIncrementalConfig.getIncrementalDelete().trim());
+        }
         if (StringUtils.isEmpty(datasetTableIncrementalConfig.getId())) {
             datasetTableIncrementalConfig.setId(UUID.randomUUID().toString());
             datasetTableIncrementalConfigMapper.insertSelective(datasetTableIncrementalConfig);

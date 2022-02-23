@@ -2,7 +2,7 @@
   <el-row style="display: flex;flex-direction: column;height: 100%">
     <el-row style="height: 26px;" class="title-text">
       <span style="line-height: 26px;">
-        {{ $t('dataset.add_api_table') }}
+        {{ $t('datasource.add_api_table') }}
       </span>
       <el-row style="float: right">
         <el-button size="mini" @click="cancel">
