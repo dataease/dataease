@@ -32,7 +32,6 @@
             :default-expanded-keys="expandedArray"
             :data="tData"
             node-key="id"
-            default-expand-all
             :expand-on-click-node="true"
             :filter-node-method="filterNode"
             @node-click="nodeClick"
