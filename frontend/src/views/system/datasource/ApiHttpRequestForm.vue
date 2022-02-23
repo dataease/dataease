@@ -369,14 +369,14 @@ export default {
 
 <style scoped>
 .ms-query {
-  background: #783887;
+  background: #409EFF;
   color: white;
   height: 18px;
   border-radius: 42%;
 }
 
 .ms-header {
-  background: #783887;
+  background: #409EFF;
   color: white;
   height: 18px;
   border-radius: 42%;

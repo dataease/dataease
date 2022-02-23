@@ -3,6 +3,7 @@
     <div class="kv-row item" v-for="(item, index) in items" :key="index">
 
       <el-row type="flex" :gutter="20" justify="space-between" align="middle">
+        <span style="margin-left: 10px"></span>
         <i class="el-icon-top" style="cursor:pointer" @click="moveTop(index)"/>
         <i class="el-icon-bottom" style="cursor:pointer;" @click="moveBottom(index)"/>
 

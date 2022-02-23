@@ -1584,6 +1584,10 @@ export default {
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
+
+          // 将视图传入echart组件
+          this.chart = response.data
+          this.data = response.data.data
         }).catch(err => {
           this.httpRequest.status = err.response.data.success
           this.httpRequest.msg = err.response.data.message
