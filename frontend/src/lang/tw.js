@@ -1558,7 +1558,9 @@ export default {
     show_title: '顯示標題',
     default_settings: '默認值設置',
     choose_background: '选择组件背景',
-    choose_background_tips: '组件自有的背景设置会覆盖当前设置'
+    choose_background_tips: '组件自有的背景设置会覆盖当前设置',
+    setting_background: '设置背景',
+    setting_jump: '跳转设置'
   },
   plugin: {
     local_install: '本地安裝',

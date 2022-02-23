@@ -1572,7 +1572,9 @@ export default {
     release_time: 'Time',
     un_install: 'Uninstall',
     uninstall_confirm: 'Comfirm to uninstall the plugin?',
-    uninstall_cancel: 'Cancel uninstall plugin'
+    uninstall_cancel: 'Cancel uninstall plugin',
+    setting_background: 'BackGround',
+    setting_jump: 'Jump Setting'
   },
   display: {
     logo: 'Head system logo',

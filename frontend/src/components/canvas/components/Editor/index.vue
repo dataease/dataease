@@ -173,6 +173,7 @@
       :visible.sync="boardSetVisible"
       width="750px"
       class="dialog-css"
+      :close-on-click-modal="false"
       :show-close="false"
       :destroy-on-close="true"
       :append-to-body="true"
