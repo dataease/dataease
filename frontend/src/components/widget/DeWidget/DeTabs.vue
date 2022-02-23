@@ -95,6 +95,7 @@ import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import componentList from '@/components/canvas/custom-component/component-list'
 import { mapState } from 'vuex'
+import { chartCopy } from '@/api/chart/chart'
 
 export default {
   name: 'DeTabls',
@@ -138,7 +139,9 @@ export default {
     dropdownShow() {
       return this.isEdit && !this.mobileLayoutStatus
     },
-
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
     ...mapState([
       'curComponent',
       'mobileLayoutStatus'
@@ -211,11 +214,14 @@ export default {
       component.id = newComponentId
       component.style.width = '100%'
       component.style.height = '100%'
-      this.curItem.content = component
-      this.curItem.name = newComponentId
-      this.viewDialogVisible = false
-      this.activeTabName = newComponentId
-      this.styleChange()
+      chartCopy(node.innerId, this.panelInfo.id).then(res => {
+        component.propValue.viewId = res.data
+        this.curItem.content = component
+        this.curItem.name = newComponentId
+        this.viewDialogVisible = false
+        this.activeTabName = newComponentId
+        this.styleChange()
+      })
       // this.setComponentInfo()
     },
 

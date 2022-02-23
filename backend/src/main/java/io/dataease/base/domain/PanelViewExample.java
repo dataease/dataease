@@ -573,6 +573,76 @@ public class PanelViewExample {
             addCriterion("update_time not between", value1, value2, "updateTime");
             return (Criteria) this;
         }
+
+        public Criteria andPositionIsNull() {
+            addCriterion("`position` is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPositionIsNotNull() {
+            addCriterion("`position` is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPositionEqualTo(String value) {
+            addCriterion("`position` =", value, "position");
+            return (Criteria) this;
+        }
+
+        public Criteria andPositionNotEqualTo(String value) {
+            addCriterion("`position` <>", value, "position");
+            return (Criteria) this;
+        }
+
+        public Criteria andPositionGreaterThan(String value) {
+            addCriterion("`position` >", value, "position");
+            return (Criteria) this;
+        }
+
+        public Criteria andPositionGreaterThanOrEqualTo(String value) {
+            addCriterion("`position` >=", value, "position");
+            return (Criteria) this;
+        }
+
+        public Criteria andPositionLessThan(String value) {
+            addCriterion("`position` <", value, "position");
+            return (Criteria) this;
+        }
+
+        public Criteria andPositionLessThanOrEqualTo(String value) {
+            addCriterion("`position` <=", value, "position");
+            return (Criteria) this;
+        }
+
+        public Criteria andPositionLike(String value) {
+            addCriterion("`position` like", value, "position");
+            return (Criteria) this;
+        }
+
+        public Criteria andPositionNotLike(String value) {
+            addCriterion("`position` not like", value, "position");
+            return (Criteria) this;
+        }
+
+        public Criteria andPositionIn(List<String> values) {
+            addCriterion("`position` in", values, "position");
+            return (Criteria) this;
+        }
+
+        public Criteria andPositionNotIn(List<String> values) {
+            addCriterion("`position` not in", values, "position");
+            return (Criteria) this;
+        }
+
+        public Criteria andPositionBetween(String value1, String value2) {
+            addCriterion("`position` between", value1, value2, "position");
+            return (Criteria) this;
+        }
+
+        public Criteria andPositionNotBetween(String value1, String value2) {
+            addCriterion("`position` not between", value1, value2, "position");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
