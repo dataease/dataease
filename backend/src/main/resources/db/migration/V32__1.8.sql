@@ -365,7 +365,7 @@ ADD COLUMN `copy_id` varchar(255) NULL COMMENT '本次复制的执行ID' AFTER `
 
 ALTER TABLE `panel_view_linkage`
 ADD COLUMN `copy_from` varchar(255) NULL AFTER `ext2`,
-ADD COLUMN `copy_id` varchar(0) NULL AFTER `copy_from`;
+ADD COLUMN `copy_id` varchar(255) NULL AFTER `copy_from`;
 
 ALTER TABLE `panel_view_linkage_field`
 ADD COLUMN `copy_from` varchar(255) NULL AFTER `update_time`,
@@ -382,3 +382,20 @@ ADD COLUMN `copy_id` varchar(255) NULL AFTER `copy_from`;
 ALTER TABLE `panel_link_jump_target_view_info`
 ADD COLUMN `copy_from` varchar(255) NULL AFTER `target_field_id`,
 ADD COLUMN `copy_id` varchar(255) NULL AFTER `copy_from`;
+
+DROP TABLE IF EXISTS `dataease_code_version`;
+CREATE TABLE `dataease_code_version` (
+  `installed_rank` int(11) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `installed_on` timestamp NULL DEFAULT NULL,
+  `success` tinyint(1) NOT NULL,
+  PRIMARY KEY (`installed_rank`),
+  KEY `dataease_version_s_idx` (`success`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of dataease_code_version
+-- ----------------------------
+BEGIN;
+INSERT INTO `dataease_code_version` VALUES (0, 'init', NULL, 1);
+COMMIT;

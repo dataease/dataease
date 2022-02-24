@@ -22,4 +22,6 @@ public interface ExtPanelGroupMapper {
     //移除未使用的视图
     void removeUselessViews(@Param("panelId") String panelId);
 
+    List<PanelGroupDTO> panelGroupInit();
+
 }

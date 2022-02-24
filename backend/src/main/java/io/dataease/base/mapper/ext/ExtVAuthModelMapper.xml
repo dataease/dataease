@@ -164,7 +164,6 @@
             chart_view
             LEFT JOIN panel_view ON panel_view.chart_view_id = chart_view.id
         <where>
-            chart_view.chart_type ='public'
             <if test="record.pids != null and record.pids.size() > 0">
                 and panel_view.panel_id in
                 <foreach collection="record.pids" item="item" separator="," open="(" close=")">

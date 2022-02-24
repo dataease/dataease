@@ -16,6 +16,10 @@
         select panel_group.*,panel_group.name as label from panel_group where id =#{id}
     </select>
 
+    <select id="panelGroupInit" resultMap="BaseResultMapDTO">
+        select id, name,panel_data from panel_group where node_type = 'panel' and panel_type ='self'
+    </select>
+
     <select id="panelGroupListDefault" resultMap="BaseResultMapDTO">
         SELECT
         panel_group.id,
