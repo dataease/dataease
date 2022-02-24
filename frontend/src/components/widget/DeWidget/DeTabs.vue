@@ -52,7 +52,7 @@
             :is-edit="isEdit"
             :active="active"
             :element="item.content"
-            :filters="filterMap[item.content.propValue && item.content.propValue.viewId]"
+            :filters="filterMap[item.content.propValue && item.content.propValue.viewId] || []"
             :out-style="outStyle"
           />
         </div>
