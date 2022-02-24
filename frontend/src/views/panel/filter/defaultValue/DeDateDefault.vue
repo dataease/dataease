@@ -40,13 +40,13 @@
           v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === (defaultSetting.relativeOptions.length - 1)"
           label=""
         >
-          <el-input
+          <el-input-number
             v-model="element.options.attrs.default.dynamicPrefix"
-            type="number"
+            controls-position="right"
             size="mini"
             :min="1"
             :max="12"
-            @input="dynamicPrefixChange"
+            @change="dynamicPrefixChange"
           />
         </el-form-item>
 
