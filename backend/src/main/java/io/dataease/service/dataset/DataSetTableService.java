@@ -464,7 +464,7 @@ public class DataSetTableService {
     }
 
     public Map<String, Object> getPreviewData(DataSetTableRequest dataSetTableRequest, Integer page, Integer pageSize,
-            List<DatasetTableField> extFields) throws Exception {
+                                              List<DatasetTableField> extFields) throws Exception {
         Map<String, Object> map = new HashMap<>();
         DatasetTableField datasetTableField = DatasetTableField.builder().tableId(dataSetTableRequest.getId())
                 .checked(Boolean.TRUE).build();
@@ -926,8 +926,8 @@ public class DataSetTableService {
                             DorisTableUtils.dorisFieldName(
                                     datasetTableField.getTableId() + "_" + datasetTableField.getDataeaseName()))
                             || StringUtils.equalsIgnoreCase(tableField.getFieldName(),
-                                    DorisTableUtils.dorisFieldNameShort(datasetTableField.getTableId() + "_"
-                                            + datasetTableField.getOriginName()))) {
+                            DorisTableUtils.dorisFieldNameShort(datasetTableField.getTableId() + "_"
+                                    + datasetTableField.getOriginName()))) {
                         tableField.setRemarks(datasetTableField.getName());
                         break;
                     }
@@ -990,7 +990,7 @@ public class DataSetTableService {
                             DorisTableUtils.dorisFieldName(
                                     datasetTableField.getTableId() + "_" + datasetTableField.getDataeaseName()))
                             || StringUtils.equalsIgnoreCase(tableField.getFieldName(), DorisTableUtils.dorisFieldName(
-                                    datasetTableField.getTableId() + "_" + datasetTableField.getOriginName()))) {
+                            datasetTableField.getTableId() + "_" + datasetTableField.getOriginName()))) {
                         tableField.setRemarks(datasetTableField.getName());
                         break;
                     }
@@ -1073,7 +1073,7 @@ public class DataSetTableService {
     }
 
     public String getCustomSQLDatasource(DataTableInfoDTO dataTableInfoDTO, List<DataSetTableUnionDTO> list,
-            Datasource ds) {
+                                         Datasource ds) {
         DatasourceTypes datasourceTypes = DatasourceTypes.valueOf(ds.getType());
         String keyword = datasourceTypes.getKeywordPrefix() + "%s" + datasourceTypes.getKeywordSuffix();
         Map<String, String[]> customInfo = new TreeMap<>();
@@ -1260,7 +1260,7 @@ public class DataSetTableService {
 
     // 递归计算出所有子级的checkedFields和unionParam
     private void getUnionSQLDorisJoin(List<UnionDTO> childrenDs, Map<String, String[]> checkedInfo,
-            List<UnionParamDTO> unionList, List<DatasetTableField> checkedFields) {
+                                      List<UnionParamDTO> unionList, List<DatasetTableField> checkedFields) {
         for (int i = 0; i < childrenDs.size(); i++) {
             UnionDTO unionDTO = childrenDs.get(i);
             String tableId = unionDTO.getCurrentDs().getId();
@@ -1398,7 +1398,7 @@ public class DataSetTableService {
 
     // 递归计算出所有子级的checkedFields和unionParam
     private void getUnionSQLDatasourceJoin(List<UnionDTO> childrenDs, Map<String, String[]> checkedInfo,
-            List<UnionParamDTO> unionList, String keyword, List<DatasetTableField> checkedFields) {
+                                           List<UnionParamDTO> unionList, String keyword, List<DatasetTableField> checkedFields) {
         for (int i = 0; i < childrenDs.size(); i++) {
             UnionDTO unionDTO = childrenDs.get(i);
 
@@ -1703,10 +1703,10 @@ public class DataSetTableService {
         if (datasetTableIncrementalConfig == null || StringUtils.isEmpty(datasetTableIncrementalConfig.getTableId())) {
             return;
         }
-        if(StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd())){
+        if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd())) {
             datasetTableIncrementalConfig.setIncrementalAdd(datasetTableIncrementalConfig.getIncrementalAdd().trim());
         }
-        if(StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete())){
+        if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete())) {
             datasetTableIncrementalConfig.setIncrementalDelete(datasetTableIncrementalConfig.getIncrementalDelete().trim());
         }
         if (StringUtils.isEmpty(datasetTableIncrementalConfig.getId())) {
