@@ -248,7 +248,7 @@ public class ChartViewService {
         DatasetTableField datasetTableFieldObj = DatasetTableField.builder().tableId(view.getTableId()).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableFieldObj);
         // 获取数据集,需校验权限
-        DataSetTableDTO table = dataSetTableService.getWithPermission(view.getTableId());
+        DataSetTableDTO table = dataSetTableService.getWithPermission(view.getTableId(), requestList.getUser());
         checkPermission("use", table, requestList.getUser());
 
         //列权限

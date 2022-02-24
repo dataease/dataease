@@ -105,7 +105,7 @@ public class DataSetTableController {
     @ApiOperation("带权限查询")
     @PostMapping("getWithPermission/{id}")
     public DataSetTableDTO getWithPermission(@PathVariable String id) {
-        return dataSetTableService.getWithPermission(id);
+        return dataSetTableService.getWithPermission(id, null);
     }
 
     @ApiOperation("查询原始字段")

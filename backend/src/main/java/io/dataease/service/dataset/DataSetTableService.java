@@ -2,6 +2,8 @@ package io.dataease.service.dataset;
 
 import com.google.gson.Gson;
 import io.dataease.auth.annotation.DeCleaner;
+import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
@@ -401,10 +403,13 @@ public class DataSetTableService {
         return datasetTableMapper.selectByPrimaryKey(id);
     }
 
-    public DataSetTableDTO getWithPermission(String id) {
+    public DataSetTableDTO getWithPermission(String id, Long user) {
+        CurrentUserDto currentUserDto = AuthUtils.getUser();
+        Long userId = user != null ? currentUserDto.getUserId() : user;
+
         DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
         dataSetTableRequest.setId(id);
-        dataSetTableRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        dataSetTableRequest.setUserId(String.valueOf(userId));
         dataSetTableRequest.setTypeFilter(dataSetTableRequest.getTypeFilter());
         return extDataSetTableMapper.searchOne(dataSetTableRequest);
     }
