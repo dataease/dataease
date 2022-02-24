@@ -342,11 +342,16 @@ CREATE TABLE `sys_background_image` (
 -- Records of sys_background_image
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_background_image` VALUES ('blue_1', '边框1', '蓝色调', '', NULL, NULL, NULL, 'img/board', 'board/blue_1.svg');
-INSERT INTO `sys_background_image` VALUES ('blue_2', '边框2', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_2.svg');
-INSERT INTO `sys_background_image` VALUES ('blue_3', '边框3', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_3.svg');
-INSERT INTO `sys_background_image` VALUES ('blue_4', '边框4', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_4.svg');
-INSERT INTO `sys_background_image` VALUES ('blue_5', '边框5', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_5.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_1', '边框1', '蓝色调', '', NULL, NULL, NULL, 'img/board', 'board/blue_1.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_2', '边框2', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_2.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_3', '边框3', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_3.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_4', '边框4', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_4.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_5', '边框5', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_5.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_6', '边框6', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_6.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_7', '边框7', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_7.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_8', '边框8', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_8.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_9', '边框9', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_9.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('dark_1', '边框1', '深色调', NULL, NULL, NULL, NULL, 'img/board', 'board/dark_1.svg');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
