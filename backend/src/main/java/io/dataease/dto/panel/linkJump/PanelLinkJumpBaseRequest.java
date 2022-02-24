@@ -18,4 +18,19 @@ public class PanelLinkJumpBaseRequest {
 
     private String targetPanelId;
 
+    private String targetViewId;
+
+    private String linkJumpId;
+
+    public PanelLinkJumpBaseRequest() {
+    }
+
+    public PanelLinkJumpBaseRequest(String sourcePanelId, String sourceViewId, String targetPanelId, String targetViewId, String linkJumpId) {
+        this.sourcePanelId = sourcePanelId;
+        this.sourceViewId = sourceViewId;
+        this.targetPanelId = targetPanelId;
+        this.targetViewId = targetViewId;
+        this.linkJumpId = linkJumpId;
+    }
 }
+

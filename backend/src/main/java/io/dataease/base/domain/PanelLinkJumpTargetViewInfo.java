@@ -13,5 +13,9 @@ public class PanelLinkJumpTargetViewInfo implements Serializable {
 
     private String targetFieldId;
 
+    private String copyFrom;
+
+    private String copyId;
+
     private static final long serialVersionUID = 1L;
 }

@@ -77,6 +77,37 @@
         </foreach>
     </insert>
 
+    <insert id="copyFromPanel">
+        INSERT INTO panel_view (id,
+        panel_id,
+        chart_view_id,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        `position`,
+        copy_from_panel,
+        copy_from_view,
+        copy_from,
+        copy_id)
+        SELECT
+        uuid() AS id,
+        #{newPanelId},
+        uuid() AS chart_view_id,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        `position`,
+        panel_id as copy_from_panel,
+        chart_view_id as copy_from_view,
+        id AS copy_from,
+        #{copyId} as copyId
+        FROM
+            panel_view
+        WHERE
+            panel_id = #{sourcePanelId}
+    </insert>
 
 
 

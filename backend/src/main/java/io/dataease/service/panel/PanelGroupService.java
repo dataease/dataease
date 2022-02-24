@@ -4,10 +4,9 @@ import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.base.mapper.PanelGroupMapper;
+import io.dataease.base.mapper.PanelViewMapper;
 import io.dataease.base.mapper.VAuthModelMapper;
-import io.dataease.base.mapper.ext.ExtPanelGroupMapper;
-import io.dataease.base.mapper.ext.ExtPanelLinkJumpMapper;
-import io.dataease.base.mapper.ext.ExtVAuthModelMapper;
+import io.dataease.base.mapper.ext.*;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.utils.AuthUtils;
@@ -17,12 +16,14 @@ import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
+import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseRequest;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.pentaho.di.core.util.UUIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -70,6 +71,14 @@ public class PanelGroupService {
     private ExtVAuthModelMapper extVAuthModelMapper;
     @Resource
     private VAuthModelMapper vAuthModelMapper;
+    @Resource
+    private PanelViewMapper panelViewMapper;
+    @Resource
+    private ExtPanelViewMapper extPanelViewMapper;
+    @Resource
+    private ExtPanelViewLinkageMapper extPanelViewLinkageMapper;
+    @Resource
+    private ExtChartViewMapper extChartViewMapper;
 
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
@@ -86,7 +95,7 @@ public class PanelGroupService {
     }
 
     @DeCleaner(DePermissionType.PANEL)
-    @Transactional
+//    @Transactional
     public PanelGroup saveOrUpdate(PanelGroupRequest request) {
         try {
             Boolean mobileLayout = panelViewService.syncPanelViews(request);
@@ -119,20 +128,8 @@ public class PanelGroupService {
             checkPanelName(newDefaultPanel.getName(), newDefaultPanel.getPid(), PanelConstants.OPT_TYPE_INSERT, newDefaultPanel.getId(),newDefaultPanel.getNodeType());
             panelGroupMapper.insertSelective(newDefaultPanel);
         } else if ("copy".equals(request.getOptType())) {
-            panelId = UUID.randomUUID().toString();
-            // 复制模板
-            PanelGroupWithBLOBs newPanel = panelGroupMapper.selectByPrimaryKey(request.getId());
-            // 插入校验
-            if (StringUtils.isNotEmpty(request.getName())) {
-                checkPanelName(request.getName(), newPanel.getPid(), PanelConstants.OPT_TYPE_INSERT, request.getId(),newPanel.getNodeType());
-            }
-            newPanel.setName(request.getName());
-            newPanel.setId(panelId);
-            newPanel.setCreateBy(AuthUtils.getUser().getUsername());
-            panelGroupMapper.insertSelective(newPanel);
-
             try {
-                panelViewService.syncPanelViews(newPanel);
+                this.panelGroupCopy(request);
             } catch (Exception e) {
                 e.printStackTrace();
                 LOGGER.error("更新panelView出错panelId：{}", request.getId());
@@ -251,8 +248,45 @@ public class PanelGroupService {
                 result.addAll(TreeUtils.mergeTree(viewOriginal,"public_chart"));
             }
         }
-
         return result;
+    }
+
+    public String panelGroupCopy(PanelGroupRequest request){
+        String sourcePanelId = request.getId(); //源仪表板ID
+        String newPanelId = UUIDUtil.getUUIDAsString(); //目标仪表板ID
+        String copyId = UUIDUtil.getUUIDAsString(); // 本次复制执行ID
+        // 复制仪表板
+        PanelGroupWithBLOBs newPanel = panelGroupMapper.selectByPrimaryKey(sourcePanelId);
+        if (StringUtils.isNotEmpty(request.getName())) {
+            // 插入校验
+            checkPanelName(request.getName(), newPanel.getPid(), PanelConstants.OPT_TYPE_INSERT, request.getId(),newPanel.getNodeType());
+        }
+        newPanel.setName(request.getName());
+        newPanel.setId(newPanelId);
+        newPanel.setCreateBy(AuthUtils.getUser().getUsername());
+        //TODO copy panelView
+        extPanelViewMapper.copyFromPanel(newPanelId,sourcePanelId,copyId);
+        //TODO 复制视图 chart_view
+        extChartViewMapper.chartCopyWithPanel(copyId);
+        //TODO 替换panel_data viewId 数据
+        List<PanelView> panelViewList = panelViewService.findPanelViews(newPanelId);
+        if(CollectionUtils.isNotEmpty(panelViewList)){
+            String panelData = newPanel.getPanelData();
+            //TODO 替换panel_data viewId 数据  并保存
+            for(PanelView panelView:panelViewList){
+                panelData = panelData.replaceAll(panelView.getCopyFromView(),panelView.getChartViewId());
+            }
+            newPanel.setPanelData(panelData);
+            panelGroupMapper.insertSelective(newPanel);
+            //TODO 复制跳转信息 copy panel_link_jump panel_link_jump_info  panel_link_jump_target_view_info
+            extPanelLinkJumpMapper.copyLinkJump(copyId);
+            extPanelLinkJumpMapper.copyLinkJumpInfo(copyId);
+            extPanelLinkJumpMapper.copyLinkJumpTarget(copyId);
+            //TODO 复制联动信息 copy panel_view_linkage_field panel_view_linkage
+            extPanelViewLinkageMapper.copyViewLinkage(copyId);
+            extPanelViewLinkageMapper.copyViewLinkageField(copyId);
+        }
+        return newPanelId;
     }
 
 }

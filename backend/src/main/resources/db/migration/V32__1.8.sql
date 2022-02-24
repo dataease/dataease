@@ -353,3 +353,29 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 ALTER TABLE `panel_view`
 ADD COLUMN `position` varchar(255) NULL DEFAULT 'panel' COMMENT '视图位置 panel 仪表板中，tab Tab页中' AFTER `update_time`;
+
+ALTER TABLE `panel_view`
+ADD COLUMN `copy_from_panel` varchar(255) NULL AFTER `position`,
+ADD COLUMN `copy_from_view` varchar(255) NULL AFTER `copy_from_panel`,
+ADD COLUMN `copy_from` varchar(255) NOT NULL COMMENT '如果有复制 最近一次的复制来源id' AFTER `copy_from_view`,
+ADD COLUMN `copy_id` varchar(255) NULL COMMENT '本次复制的执行ID' AFTER `copy_from`;
+
+ALTER TABLE `panel_view_linkage`
+ADD COLUMN `copy_from` varchar(255) NULL AFTER `ext2`,
+ADD COLUMN `copy_id` varchar(0) NULL AFTER `copy_from`;
+
+ALTER TABLE `panel_view_linkage_field`
+ADD COLUMN `copy_from` varchar(255) NULL AFTER `update_time`,
+ADD COLUMN `copy_id` varchar(255) NULL AFTER `copy_from`;
+
+ALTER TABLE `panel_link_jump`
+ADD COLUMN `copy_from` varchar(255) NULL AFTER `checked`,
+ADD COLUMN `copy_id` varchar(255) NULL AFTER `copy_from`;
+
+ALTER TABLE `panel_link_jump_info`
+ADD COLUMN `copy_from` varchar(255) NULL AFTER `checked`,
+ADD COLUMN `copy_id` varchar(255) NULL AFTER `copy_from`;
+
+ALTER TABLE `panel_link_jump_target_view_info`
+ADD COLUMN `copy_from` varchar(255) NULL AFTER `target_field_id`,
+ADD COLUMN `copy_id` varchar(255) NULL AFTER `copy_from`;

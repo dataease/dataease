@@ -6,6 +6,8 @@
     <result column="link_jump_info_id" jdbcType="VARCHAR" property="linkJumpInfoId" />
     <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId" />
     <result column="target_field_id" jdbcType="VARCHAR" property="targetFieldId" />
+    <result column="copy_from" jdbcType="VARCHAR" property="copyFrom" />
+    <result column="copy_id" jdbcType="VARCHAR" property="copyId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -66,7 +68,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    target_id, link_jump_info_id, target_view_id, target_field_id
+    target_id, link_jump_info_id, target_view_id, target_field_id, copy_from, copy_id
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.PanelLinkJumpTargetViewInfoExample" resultMap="BaseResultMap">
     select
@@ -100,9 +102,11 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.PanelLinkJumpTargetViewInfo">
     insert into panel_link_jump_target_view_info (target_id, link_jump_info_id, target_view_id, 
-      target_field_id)
+      target_field_id, copy_from, copy_id
+      )
     values (#{targetId,jdbcType=VARCHAR}, #{linkJumpInfoId,jdbcType=VARCHAR}, #{targetViewId,jdbcType=VARCHAR}, 
-      #{targetFieldId,jdbcType=VARCHAR})
+      #{targetFieldId,jdbcType=VARCHAR}, #{copyFrom,jdbcType=VARCHAR}, #{copyId,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelLinkJumpTargetViewInfo">
     insert into panel_link_jump_target_view_info
@@ -119,6 +123,12 @@
       <if test="targetFieldId != null">
         target_field_id,
       </if>
+      <if test="copyFrom != null">
+        copy_from,
+      </if>
+      <if test="copyId != null">
+        copy_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="targetId != null">
@@ -132,6 +142,12 @@
       </if>
       <if test="targetFieldId != null">
         #{targetFieldId,jdbcType=VARCHAR},
+      </if>
+      <if test="copyFrom != null">
+        #{copyFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="copyId != null">
+        #{copyId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -156,6 +172,12 @@
       <if test="record.targetFieldId != null">
         target_field_id = #{record.targetFieldId,jdbcType=VARCHAR},
       </if>
+      <if test="record.copyFrom != null">
+        copy_from = #{record.copyFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="record.copyId != null">
+        copy_id = #{record.copyId,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -166,7 +188,9 @@
     set target_id = #{record.targetId,jdbcType=VARCHAR},
       link_jump_info_id = #{record.linkJumpInfoId,jdbcType=VARCHAR},
       target_view_id = #{record.targetViewId,jdbcType=VARCHAR},
-      target_field_id = #{record.targetFieldId,jdbcType=VARCHAR}
+      target_field_id = #{record.targetFieldId,jdbcType=VARCHAR},
+      copy_from = #{record.copyFrom,jdbcType=VARCHAR},
+      copy_id = #{record.copyId,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -183,6 +207,12 @@
       <if test="targetFieldId != null">
         target_field_id = #{targetFieldId,jdbcType=VARCHAR},
       </if>
+      <if test="copyFrom != null">
+        copy_from = #{copyFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="copyId != null">
+        copy_id = #{copyId,jdbcType=VARCHAR},
+      </if>
     </set>
     where target_id = #{targetId,jdbcType=VARCHAR}
   </update>
@@ -190,7 +220,9 @@
     update panel_link_jump_target_view_info
     set link_jump_info_id = #{linkJumpInfoId,jdbcType=VARCHAR},
       target_view_id = #{targetViewId,jdbcType=VARCHAR},
-      target_field_id = #{targetFieldId,jdbcType=VARCHAR}
+      target_field_id = #{targetFieldId,jdbcType=VARCHAR},
+      copy_from = #{copyFrom,jdbcType=VARCHAR},
+      copy_id = #{copyId,jdbcType=VARCHAR}
     where target_id = #{targetId,jdbcType=VARCHAR}
   </update>
 </mapper>

@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.dataease.base.domain.PanelGroupWithBLOBs;
+import io.dataease.base.domain.PanelView;
+import io.dataease.base.domain.PanelViewExample;
+import io.dataease.base.mapper.PanelViewMapper;
 import io.dataease.base.mapper.ext.ExtPanelViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +35,9 @@ public class PanelViewService {
 
     @Autowired(required = false)
     private ExtPanelViewMapper extPanelViewMapper;
+
+    @Resource
+    private PanelViewMapper panelViewMapper;
 
     private final static String SCENE_TYPE = "scene";
 
@@ -115,5 +122,11 @@ public class PanelViewService {
 
     public List<PanelViewTableDTO> detailList(String panelId) {
         return extPanelViewMapper.getPanelViewDetails(panelId);
+    }
+
+    public List<PanelView> findPanelViews(String panelId){
+        PanelViewExample panelViewExample = new PanelViewExample();
+        panelViewExample.createCriteria().andPanelIdEqualTo(panelId);
+        return panelViewMapper.selectByExample(panelViewExample);
     }
 }
