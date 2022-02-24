@@ -2,6 +2,9 @@ package io.dataease.service.chart;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.auth.entity.SysUserEntity;
+import io.dataease.auth.service.AuthUserService;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.base.mapper.ext.ExtChartGroupMapper;
@@ -66,6 +69,8 @@ public class ChartViewService {
     private DataSetTableUnionService dataSetTableUnionService;
     @Resource
     private PermissionService permissionService;
+    @Resource
+    private AuthUserService authUserService;
 
     //默认使用非公平
     private ReentrantLock lock = new ReentrantLock();
@@ -244,7 +249,7 @@ public class ChartViewService {
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableFieldObj);
         // 获取数据集,需校验权限
         DataSetTableDTO table = dataSetTableService.getWithPermission(view.getTableId());
-        checkPermission("use", table);
+        checkPermission("use", table, requestList.getUser());
 
         //列权限
         List<String> desensitizationList = new ArrayList<>();
@@ -1695,11 +1700,13 @@ public class ChartViewService {
     }
 
     // check permission
-    private void checkPermission(String needPermission, DataSetTableDTO table) {
+    private void checkPermission(String needPermission, DataSetTableDTO table,  Long userId) {
         if (ObjectUtils.isEmpty(table)) {
             throw new RuntimeException(Translator.get("i18n_dataset_delete"));
         }
-        if (!AuthUtils.getUser().getIsAdmin()) {
+        SysUserEntity user = AuthUtils.getUser();
+        user = user != null ? user : authUserService.getUserById(userId);
+        if (!user.getIsAdmin()) {
             if (ObjectUtils.isEmpty(table.getPrivileges()) || !table.getPrivileges().contains(needPermission)) {
                 throw new RuntimeException(Translator.get("i18n_dataset_no_permission"));
             }
