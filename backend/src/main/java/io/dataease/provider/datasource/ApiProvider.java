@@ -12,15 +12,13 @@ import io.dataease.controller.request.datasource.ApiDefinitionRequest;
 import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.dto.datasource.TableDesc;
 import io.dataease.dto.datasource.TableField;
-import io.dataease.exception.DataEaseException;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHeaders;
+
 import org.springframework.stereotype.Service;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -102,22 +100,18 @@ public class ApiProvider extends DatasourceProvider{
 
     @Override
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
-        List<ApiDefinition> apiDefinitionList = JSONObject.parseArray(datasourceRequest.getDatasource().getConfiguration(), ApiDefinition.class).stream().filter(item -> item.getName().equalsIgnoreCase(datasourceRequest.getTable())).collect(Collectors.toList());
-        int success = 0;
+        List<ApiDefinition> apiDefinitionList = JSONObject.parseArray(datasourceRequest.getDatasource().getConfiguration(), ApiDefinition.class);
+        JSONObject apiItemStatuses = new JSONObject();
         for (ApiDefinition apiDefinition : apiDefinitionList) {
             datasourceRequest.setTable(apiDefinition.getName());
            try {
-                getData(datasourceRequest);
-                success++;
-           }catch (Exception ignore){}
+               getData(datasourceRequest);
+               apiItemStatuses.put(apiDefinition.getName(), "Success");
+           }catch (Exception ignore){
+               apiItemStatuses.put(apiDefinition.getName(), "Error");
+           }
         }
-        if(success == apiDefinitionList.size()){
-            return "Success";
-        }
-        if(success > 0 && success < apiDefinitionList.size() ){
-            return "Warning";
-        }
-        return "Error";
+        return JSONObject.toJSONString(apiItemStatuses);
     }
 
     static public String execHttpRequest(ApiDefinition apiDefinition) throws Exception{

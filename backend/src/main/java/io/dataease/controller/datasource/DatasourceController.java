@@ -50,7 +50,7 @@ public class DatasourceController {
     @DePermission(type = DePermissionType.DATASOURCE, value = "id")
     @ApiOperation("验证数据源")
     @PostMapping("/validate")
-    public ResultHolder validate(@RequestBody Datasource datasource) throws Exception {
+    public ResultHolder validate(@RequestBody DatasourceDTO datasource) throws Exception {
         return datasourceService.validate(datasource);
     }
 

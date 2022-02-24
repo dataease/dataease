@@ -16,5 +16,6 @@ public class ApiDefinition {
     private List<DatasetTableField> fields;
     private String request;
     private String dataPath;
+    private String status;
     private List<JSONObject> datas = new ArrayList<>();
 }

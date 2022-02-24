@@ -48,6 +48,18 @@
               <el-table-column prop="name" :label="$t('datasource.data_table_name')" width="150" show-overflow-tooltip></el-table-column>
               <el-table-column prop="method" :label="$t('datasource.method')" width="150" show-overflow-tooltip></el-table-column>
               <el-table-column prop="url" :label="$t('datasource.url')" width="150" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="status" :label="$t('commons.status')" width="150">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.status === 'Success'" style="color: green">
+                    {{ $t('datasource.valid') }}
+                  </span>
+                  <span v-if="scope.row.status === 'Error'" style="color: red">
+                    {{ $t('datasource.invalid') }}
+                  </span>
+                </template>
+              </el-table-column>
+
+
               <el-table-column :label="$t('dataset.operate')">
                 <template slot-scope="scope" style="float: right">
                   <el-button size="mini" type="primary" icon="el-icon-edit" circle @click="addApiItem(scope.row)"/>
@@ -409,7 +421,7 @@ export default {
       canEdit: false,
       originConfiguration: {},
       edit_api_item: false,
-      add_api_item: false,
+      add_api_item: true,
       active: 0,
       defaultApiItem: {
         name: '',
@@ -426,6 +438,7 @@ export default {
         fields: []
       },
       apiItem: {
+        status: '',
         name: '',
         url: '',
         method: 'GET',
@@ -571,6 +584,10 @@ export default {
         const method = this.formType === 'add' ? addDs : editDs
         const form = JSON.parse(JSON.stringify(this.form))
         if(form.type === 'api'){
+          if(this.form.apiConfiguration.length < 1){
+            this.$message.error(i18n.t('datasource.api_table_not_empty'))
+            return
+          }
           form.configuration = JSON.stringify(form.apiConfiguration)
         }else {
           form.configuration = JSON.stringify(form.configuration)
@@ -655,6 +672,9 @@ export default {
               if (res.success) {
                 this.$success(i18n.t('datasource.validate_success'))
               } else {
+                if(data.type === 'api') {
+                  this.form.apiConfiguration = res.data.apiConfiguration
+                }
                 if (res.message.length < 2500) {
                   this.$error(res.message)
                 } else {
@@ -686,6 +706,25 @@ export default {
     },
     next() {
       if(this.active === 1){
+        let hasRepeatName = false
+        if(this.add_api_item){
+          this.form.apiConfiguration.forEach(item => {
+            if(item.name === this.apiItem.name){
+              hasRepeatName = true
+            }
+          })
+        }else {
+          let index = this.form.apiConfiguration.indexOf(this.apiItem)
+          for(let i=0; i < this.form.apiConfiguration.length;i++ ){
+            if(i !== index && this.form.apiConfiguration[i].name === this.apiItem.name){
+              hasRepeatName = true
+            }
+          }
+        }
+        if(hasRepeatName){
+          this.$message.error(i18n.t('datasource.has_repeat_name'))
+          return
+        }
         this.$refs.apiItem.validate(valid => {
           if (valid) {
             const data = JSON.parse(JSON.stringify(this.apiItem))
@@ -693,6 +732,7 @@ export default {
             this.loading = true
             checkApiDatasource(data).then(res => {
               this.loading = false
+              this.apiItem.status = 'Success'
               this.$success(i18n.t('commons.success'))
               this.active++
               this.apiItem.fields = res.data.fields
@@ -718,17 +758,17 @@ export default {
     saveItem() {
       this.active = 0
       this.edit_api_item = false
-      if(!this.add_api_item){
+      if(this.add_api_item){
         this.form.apiConfiguration.push(this.apiItem)
       }
     },
     addApiItem(item) {
       if (item) {
-        this.add_api_item = true
+        this.add_api_item = false
         this.api_table_title = this.$t('datasource.edit_api_table')
         this.apiItem = item
       }else {
-        this.add_api_item = false
+        this.add_api_item = true
         this.apiItem = JSON.parse(JSON.stringify(this.defaultApiItem))
         this.api_table_title = this.$t('datasource.add_api_table')
       }
@@ -737,21 +777,6 @@ export default {
     },
     deleteItem(item) {
       this.form.apiConfiguration.splice(this.form.apiConfiguration.indexOf(item), 1)
-    },
-    runDebug() {
-      this.$refs['debugForm'].validate((valid) => {
-        if (valid) {
-          this.loading = true;
-          this.isStop = true;
-          this.request.url = this.debugForm.url;
-          this.request.method = this.debugForm.method;
-          this.request.name = getUUID().substring(0, 8);
-          this.runData = [];
-          this.runData.push(this.request);
-          /*触发执行操作*/
-          this.reportId = getUUID().substring(0, 8);
-        }
-      })
     },
     validateApi(item) {
       if(undefined){
