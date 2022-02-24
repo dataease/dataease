@@ -354,6 +354,9 @@ SET FOREIGN_KEY_CHECKS = 1;
 ALTER TABLE `panel_view`
 ADD COLUMN `position` varchar(255) NULL DEFAULT 'panel' COMMENT '视图位置 panel 仪表板中，tab Tab页中' AFTER `update_time`;
 
+ALTER TABLE `datasource`
+    CHANGE COLUMN `status` `status` LONGTEXT NULL DEFAULT NULL COMMENT '状态' ;
+
 ALTER TABLE `panel_view`
 ADD COLUMN `copy_from_panel` varchar(255) NULL AFTER `position`,
 ADD COLUMN `copy_from_view` varchar(255) NULL AFTER `copy_from_panel`,

@@ -1346,7 +1346,11 @@ export default {
     auth_config_info: '请求需要进行权限校验',
     verified: '认证',
     verification_method: '认证方式',
-    username: '用户名'
+    username: '用户名',
+    api_table_not_empty: 'API 数据表不能为空',
+    has_repeat_name: 'API 数据表名称重复',
+    valid: '有效',
+    invalid: '无效'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',

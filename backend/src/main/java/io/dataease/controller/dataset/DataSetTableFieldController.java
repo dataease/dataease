@@ -3,9 +3,12 @@ package io.dataease.controller.dataset;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.filter.F2CLinkFilter;
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableField;
+import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.exception.DEException;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.MultFieldValuesRequest;
@@ -106,6 +109,7 @@ public class DataSetTableFieldController {
         dataSetTableFieldsService.batchEdit(list);
     }
 
+    @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("save")
     public DatasetTableField save(@RequestBody DatasetTableField datasetTableField) {

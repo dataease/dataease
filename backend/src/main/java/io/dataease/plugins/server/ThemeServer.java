@@ -19,7 +19,9 @@ import io.dataease.plugins.xpack.theme.dto.ThemeDto;
 import io.dataease.plugins.xpack.theme.dto.ThemeItem;
 import io.dataease.plugins.xpack.theme.dto.ThemeRequest;
 import io.dataease.plugins.xpack.theme.service.ThemeXpackService;
+import springfox.documentation.annotations.ApiIgnore;
 
+@ApiIgnore
 @RequestMapping("/plugin/theme")
 @RestController
 public class ThemeServer {

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.view.entity.PluginViewType;
 import io.dataease.plugins.view.service.ViewPluginService;
+import springfox.documentation.annotations.ApiIgnore;
 
+@ApiIgnore
 @RequestMapping("/plugin/view")
 @RestController
 public class PluginViewServer {

@@ -1338,7 +1338,11 @@ export default {
     auth_config_info: '請求需要進行權限校驗',
     verified: '認證',
     verification_method: '認證方式',
-    username: '用戶名'
+    username: '用戶名',
+    api_table_not_empty: 'API 數據表不能為空',
+    has_repeat_name: 'API 數據表名稱重複',
+    valid: '有效',
+    invalid: '無效'
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',

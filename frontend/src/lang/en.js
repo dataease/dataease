@@ -1337,7 +1337,11 @@ export default {
     auth_config_info: 'Permission verification is required for the request',
     verified: 'Verified',
     verification_method: 'Verification Method',
-    username: 'Username'
+    username: 'Username',
+    api_table_not_empty: 'API data table cannot be empty',
+    has_repeat_name: 'Duplicate API data table name',
+    valid: 'Valid',
+    invalid: 'Invalid'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',

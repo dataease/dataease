@@ -17,9 +17,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import io.dataease.plugins.xpack.auth.service.AuthXpackService;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.*;
-
+@ApiIgnore
 @RequestMapping("/plugin/auth")
 @RestController
 public class XAuthServer {
