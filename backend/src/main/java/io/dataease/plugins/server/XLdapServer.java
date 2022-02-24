@@ -8,9 +8,10 @@ import io.dataease.plugins.xpack.ldap.dto.response.LdapInfo;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
-
+@ApiIgnore
 @RequestMapping("/plugin/ldap")
 @RestController
 public class XLdapServer {

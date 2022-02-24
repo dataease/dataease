@@ -7,9 +7,11 @@ import io.dataease.plugins.xpack.display.service.DisplayXpackService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
+
 import java.util.List;
 import java.util.Map;
-
+@ApiIgnore
 @RequestMapping("/api/display")
 @RestController
 public class XDisplayServer {

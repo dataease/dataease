@@ -162,6 +162,7 @@ public class DatasourceService {
         return extDataSourceMapper.query(gridExample);
     }
 
+    @DeCleaner(DePermissionType.DATASOURCE)
     public void deleteDatasource(String datasourceId) throws Exception {
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andDataSourceIdEqualTo(datasourceId);

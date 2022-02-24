@@ -23,13 +23,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 import java.util.concurrent.Future;
 
 import javax.annotation.Resource;
 
-
+@ApiIgnore
 @RequestMapping("/plugin/task")
 @RestController
 public class XEmailTaskServer {
