@@ -15,10 +15,11 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@ApiIgnore
 @RestController
 @RequestMapping("plugin/dataset/rowPermissions")
 public class RowPermissionsController {

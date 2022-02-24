@@ -95,15 +95,15 @@ public class XDeptServer {
     }
 
 
-    @RequiresPermissions("dept:del")
+
     @ApiIgnore
-    @ApiOperation("删除")
     @PostMapping("/nodesByDeptId/{deptId}")
     public List<XpackDeptTreeNode> nodesByDeptId(@PathVariable("deptId") Long deptId){
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
         return deptService.searchTree(deptId);
     }
 
+    @RequiresPermissions("dept:edit")
     @ApiOperation("移动")
     @PostMapping("/move")
     public void move(@RequestBody XpackMoveDept xpackMoveDept){
