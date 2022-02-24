@@ -35,7 +35,26 @@
         </span>
 
         <div v-if="activeTabName === item.name" class="de-tab-content">
-          <user-view v-if="item.content && item.content.propValue && item.content.propValue.viewId" :ref="item.name" :in-tab="true" :is-edit="isEdit" :active="active" :element="item.content" :filters="item.content.filters" :out-style="outStyle" />
+          <!-- <user-view
+            v-if="item.content && item.content.propValue && item.content.propValue.viewId"
+            :ref="item.name"
+            :in-tab="true"
+            :is-edit="isEdit"
+            :active="active"
+            :element="item.content"
+            :filters="item.content.filters"
+            :out-style="outStyle"
+          /> -->
+          <user-view
+            v-if="item.content && item.content.propValue && item.content.propValue.viewId"
+            :ref="item.name"
+            :in-tab="true"
+            :is-edit="isEdit"
+            :active="active"
+            :element="item.content"
+            :filters="filterMap[item.content.propValue && item.content.propValue.viewId]"
+            :out-style="outStyle"
+          />
         </div>
 
       </el-tab-pane>
@@ -96,7 +115,7 @@ import bus from '@/utils/bus'
 import componentList from '@/components/canvas/custom-component/component-list'
 import { mapState } from 'vuex'
 import { chartCopy } from '@/api/chart/chart'
-
+import { buildFilterMap } from '@/utils/conditionUtil'
 export default {
   name: 'DeTabls',
   components: { ViewSelect },
@@ -142,7 +161,12 @@ export default {
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
+    filterMap() {
+      const map = buildFilterMap(this.componentData)
+      return map
+    },
     ...mapState([
+      'componentData',
       'curComponent',
       'mobileLayoutStatus'
     ])
