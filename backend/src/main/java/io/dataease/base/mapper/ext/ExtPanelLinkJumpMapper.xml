@@ -174,7 +174,7 @@
             panel_link_jump.checked,
             panel_link_jump.id as copy_from,
             #{copyId} as copy_id
-            from panel_link_jump left join
+            from panel_link_jump inner join
             (SELECT
             pvs.panel_id as s_panel_id,
             pvs.chart_view_id as s_chart_view_id,
@@ -182,7 +182,7 @@
             pvt.chart_view_id as t_chart_view_id
         FROM
             panel_view pvt
-            LEFT JOIN panel_view pvs ON pvt.copy_from = pvs.id
+            inner JOIN panel_view pvs ON pvt.copy_from = pvs.id
             WHERE
             pvt.copy_id = #{copyId}) panel_view_copy on panel_link_jump.source_panel_id = panel_view_copy.s_panel_id
             and panel_link_jump.source_view_id = panel_view_copy.s_chart_view_id
@@ -213,7 +213,7 @@
         #{copyId}
         FROM
             panel_link_jump_info
-            LEFT JOIN (
+            inner JOIN (
             SELECT
                 id AS t_id,
                 copy_from AS s_id
@@ -241,7 +241,7 @@
         #{copyId} AS copy_id
         FROM
             panel_link_jump_target_view_info
-            LEFT JOIN (
+            inner JOIN (
             SELECT
                 id AS t_id,
                 copy_from AS s_id
@@ -251,5 +251,4 @@
                 copy_id = #{copyId}
             ) plji_copy ON panel_link_jump_target_view_info.link_jump_info_id = plji_copy.s_id
     </insert>
-
 </mapper>
