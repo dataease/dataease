@@ -1,4 +1,4 @@
-FROM registry.cn-qingdao.aliyuncs.com/dataease/fabric8-java-alpine-openjdk8-jre:edge
+FROM registry.cn-qingdao.aliyuncs.com/dataease/fabric8-java-alpine-openjdk8-jre:edge-chromium
 
 # RUN echo -e 'https://dl-cdn.alpinelinux.org/alpine/edge/main/\nhttps://dl-cdn.alpinelinux.org/alpine/edge/community/' > /etc/apk/repositories 
 
