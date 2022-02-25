@@ -365,7 +365,7 @@ ALTER TABLE `datasource`
 ALTER TABLE `panel_view`
 ADD COLUMN `copy_from_panel` varchar(255) NULL AFTER `position`,
 ADD COLUMN `copy_from_view` varchar(255) NULL AFTER `copy_from_panel`,
-ADD COLUMN `copy_from` varchar(255) NOT NULL COMMENT '如果有复制 最近一次的复制来源id' AFTER `copy_from_view`,
+ADD COLUMN `copy_from` varchar(255) NULL COMMENT '如果有复制 最近一次的复制来源id' AFTER `copy_from_view`,
 ADD COLUMN `copy_id` varchar(255) NULL COMMENT '本次复制的执行ID' AFTER `copy_from`;
 
 ALTER TABLE `panel_view_linkage`
