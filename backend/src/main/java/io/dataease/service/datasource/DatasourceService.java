@@ -362,18 +362,16 @@ public class DatasourceService {
 
         List<JSONObject> dataList = new ArrayList<>();
         List<DatasetTableField> fields = new ArrayList<>();
-        Boolean getFileds = true;
-
+        Set<String> fieldKeys = new HashSet<>();
+        //第一遍获取 field
         for (LinkedHashMap data : datas) {
-            JSONObject jsonObject = new JSONObject();
-            Iterator it = data.entrySet().iterator();
-            while (it.hasNext()){
-                Map.Entry entry = (Map.Entry)it.next();
-                jsonObject.put((String) entry.getKey(), Optional.ofNullable(entry.getValue()).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
-                if(getFileds) {
+            Set<String> keys = data.keySet();
+            for (String key : keys) {
+                if(!fieldKeys.contains(key)){
+                    fieldKeys.add(key);
                     DatasetTableField tableField = new DatasetTableField();
-                    tableField.setOriginName((String) entry.getKey());
-                    tableField.setName((String) entry.getKey());
+                    tableField.setOriginName(key);
+                    tableField.setName(key);
                     tableField.setSize(65535);
                     tableField.setDeExtractType(0);
                     tableField.setDeType(0);
@@ -381,7 +379,13 @@ public class DatasourceService {
                     fields.add(tableField);
                 }
             }
-            getFileds = false;
+        }
+        //第二遍获取 data
+        for (LinkedHashMap data : datas) {
+            JSONObject jsonObject = new JSONObject();
+            for (String key : fieldKeys) {
+                jsonObject.put(key, Optional.ofNullable(data.get(key)).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
+            }
             dataList.add(jsonObject);
         }
         apiDefinition.setDatas(dataList);
