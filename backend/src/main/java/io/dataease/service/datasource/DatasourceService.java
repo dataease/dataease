@@ -6,9 +6,11 @@ import com.google.gson.Gson;
 import com.jayway.jsonpath.JsonPath;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.*;
-import io.dataease.base.mapper.*;
+import io.dataease.base.mapper.DatasetTableMapper;
+import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.base.mapper.ext.ExtDataSourceMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.commons.constants.DatasourceTypes;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.AuthURD;
@@ -18,21 +20,19 @@ import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.request.datasource.ApiDefinition;
+import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
-import io.dataease.commons.constants.DatasourceTypes;
-import io.dataease.provider.datasource.ApiProvider;
-import io.dataease.provider.datasource.DatasourceProvider;
-import io.dataease.provider.ProviderFactory;
-import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.dto.datasource.*;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.provider.ProviderFactory;
+import io.dataease.provider.datasource.ApiProvider;
+import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.service.dataset.DataSetGroupService;
 import io.dataease.service.message.DeMsgutil;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -276,7 +276,7 @@ public class DatasourceService {
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
-        if(!datasource.getType().equalsIgnoreCase("api")){
+        if(!ds.getType().equalsIgnoreCase("api")){
             datasourceProvider.checkStatus(datasourceRequest);
         }
 
@@ -284,12 +284,12 @@ public class DatasourceService {
 
         // 获取当前数据源下的db、api类型数据集
         DatasetTableExample datasetTableExample = new DatasetTableExample();
-        datasetTableExample.createCriteria().andTypeIn(Arrays.asList("db","api")).andDataSourceIdEqualTo(datasource.getId());
+        datasetTableExample.createCriteria().andTypeIn(Arrays.asList("db","api")).andDataSourceIdEqualTo(ds.getId());
         List<DatasetTable> datasetTables = datasetTableMapper.selectByExampleWithBLOBs(datasetTableExample);
         List<DBTableDTO> list = new ArrayList<>();
         for (TableDesc tableDesc : tables) {
             DBTableDTO dbTableDTO = new DBTableDTO();
-            dbTableDTO.setDatasourceId(datasource.getId());
+            dbTableDTO.setDatasourceId(ds.getId());
             dbTableDTO.setName(tableDesc.getName());
             dbTableDTO.setRemark(tableDesc.getRemark());
             dbTableDTO.setEnableCheck(true);
@@ -415,8 +415,8 @@ public class DatasourceService {
             if (!StringUtils.equals(temp.getStatus(), "Error")) {
                 sendWebMsg(datasource);
                 datasourceMapper.updateByPrimaryKeySelective(datasource);
-            }            
-            
+            }
+
         }
     }
 
