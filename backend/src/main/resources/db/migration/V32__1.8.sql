@@ -342,11 +342,16 @@ CREATE TABLE `sys_background_image` (
 -- Records of sys_background_image
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_background_image` VALUES ('blue_1', '边框1', '蓝色调', '', NULL, NULL, NULL, 'img/board', 'board/blue_1.svg');
-INSERT INTO `sys_background_image` VALUES ('blue_2', '边框2', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_2.svg');
-INSERT INTO `sys_background_image` VALUES ('blue_3', '边框3', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_3.svg');
-INSERT INTO `sys_background_image` VALUES ('blue_4', '边框4', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_4.svg');
-INSERT INTO `sys_background_image` VALUES ('blue_5', '边框5', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_5.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_1', '边框1', '蓝色调', '', NULL, NULL, NULL, 'img/board', 'board/blue_1.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_2', '边框2', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_2.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_3', '边框3', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_3.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_4', '边框4', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_4.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_5', '边框5', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_5.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_6', '边框6', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_6.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_7', '边框7', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_7.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_8', '边框8', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_8.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('blue_9', '边框9', '蓝色调', NULL, NULL, NULL, NULL, 'img/board', 'board/blue_9.svg');
+INSERT INTO `sys_background_image` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('dark_1', '边框1', '深色调', NULL, NULL, NULL, NULL, 'img/board', 'board/dark_1.svg');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
@@ -365,7 +370,7 @@ ADD COLUMN `copy_id` varchar(255) NULL COMMENT '本次复制的执行ID' AFTER `
 
 ALTER TABLE `panel_view_linkage`
 ADD COLUMN `copy_from` varchar(255) NULL AFTER `ext2`,
-ADD COLUMN `copy_id` varchar(0) NULL AFTER `copy_from`;
+ADD COLUMN `copy_id` varchar(255) NULL AFTER `copy_from`;
 
 ALTER TABLE `panel_view_linkage_field`
 ADD COLUMN `copy_from` varchar(255) NULL AFTER `update_time`,
@@ -382,3 +387,20 @@ ADD COLUMN `copy_id` varchar(255) NULL AFTER `copy_from`;
 ALTER TABLE `panel_link_jump_target_view_info`
 ADD COLUMN `copy_from` varchar(255) NULL AFTER `target_field_id`,
 ADD COLUMN `copy_id` varchar(255) NULL AFTER `copy_from`;
+
+DROP TABLE IF EXISTS `dataease_code_version`;
+CREATE TABLE `dataease_code_version` (
+  `installed_rank` int(11) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `installed_on` timestamp NULL DEFAULT NULL,
+  `success` tinyint(1) NOT NULL,
+  PRIMARY KEY (`installed_rank`),
+  KEY `dataease_version_s_idx` (`success`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of dataease_code_version
+-- ----------------------------
+BEGIN;
+INSERT INTO `dataease_code_version` VALUES (0, 'init', NULL, 1);
+COMMIT;

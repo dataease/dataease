@@ -124,9 +124,9 @@ public class PanelViewService {
         return extPanelViewMapper.getPanelViewDetails(panelId);
     }
 
-    public List<PanelView> findPanelViews(String panelId){
+    public List<PanelView> findPanelViews(String copyId){
         PanelViewExample panelViewExample = new PanelViewExample();
-        panelViewExample.createCriteria().andPanelIdEqualTo(panelId);
+        panelViewExample.createCriteria().andCopyIdEqualTo(copyId);
         return panelViewMapper.selectByExample(panelViewExample);
     }
 }
