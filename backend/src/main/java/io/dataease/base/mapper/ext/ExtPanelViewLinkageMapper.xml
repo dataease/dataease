@@ -144,7 +144,7 @@
                     pvt.chart_view_id AS t_chart_view_id
                 FROM
                     panel_view pvt
-                    LEFT JOIN panel_view pvs ON pvt.copy_from = pvs.id
+                    inner JOIN panel_view pvs ON pvt.copy_from = pvs.id
                 WHERE
                     pvt.copy_id = #{copyId}
                 ) pv_source_copy ON panel_view_linkage.panel_id = pv_source_copy.s_panel_id
@@ -157,7 +157,7 @@
                     pvt.chart_view_id AS t_chart_view_id
                 FROM
                     panel_view pvt
-                    LEFT JOIN panel_view pvs ON pvt.copy_from = pvs.id
+                    inner JOIN panel_view pvs ON pvt.copy_from = pvs.id
                 WHERE
                     pvt.copy_id = #{copyId}
                 ) pv_target_copy ON panel_view_linkage.panel_id = pv_target_copy.s_panel_id

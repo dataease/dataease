@@ -1,5 +1,6 @@
 package io.dataease.service.panel;
 
+import com.alibaba.fastjson.JSON;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
@@ -311,25 +312,33 @@ public class PanelGroupService {
             List<PanelView> panelViewList = panelViewService.findPanelViews(copyId);
             String panelData = panelGroupDTO.getPanelData();
             if (CollectionUtils.isNotEmpty(panelViewList) && StringUtils.isNotEmpty(panelData)) {
-                //TODO 替换panel_data viewId 数据  并保存
-                for (PanelView panelView : panelViewList) {
-                    panelData = panelData.replaceAll(panelView.getCopyFromView(), panelView.getChartViewId());
+                PanelView panelViewtemp = new PanelView();
+                try {
+                    //TODO 替换panel_data viewId 数据  并保存
+                    for (PanelView panelView : panelViewList) {
+                        panelViewtemp = panelView;
+                        panelData = panelData.replaceAll(panelView.getCopyFromView(), panelView.getChartViewId());
+                    }
+                    panelGroupDTO.setPanelData(panelData);
+                    panelGroupMapper.updateByPrimaryKeySelective(panelGroupDTO);
+                    //TODO 复制跳转信息 copy panel_link_jump panel_link_jump_info  panel_link_jump_target_view_info
+                    extPanelLinkJumpMapper.copyLinkJump(copyId);
+                    extPanelLinkJumpMapper.copyLinkJumpInfo(copyId);
+                    extPanelLinkJumpMapper.copyLinkJumpTarget(copyId);
+                    //TODO 复制联动信息 copy panel_view_linkage_field panel_view_linkage
+                    extPanelViewLinkageMapper.copyViewLinkage(copyId);
+                    extPanelViewLinkageMapper.copyViewLinkageField(copyId);
+                }catch (Exception e){
+                    e.printStackTrace();
+                    System.out.println("错误===》panel:"+panelGroupDTO.getId()+";panelView:"+ JSON.toJSONString(panelViewtemp));
                 }
-                panelGroupDTO.setPanelData(panelData);
-                panelGroupMapper.updateByPrimaryKeySelective(panelGroupDTO);
-                //TODO 复制跳转信息 copy panel_link_jump panel_link_jump_info  panel_link_jump_target_view_info
-                extPanelLinkJumpMapper.copyLinkJump(copyId);
-                extPanelLinkJumpMapper.copyLinkJumpInfo(copyId);
-                extPanelLinkJumpMapper.copyLinkJumpTarget(copyId);
-                //TODO 复制联动信息 copy panel_view_linkage_field panel_view_linkage
-                extPanelViewLinkageMapper.copyViewLinkage(copyId);
-                extPanelViewLinkageMapper.copyViewLinkageField(copyId);
             }
         }
         //TODO 清理已经复制过的Panel_view
         PanelViewExample clearViewExample = new PanelViewExample();
         clearViewExample.createCriteria().andCopyFromIsNull();
         panelViewMapper.deleteByExample(clearViewExample);
+
         LogUtil.info("=====v1.8版本 仪表板私有化【结束】=====");
     }
 
