@@ -1,8 +1,8 @@
 package io.dataease.commons.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -90,8 +90,7 @@ public class HttpClientUtil {
             httpGet.addHeader(HTTP.CONTENT_ENCODING, config.getCharset());
 
             HttpResponse response = httpClient.execute(httpGet);
-            HttpEntity entity = response.getEntity();
-            return getResponseStr(response, entity, config);
+            return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
@@ -136,8 +135,7 @@ public class HttpClientUtil {
             httpPost.setEntity(requestEntity);
 
             HttpResponse response = httpClient.execute(httpPost);
-            HttpEntity entity = response.getEntity();
-            return getResponseStr(response, entity, config);
+            return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
@@ -198,8 +196,7 @@ public class HttpClientUtil {
             }
 
             HttpResponse response = httpClient.execute(httpPost);
-            HttpEntity entity = response.getEntity();
-            return getResponseStr(response, entity, config);
+            return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
@@ -212,10 +209,14 @@ public class HttpClientUtil {
         }
     }
 
-    private static String getResponseStr(HttpResponse response, HttpEntity entity, HttpClientConfig config) throws Exception{
+    private static String getResponseStr(HttpResponse response, HttpClientConfig config) throws Exception{
         if(response.getStatusLine().getStatusCode() >= 400){
-            throw new Exception(EntityUtils.toString(entity, config.getCharset()));
+            String msg = EntityUtils.toString(response.getEntity(), config.getCharset());
+            if(StringUtils.isEmpty(msg)){
+                msg = "StatusCode: " + response.getStatusLine().getStatusCode();
+            }
+            throw new Exception(msg);
         }
-        return EntityUtils.toString(entity, config.getCharset());
+        return EntityUtils.toString(response.getEntity(), config.getCharset());
     }
 }

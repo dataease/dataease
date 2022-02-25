@@ -28,7 +28,7 @@ public class ApiProvider extends DatasourceProvider{
     public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
         String response = execHttpRequest(apiDefinition);
-        return fetchResult(response, apiDefinition.getDataPath());
+        return fetchResult(response, apiDefinition);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ApiProvider extends DatasourceProvider{
 
         fieldList = getTableFileds(datasourceRequest);
         result.put("fieldList", fieldList);
-        dataList = fetchResult(response, apiDefinition.getDataPath());
+        dataList = fetchResult(response, apiDefinition);
         result.put("dataList", dataList);
         return result;
     }
@@ -170,16 +170,14 @@ public class ApiProvider extends DatasourceProvider{
         return response;
     }
 
-    private List<String[]> fetchResult(String result, String path){
+    private List<String[]> fetchResult(String result, ApiDefinition apiDefinition){
         List<String[]> dataList = new LinkedList<>();
-        List<LinkedHashMap> datas = JsonPath.read(result, path);
+        List<LinkedHashMap> datas = JsonPath.read(result, apiDefinition.getDataPath());
         for (LinkedHashMap data : datas) {
-            String[] row = new String[data.entrySet().size()];
-            Iterator it = data.entrySet().iterator();
+            String[] row = new String[apiDefinition.getFields().size()];
             int i = 0;
-            while (it.hasNext()){
-                Map.Entry entry = (Map.Entry)it.next();
-                row[i] = Optional.ofNullable(entry.getValue()).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " ");
+            for (DatasetTableField field : apiDefinition.getFields()) {
+                row[i] = Optional.ofNullable(data.get(field.getOriginName())).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " ");
                 i++;
             }
             dataList.add(row);
