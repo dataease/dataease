@@ -2,6 +2,9 @@ package io.dataease.plugins.server;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.dataease.auth.annotation.DePermission;
+import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.i18n.Translator;
@@ -13,6 +16,7 @@ import io.dataease.plugins.xpack.auth.dto.request.DatasetRowPermissions;
 import io.dataease.plugins.xpack.auth.service.RowPermissionService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -24,6 +28,8 @@ import java.util.List;
 @RequestMapping("plugin/dataset/rowPermissions")
 public class RowPermissionsController {
 
+    @RequiresPermissions("datasource:read")
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("save")
     public void save(@RequestBody DatasetRowPermissions datasetRowPermissions) throws Exception {
@@ -49,6 +55,8 @@ public class RowPermissionsController {
         rowPermissionService.save(datasetRowPermissions);
     }
 
+    @RequiresPermissions("datasource:read")
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("查询")
     @PostMapping("/list")
     public List<DataSetRowPermissionsDTO> rowPermissions(@RequestBody DataSetRowPermissionsDTO request) {
@@ -56,6 +64,8 @@ public class RowPermissionsController {
        return rowPermissionService.searchRowPermissions(request);
     }
 
+    //TODO
+    @RequiresPermissions("datasource:read")
     @ApiOperation("删除")
     @PostMapping("/delete/{id}")
     public void dataSetRowPermissionInfo(@PathVariable String id) {
@@ -63,6 +73,8 @@ public class RowPermissionsController {
         rowPermissionService.delete(id);
     }
 
+    @RequiresPermissions("datasource:read")
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("分页查询")
     @PostMapping("/pageList/{datasetId}/{goPage}/{pageSize}")
     public Pager<List<DataSetRowPermissionsDTO>> rowPermissions(@PathVariable String datasetId, @PathVariable int goPage, @PathVariable int pageSize, @RequestBody XpackGridRequest request) {
@@ -78,6 +90,8 @@ public class RowPermissionsController {
         return PageUtils.setPageInfo(page, rowPermissionService.queryRowPermissions(request));
     }
 
+    @RequiresPermissions("datasource:read")
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("有权限的对象")
     @PostMapping("/authObjs")
     public List<Object> authObjs(@RequestBody DataSetRowPermissionsDTO request) {
@@ -85,6 +99,8 @@ public class RowPermissionsController {
         return (List<Object>) rowPermissionService.authObjs(request);
     }
 
+    @RequiresPermissions("datasource:read")
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("详情")
     @PostMapping("/dataSetRowPermissionInfo")
     public DataSetRowPermissionsDTO dataSetRowPermissionInfo(@RequestBody DataSetRowPermissionsDTO request) {

@@ -21,6 +21,7 @@ import io.dataease.service.dataset.PermissionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import cn.hutool.core.collection.CollectionUtil;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +56,8 @@ public class DataSetTableFieldController {
     @Resource
     private PermissionService permissionService;
 
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("查询表下属字段")
     @PostMapping("list/{tableId}")
     public List<DatasetTableField> list(@PathVariable String tableId) {
@@ -64,6 +68,8 @@ public class DataSetTableFieldController {
         return fields;
     }
 
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("查询表下属字段")
     @PostMapping("listWithPermission/{tableId}")
     public List<DatasetTableField> listWithPermission(@PathVariable String tableId) {
@@ -77,6 +83,8 @@ public class DataSetTableFieldController {
     }
 
     //管理权限，可以列出所有字段
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("查询表下属字段")
     @PostMapping("listForPermissionSeting/{tableId}")
     public List<DatasetTableField> listForPermissionSeting(@PathVariable String tableId) {
@@ -87,6 +95,8 @@ public class DataSetTableFieldController {
     }
 
     //管理权限，可以列出所有字段
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("分组查询表下属字段")
     @PostMapping("listByDQ/{tableId}")
     public DatasetTableField4Type listByDQ(@PathVariable String tableId) {
@@ -103,12 +113,15 @@ public class DataSetTableFieldController {
         return datasetTableField4Type;
     }
 
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("批量更新")
     @PostMapping("batchEdit")
     public void batchEdit(@RequestBody List<DatasetTableField> list) {
         dataSetTableFieldsService.batchEdit(list);
     }
 
+    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("save")
@@ -126,13 +139,14 @@ public class DataSetTableFieldController {
         return dataSetTableFieldsService.save(datasetTableField);
     }
 
+    //TODO 校验权限
     @ApiOperation("删除")
     @PostMapping("delete/{id}")
     public void delete(@PathVariable String id) {
         dataSetTableFieldsService.delete(id);
     }
 
-    @ApiOperation("多字段值枚举")
+    @ApiIgnore
     @PostMapping("linkMultFieldValues")
     public List<Object> linkMultFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest)
             throws Exception {
@@ -145,7 +159,7 @@ public class DataSetTableFieldController {
         return multFieldValues(multFieldValuesRequest);
     }
 
-    @ApiOperation("多字段值枚举")
+    @ApiIgnore
     @PostMapping("multFieldValues")
     public List<Object> multFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
         List<Object> results = new ArrayList<>();
@@ -168,7 +182,7 @@ public class DataSetTableFieldController {
         return list;
     }
 
-    @ApiOperation("多字段值枚举")
+    @ApiIgnore
     @PostMapping("multFieldValuesForPermissions")
     public List<Object> multFieldValuesForPermissions(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
         List<Object> results = new ArrayList<>();

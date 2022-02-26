@@ -72,7 +72,7 @@ public class DataSetGroupController {
         return dataSetGroupService.getScene(id);
     }
 
-    @ApiOperation("检测kettle")
+    @ApiIgnore
     @PostMapping("/isKettleRunning")
     public boolean isKettleRunning() {
         return extractDataService.isKettleRunning();
