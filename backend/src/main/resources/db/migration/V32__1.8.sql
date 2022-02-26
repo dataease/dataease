@@ -405,5 +405,5 @@ BEGIN;
 INSERT INTO `dataease_code_version` VALUES (0, 'init', NULL, 1);
 COMMIT;
 
-DELETE FALSE `sys_menu` WHERE pid=34;
+DELETE FROM `sys_menu` WHERE pid=34;
 UPDATE `sys_menu` SET `sub_count` = '0' WHERE (`menu_id` = '34');
