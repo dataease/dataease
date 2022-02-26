@@ -76,6 +76,7 @@ public class DataSetTableController {
         dataSetTableService.alter(request);
     }
 
+    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("删除")
     @PostMapping("delete/{id}")
@@ -83,18 +84,21 @@ public class DataSetTableController {
         dataSetTableService.delete(id);
     }
 
+    @RequiresPermissions("data:read")
     @ApiOperation("查询")
     @PostMapping("list")
     public List<DataSetTableDTO> list(@RequestBody DataSetTableRequest dataSetTableRequest) {
         return dataSetTableService.list(dataSetTableRequest);
     }
 
+    @RequiresPermissions("data:read")
     @ApiOperation("查询组")
     @PostMapping("listAndGroup")
     public List<DataSetTableDTO> listAndGroup(@RequestBody DataSetTableRequest dataSetTableRequest) {
         return dataSetTableService.listAndGroup(dataSetTableRequest);
     }
 
+    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE)
     @ApiOperation("详息")
     @PostMapping("get/{id}")
@@ -102,12 +106,14 @@ public class DataSetTableController {
         return dataSetTableService.get(id);
     }
 
+    @RequiresPermissions("data:read")
     @ApiOperation("带权限查询")
     @PostMapping("getWithPermission/{id}")
     public DataSetTableDTO getWithPermission(@PathVariable String id) {
         return dataSetTableService.getWithPermission(id, null);
     }
 
+    @RequiresPermissions("data:read")
     @ApiOperation("查询原始字段")
     @PostMapping("getFields")
     public List<TableField> getFields(@RequestBody DatasetTable datasetTable) throws Exception {
@@ -167,24 +173,31 @@ public class DataSetTableController {
         return dataSetTableService.excelSaveAndParse(file, tableId, editType);
     }
 
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("检测doris")
     @PostMapping("checkDorisTableIsExists/{id}")
     public Boolean checkDorisTableIsExists(@PathVariable String id) throws Exception {
         return dataSetTableService.checkDorisTableIsExists(id);
     }
 
+    @RequiresPermissions("data:read")
     @ApiOperation("搜索")
     @PostMapping("search")
     public List<DataSetTableDTO> search(@RequestBody DataSetTableRequest dataSetTableRequest) {
         return dataSetTableService.search(dataSetTableRequest);
     }
 
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("数据集同步表结构")
     @PostMapping("syncField/{id}")
     public DatasetTable syncDatasetTableField(@PathVariable String id) throws Exception {
         return dataSetTableService.syncDatasetTableField(id);
     }
 
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET, value = "id")
     @ApiOperation("关联数据集预览数据")
     @PostMapping("unionPreview")
     public Map<String, Object> unionPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {

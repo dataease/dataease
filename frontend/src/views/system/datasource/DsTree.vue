@@ -5,7 +5,7 @@
         <span class="title-text">
           {{ $t('commons.datasource') }}
         </span>
-        <el-button v-permission="['datasource:add']" icon="el-icon-plus" type="text" size="mini" style="float: right;"
+        <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;"
                    @click="addFolder"/>
 
       </el-row>
@@ -76,7 +76,6 @@
                 <span v-if="data.type ==='folder'" @click.stop>
                   <span class="el-dropdown-link">
                     <el-button
-                      v-permission="['datasource:add']"
                       icon="el-icon-plus"
                       type="text"
                       size="small"

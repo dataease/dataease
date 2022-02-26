@@ -202,7 +202,6 @@ export default {
             loginType: this.loginForm.loginType
           }
           const publicKey = localStorage.getItem('publicKey')
-          console.log(publicKey)
           this.$store.dispatch('user/login', user).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false

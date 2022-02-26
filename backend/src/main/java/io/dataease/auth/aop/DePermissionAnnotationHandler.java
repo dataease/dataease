@@ -134,7 +134,7 @@ public class DePermissionAnnotationHandler {
             return access(o, annotation, ++layer);
         } else {
             // 当作自定义类处理
-            String[] values = value.split("u002E");
+            String[] values = value.split("\\.");
             String fieldName = values[layer];
 
             Object fieldValue = getFieldValue(arg, fieldName);
