@@ -315,7 +315,7 @@ ALTER TABLE `chart_view`
 ADD COLUMN `is_plugin` bit(1) NULL COMMENT '是否插件' AFTER `chart_type`;
 
 
-INSERT INTO `my_plugin` VALUES (2, '视图默认插件', 'default', 0, 20000, 'view', '默认视图插件', '1.0-SNAPSHOT', NULL, 'fit2cloud-chenyw', 0, NULL, NULL, 'deplugin-view-backend', NULL);
+INSERT INTO `my_plugin` VALUES (2, '视图默认插件', 'default', 0, 20000, 'view', '默认视图插件', '1.0-SNAPSHOT', NULL, 'fit2cloud-chenyw', 0, NULL, NULL, 'dataease-extensions-backend', NULL);
 
 
 SET NAMES utf8mb4;
@@ -365,7 +365,7 @@ ALTER TABLE `datasource`
 ALTER TABLE `panel_view`
 ADD COLUMN `copy_from_panel` varchar(255) NULL AFTER `position`,
 ADD COLUMN `copy_from_view` varchar(255) NULL AFTER `copy_from_panel`,
-ADD COLUMN `copy_from` varchar(255) NOT NULL COMMENT '如果有复制 最近一次的复制来源id' AFTER `copy_from_view`,
+ADD COLUMN `copy_from` varchar(255) NULL COMMENT '如果有复制 最近一次的复制来源id' AFTER `copy_from_view`,
 ADD COLUMN `copy_id` varchar(255) NULL COMMENT '本次复制的执行ID' AFTER `copy_from`;
 
 ALTER TABLE `panel_view_linkage`

@@ -131,7 +131,7 @@ public class PanelGroupService {
             panelGroupMapper.insertSelective(newDefaultPanel);
         } else if ("copy".equals(request.getOptType())) {
             try {
-                this.panelGroupCopy(request, null, true);
+                panelId =  this.panelGroupCopy(request, null, true);
             } catch (Exception e) {
                 e.printStackTrace();
                 LOGGER.error("更新panelView出错panelId：{}", request.getId());
