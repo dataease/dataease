@@ -45,14 +45,13 @@ public class DataSetGroupController {
         return dataSetGroupService.save(datasetGroup);
     }
 
-    @RequiresPermissions("data:read")
-    @ApiOperation("查询树")
+    @ApiIgnore
     @PostMapping("/tree")
     public List<DataSetGroupDTO> tree(@RequestBody DataSetGroupRequest datasetGroup) {
         return dataSetGroupService.tree(datasetGroup);
     }
 
-    @ApiOperation("查询树节点")
+    @ApiIgnore
     @PostMapping("/treeNode")
     public List<DataSetGroupDTO> treeNode(@RequestBody DataSetGroupRequest datasetGroup) {
         return dataSetGroupService.treeNode(datasetGroup);

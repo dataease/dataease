@@ -21,24 +21,28 @@ public class ChartGroupController {
     @Resource
     private ChartGroupService chartGroupService;
 
+    @ApiIgnore
     @ApiOperation("保存")
     @PostMapping("/save")
     public ChartGroupDTO save(@RequestBody ChartGroup ChartGroup) {
         return chartGroupService.save(ChartGroup);
     }
 
+    @ApiIgnore
     @ApiOperation("查询树")
     @PostMapping("/tree")
     public List<ChartGroupDTO> tree(@RequestBody ChartGroupRequest ChartGroup) {
         return chartGroupService.tree(ChartGroup);
     }
 
+    @ApiIgnore
     @ApiOperation("查询树节点")
     @PostMapping("/treeNode")
     public List<ChartGroupDTO> treeNode(@RequestBody ChartGroupRequest ChartGroup) {
         return chartGroupService.tree(ChartGroup);
     }
 
+    @ApiIgnore
     @ApiOperation("删除")
     @PostMapping("/delete/{id}")
     public void tree(@PathVariable String id) {
