@@ -392,7 +392,7 @@ export default {
         cancelButtonText: this.$t('dataset.cancel'),
         type: 'warning'
       }).then(() => {
-        post('/dataset/field/delete/' + item.id, null).then(response => {
+        post('/dataset/field/delete/' + item.id + '/' + item.tableId, null).then(response => {
           this.$message({
             type: 'success',
             message: this.$t('chart.delete_success'),
