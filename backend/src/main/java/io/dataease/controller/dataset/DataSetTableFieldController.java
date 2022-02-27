@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
+import io.dataease.auth.annotation.DePermissions;
 import io.dataease.auth.filter.F2CLinkFilter;
 import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableField;
@@ -21,6 +22,7 @@ import io.dataease.service.dataset.PermissionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,10 +141,13 @@ public class DataSetTableFieldController {
         return dataSetTableFieldsService.save(datasetTableField);
     }
 
-    //TODO 校验权限
+    @RequiresPermissions("data:read")
+    @DePermissions(value = {
+            @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE, paramIndex = 1)
+    })
     @ApiOperation("删除")
-    @PostMapping("delete/{id}")
-    public void delete(@PathVariable String id) {
+    @PostMapping("delete/{id}/{tableId}")
+    public void delete(@PathVariable String id, @PathVariable String tableId) {
         dataSetTableFieldsService.delete(id);
     }
 

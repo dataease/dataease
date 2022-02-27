@@ -10,9 +10,9 @@ import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.response.DataSetDetail;
-import io.dataease.dto.datasource.TableField;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.ExcelFileData;
+import io.dataease.dto.datasource.TableField;
 import io.dataease.service.dataset.DataSetTableService;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.Logical;
@@ -38,9 +38,9 @@ public class DataSetTableController {
 
     @RequiresPermissions("data:read")
     @DePermissions(value = {
-        @DePermission(type = DePermissionType.DATASET, value = "id"),
-        @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
-        @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASET_LEVEL_USE)
+            @DePermission(type = DePermissionType.DATASET, value = "id"),
+            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
+            @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASET_LEVEL_USE)
     }, logical = Logical.AND)
     @ApiOperation("批量保存")
     @PostMapping("batchAdd")
@@ -85,6 +85,7 @@ public class DataSetTableController {
     }
 
     @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "sceneId")
     @ApiOperation("查询")
     @PostMapping("list")
     public List<DataSetTableDTO> list(@RequestBody DataSetTableRequest dataSetTableRequest) {
@@ -92,6 +93,7 @@ public class DataSetTableController {
     }
 
     @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "sceneId")
     @ApiOperation("查询组")
     @PostMapping("listAndGroup")
     public List<DataSetTableDTO> listAndGroup(@RequestBody DataSetTableRequest dataSetTableRequest) {
@@ -107,6 +109,7 @@ public class DataSetTableController {
     }
 
     @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE)
     @ApiOperation("带权限查询")
     @PostMapping("getWithPermission/{id}")
     public DataSetTableDTO getWithPermission(@PathVariable String id) {
@@ -114,48 +117,63 @@ public class DataSetTableController {
     }
 
     @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_USE, value = "dataSourceId")
     @ApiOperation("查询原始字段")
     @PostMapping("getFields")
     public List<TableField> getFields(@RequestBody DatasetTable datasetTable) throws Exception {
         return dataSetTableService.getFields(datasetTable);
     }
 
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "id")
     @ApiOperation("查询生成字段")
     @PostMapping("getFieldsFromDE")
     public Map<String, List<DatasetTableField>> getFieldsFromDE(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
         return dataSetTableService.getFieldsFromDE(dataSetTableRequest);
     }
 
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "id")
     @ApiOperation("查询预览数据")
     @PostMapping("getPreviewData/{page}/{pageSize}")
     public Map<String, Object> getPreviewData(@RequestBody DataSetTableRequest dataSetTableRequest, @PathVariable Integer page, @PathVariable Integer pageSize) throws Exception {
         return dataSetTableService.getPreviewData(dataSetTableRequest, page, pageSize, null);
     }
 
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_USE, value = "dataSourceId")
     @ApiOperation("根据sql查询预览数据")
     @PostMapping("sqlPreview")
     public Map<String, Object> getSQLPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
         return dataSetTableService.getSQLPreview(dataSetTableRequest);
     }
 
-    @ApiOperation("客户预览数据")
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_USE, value = "dataSourceId")
+    @ApiOperation("预览自定义数据数据")
     @PostMapping("customPreview")
     public Map<String, Object> customPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
         return dataSetTableService.getCustomPreview(dataSetTableRequest);
     }
 
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "tableId")
     @ApiOperation("查询增量配置")
     @PostMapping("incrementalConfig")
     public DatasetTableIncrementalConfig incrementalConfig(@RequestBody DatasetTableIncrementalConfig datasetTableIncrementalConfig) throws Exception {
         return dataSetTableService.incrementalConfig(datasetTableIncrementalConfig);
     }
 
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE, value = "tableId")
     @ApiOperation("保存增量配置")
     @PostMapping("save/incrementalConfig")
     public void saveIncrementalConfig(@RequestBody DatasetTableIncrementalConfig datasetTableIncrementalConfig) throws Exception {
         dataSetTableService.saveIncrementalConfig(datasetTableIncrementalConfig);
     }
 
+    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("数据集详息")
     @PostMapping("datasetDetail/{id}")
     public DataSetDetail datasetDetail(@PathVariable String id) {
