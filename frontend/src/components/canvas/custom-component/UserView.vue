@@ -433,7 +433,7 @@ export default {
           ...this.filter,
           cache: cache
         }
-        method(id, requestInfo).then(response => {
+        method(id, this.panelInfo.id, requestInfo).then(response => {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
