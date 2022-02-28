@@ -26,4 +26,8 @@ public interface ExtChartViewMapper {
     ChartViewDTO searchOneWithPrivileges(@Param("userId") String userId,@Param("id") String id );
 
     void chartCopyWithPanel(@Param("copyId") String copyId);
+
+    void deleteCircleView(@Param("pid") String pid);
+
+    void deleteCircleGroup(@Param("pid") String pid);
 }

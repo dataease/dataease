@@ -268,9 +268,16 @@ export default {
         type: 'warning'
       }).then(() => {
         delDs(datasource.id).then(res => {
-          this.$success(this.$t('commons.delete_success'))
-          this.switchMain('DataHome', {}, this.tData)
-          this.refreshType(datasource)
+          if(res.success){
+            this.$success(this.$t('commons.delete_success'))
+            this.switchMain('DataHome', {}, this.tData)
+            this.refreshType(datasource)
+          }else {
+            this.$message({
+              type: 'error',
+              message: res.message
+            })
+          }
         })
       }).catch(() => {
         this.$message({

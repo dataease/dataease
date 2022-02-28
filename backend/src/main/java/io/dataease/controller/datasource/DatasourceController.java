@@ -72,8 +72,8 @@ public class DatasourceController {
     @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_MANAGE)
     @ApiOperation("删除数据源")
     @PostMapping("/delete/{datasourceID}")
-    public void deleteDatasource(@PathVariable(value = "datasourceID") String datasourceID) throws Exception {
-        datasourceService.deleteDatasource(datasourceID);
+    public ResultHolder deleteDatasource(@PathVariable(value = "datasourceID") String datasourceID) throws Exception {
+        return datasourceService.deleteDatasource(datasourceID);
     }
 
     @RequiresPermissions("datasource:read")

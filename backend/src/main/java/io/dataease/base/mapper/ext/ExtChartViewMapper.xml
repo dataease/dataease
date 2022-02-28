@@ -228,4 +228,12 @@
             ) pv_copy
             LEFT JOIN chart_view ON chart_view.id = pv_copy.copy_from_view
     </insert>
+
+    <delete id="deleteCircleView">
+        delete chart_view from (select GET_CHART_GROUP_WITH_CHILDREN(#{pid}) cids) t,chart_view where FIND_IN_SET(chart_view.id,cids) and chart_type='public'
+    </delete>
+
+    <delete id="deleteCircleGroup">
+        delete chart_group from (select GET_CHART_GROUP_WITH_CHILDREN(#{pid}) cids) t,chart_group where FIND_IN_SET(chart_group.id,cids)
+    </delete>
 </mapper>

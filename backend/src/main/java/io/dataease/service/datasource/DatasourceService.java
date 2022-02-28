@@ -163,16 +163,17 @@ public class DatasourceService {
     }
 
     @DeCleaner(DePermissionType.DATASOURCE)
-    public void deleteDatasource(String datasourceId) throws Exception {
+    public ResultHolder deleteDatasource(String datasourceId) throws Exception {
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andDataSourceIdEqualTo(datasourceId);
         List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(example);
         if(CollectionUtils.isNotEmpty(datasetTables)){
-            DataEaseException.throwException(datasetTables.size() +  Translator.get("i18n_datasource_not_allow_delete_msg"));
+            return ResultHolder.error(datasetTables.size() +  Translator.get("i18n_datasource_not_allow_delete_msg"));
         }
         Datasource datasource = datasourceMapper.selectByPrimaryKey(datasourceId);
         datasourceMapper.deleteByPrimaryKey(datasourceId);
         handleConnectionPool(datasource, "delete");
+        return ResultHolder.success("success");
     }
 
     public void updateDatasource(Datasource datasource) {

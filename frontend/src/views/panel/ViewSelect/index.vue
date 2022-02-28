@@ -34,8 +34,8 @@
           @check="checkChanged"
           @node-drag-end="dragEnd"
         >
-          <span slot-scope="{ node, data }" class="custom-tree-node">
-            <span>
+          <span slot-scope="{ node, data }" class="custom-tree-node-list father">
+            <span style="display: flex; flex: 1 1 0%; width: 0px;">
               <span v-if="data.modelInnerType==='history'">
                 <i class="el-icon-collection" />
               </span>
@@ -48,7 +48,17 @@
               <span v-else>
                 <svg-icon :icon-class="data.modelInnerType" style="width: 14px;height: 14px" />
               </span>
-              <span style="margin-left: 6px;font-size: 14px">{{ data.name }}</span>
+              <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+            </span>
+            <span v-if="data.mode===1" class="child">
+              <span @click.stop>
+                <el-button
+                  icon="el-icon-delete"
+                  type="text"
+                  size="small"
+                  @click="deleteHistory(data, node)"
+                />
+              </span>
             </span>
           </span>
         </el-tree>
@@ -63,6 +73,8 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
 import { queryPanelViewTree } from '@/api/panel/panel'
+import { deleteCircle } from '@/api/chart/chart'
+import { delUser } from '@/api/system/user'
 
 export default {
   name: 'ViewSelect',
@@ -176,8 +188,20 @@ export default {
       component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
       component.moveStatus = 'start'
       return component
+    },
+    deleteHistory(data, node) {
+      deleteCircle(data.id).then(() => {
+        this.$success(this.$t('commons.delete_success'))
+        this.remove(node, data)
+        // this.loadData()
+      })
+    },
+    remove(node, data) {
+      const parent = node.parent
+      const children = parent.data.children || parent.data
+      const index = children.findIndex(d => d.id === data.id)
+      children.splice(index, 1)
     }
-
   }
 }
 </script>
@@ -197,5 +221,23 @@ export default {
   .view-list-thumbnails {
     width: 100%;
     height: 100%;
+  }
+
+  .father .child {
+    /*display: none;*/
+    visibility: hidden;
+  }
+  .father:hover .child {
+    /*display: inline;*/
+    visibility: visible;
+  }
+
+  .custom-tree-node-list {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding:0 8px;
   }
 </style>
