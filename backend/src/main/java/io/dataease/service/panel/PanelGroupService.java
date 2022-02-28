@@ -206,9 +206,9 @@ public class PanelGroupService {
 
 
     public PanelGroupWithBLOBs findOne(String panelId) {
-        PanelGroupWithBLOBs panelGroupWithBLOBs = panelGroupMapper.selectByPrimaryKey(panelId);
+        PanelGroupWithBLOBs panelGroupWithBLOBs = extPanelGroupMapper.findOneWithPrivileges(panelId,String.valueOf(AuthUtils.getUser().getUserId()));
         if (panelGroupWithBLOBs != null && StringUtils.isNotEmpty(panelGroupWithBLOBs.getSource())) {
-            return panelGroupMapper.selectByPrimaryKey(panelGroupWithBLOBs.getSource());
+            return extPanelGroupMapper.findOneWithPrivileges(panelGroupWithBLOBs.getSource(),String.valueOf(AuthUtils.getUser().getUserId()));
         }
         return panelGroupWithBLOBs;
     }

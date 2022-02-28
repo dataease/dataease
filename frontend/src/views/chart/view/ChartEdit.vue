@@ -1191,6 +1191,9 @@ export default {
   computed: {
     chartType() {
       return this.chart.type
+    },
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
     }
   },
   watch: {
@@ -1446,7 +1449,7 @@ export default {
       this.hasEdit = true
       const view = this.buildParam(getData, trigger, needRefreshGroup, switchType)
       if (!view) return
-      post('/chart/view/calcData', {
+      post('/chart/view/calcData/' + this.panelInfo.id, {
         view: view,
         requestList: {
           filter: [],
@@ -1509,7 +1512,7 @@ export default {
       }
       const view = this.buildParam(true, 'chart', false, false)
       if (!view) return
-      post('/chart/view/save', view).then(response => {
+      post('/chart/view/save/' + this.panelInfo.id, view).then(response => {
         this.getChart(response.data.id)
         this.hasEdit = false
         this.refreshGroup(view)
@@ -1524,7 +1527,7 @@ export default {
     getData(id) {
       this.hasEdit = false
       if (id) {
-        ajaxGetDataOnly(id, {
+        ajaxGetDataOnly(id, this.panelInfo.id, {
           filter: [],
           drill: this.drillClickDimensionList
         }).then(response => {
@@ -1571,7 +1574,7 @@ export default {
     },
     getChart(id) {
       if (id) {
-        post('/chart/view/get/' + id, {}).then(response => {
+        post('/chart/view/get/' + id + '/' + this.panelInfo.id, {}).then(response => {
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
