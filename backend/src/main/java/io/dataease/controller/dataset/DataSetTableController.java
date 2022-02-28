@@ -84,7 +84,6 @@ public class DataSetTableController {
         dataSetTableService.delete(id);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "sceneId")
     @ApiOperation("查询")
     @PostMapping("list")
@@ -92,7 +91,6 @@ public class DataSetTableController {
         return dataSetTableService.list(dataSetTableRequest);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "sceneId")
     @ApiOperation("查询组")
     @PostMapping("listAndGroup")
@@ -100,7 +98,6 @@ public class DataSetTableController {
         return dataSetTableService.listAndGroup(dataSetTableRequest);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE)
     @ApiOperation("详息")
     @PostMapping("get/{id}")
@@ -108,7 +105,6 @@ public class DataSetTableController {
         return dataSetTableService.get(id);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE)
     @ApiOperation("带权限查询")
     @PostMapping("getWithPermission/{id}")
@@ -116,7 +112,6 @@ public class DataSetTableController {
         return dataSetTableService.getWithPermission(id, null);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_USE, value = "dataSourceId")
     @ApiOperation("查询原始字段")
     @PostMapping("getFields")
@@ -124,7 +119,6 @@ public class DataSetTableController {
         return dataSetTableService.getFields(datasetTable);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "id")
     @ApiOperation("查询生成字段")
     @PostMapping("getFieldsFromDE")
@@ -132,7 +126,6 @@ public class DataSetTableController {
         return dataSetTableService.getFieldsFromDE(dataSetTableRequest);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "id")
     @ApiOperation("查询预览数据")
     @PostMapping("getPreviewData/{page}/{pageSize}")
@@ -140,7 +133,6 @@ public class DataSetTableController {
         return dataSetTableService.getPreviewData(dataSetTableRequest, page, pageSize, null);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_USE, value = "dataSourceId")
     @ApiOperation("根据sql查询预览数据")
     @PostMapping("sqlPreview")
@@ -148,7 +140,6 @@ public class DataSetTableController {
         return dataSetTableService.getSQLPreview(dataSetTableRequest);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_USE, value = "dataSourceId")
     @ApiOperation("预览自定义数据数据")
     @PostMapping("customPreview")
@@ -172,7 +163,6 @@ public class DataSetTableController {
         dataSetTableService.saveIncrementalConfig(datasetTableIncrementalConfig);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("数据集详息")
     @PostMapping("datasetDetail/{id}")
@@ -206,7 +196,6 @@ public class DataSetTableController {
         return dataSetTableService.search(dataSetTableRequest);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("数据集同步表结构")
     @PostMapping("syncField/{id}")
