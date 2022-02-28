@@ -1519,6 +1519,7 @@ export default {
         this.closeChangeChart()
         // 从仪表板入口关闭
         if (this.$route.path.indexOf('panel') > -1) {
+          this.$store.commit('recordSnapshot')
           bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
         }
         this.$success(this.$t('commons.save_success'))
