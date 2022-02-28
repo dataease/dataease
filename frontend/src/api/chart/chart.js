@@ -60,9 +60,9 @@ export function checkSameDataSet(viewIdSource, viewIdTarget) {
   })
 }
 
-export function ajaxGetDataOnly(id, data) {
+export function ajaxGetDataOnly(id, panelId, data) {
   return request({
-    url: '/chart/view/getData/' + id,
+    url: '/chart/view/getData/' + id + '/' + panelId,
     method: 'post',
     loading: true,
     hideMsg: true,
