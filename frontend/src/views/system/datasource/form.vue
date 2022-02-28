@@ -253,7 +253,7 @@
           </el-select>
         </el-form-item>
 
-        <el-collapse v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'">
+        <el-collapse v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api' && form.type !== 'mongo'">
           <el-collapse-item :title="$t('datasource.priority')" name="1">
             <el-form-item :label="$t('datasource.initial_pool_size')" prop="configuration.initialPoolSize">
               <el-input v-model="form.configuration.initialPoolSize" autocomplete="off" type="number" min="0"
