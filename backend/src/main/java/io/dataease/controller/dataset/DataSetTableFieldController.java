@@ -58,7 +58,6 @@ public class DataSetTableFieldController {
     @Resource
     private PermissionService permissionService;
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("查询表下属字段")
     @PostMapping("list/{tableId}")
@@ -70,7 +69,6 @@ public class DataSetTableFieldController {
         return fields;
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("查询表下属字段")
     @PostMapping("listWithPermission/{tableId}")
@@ -85,7 +83,6 @@ public class DataSetTableFieldController {
     }
 
     //管理权限，可以列出所有字段
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("查询表下属字段")
     @PostMapping("listForPermissionSeting/{tableId}")
@@ -97,7 +94,6 @@ public class DataSetTableFieldController {
     }
 
     //管理权限，可以列出所有字段
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("分组查询表下属字段")
     @PostMapping("listByDQ/{tableId}")
@@ -115,7 +111,6 @@ public class DataSetTableFieldController {
         return datasetTableField4Type;
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("批量更新")
     @PostMapping("batchEdit")
@@ -123,7 +118,6 @@ public class DataSetTableFieldController {
         dataSetTableFieldsService.batchEdit(list);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("save")
@@ -141,7 +135,6 @@ public class DataSetTableFieldController {
         return dataSetTableFieldsService.save(datasetTableField);
     }
 
-    @RequiresPermissions("data:read")
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE, paramIndex = 1)
     })
