@@ -16,7 +16,9 @@ import io.dataease.service.dataset.DataSetTableTaskLogService;
 import io.dataease.service.dataset.DataSetTableTaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -42,18 +44,21 @@ public class DataSetTableTaskController {
         return dataSetTableTaskService.save(dataSetTaskRequest);
     }
 
+    //TODO
     @ApiOperation("删除")
     @PostMapping("delete/{id}")
     public void delete(@PathVariable String id) {
         dataSetTableTaskService.delete(id);
     }
 
+    @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("查询")
     @PostMapping("list")
     public List<DatasetTableTask> list(@RequestBody DatasetTableTask datasetTableTask) {
         return dataSetTableTaskService.list(datasetTableTask);
     }
 
+    @RequiresPermissions("task:read")
     @ApiOperation("分页查询")
     @PostMapping("/pageList/{goPage}/{pageSize}")
     public Pager<List<DataSetTaskDTO>> taskList(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody BaseGridRequest request) {
@@ -62,12 +67,13 @@ public class DataSetTableTaskController {
         return PageUtils.setPageInfo(page, dataSetTableTaskService.taskList4User(request));
     }
 
-    @ApiOperation("上次执行时间")
+    @ApiIgnore
     @PostMapping("/lastExecStatus")
     public DataSetTaskDTO lastExecStatus(@RequestBody DataSetTaskDTO datasetTableTask) {
         return dataSetTableTaskLogService.lastExecStatus(datasetTableTask);
     }
 
+    @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("更新状态")
     @PostMapping("/updateStatus")
     public void updateStatus(@RequestBody DatasetTableTask datasetTableTask) throws Exception{

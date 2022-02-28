@@ -15,7 +15,11 @@ public enum ResourceAuthLevel {
 
     LINK_LEVEL_USE(1),
     LINK_LEVEL_MANAGE(3),
-    LINK_LEVEL_GRANT(15);
+    LINK_LEVEL_GRANT(15),
+
+    DATASOURCE_LEVEL_USE(1),
+    DATASOURCE_LEVEL_MANAGE(3),
+    DATASOURCE_LEVEL_GRANT(15);
 
     private Integer level;
 

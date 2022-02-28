@@ -48,7 +48,7 @@ export const buildFilterMap = panelItems => {
     }
     if (element.type === 'de-tabs') {
       element.options.tabList && element.options.tabList.forEach(tab => {
-        if (tab.content.propValue && tab.content.propValue.viewId) {
+        if (tab.content && tab.content.propValue && tab.content.propValue.viewId) {
           result[tab.content.propValue.viewId] = []
         }
       })

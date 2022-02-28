@@ -14,6 +14,7 @@ import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import io.dataease.service.dataset.DataSetTableTaskLogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -38,12 +39,13 @@ public class DataSetTableTaskLogController {
         return dataSetTableTaskLogService.save(datasetTableTaskLog);
     }
 
-    @ApiOperation("删除")
-    @PostMapping("delete/{id}")
-    public void delete(@PathVariable String id) {
-        dataSetTableTaskLogService.delete(id);
-    }
+//    @ApiOperation("删除")
+//    @PostMapping("delete/{id}")
+//    public void delete(@PathVariable String id) {
+//        dataSetTableTaskLogService.delete(id);
+//    }
 
+    @RequiresPermissions("task:read")
     @ApiOperation("分页查询")
     @PostMapping("list/{type}/{goPage}/{pageSize}")
     public Pager<List<DataSetTaskLogDTO>> list(@RequestBody BaseGridRequest request, @PathVariable String type, @PathVariable int goPage, @PathVariable int pageSize) {
