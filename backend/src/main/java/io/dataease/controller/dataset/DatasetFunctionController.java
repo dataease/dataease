@@ -29,7 +29,6 @@ public class DatasetFunctionController {
     @Resource
     private DatasetFunctionService datasetFunctionService;
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("查询")
     @PostMapping("listByTableId/{tableId}")
