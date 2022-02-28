@@ -1,7 +1,7 @@
 <template>
   <de-container>
     <de-aside-container>
-      <dataset-group-selector-tree :privileges="privileges" :mode="mode" :clearEmptyDir="clearEmptyDir" :type="type" :custom-type="customType" :show-mode="showMode" @getTable="getTable" />
+      <dataset-group-selector-tree :privileges="privileges" :mode="mode" :clear-empty-dir="clearEmptyDir" :type="type" :custom-type="customType" :show-mode="showMode" @getTable="getTable" />
     </de-aside-container>
     <de-main-container>
       <dataset-table-data :table="table" />
@@ -54,7 +54,7 @@ export default {
       type: Boolean,
       required: false,
       default: false
-    },
+    }
   },
   data() {
     return {
@@ -69,7 +69,7 @@ export default {
   methods: {
     getTable(table) {
       // this.table = table
-      getTable(table.id).then(response => {
+      table && table.id && getTable(table.id).then(response => {
         this.table = response.data
         this.$emit('getTable', this.table)
       }).catch(res => {
