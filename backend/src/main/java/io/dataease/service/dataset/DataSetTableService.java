@@ -1629,7 +1629,7 @@ public class DataSetTableService {
                         datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
                     } else {
                         Integer fieldType = qp.transFieldType(filed.getFieldType());
-                        datasetTableField.setDeType(fieldType == 4 ? 2 : fieldType);
+                        datasetTableField.setDeType(fieldType == 4 ? 2 : (fieldType == 6 ? 0 : fieldType));
                         datasetTableField.setDeExtractType(fieldType);
                     }
                     datasetTableField.setSize(filed.getFieldSize());
@@ -1637,7 +1637,7 @@ public class DataSetTableService {
                     datasetTableField.setColumnIndex(i);
                     datasetTableField.setLastSyncTime(syncTime);
                     datasetTableField.setExtField(0);
-                    datasetTableField.setGroupType(datasetTableField.getDeType() < 2 ? "d" : "q");
+                    datasetTableField.setGroupType((datasetTableField.getDeType() < 2 || datasetTableField.getDeType() == 6) ? "d" : "q");
                 }
                 dataSetTableFieldsService.save(datasetTableField);
             }
