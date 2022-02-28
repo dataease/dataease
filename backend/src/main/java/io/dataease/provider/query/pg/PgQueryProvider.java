@@ -86,8 +86,6 @@ public class PgQueryProvider extends QueryProvider {
                 return DeTypeConstants.DE_FLOAT;// 浮点
             case "TINYINT":
                 return DeTypeConstants.DE_BOOL;// 布尔
-            case "bytea":
-                return DeTypeConstants.DE_BINARY;// 二进制
             default:
                 return DeTypeConstants.DE_STRING;
         }
