@@ -122,6 +122,11 @@ export default {
       info: {}
     }
   },
+  computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    }
+  },
   watch: {
     'data': function() {
       this.init()
@@ -145,7 +150,7 @@ export default {
             this.info = JSON.parse(res.data.table.info)
           })
         } else if (this.type === 'chart') {
-          post('/chart/view/chartDetail/' + this.data.id, null).then(res => {
+          post('/chart/view/chartDetail/' + this.data.id + '/' + this.panelInfo.id, null).then(res => {
             this.detail = res.data
             this.info = JSON.parse(res.data.table.info)
           })
