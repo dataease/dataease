@@ -54,7 +54,6 @@ public class DatasourceController {
         return datasourceService.validate(datasourceId);
     }
 
-    @RequiresPermissions("datasource:read")
     @ApiOperation("查询当前用户数据源")
     @GetMapping("/list")
     public List<DatasourceDTO> getDatasourceList() throws Exception {
@@ -63,7 +62,6 @@ public class DatasourceController {
         return datasourceService.getDatasourceList(request);
     }
 
-    @RequiresPermissions("datasource:read")
     @ApiOperation("查询当前用户数据源")
     @GetMapping("/list/{type}")
     public List<DatasourceDTO> getDatasourceListByType(@PathVariable String type) throws Exception {
@@ -74,8 +72,8 @@ public class DatasourceController {
     @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_MANAGE)
     @ApiOperation("删除数据源")
     @PostMapping("/delete/{datasourceID}")
-    public void deleteDatasource(@PathVariable(value = "datasourceID") String datasourceID) throws Exception {
-        datasourceService.deleteDatasource(datasourceID);
+    public ResultHolder deleteDatasource(@PathVariable(value = "datasourceID") String datasourceID) throws Exception {
+        return datasourceService.deleteDatasource(datasourceID);
     }
 
     @RequiresPermissions("datasource:read")
