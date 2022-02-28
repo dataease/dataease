@@ -721,6 +721,7 @@ export default {
 
   .chart-class {
     height: 100%;
+    padding: 0px!important;
   }
 
   .table-class {
