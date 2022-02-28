@@ -28,7 +28,7 @@ import java.util.List;
 @RequestMapping("plugin/dataset/rowPermissions")
 public class RowPermissionsController {
 
-    @RequiresPermissions("datasource:read")
+    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("save")
@@ -55,7 +55,7 @@ public class RowPermissionsController {
         rowPermissionService.save(datasetRowPermissions);
     }
 
-    @RequiresPermissions("datasource:read")
+    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("查询")
     @PostMapping("/list")
@@ -65,7 +65,7 @@ public class RowPermissionsController {
     }
 
     //TODO
-    @RequiresPermissions("datasource:read")
+    @RequiresPermissions("data:read")
     @ApiOperation("删除")
     @PostMapping("/delete/{id}")
     public void dataSetRowPermissionInfo(@PathVariable String id) {
@@ -73,7 +73,7 @@ public class RowPermissionsController {
         rowPermissionService.delete(id);
     }
 
-    @RequiresPermissions("datasource:read")
+    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("分页查询")
     @PostMapping("/pageList/{datasetId}/{goPage}/{pageSize}")
@@ -90,7 +90,7 @@ public class RowPermissionsController {
         return PageUtils.setPageInfo(page, rowPermissionService.queryRowPermissions(request));
     }
 
-    @RequiresPermissions("datasource:read")
+    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("有权限的对象")
     @PostMapping("/authObjs")
@@ -99,7 +99,7 @@ public class RowPermissionsController {
         return (List<Object>) rowPermissionService.authObjs(request);
     }
 
-    @RequiresPermissions("datasource:read")
+    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("详情")
     @PostMapping("/dataSetRowPermissionInfo")
