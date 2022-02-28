@@ -86,7 +86,6 @@ public class DatasourceController {
         datasourceService.updateDatasource(Datasource);
     }
 
-    @RequiresPermissions("datasource:read")
     @DePermission(type = DePermissionType.DATASOURCE, value = "id")
     @ApiOperation("查询数据源下属所有表")
     @PostMapping("/getTables")
