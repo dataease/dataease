@@ -12,8 +12,8 @@
         <result column="is_default" property="isDefault"/>
     </resultMap>
 
-    <select id="panelGroup" resultMap="BaseResultMapDTO">
-        select panel_group.*,panel_group.name as label from panel_group where id =#{id}
+    <select id="findOneWithPrivileges" resultMap="BaseResultMapDTO">
+        select panel_group.*,panel_group.name as label , get_auths(panel_group.id,'panel',#{userId}) as `privileges` from panel_group where id =#{panelId}
     </select>
 
     <select id="panelGroupInit" resultMap="BaseResultMapDTO">
