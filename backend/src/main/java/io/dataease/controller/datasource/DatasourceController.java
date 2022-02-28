@@ -54,7 +54,6 @@ public class DatasourceController {
         return datasourceService.validate(datasourceId);
     }
 
-    @RequiresPermissions("datasource:read")
     @ApiOperation("查询当前用户数据源")
     @GetMapping("/list")
     public List<DatasourceDTO> getDatasourceList() throws Exception {
@@ -63,7 +62,6 @@ public class DatasourceController {
         return datasourceService.getDatasourceList(request);
     }
 
-    @RequiresPermissions("datasource:read")
     @ApiOperation("查询当前用户数据源")
     @GetMapping("/list/{type}")
     public List<DatasourceDTO> getDatasourceListByType(@PathVariable String type) throws Exception {
