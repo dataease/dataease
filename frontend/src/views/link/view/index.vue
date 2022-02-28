@@ -39,7 +39,8 @@ export default {
       loadResource(this.resourceId).then(res => {
         this.$store.dispatch('panel/setPanelInfo', {
           id: res.data.id,
-          name: res.data.name
+          name: res.data.name,
+          privileges: res.data.privileges
         })
 
         panelInit(JSON.parse(res.data.panelData), JSON.parse(res.data.panelStyle))

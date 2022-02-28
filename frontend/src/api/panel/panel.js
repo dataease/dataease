@@ -141,7 +141,8 @@ export function initPanelData(panelId, callback) {
     // 设置当前仪表板全局信息
     store.dispatch('panel/setPanelInfo', {
       id: response.data.id,
-      name: response.data.name
+      name: response.data.name,
+      privileges: response.data.privileges
     })
     // 刷新联动信息
     getPanelAllLinkageInfo(panelId).then(rsp => {
