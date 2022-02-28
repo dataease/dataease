@@ -44,9 +44,9 @@ public class ChartGroupController {
 
     @ApiIgnore
     @ApiOperation("删除")
-    @PostMapping("/delete/{id}")
+    @PostMapping("/deleteCircle/{id}")
     public void tree(@PathVariable String id) {
-        chartGroupService.delete(id);
+        chartGroupService.deleteCircle(id);
     }
 
     @ApiIgnore
