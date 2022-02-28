@@ -255,7 +255,9 @@ const data = {
       for (let index = 0; index < state.componentData.length; index++) {
         const element = state.componentData[index]
         if (!element.type || element.type !== 'view') continue
-        const currentFilters = element.linkageFilters || [] // 当前联动filter
+        // const currentFilters = element.linkageFilters || [] // 当前联动filter
+        // 联动的视图情况历史条件
+        const currentFilters = []
 
         data.dimensionList.forEach(dimension => {
           const sourceInfo = viewId + '#' + dimension.id
