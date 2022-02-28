@@ -36,7 +36,7 @@
             panel_link_jump_info.jump_type,
             panel_link_jump_info.target_panel_id,
             panel_link_jump_info.content,
-            panel_link_mapping.id as publicJumpId,
+            ifnull( panel_link_mapping.uuid, panel_link_mapping.id ) AS publicJumpId,
             ifnull( panel_link_jump_info.checked, 0 ) AS checked,
             panel_link_jump_target_view_info.target_view_id,
             panel_link_jump_target_view_info.target_field_id
