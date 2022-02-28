@@ -101,14 +101,6 @@ public class ChartViewController {
         return chartViewService.searchAdviceSceneId(panelId);
     }
 
-    @ApiOperation("根据权限查详情")
-    @PostMapping("/getOneWithPermission/{id}")
-    public ChartViewDTO getOneWithPermission(@PathVariable String id, @RequestBody ChartExtRequest requestList) throws Exception {
-        //如果能获取用户 则添加对应的权限
-        ChartViewDTO dto = chartViewService.getData(id, requestList);
-        return dto;
-    }
-
     @ApiOperation("搜索")
     @PostMapping("search")
     public List<ChartViewDTO> search(@RequestBody ChartViewRequest chartViewRequest) {

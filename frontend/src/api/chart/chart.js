@@ -9,16 +9,6 @@ export function post(url, data) {
   })
 }
 
-export function ajaxGetData(id, data) {
-  return request({
-    url: '/chart/view/getOneWithPermission/' + id,
-    method: 'post',
-    loading: true,
-    hideMsg: true,
-    data
-  })
-}
-
 export function getChartTree(data) {
   return request({
     url: 'api',
