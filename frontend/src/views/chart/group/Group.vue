@@ -423,6 +423,9 @@ export default {
   computed: {
     chartType() {
       return this.view.type
+    },
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
     }
   },
   watch: {
@@ -545,7 +548,7 @@ export default {
         if (valid) {
           view.title = view.name
           view.sceneId = view.pid
-          post('/chart/view/save', view).then(response => {
+          post('/chart/view/save/' + this.panelInfo.id, view).then(response => {
             this.closeTable()
             this.$message({
               message: this.$t('dataset.save_success'),
@@ -772,7 +775,7 @@ export default {
       view.extBubble = JSON.stringify([])
       this.setChartDefaultOptions(view)
       const _this = this
-      post('/chart/view/save', view).then(response => {
+      post('/chart/view/save/' + this.panelInfo.id, view).then(response => {
         this.closeCreateChart()
         this.$store.dispatch('chart/setTableId', null)
         this.$store.dispatch('chart/setTableId', this.table.id)
@@ -905,7 +908,7 @@ export default {
     saveMoveDs() {
       const newSceneId = this.tDs.id
       this.dsForm.sceneId = newSceneId
-      post('/chart/view/save', this.dsForm).then(res => {
+      post('/chart/view/save/' + this.panelInfo.id, this.dsForm).then(res => {
         this.closeMoveDs()
         this.expandedArray.push(newSceneId)
         this.treeNode()

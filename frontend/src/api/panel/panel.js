@@ -56,9 +56,9 @@ export function groupTree(data, loading = true, timeout = 60000) {
   })
 }
 
-export function viewData(id, data) {
+export function viewData(id, panelId, data) {
   return request({
-    url: '/chart/view/getData/' + id,
+    url: '/chart/view/getData/' + id + '/' + panelId,
     method: 'post',
     hideMsg: true,
     data
