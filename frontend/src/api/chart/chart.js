@@ -66,3 +66,12 @@ export function pluginTypes() {
     method: 'post'
   })
 }
+
+export function deleteCircle(id) {
+  return request({
+    url: '/chart/group/deleteCircle/' + id,
+    method: 'post',
+    loading: true
+  })
+}
+
