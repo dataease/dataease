@@ -34,7 +34,6 @@ public class ChartViewController {
     @Resource
     private ChartViewService chartViewService;
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("/save/{panelId}")
@@ -56,7 +55,6 @@ public class ChartViewController {
         return chartViewService.listAndGroup(chartViewRequest);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW, paramIndex = 1)
     @ApiOperation("详细信息")
     @PostMapping("/get/{id}/{panelId}")
@@ -71,7 +69,6 @@ public class ChartViewController {
         chartViewService.delete(id);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW, paramIndex = 1)
     @ApiOperation("数据")
     @PostMapping("/getData/{id}/{panelId}")
@@ -79,7 +76,6 @@ public class ChartViewController {
         return chartViewService.getData(id, requestList);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW, paramIndex = 1)
     @ApiOperation("视图详情")
     @PostMapping("chartDetail/{id}/{panelId}")
@@ -87,7 +83,6 @@ public class ChartViewController {
         return chartViewService.getChartDetail(id);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE, paramIndex = 1)
     @ApiOperation("复制")
     @PostMapping("chartCopy/{id}/{panelId}")
@@ -101,13 +96,13 @@ public class ChartViewController {
         return chartViewService.searchAdviceSceneId(panelId);
     }
 
+    @ApiIgnore
     @ApiOperation("搜索")
     @PostMapping("search")
     public List<ChartViewDTO> search(@RequestBody ChartViewRequest chartViewRequest) {
         return chartViewService.search(chartViewRequest);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW)
     @ApiOperation("计算结果")
     @PostMapping("/calcData/{panelId}")
