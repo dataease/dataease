@@ -5,16 +5,14 @@ import com.google.gson.Gson;
 import io.dataease.commons.utils.HttpClientConfig;
 import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.controller.request.datasource.es.EsReponse;
-import io.dataease.controller.request.datasource.es.Requst;
-import io.dataease.controller.request.datasource.es.RequstWithCursor;
+import io.dataease.controller.request.datasource.es.Request;
+import io.dataease.controller.request.datasource.es.RequestWithCursor;
 import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.dto.datasource.EsConfiguration;
 import io.dataease.dto.datasource.TableDesc;
 import io.dataease.dto.datasource.TableField;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
-import io.dataease.provider.ProviderFactory;
-import io.dataease.provider.query.QueryProvider;
 import io.dataease.provider.query.es.EsQueryProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -55,11 +53,11 @@ public class EsProvider extends DatasourceProvider {
                 byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
                 httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
             }
-            Requst requst = new Requst();
-            requst.setQuery(dsr.getQuery());
-            requst.setFetch_size(dsr.getFetchSize());
+            Request request = new Request();
+            request.setQuery(dsr.getQuery());
+            request.setFetch_size(dsr.getFetchSize());
             String url = esConfiguration.getUrl().endsWith("/") ? esConfiguration.getUrl() + esConfiguration.getUri() + "?format=json" : esConfiguration.getUrl() + "/" + esConfiguration.getUri() + "?format=json";
-            String response = HttpClientUtil.post(url, new Gson().toJson(requst), httpClientConfig);
+            String response = HttpClientUtil.post(url, new Gson().toJson(request), httpClientConfig);
             EsReponse esReponse = new Gson().fromJson(response, EsReponse.class);
 
             list.addAll(fetchResult(esReponse));
@@ -69,7 +67,7 @@ public class EsProvider extends DatasourceProvider {
             }
             if (!dsr.isPreviewData()) {
                 while (StringUtils.isNotEmpty(esReponse.getCursor())) {
-                    RequstWithCursor requstWithCursor = new RequstWithCursor();
+                    RequestWithCursor requstWithCursor = new RequestWithCursor();
                     requstWithCursor.setQuery(dsr.getQuery());
                     requstWithCursor.setFetch_size(dsr.getFetchSize());
                     requstWithCursor.setCursor(esReponse.getCursor());
@@ -286,11 +284,11 @@ public class EsProvider extends DatasourceProvider {
             httpClientConfig.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth));
         }
 
-        Requst requst = new Requst();
-        requst.setQuery(sql);
-        requst.setFetch_size(datasourceRequest.getFetchSize());
+        Request request = new Request();
+        request.setQuery(sql);
+        request.setFetch_size(datasourceRequest.getFetchSize());
         String url = esConfiguration.getUrl().endsWith("/") ? esConfiguration.getUrl() + uri : esConfiguration.getUrl() + "/" + uri;
-        String response = HttpClientUtil.post(url, new Gson().toJson(requst), httpClientConfig);
+        String response = HttpClientUtil.post(url, new Gson().toJson(request), httpClientConfig);
         return response;
     }
 
