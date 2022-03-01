@@ -588,6 +588,9 @@ export default {
             this.$message.error(i18n.t('datasource.api_table_not_empty'))
             return
           }
+          form.apiConfiguration.forEach(item =>{
+            delete item.status
+          })
           form.configuration = JSON.stringify(form.apiConfiguration)
         }else {
           form.configuration = JSON.stringify(form.configuration)

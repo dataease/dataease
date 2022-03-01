@@ -405,8 +405,7 @@ public class DataSetTableService {
 
     public DataSetTableDTO getWithPermission(String id, Long user) {
         CurrentUserDto currentUserDto = AuthUtils.getUser();
-        Long userId = currentUserDto != null ? currentUserDto.getUserId() : user;
-
+        Long userId = user != null ? user : currentUserDto.getUserId();
         DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
         dataSetTableRequest.setId(id);
         dataSetTableRequest.setUserId(String.valueOf(userId));
