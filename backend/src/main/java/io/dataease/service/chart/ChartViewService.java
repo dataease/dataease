@@ -264,7 +264,7 @@ public class ChartViewService {
 
 
         //行权限
-        List<ChartFieldCustomFilterDTO> rowPermissionFields = permissionService.getCustomFilters(columnPermissionFields, table, requestList.getUser());
+        List<ChartFieldCustomFilterDTO> rowPermissionFields = permissionService.getCustomFilters(fields, table, requestList.getUser());
         fieldCustomFilter.addAll(rowPermissionFields);
 
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
