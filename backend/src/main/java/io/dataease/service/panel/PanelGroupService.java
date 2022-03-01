@@ -130,12 +130,7 @@ public class PanelGroupService {
             checkPanelName(newDefaultPanel.getName(), newDefaultPanel.getPid(), PanelConstants.OPT_TYPE_INSERT, newDefaultPanel.getId(), newDefaultPanel.getNodeType());
             panelGroupMapper.insertSelective(newDefaultPanel);
         } else if ("copy".equals(request.getOptType())) {
-            try {
-                panelId =  this.panelGroupCopy(request, null, true);
-            } catch (Exception e) {
-                e.printStackTrace();
-                LOGGER.error("更新panelView出错panelId：{}", request.getId());
-            }
+            panelId = this.panelGroupCopy(request, null, true);
         } else if ("move".equals(request.getOptType())) {
             PanelGroupWithBLOBs panelInfo = panelGroupMapper.selectByPrimaryKey(request.getId());
             if (panelInfo.getPid().equalsIgnoreCase(request.getPid())) {
@@ -206,9 +201,9 @@ public class PanelGroupService {
 
 
     public PanelGroupWithBLOBs findOne(String panelId) {
-        PanelGroupWithBLOBs panelGroupWithBLOBs = extPanelGroupMapper.findOneWithPrivileges(panelId,String.valueOf(AuthUtils.getUser().getUserId()));
+        PanelGroupWithBLOBs panelGroupWithBLOBs = extPanelGroupMapper.findOneWithPrivileges(panelId, String.valueOf(AuthUtils.getUser().getUserId()));
         if (panelGroupWithBLOBs != null && StringUtils.isNotEmpty(panelGroupWithBLOBs.getSource())) {
-            return extPanelGroupMapper.findOneWithPrivileges(panelGroupWithBLOBs.getSource(),String.valueOf(AuthUtils.getUser().getUserId()));
+            return extPanelGroupMapper.findOneWithPrivileges(panelGroupWithBLOBs.getSource(), String.valueOf(AuthUtils.getUser().getUserId()));
         }
         return panelGroupWithBLOBs;
     }
@@ -247,7 +242,7 @@ public class PanelGroupService {
             if (AuthUtils.getUser().getIsAdmin()) {
                 // 原有视图的目录结构
                 List<VAuthModelDTO> viewOriginal = extVAuthModelMapper.queryAuthViewsOriginal(viewRequest);
-                if (CollectionUtils.isNotEmpty(viewOriginal) && viewOriginal.size() > 1 ) {
+                if (CollectionUtils.isNotEmpty(viewOriginal) && viewOriginal.size() > 1) {
                     result.addAll(TreeUtils.mergeTree(viewOriginal, "public_chart"));
                 }
             }
@@ -328,9 +323,9 @@ public class PanelGroupService {
                     //TODO 复制联动信息 copy panel_view_linkage_field panel_view_linkage
                     extPanelViewLinkageMapper.copyViewLinkage(copyId);
                     extPanelViewLinkageMapper.copyViewLinkageField(copyId);
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println("错误===》panel:"+panelGroupDTO.getId()+";panelView:"+ JSON.toJSONString(panelViewtemp));
+                    System.out.println("错误===》panel:" + panelGroupDTO.getId() + ";panelView:" + JSON.toJSONString(panelViewtemp));
                 }
             }
         }

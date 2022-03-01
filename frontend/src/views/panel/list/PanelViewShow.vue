@@ -169,8 +169,8 @@ export default {
     imageWrapperStyle() {
       if (this.exporting) {
         return {
-          width: '4096px',
-          height: '2160px'
+          width: '2560px',
+          height: '1440px'
         }
       } else {
         return {
