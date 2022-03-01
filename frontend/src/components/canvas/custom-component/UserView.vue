@@ -433,6 +433,10 @@ export default {
           ...this.filter,
           cache: cache
         }
+        if (this.panelInfo.proxy) {
+          // method = viewInfo
+          requestInfo.proxy = { userId: this.panelInfo.proxy }
+        }
         method(id, this.panelInfo.id, requestInfo).then(response => {
           // 将视图传入echart组件
           if (response.success) {

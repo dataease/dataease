@@ -208,9 +208,7 @@ export default {
     },
 
     queryShareNodeIds(callBack) {
-      const conditionResourceId = { field: 'panel_group_id', operator: 'eq', value: this.resourceId }
-      const conditionType = { field: 'type', operator: 'eq', value: this.type }
-      const param = { conditions: [conditionResourceId, conditionType] }
+      const param = { resourceId: this.resourceId, type: this.type }
       loadShares(param).then(res => {
         const shares = res.data
         const nodeIds = shares.map(share => share.targetId)
