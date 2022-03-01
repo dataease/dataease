@@ -5,7 +5,6 @@ import io.dataease.auth.annotation.DePermission;
 import io.dataease.base.domain.ChartViewWithBLOBs;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
-import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.request.chart.ChartCalRequest;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
@@ -14,12 +13,10 @@ import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.service.chart.ChartViewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
-import javax.ws.rs.Path;
 import java.util.List;
 
 /**

@@ -14,7 +14,6 @@ import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import io.dataease.service.dataset.DataSetTableTaskLogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -39,7 +38,6 @@ public class DataSetTableTaskLogController {
         return dataSetTableTaskLogService.save(datasetTableTaskLog);
     }
 
-    @RequiresPermissions("task:read")
     @ApiOperation("分页查询")
     @PostMapping("list/{type}/{goPage}/{pageSize}")
     public Pager<List<DataSetTaskLogDTO>> list(@RequestBody BaseGridRequest request, @PathVariable String type, @PathVariable int goPage, @PathVariable int pageSize) {
@@ -47,7 +45,6 @@ public class DataSetTableTaskLogController {
         return PageUtils.setPageInfo(page, dataSetTableTaskLogService.listTaskLog(request, type));
     }
 
-    @RequiresPermissions("data:read")
     @ApiOperation("分页查询")
     @PostMapping("listForDataset/{type}/{goPage}/{pageSize}")
     public Pager<List<DataSetTaskLogDTO>> listForDataset(@RequestBody BaseGridRequest request, @PathVariable String type, @PathVariable int goPage, @PathVariable int pageSize) {

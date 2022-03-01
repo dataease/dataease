@@ -16,7 +16,6 @@ import io.dataease.dto.datasource.TableField;
 import io.dataease.service.dataset.DataSetTableService;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

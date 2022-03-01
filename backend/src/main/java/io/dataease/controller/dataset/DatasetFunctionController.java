@@ -8,7 +8,6 @@ import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.service.dataset.DatasetFunctionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
