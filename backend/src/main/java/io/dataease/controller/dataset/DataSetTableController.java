@@ -36,7 +36,6 @@ public class DataSetTableController {
     @Resource
     private DataSetTableService dataSetTableService;
 
-    @RequiresPermissions("data:read")
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id"),
             @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
@@ -48,7 +47,6 @@ public class DataSetTableController {
         dataSetTableService.batchInsert(datasetTable);
     }
 
-    @RequiresPermissions("data:read")
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
             @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
@@ -64,7 +62,6 @@ public class DataSetTableController {
         }
     }
 
-    @RequiresPermissions("data:read")
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
             @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
@@ -76,7 +73,6 @@ public class DataSetTableController {
         dataSetTableService.alter(request);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("删除")
     @PostMapping("delete/{id}")
@@ -147,7 +143,6 @@ public class DataSetTableController {
         return dataSetTableService.getCustomPreview(dataSetTableRequest);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "tableId")
     @ApiOperation("查询增量配置")
     @PostMapping("incrementalConfig")
@@ -155,7 +150,6 @@ public class DataSetTableController {
         return dataSetTableService.incrementalConfig(datasetTableIncrementalConfig);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE, value = "tableId")
     @ApiOperation("保存增量配置")
     @PostMapping("save/incrementalConfig")
@@ -181,7 +175,6 @@ public class DataSetTableController {
         return dataSetTableService.excelSaveAndParse(file, tableId, editType);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("检测doris")
     @PostMapping("checkDorisTableIsExists/{id}")
@@ -189,7 +182,6 @@ public class DataSetTableController {
         return dataSetTableService.checkDorisTableIsExists(id);
     }
 
-    @RequiresPermissions("data:read")
     @ApiOperation("搜索")
     @PostMapping("search")
     public List<DataSetTableDTO> search(@RequestBody DataSetTableRequest dataSetTableRequest) {
@@ -203,7 +195,6 @@ public class DataSetTableController {
         return dataSetTableService.syncDatasetTableField(id);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, value = "id")
     @ApiOperation("关联数据集预览数据")
     @PostMapping("unionPreview")

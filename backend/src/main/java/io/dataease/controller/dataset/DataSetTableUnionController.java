@@ -27,14 +27,12 @@ public class DataSetTableUnionController {
     @Resource
     private DataSetTableUnionService dataSetTableUnionService;
 
-    @RequiresPermissions("data:read")
     @ApiOperation("保存")
     @PostMapping("save")
     public DatasetTableUnion save(@RequestBody DatasetTableUnion datasetTableUnion) {
         return dataSetTableUnionService.save(datasetTableUnion);
     }
 
-    @RequiresPermissions("datasource:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("删除")
     @PostMapping("delete/{id}")
@@ -42,7 +40,6 @@ public class DataSetTableUnionController {
         dataSetTableUnionService.delete(id);
     }
 
-    @RequiresPermissions("datasource:read")
     @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("查询")
     @PostMapping("listByTableId/{tableId}")
