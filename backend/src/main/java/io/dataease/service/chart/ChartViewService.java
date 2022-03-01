@@ -1705,7 +1705,7 @@ public class ChartViewService {
             throw new RuntimeException(Translator.get("i18n_dataset_delete"));
         }
         SysUserEntity user = AuthUtils.getUser();
-        user = user != null ? user : authUserService.getUserById(userId);
+        user = userId != null ? authUserService.getUserById(userId) : user;
         if (!user.getIsAdmin()) {
             if (ObjectUtils.isEmpty(table.getPrivileges()) || !table.getPrivileges().contains(needPermission)) {
                 throw new RuntimeException(Translator.get("i18n_dataset_no_permission"));
