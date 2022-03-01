@@ -621,7 +621,6 @@ export default {
         this.currentFilterCom.mobileStyle = BASE_MOBILE_STYLE
         this.currentFilterCom.commonBackground || deepCopy(COMMON_BACKGROUND)
 
-
         if (this.currentWidget.filterDialog) {
           this.show = false
           this.openFilterDialog(true)
@@ -870,13 +869,14 @@ export default {
 
     // 如果内部样式有变化 1秒钟后保存一个镜像
     recordStyleChange(index) {
-      this.timeMachine = setTimeout(() => {
-        if (index === this.$store.state.styleChangeTimes) {
-          this.$store.commit('recordSnapshot', 'recordStyleChange')
+      if (index === this.$store.state.styleChangeTimes) {
+        this.timeMachine = setTimeout(() => {
+          // console.log('recordSnapshot')
+          this.$store.commit('recordSnapshot')
           this.$store.state.styleChangeTimes = 0
-        }
-        this.destroyTimeMachine()
-      }, 1000)
+          this.destroyTimeMachine()
+        }, 1000)
+      }
     },
     handleDragOver(e) {
       e.preventDefault()
