@@ -1,8 +1,8 @@
 package io.dataease.base.mapper.ext;
 
 import io.dataease.base.domain.PanelShare;
-import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.controller.request.panel.PanelShareRemoveRequest;
+import io.dataease.controller.request.panel.PanelShareSearchRequest;
 import io.dataease.dto.panel.PanelShareOutDTO;
 import io.dataease.dto.panel.PanelSharePo;
 import org.apache.ibatis.annotations.Param;
@@ -20,9 +20,9 @@ public interface ExtPanelShareMapper {
 
     List<PanelSharePo> queryOut(String userName);
 
-    List<PanelShare> queryWithResource(GridExample example);
+    List<PanelShare> queryWithResource(PanelShareSearchRequest request);
 
-    List<PanelShareOutDTO> queryTargets(String panelId);
+    List<PanelShareOutDTO> queryTargets(@Param("panelId") String panelId, @Param("userName") String userName);
 
     void removeShares(@Param("request") PanelShareRemoveRequest request);
 
