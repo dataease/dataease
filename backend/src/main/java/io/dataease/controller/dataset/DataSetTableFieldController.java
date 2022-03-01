@@ -1,5 +1,6 @@
 package io.dataease.controller.dataset;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
@@ -22,15 +23,11 @@ import io.dataease.service.dataset.PermissionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import cn.hutool.core.collection.CollectionUtil;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
