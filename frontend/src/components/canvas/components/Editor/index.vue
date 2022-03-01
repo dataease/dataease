@@ -160,7 +160,7 @@
 
     <el-dialog
       :visible.sync="linkJumpSetVisible"
-      width="60%"
+      width="900px"
       class="dialog-css"
       :show-close="true"
       :destroy-on-close="true"
