@@ -99,10 +99,17 @@ public class EsProvider extends DatasourceProvider {
 
     @Override
     public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
-        QueryProvider qp = ProviderFactory.getQueryProvider(datasourceRequest.getDatasource().getType());
-        datasourceRequest.setQuery(qp.convertTableToSql(datasourceRequest.getTable(), datasourceRequest.getDatasource()));
-        return fetchResultField(datasourceRequest);
+        datasourceRequest.setQuery("desc " + datasourceRequest.getTable());
+        List<TableField> tableFields = new ArrayList<>();
+        try {
+            String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "?format=json");
+            tableFields = fetchResultField4Table(response);
+        } catch (Exception e) {
+            DataEaseException.throwException(e);
+        }
+        return tableFields;
     }
+
 
     private List<String[]> fetchResult(String response) throws Exception {
         EsReponse esReponse = new Gson().fromJson(response, EsReponse.class);
@@ -162,6 +169,26 @@ public class EsProvider extends DatasourceProvider {
             field.setFieldType(column.getType());
             field.setFieldSize(EsQueryProvider.transFieldTypeSize(column.getType()));
             fieldList.add(field);
+        }
+        return fieldList;
+    }
+
+    private List<TableField> fetchResultField4Table(String response) throws Exception {
+        List<TableField> fieldList = new ArrayList<>();
+        EsReponse esReponse = new Gson().fromJson(response, EsReponse.class);
+        if (esReponse.getError() != null) {
+            throw new Exception(esReponse.getError().getReason());
+        }
+
+        for (String[] row : esReponse.getRows()) {
+            if(!row[1].equalsIgnoreCase("STRUCT")){
+                TableField field = new TableField();
+                field.setFieldName(row[0]);
+                field.setRemarks(row[0]);
+                field.setFieldType(row[2]);
+                field.setFieldSize(EsQueryProvider.transFieldTypeSize(row[2]));
+                fieldList.add(field);
+            }
         }
         return fieldList;
     }

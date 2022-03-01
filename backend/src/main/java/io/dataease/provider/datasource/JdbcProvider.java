@@ -403,6 +403,9 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     private Connection getConnectionFromPool(DatasourceRequest datasourceRequest) throws Exception {
+        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mongo.name())){
+            return getConnection(datasourceRequest);
+        }
         DruidDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
         if (dataSource == null) {
             handleDatasource(datasourceRequest, "add");
@@ -464,7 +467,7 @@ public class JdbcProvider extends DatasourceProvider {
                 username = mongodbConfiguration.getUsername();
                 password = mongodbConfiguration.getPassword();
                 driver = mongodbConfiguration.getDriver();
-                jdbcurl = mongodbConfiguration.getJdbc();
+                jdbcurl = mongodbConfiguration.getJdbc(datasourceRequest.getDatasource().getId());
                 break;
             case redshift:
                 RedshiftConfigration redshiftConfigration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfigration.class);
@@ -563,7 +566,7 @@ public class JdbcProvider extends DatasourceProvider {
             case mongo:
                 MongodbConfiguration mongodbConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MongodbConfiguration.class);
                 dataSource.setDriverClassName(mongodbConfiguration.getDriver());
-                dataSource.setUrl(mongodbConfiguration.getJdbc());
+                dataSource.setUrl(mongodbConfiguration.getJdbc(datasourceRequest.getDatasource().getId()));
                 jdbcConfiguration = mongodbConfiguration;
                 break;
             case redshift:
