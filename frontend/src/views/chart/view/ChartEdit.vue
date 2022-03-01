@@ -1952,13 +1952,17 @@ export default {
         }
       }
     },
-    dragMoveDuplicate(list, e) {
-      const that = this
-      const dup = list.filter(function(m) {
-        return m.id === that.moveId
-      })
-      if (dup && dup.length > 1) {
+    dragMoveDuplicate(list, e, mode) {
+      if (mode === 'ds') {
         list.splice(e.newDraggableIndex, 1)
+      } else {
+        const that = this
+        const dup = list.filter(function(m) {
+          return m.id === that.moveId
+        })
+        if (dup && dup.length > 1) {
+          list.splice(e.newDraggableIndex, 1)
+        }
       }
     },
     addXaxis(e) {
@@ -1998,13 +2002,11 @@ export default {
       this.calcData(true)
     },
     moveToDimension(e) {
-      this.dragCheckType(this.dimensionData, 'd')
-      this.dragMoveDuplicate(this.dimensionData, e)
+      this.dragMoveDuplicate(this.dimensionData, e, 'ds')
       this.calcData(true)
     },
     moveToQuota(e) {
-      this.dragCheckType(this.quotaData, 'q')
-      this.dragMoveDuplicate(this.quotaData, e)
+      this.dragMoveDuplicate(this.quotaData, e, 'ds')
       this.calcData(true)
     },
     addCustomFilter(e) {
