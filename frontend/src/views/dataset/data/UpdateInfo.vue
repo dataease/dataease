@@ -334,7 +334,7 @@ import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
 // vue-cron
 import cron from '@/components/cron/cron'
-
+import {hasDataPermission} from '@/utils/permission'
 export default {
   name: 'UpdateInfo',
   components: { codemirror, cron },
@@ -422,7 +422,10 @@ export default {
   watch: {
     table: {
       handler() {
-        this.listTask()
+        if(hasDataPermission('manage',this.param.privileges)){
+          this.listTask()
+        }
+
         this.listTaskLog()
       },
       immediate: true
@@ -447,7 +450,9 @@ export default {
       } else {
         this.taskLastRequestComplete = false
       }
-      this.listTask(false)
+      if(hasDataPermission('manage',this.param.privileges)){
+        this.listTask(false)
+      }
     }, 10000)
   },
   beforeDestroy() {
