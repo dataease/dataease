@@ -31,7 +31,6 @@ import java.util.List;
 @RequestMapping("plugin/dataset/columnPermissions")
 public class ColumnPermissionsController {
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("save")
@@ -57,7 +56,6 @@ public class ColumnPermissionsController {
         return columnPermissionService.save(datasetColumnPermissions);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("查询")
     @PostMapping("/list")
@@ -66,8 +64,7 @@ public class ColumnPermissionsController {
        return columnPermissionService.searchPermissions(request);
     }
 
-    //TODO
-    @RequiresPermissions("data:read")
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("删除")
     @PostMapping("/delete/{id}")
     public void delete(@PathVariable String id) {
@@ -75,7 +72,6 @@ public class ColumnPermissionsController {
         columnPermissionService.delete(id);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("分页查询")
     @PostMapping("/pageList/{datasetId}/{goPage}/{pageSize}")
@@ -92,7 +88,6 @@ public class ColumnPermissionsController {
         return PageUtils.setPageInfo(page, columnPermissionService.queryPermissions(request));
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("有权限的对象")
     @PostMapping("/authObjs")
@@ -101,7 +96,6 @@ public class ColumnPermissionsController {
         return (List<Object>) columnPermissionService.authObjs(request);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("详情")
     @PostMapping("/permissionInfo")
