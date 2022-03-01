@@ -102,7 +102,7 @@ export default {
     }
   },
   mounted() {
-    if (this.curComponent.commonBackground.outerImage && typeof (this.curComponent.commonBackground.outerImage) === 'string') {
+    if (this.curComponent.commonBackground && this.curComponent.commonBackground.outerImage && typeof (this.curComponent.commonBackground.outerImage) === 'string') {
       this.fileList.push({ url: this.curComponent.commonBackground.outerImage })
     }
     this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
