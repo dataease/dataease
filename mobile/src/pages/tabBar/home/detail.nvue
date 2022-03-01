@@ -1,7 +1,7 @@
 <template>
-	<view class="page dataease-main">
+	<view>
        
-		<uni-nav-bar :fixed="false" left-icon="arrowleft"  @clickLeft="back" :title="banner.title" >
+		<uni-nav-bar :fixed="true" left-icon="arrowleft"  @clickLeft="back" :title="banner.title" >
 			<block slot="right">
 				<uni-row class="demo-uni-row" >
 					<uni-col :span="12">
@@ -21,15 +21,13 @@
 			</block>
 			
 		</uni-nav-bar>
-		<view class="article-content" style="height: 100% !important;">
-            <view v-if="url">
+		 <view v-if="url">
                 <web-view
                 :webview-styles="webViewStyles"
                 style="height: 100vh;"
                 >
                 </web-view>
             </view>
-		</view>
 		
 
        
@@ -253,81 +251,6 @@
 </script>
 
 <style>
-.dataease-main {
-    
-    position: fixed;
-    left: var(--window-left);
-    right: var(--window-right);
-    padding: 5px;
-    height: calc(100vh - 10px);
-    
-}
-
-.person-title {
-    font-weight: 700;
-    font-size: 15px;
-    text-align: center;
-    overflow: hidden;
-    white-space: nowrap;
-    
-    text-overflow: ellipsis;
-    
-}
-.article-content {
-    
-    margin: 5px 0;
-    background: #ffffff;
-}
-.card-actions {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    height: 45px;
-    border-top: 1px #eee solid;
-    background: #ffffff;
-}
-.card-actions-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-.card-actions-item-text {
-    font-size: 12px;
-    color: #666;
-    margin-left: 5px;
-}
-
-.input-view {
-		/* #ifndef APP-PLUS-NVUE */
-		display: flex;
-		/* #endif */
-		flex-direction: row;
-		// width: 500rpx;
-		flex: 1;
-		background-color: #f8f8f8;
-		height: $nav-height;
-		border-radius: 15px;
-		padding: 0 15px;
-		flex-wrap: nowrap;
-		margin: 7px 0;
-		line-height: $nav-height;
-	}
-
-	.input-uni-icon {
-		line-height: $nav-height;
-	}
-
-	.nav-bar-input {
-		height: $nav-height;
-		line-height: $nav-height;
-		/* #ifdef APP-PLUS-NVUE */
-		width: 370rpx;
-		/* #endif */
-		padding: 0 5px;
-		font-size: 14px;
-		background-color: #f8f8f8;
-	}
 
 
 </style>
