@@ -34,7 +34,6 @@ public class DataSetGroupController {
     @Resource
     private ExtractDataService extractDataService;
 
-    @RequiresPermissions("data:read")
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id"),
             @DePermission(type = DePermissionType.DATASET, value = "pid", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
@@ -57,7 +56,6 @@ public class DataSetGroupController {
         return dataSetGroupService.treeNode(datasetGroup);
     }
 
-    @RequiresPermissions("data:read")
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("删除")
     @PostMapping("/delete/{id}")
