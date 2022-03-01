@@ -10,7 +10,7 @@
       :style="classBackground"
       @click.stop="setBoard"
     />
-      <span class="demonstration">{{ template.name }}</span>
+    <span class="demonstration">{{ template.name }}</span>
   </div>
 </template>
 
@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     itemActive() {
-      return this.curComponent.commonBackground.innerImage === this.template.url
+      return this.curComponent.commonBackground && this.curComponent.commonBackground.innerImage === this.template.url
     },
     classBackground() {
       if (this.template.url) {
