@@ -119,6 +119,14 @@ export default {
       'curCanvasScale'
     ])
   },
+  watch: {
+    formatInfo: {
+      handler(newVal, oldVla) {
+        this.$store.state.styleChangeTimes++
+      },
+      deep: true
+    }
+  },
   created() {
 
   },
