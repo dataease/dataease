@@ -2,6 +2,7 @@ package io.dataease.controller.chart;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
+import io.dataease.auth.annotation.DePermissionProxy;
 import io.dataease.base.domain.ChartViewWithBLOBs;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
@@ -66,10 +67,12 @@ public class ChartViewController {
         chartViewService.delete(id);
     }
 
+    @DePermissionProxy(value = "proxy", paramIndex = 2)
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW, paramIndex = 1)
     @ApiOperation("数据")
     @PostMapping("/getData/{id}/{panelId}")
-    public ChartViewDTO getData(@PathVariable String id, @PathVariable String panelId, @RequestBody ChartExtRequest requestList) throws Exception {
+    public ChartViewDTO getData(@PathVariable String id, @PathVariable String panelId,
+            @RequestBody ChartExtRequest requestList) throws Exception {
         return chartViewService.getData(id, requestList);
     }
 
@@ -110,7 +113,8 @@ public class ChartViewController {
     @ApiIgnore
     @ApiOperation("验证视图是否使用相同数据集")
     @GetMapping("/checkSameDataSet/{viewIdSource}/{viewIdTarget}")
-    public String checkSameDataSet(@PathVariable String viewIdSource, @PathVariable String viewIdTarget) throws Exception {
+    public String checkSameDataSet(@PathVariable String viewIdSource, @PathVariable String viewIdTarget)
+            throws Exception {
         return chartViewService.checkSameDataSet(viewIdSource, viewIdTarget);
     }
 }

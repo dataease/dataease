@@ -1,13 +1,18 @@
 package io.dataease.controller.panel;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+
+import io.dataease.auth.annotation.DePermissionProxy;
 import io.dataease.base.domain.DatasetTableField;
+import io.dataease.dto.PermissionProxy;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseRequest;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseResponse;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpDTO;
 import io.dataease.service.panel.PanelLinkJumpService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import springfox.documentation.annotations.ApiIgnore;
+
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -33,7 +38,6 @@ public class PanelLinkJumpController {
         return panelLinkJumpService.getViewFields(viewId);
     }
 
-
     @ApiOperation("根据仪表板ID和视图ID获取跳转信息")
     @GetMapping("/queryWithViewId/{panelId}/{viewId}")
     public PanelLinkJumpDTO queryWithViewId(@PathVariable String panelId, @PathVariable String viewId) {
@@ -43,6 +47,15 @@ public class PanelLinkJumpController {
     @ApiOperation("根据仪表板ID获取跳转信息")
     @GetMapping("/queryPanelJumpInfo/{panelId}")
     public PanelLinkJumpBaseResponse queryPanelJumpInfo(@PathVariable String panelId) {
+        return panelLinkJumpService.queryPanelJumpInfo(panelId);
+    }
+
+    @ApiIgnore
+    @ApiOperation("根据仪表板ID获取跳转信息(分享人代理)")
+    @DePermissionProxy(paramIndex = 1)
+    @PostMapping("/proxy/queryPanelJumpInfo/{panelId}")
+    public PanelLinkJumpBaseResponse queryPanelJumpInfo(@PathVariable String panelId,
+            @RequestBody PermissionProxy proxy) {
         return panelLinkJumpService.queryPanelJumpInfo(panelId);
     }
 

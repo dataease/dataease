@@ -50,7 +50,8 @@
 <script>
 import { loadTree, loadShareOutTree, removeShares } from '@/api/panel/share'
 import { uuid } from 'vue-uuid'
-import { get, initPanelData } from '@/api/panel/panel'
+import { initPanelData } from '@/api/panel/panel'
+import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import bus from '@/utils/bus'
 export default {
   name: 'ShareTree',
@@ -103,7 +104,11 @@ export default {
       return loadShareOutTree()
     },
     handleNodeClick(data) {
-      initPanelData(data.id, function() {
+      if (!data || !data.userId || !data.id) {
+        return
+      }
+      const param = { userId: data.userId }
+      proxyInitPanelData(data.id, param, function() {
         bus.$emit('set-panel-show-type', 1)
       })
       this.$refs['botTree'].setCurrentKey(null)
