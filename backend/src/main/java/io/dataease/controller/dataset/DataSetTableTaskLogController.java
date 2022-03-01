@@ -39,16 +39,18 @@ public class DataSetTableTaskLogController {
         return dataSetTableTaskLogService.save(datasetTableTaskLog);
     }
 
-//    @ApiOperation("删除")
-//    @PostMapping("delete/{id}")
-//    public void delete(@PathVariable String id) {
-//        dataSetTableTaskLogService.delete(id);
-//    }
-
     @RequiresPermissions("task:read")
     @ApiOperation("分页查询")
     @PostMapping("list/{type}/{goPage}/{pageSize}")
     public Pager<List<DataSetTaskLogDTO>> list(@RequestBody BaseGridRequest request, @PathVariable String type, @PathVariable int goPage, @PathVariable int pageSize) {
+        Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
+        return PageUtils.setPageInfo(page, dataSetTableTaskLogService.listTaskLog(request, type));
+    }
+
+    @RequiresPermissions("data:read")
+    @ApiOperation("分页查询")
+    @PostMapping("listForDataset/{type}/{goPage}/{pageSize}")
+    public Pager<List<DataSetTaskLogDTO>> listForDataset(@RequestBody BaseGridRequest request, @PathVariable String type, @PathVariable int goPage, @PathVariable int pageSize) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, dataSetTableTaskLogService.listTaskLog(request, type));
     }
