@@ -15,6 +15,7 @@ import io.dataease.job.sechedule.strategy.TaskHandler;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
 import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.xpack.email.dto.request.XpackEmailTaskRequest;
 import io.dataease.plugins.xpack.email.dto.request.XpackPixelEntity;
 import io.dataease.plugins.xpack.email.dto.response.XpackEmailTemplateDTO;
 import io.dataease.plugins.xpack.email.service.EmailXpackService;
@@ -127,7 +128,10 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             SysUserEntity user) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         try {
-
+            XpackEmailTaskRequest taskForm = emailXpackService.taskForm(taskInstance.getTaskId());
+            if (ObjectUtils.isEmpty(taskForm) || CronUtils.taskExpire(taskForm.getEndTime())) {
+                return;
+            }
             String panelId = emailTemplateDTO.getPanelId();
             String url = panelUrl(panelId);
             String token = tokenByUser(user);
@@ -148,7 +152,6 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             emailService.sendWithImage(recipients, emailTemplateDTO.getTitle(),
                     contentStr, bytes);
 
-            Thread.sleep(10000);
             success(taskInstance);
         } catch (Exception e) {
             error(taskInstance, e);
