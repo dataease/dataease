@@ -90,7 +90,7 @@ public class DePermissionAnnotationHandler {
 
         } catch (Throwable throwable) {
             LogUtil.error(throwable.getMessage(), throwable);
-            throw new RuntimeException(throwable);
+            throw new RuntimeException(throwable.getMessage());
         }
     }
 
