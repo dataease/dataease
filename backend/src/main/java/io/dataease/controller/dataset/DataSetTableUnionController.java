@@ -9,7 +9,6 @@ import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.service.dataset.DataSetTableUnionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
