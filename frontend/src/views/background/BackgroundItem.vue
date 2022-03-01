@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     itemActive() {
-      return this.curComponent.commonBackground && this.curComponent.commonBackground.innerImage === this.template.url
+      return this.curComponent && this.curComponent.commonBackground && this.curComponent.commonBackground.innerImage === this.template.url
     },
     classBackground() {
       if (this.template.url) {
