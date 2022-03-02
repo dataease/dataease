@@ -26,17 +26,18 @@ public class DataSetTableUnionController {
     @Resource
     private DataSetTableUnionService dataSetTableUnionService;
 
+    @DePermission(type = DePermissionType.DATASET, value = "sourceTableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("save")
     public DatasetTableUnion save(@RequestBody DatasetTableUnion datasetTableUnion) {
         return dataSetTableUnionService.save(datasetTableUnion);
     }
 
-    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    @DePermission(type = DePermissionType.DATASET, value = "sourceTableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("删除")
-    @PostMapping("delete/{id}")
-    public void delete(@PathVariable String id) {
-        dataSetTableUnionService.delete(id);
+    @PostMapping("delete")
+    public void delete(@RequestBody DatasetTableUnion datasetTableUnion) {
+        dataSetTableUnionService.delete(datasetTableUnion.getId());
     }
 
     @DePermission(type = DePermissionType.DATASET)
