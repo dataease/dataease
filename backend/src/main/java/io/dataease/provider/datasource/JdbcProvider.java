@@ -606,7 +606,7 @@ public class JdbcProvider extends DatasourceProvider {
             case mysql:
             case mariadb:
                 JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
-                return String.format("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = '%s' ;", jdbcConfiguration.getDataBase());
+                return String.format("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' ;", jdbcConfiguration.getDataBase());
             case de_doris:
             case ds_doris:
             case hive:
@@ -658,8 +658,6 @@ public class JdbcProvider extends DatasourceProvider {
             case mariadb:
             case de_doris:
             case ds_doris:
-                JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
-                return String.format("SELECT TABLE_NAME,'' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' ;", jdbcConfiguration.getDataBase());
             case ck:
                 return null;
             case sqlServer:
