@@ -1,6 +1,5 @@
 package io.dataease.auth.aop;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -60,7 +59,7 @@ public class DePermissionProxyHandler {
     }
 
     private PermissionProxy getProxy(Object arg, DePermissionProxy annotation, int layer) throws Exception {
-        PermissionProxy result = null;
+        if(null == arg) return null;
         String value = annotation.value();
         Class<?> parameterType = arg.getClass();
         if (arg instanceof PermissionProxy) {
