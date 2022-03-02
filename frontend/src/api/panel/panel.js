@@ -142,7 +142,8 @@ export function initPanelData(panelId, callback) {
     store.dispatch('panel/setPanelInfo', {
       id: response.data.id,
       name: response.data.name,
-      privileges: response.data.privileges
+      privileges: response.data.privileges,
+      sourcePanelName: response.data.sourcePanelName
     })
     // 刷新联动信息
     getPanelAllLinkageInfo(panelId).then(rsp => {

@@ -71,7 +71,17 @@ public class PanelGroupController {
     @ApiOperation("详细信息")
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW)
     @GetMapping("/findOne/{id}")
-    public PanelGroupWithBLOBs findOne(@PathVariable String id) throws Exception {
+    public PanelGroupDTO findOne(@PathVariable String id) throws Exception {
+        return panelGroupService.findOne(id);
+    }
+
+    @ApiIgnore
+    @ApiOperation("详细信息(分享人代理)")
+    @DePermissionProxy(paramIndex = 1)
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW)
+    @PostMapping("/proxy/findOne/{id}")
+    public PanelGroupWithBLOBs proxyFindOne(@PathVariable String id, @RequestBody PermissionProxy proxy)
+            throws Exception {
         return panelGroupService.findOne(id);
     }
 
