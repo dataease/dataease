@@ -60,7 +60,7 @@
 
     <!--选择数据集-->
     <el-dialog v-if="selectDsDialog" v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="400px" class="dialog-css">
-      <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" @getTable="firstDs" />
+      <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" clear-empty-dir="true" @getTable="firstDs" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
         <el-button :disabled="!tempDs.id" type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
@@ -139,7 +139,7 @@ export default {
         allChildCount: 0
       },
       name: '关联数据集',
-      customType: ['db', 'sql', 'excel'],
+      customType: ['db', 'sql', 'excel', 'api'],
       selectDsDialog: false,
       // 弹框临时选中的数据集
       tempDs: {},

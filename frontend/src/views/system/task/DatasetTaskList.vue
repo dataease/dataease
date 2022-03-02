@@ -340,7 +340,7 @@ export default {
           { required: true, message: this.$t('dataset.required'), trigger: 'change' }
         ]
       },
-      customType: ['db', 'sql']
+      customType: ['db', 'sql', 'api']
     }
   },
   computed: {

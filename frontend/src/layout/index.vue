@@ -170,8 +170,8 @@ export default {
   .full-height {
     height: 100vh !important;
     ::-webkit-scrollbar {
-      width: 0px;
-      height: 0px;
+      width: 5px;
+      height: 5px;
     }
 
   }
