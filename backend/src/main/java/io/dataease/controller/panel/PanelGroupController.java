@@ -85,16 +85,6 @@ public class PanelGroupController {
         return panelGroupService.findOne(id);
     }
 
-    @ApiIgnore
-    @ApiOperation("详细信息(分享人代理)")
-    @DePermissionProxy(paramIndex = 1)
-    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW)
-    @PostMapping("/proxy/findOne/{id}")
-    public PanelGroupWithBLOBs proxyFindOne(@PathVariable String id, @RequestBody PermissionProxy proxy)
-            throws Exception {
-        return panelGroupService.findOne(id);
-    }
-
     @ApiOperation("仪表板视图信息")
     @PostMapping("/queryPanelViewTree")
     @I18n
