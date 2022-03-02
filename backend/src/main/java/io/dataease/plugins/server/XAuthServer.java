@@ -1,6 +1,5 @@
 package io.dataease.plugins.server;
 
-
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.utils.AuthUtils;
@@ -20,6 +19,8 @@ import io.dataease.plugins.xpack.auth.service.AuthXpackService;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 @ApiIgnore
 @RequestMapping("/plugin/auth")
 @RestController
@@ -74,11 +75,31 @@ public class XAuthServer {
             }
             String authCacheKey = getAuthCacheKey(request);
             if (StringUtils.isNotBlank(authCacheKey)) {
-                CacheUtils.remove(authCacheKey, request.getAuthTargetType() + request.getAuthTarget());
+                if (StringUtils.equals("dept", request.getAuthTargetType())) {
+                    List<String> authTargets = getAuthModels(request.getAuthTarget(), request.getAuthTargetType(),
+                            user.getUserId(), user.getIsAdmin());
+                    if (CollectionUtils.isNotEmpty(authTargets)) {
+                        authTargets.forEach(deptId -> {
+                            CacheUtils.remove(authCacheKey, request.getAuthTargetType() + deptId);
+                        });
+                    }
+                } else {
+                    CacheUtils.remove(authCacheKey, request.getAuthTargetType() + request.getAuthTarget());
+                }
+
             }
         });
     }
 
+    private List<String> getAuthModels(String id, String type, Long userId, Boolean isAdmin) {
+        AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
+        List<XpackVAuthModelDTO> vAuthModelDTOS = sysAuthService
+                .searchAuthModelTree(new XpackBaseTreeRequest(id, type, "children"), userId, isAdmin);
+        List<String> authSources = Optional.ofNullable(vAuthModelDTOS).orElse(new ArrayList<>()).stream()
+                .map(XpackVAuthModelDTO::getId)
+                .collect(Collectors.toList());
+        return authSources;
+    }
 
     private String getAuthCacheKey(XpackSysAuthRequest request) {
         if (CollectionUtils.isEmpty(cacheTypes)) {
