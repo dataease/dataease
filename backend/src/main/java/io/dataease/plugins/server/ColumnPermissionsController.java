@@ -64,12 +64,12 @@ public class ColumnPermissionsController {
        return columnPermissionService.searchPermissions(request);
     }
 
-    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("删除")
-    @PostMapping("/delete/{id}")
-    public void delete(@PathVariable String id) {
+    @PostMapping("/delete")
+    public void delete(@RequestBody DatasetColumnPermissions datasetColumnPermissions) {
         ColumnPermissionService columnPermissionService = SpringContextUtil.getBean(ColumnPermissionService.class);
-        columnPermissionService.delete(id);
+        columnPermissionService.delete(datasetColumnPermissions.getId());
     }
 
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
