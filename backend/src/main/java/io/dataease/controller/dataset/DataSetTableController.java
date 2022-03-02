@@ -37,8 +37,7 @@ public class DataSetTableController {
 
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id"),
-            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
-            @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASET_LEVEL_USE)
+            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     }, logical = Logical.AND)
     @ApiOperation("批量保存")
     @PostMapping("batchAdd")
@@ -48,8 +47,7 @@ public class DataSetTableController {
 
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
-            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
-            @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASET_LEVEL_USE)
+            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     }, logical = Logical.AND)
     @ApiOperation("更新")
     @PostMapping("update")
@@ -63,8 +61,7 @@ public class DataSetTableController {
 
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
-            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
-            @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASET_LEVEL_USE)
+            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     }, logical = Logical.AND)
     @ApiOperation("修改")
     @PostMapping("alter")
