@@ -13,6 +13,9 @@
         <i slot="reference" class="el-icon-warning icon-class" style="margin-left: 4px;cursor: pointer;" />
       </el-popover>
       <span style="float: right;line-height: 40px;">
+        <el-button size="mini" @click="close">
+          {{ $t('chart.close') }}
+        </el-button>
         <el-button size="mini" :disabled="!hasEdit" @click="reset">
           {{ $t('chart.recover') }}
         </el-button>
@@ -1246,7 +1249,8 @@ export default {
           this.table = response.data
           this.initTableField(id)
         }).catch(err => {
-          this.resetView()
+          this.table = null
+          this.resetDatasetField()
           this.httpRequest.status = err.response.data.success
           this.httpRequest.msg = err.response.data.message
           return true
@@ -1524,6 +1528,14 @@ export default {
         }
         this.$success(this.$t('commons.save_success'))
       })
+    },
+    close() {
+      this.closeChangeChart()
+      // 从仪表板入口关闭
+      if (this.$route.path.indexOf('panel') > -1) {
+        this.$store.commit('recordSnapshot')
+        bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
+      }
     },
     getData(id) {
       this.hasEdit = false
