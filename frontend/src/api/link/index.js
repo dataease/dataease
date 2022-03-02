@@ -64,9 +64,9 @@ export function loadResource(resourceId) {
   })
 }
 
-export function viewInfo(id, data) {
+export function viewInfo(id, panelId, data) {
   return request({
-    url: 'api/link/viewDetail/' + id,
+    url: 'api/link/viewDetail/' + id + '/' + panelId,
     method: 'post',
     hideMsg: true,
     data
