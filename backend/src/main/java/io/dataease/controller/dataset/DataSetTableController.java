@@ -37,8 +37,7 @@ public class DataSetTableController {
 
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id"),
-            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
-            @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASET_LEVEL_USE)
+            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     }, logical = Logical.AND)
     @ApiOperation("批量保存")
     @PostMapping("batchAdd")
@@ -48,8 +47,7 @@ public class DataSetTableController {
 
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
-            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
-            @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASET_LEVEL_USE)
+            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     }, logical = Logical.AND)
     @ApiOperation("更新")
     @PostMapping("update")
@@ -63,8 +61,7 @@ public class DataSetTableController {
 
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
-            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
-            @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASET_LEVEL_USE)
+            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     }, logical = Logical.AND)
     @ApiOperation("修改")
     @PostMapping("alter")
@@ -107,7 +104,6 @@ public class DataSetTableController {
         return dataSetTableService.getWithPermission(id, null);
     }
 
-    @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_USE, value = "dataSourceId")
     @ApiOperation("查询原始字段")
     @PostMapping("getFields")
     public List<TableField> getFields(@RequestBody DatasetTable datasetTable) throws Exception {
@@ -128,14 +124,12 @@ public class DataSetTableController {
         return dataSetTableService.getPreviewData(dataSetTableRequest, page, pageSize, null);
     }
 
-    @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_USE, value = "dataSourceId")
     @ApiOperation("根据sql查询预览数据")
     @PostMapping("sqlPreview")
     public Map<String, Object> getSQLPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
         return dataSetTableService.getSQLPreview(dataSetTableRequest);
     }
 
-    @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_USE, value = "dataSourceId")
     @ApiOperation("预览自定义数据数据")
     @PostMapping("customPreview")
     public Map<String, Object> customPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
