@@ -185,7 +185,7 @@ export default {
         mode: this.dataset[0].currentDs.mode,
         info: '{"union":' + JSON.stringify(this.dataset) + '}'
       }
-      post('/dataset/table/updateUnion', table).then(response => {
+      post('/dataset/table/update', table).then(response => {
         this.$emit('saveSuccess', table)
         this.cancel()
       })
