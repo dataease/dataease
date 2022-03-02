@@ -31,6 +31,8 @@
 		@scrolltolower="lower"
 		@scroll="scroll">
 			
+			<!-- <web-view v-if="url" :style="{height: 'calc(100vh - ' + ktxStatusHeight +'px)'}" /> -->
+			<!-- <web-view v-if="url" style="height: 100vh;" /> -->
 			<web-view v-if="url" :style="{height: viewHeight}" />
 
 		</scroll-view>
@@ -89,7 +91,8 @@
 				old: {
 					scrollTop: 0
 				},
-				viewHeight: null
+				viewHeight: null,
+				ktxStatusHeight: null
 			}
 		},
 		onLoad(event) {
@@ -181,14 +184,12 @@
             },
 			caclViewHeight() {
 				let systemInfo = uni.getSystemInfoSync()
-				let pxToRpxScale = 750 / systemInfo.windowWidth;
-				// 屏幕的高度
-				let ktxScreentHeight = systemInfo.screenHeight * pxToRpxScale
-				// 状态栏的高度
-				let ktxStatusHeight = systemInfo.statusBarHeight * pxToRpxScale
-				// 导航栏的高度
-				let navigationHeight = 44 * pxToRpxScale
-				this.viewHeight = (ktxScreentHeight - ktxStatusHeight) + 'px'
+				const h5Height = systemInfo.windowHeight - systemInfo.statusBarHeight
+				if(systemInfo.navigationBarHeight) {
+					h5Height = h5Height - systemInfo.navigationBarHeight
+				}
+				this.viewHeight = h5Height + 'px'
+				
 			},
             back() {   
                 // #ifdef H5  
