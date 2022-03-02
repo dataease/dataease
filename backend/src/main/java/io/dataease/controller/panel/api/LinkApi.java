@@ -1,6 +1,5 @@
 package io.dataease.controller.panel.api;
 
-
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.commons.constants.DePermissionType;
@@ -18,7 +17,6 @@ import java.util.Map;
 @ApiSupport(order = 200)
 @RequestMapping("/api/link")
 public interface LinkApi {
-
 
     @DePermission(type = DePermissionType.PANEL, value = "resourceId")
     @ApiOperation("重置密码")
@@ -45,7 +43,6 @@ public interface LinkApi {
     @PostMapping("/currentGenerate/{resourceId}")
     GenerateDto currentGenerate(String resourceId);
 
-
     @ApiOperation("验证访问")
     @PostMapping("/validate")
     ValidateDto validate(LinkValidateRequest request) throws Exception;
@@ -59,10 +56,11 @@ public interface LinkApi {
     Object resourceDetail(@PathVariable String resourceId);
 
     @ApiOperation("视图详息")
-    @PostMapping("/viewDetail/{viewId}")
-    Object viewDetail(@PathVariable String viewId, @RequestBody ChartExtRequest requestList) throws Exception;
+    @PostMapping("/viewDetail/{viewId}/{panelId}")
+    Object viewDetail(@PathVariable("viewId") String viewId, @PathVariable("panelId") String panelId,
+            @RequestBody ChartExtRequest requestList) throws Exception;
 
     @ApiOperation("压缩链接")
     @PostMapping("/shortUrl")
-    String shortUrl(@RequestBody Map<String,String> param);
+    String shortUrl(@RequestBody Map<String, String> param);
 }
