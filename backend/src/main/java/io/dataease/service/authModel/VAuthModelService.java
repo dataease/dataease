@@ -26,14 +26,12 @@ public class VAuthModelService {
 
     public List<VAuthModelDTO> queryAuthModel(VAuthModelRequest request) {
         request.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
-        // 定时任务选数据集时，列表需去除空目录
-        if (request.isClearEmptyDir()) {
-            request.setMode(null);
-        }
         List<VAuthModelDTO> result = extVAuthModelMapper.queryAuthModel(request);
-        // 定时任务选数据集时，列表需去除空目录
+
+        if (request.getPrivileges() != null) {
+            result = filterPrivileges(request, result);
+        }
         if (request.isClearEmptyDir()) {
-            result = filterData(request, result);
             List<VAuthModelDTO> vAuthModelDTOS = TreeUtils.mergeTree(result);
             setAllLeafs(vAuthModelDTOS);
             removeEmptyDir(vAuthModelDTOS);
@@ -42,16 +40,7 @@ public class VAuthModelService {
         return TreeUtils.mergeTree(result);
     }
 
-    private List<VAuthModelDTO> filterData(VAuthModelRequest request, List<VAuthModelDTO> result) {
-        if (request.getDatasetMode() != null && request.getDatasetMode() == 1) {
-            result = result.stream().filter(vAuthModelDTO -> {
-                if (vAuthModelDTO.getNodeType().equalsIgnoreCase("spine") || (vAuthModelDTO.getNodeType().equalsIgnoreCase("leaf") && vAuthModelDTO.getMode().equals(1L)) && !vAuthModelDTO.getModelInnerType().equalsIgnoreCase("excel") && !vAuthModelDTO.getModelInnerType().equalsIgnoreCase("custom") && !vAuthModelDTO.getModelInnerType().equalsIgnoreCase("union")) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }).collect(Collectors.toList());
-        }
+    private List<VAuthModelDTO> filterPrivileges(VAuthModelRequest request, List<VAuthModelDTO> result) {
         if (request.getPrivileges() != null) {
             result = result.stream().filter(vAuthModelDTO -> {
                 if (vAuthModelDTO.getNodeType().equalsIgnoreCase("spine") || (vAuthModelDTO.getNodeType().equalsIgnoreCase("leaf") && vAuthModelDTO.getPrivileges() != null && vAuthModelDTO.getPrivileges().contains(request.getPrivileges()))) {
