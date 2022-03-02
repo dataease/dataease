@@ -283,7 +283,6 @@ public class PanelGroupService {
                 panelData = panelData.replaceAll(panelView.getCopyFromView(), panelView.getChartViewId());
             }
             newPanel.setPanelData(panelData);
-            panelGroupMapper.insertSelective(newPanel);
             //TODO 复制跳转信息 copy panel_link_jump panel_link_jump_info  panel_link_jump_target_view_info
             extPanelLinkJumpMapper.copyLinkJump(copyId);
             extPanelLinkJumpMapper.copyLinkJumpInfo(copyId);
@@ -292,6 +291,7 @@ public class PanelGroupService {
             extPanelViewLinkageMapper.copyViewLinkage(copyId);
             extPanelViewLinkageMapper.copyViewLinkageField(copyId);
         }
+        panelGroupMapper.insertSelective(newPanel);
         return newPanelId;
     }
 
