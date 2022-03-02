@@ -80,7 +80,7 @@ public class PanelGroupController {
     @DePermissionProxy(paramIndex = 1)
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW)
     @PostMapping("/proxy/findOne/{id}")
-    public PanelGroupWithBLOBs proxyFindOne(@PathVariable String id, @RequestBody PermissionProxy proxy)
+    public PanelGroupDTO proxyFindOne(@PathVariable String id, @RequestBody PermissionProxy proxy)
             throws Exception {
         return panelGroupService.findOne(id);
     }
