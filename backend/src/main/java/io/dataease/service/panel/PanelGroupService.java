@@ -200,12 +200,16 @@ public class PanelGroupService {
     }
 
 
-    public PanelGroupWithBLOBs findOne(String panelId) {
-        PanelGroupWithBLOBs panelGroupWithBLOBs = extPanelGroupMapper.findOneWithPrivileges(panelId, String.valueOf(AuthUtils.getUser().getUserId()));
-        if (panelGroupWithBLOBs != null && StringUtils.isNotEmpty(panelGroupWithBLOBs.getSource())) {
-            return extPanelGroupMapper.findOneWithPrivileges(panelGroupWithBLOBs.getSource(), String.valueOf(AuthUtils.getUser().getUserId()));
+    public PanelGroupDTO findOne(String panelId) {
+        PanelGroupDTO panelGroup = extPanelGroupMapper.findOneWithPrivileges(panelId, String.valueOf(AuthUtils.getUser().getUserId()));
+        // 默认仪表板取源仪表板样式
+        if (panelGroup != null && StringUtils.isNotEmpty(panelGroup.getSource())) {
+            PanelGroupDTO sourcePanel = extPanelGroupMapper.findOneWithPrivileges(panelGroup.getSource(), String.valueOf(AuthUtils.getUser().getUserId()));
+            panelGroup.setPanelData(sourcePanel.getPanelData());
+            panelGroup.setPanelStyle(sourcePanel.getPanelStyle());
+            panelGroup.setSourcePanelName(sourcePanel.getName());
         }
-        return panelGroupWithBLOBs;
+        return panelGroup;
     }
 
 
