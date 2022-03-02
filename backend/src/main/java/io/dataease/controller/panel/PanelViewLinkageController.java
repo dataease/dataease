@@ -1,12 +1,17 @@
 package io.dataease.controller.panel;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+
+import io.dataease.auth.annotation.DePermissionProxy;
 import io.dataease.commons.model.BaseRspModel;
 import io.dataease.controller.request.panel.PanelLinkageRequest;
 import io.dataease.dto.PanelViewLinkageDTO;
+import io.dataease.dto.PermissionProxy;
 import io.dataease.service.panel.PanelViewLinkageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import springfox.documentation.annotations.ApiIgnore;
+
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -43,6 +48,15 @@ public class PanelViewLinkageController {
     @ApiOperation("获取当前仪表板所有联动信息")
     @GetMapping("/getPanelAllLinkageInfo/{panelId}")
     public Map<String, List<String>> getPanelAllLinkageInfo(@PathVariable String panelId) {
+        return panelViewLinkageService.getPanelAllLinkageInfo(panelId);
+    }
+
+    @ApiIgnore
+    @ApiOperation("获取当前仪表板所有联动信息(分享人代理)")
+    @DePermissionProxy(paramIndex = 1)
+    @PostMapping("/proxy/getPanelAllLinkageInfo/{panelId}")
+    public Map<String, List<String>> getPanelAllLinkageInfo(@PathVariable String panelId,
+            @RequestBody PermissionProxy proxy) {
         return panelViewLinkageService.getPanelAllLinkageInfo(panelId);
     }
 

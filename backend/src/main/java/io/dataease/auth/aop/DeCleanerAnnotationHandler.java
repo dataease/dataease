@@ -1,6 +1,5 @@
 package io.dataease.auth.aop;
 
-
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.constants.AuthConstants;
@@ -23,7 +22,6 @@ public class DeCleanerAnnotationHandler {
     @Around(value = "@annotation(io.dataease.auth.annotation.DeCleaner)")
     public Object CleanerAround(ProceedingJoinPoint point) {
         try {
-            CurrentUserDto user = AuthUtils.getUser();
             MethodSignature ms = (MethodSignature) point.getSignature();
             Method method = ms.getMethod();
             DeCleaner deCleaner = method.getAnnotation(DeCleaner.class);
@@ -41,7 +39,7 @@ public class DeCleanerAnnotationHandler {
             }
             return point.proceed(point.getArgs());
 
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             LogUtil.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
@@ -55,6 +53,7 @@ public class DeCleanerAnnotationHandler {
             CacheUtils.remove(AuthConstants.ROLE_PANEL_NAME, "role" + role.getId());
         });
     }
+
     public void cleanDataSet() {
         CurrentUserDto user = AuthUtils.getUser();
         CacheUtils.remove(AuthConstants.USER_DATASET_NAME, "user" + user.getUserId());
@@ -63,6 +62,7 @@ public class DeCleanerAnnotationHandler {
             CacheUtils.remove(AuthConstants.ROLE_DATASET_NAME, "role" + role.getId());
         });
     }
+
     public void cleanDataSource() {
         CurrentUserDto user = AuthUtils.getUser();
         CacheUtils.remove(AuthConstants.USER_LINK_NAME, "user" + user.getUserId());

@@ -73,6 +73,9 @@ export default {
     },
     manualModify() {
       return !!this.element.options.manualModify
+    },
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
     }
   },
 
@@ -96,9 +99,13 @@ export default {
       if (!token && linkToken) {
         method = linkMultFieldValues
       }
+      const param = { fieldIds: this.element.options.attrs.fieldId.split(',') }
+      if (this.panelInfo.proxy) {
+        param.userId = this.panelInfo.proxy
+      }
       this.element.options.attrs.fieldId &&
       this.element.options.attrs.fieldId.length > 0 &&
-      method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
+      method(param).then(res => {
         this.datas = this.optionDatas(res.data)
       }) || (this.element.options.value = '')
     },
