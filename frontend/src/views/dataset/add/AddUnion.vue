@@ -139,7 +139,7 @@ export default {
         allChildCount: 0
       },
       name: '关联数据集',
-      customType: ['db', 'sql', 'excel'],
+      customType: ['db', 'sql', 'excel', 'api'],
       selectDsDialog: false,
       // 弹框临时选中的数据集
       tempDs: {},
