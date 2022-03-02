@@ -448,3 +448,9 @@ RETURN oTemp;
 END
 ;;
 delimiter ;
+
+delete from chart_view where id in (
+'ce33ad2c-3915-41cc-8d86-55405456ed05',
+'d73eda10-68c9-40e2-b03a-a7cbe3e5b365',
+'de923e69-df6b-4f61-9391-da2987f77b51'
+);

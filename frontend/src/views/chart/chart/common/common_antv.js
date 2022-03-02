@@ -112,7 +112,13 @@ export function getLabel(chart) {
       if (l.show) {
         if (chart.type === 'pie') {
           label = {
-            type: l.position
+            type: l.position,
+            autoRotate: false
+          }
+        } else if (chart.type.includes('line')) {
+          label = {
+            position: l.position,
+            offsetY: -8
           }
         } else {
           label = {
