@@ -9,9 +9,9 @@
     </resultMap>
 
     <select id="searchOneWithPrivileges" resultMap="BaseResultMapDTO">
-        select
-        chart_view.*
-        from chart_view where id = #{id}
+        select chart_view.*
+        from chart_view
+        where id = #{id}
     </select>
 
     <select id="searchOne" resultMap="BaseResultMapDTO">
@@ -72,7 +72,7 @@
         <where>
             FIND_IN_SET(chart_view.id,cids)
             <if test="sceneId != null">
-               and scene_id = #{sceneId,jdbcType=VARCHAR}
+                and scene_id = #{sceneId,jdbcType=VARCHAR}
             </if>
             <if test="name != null">
                 and name like CONCAT('%', #{name},'%')
@@ -83,157 +83,182 @@
     </select>
 
     <insert id="chartCopy">
-        INSERT INTO chart_view (
-            `id`,
-            `name`,
-            `scene_id`,
-            `table_id`,
-            `type`,
-            `title`,
-            `x_axis`,
-            `x_axis_ext`,
-            `y_axis`,
-            `custom_attr`,
-            `custom_style`,
-            `custom_filter`,
-            `drill_fields`,
-            `create_by`,
-            `create_time`,
-            `update_time`,
-            `snapshot`,
-            `style_priority`,
-            `ext_stack`,
-            `ext_bubble`,
-            `y_axis_ext`,
-            `render`,
-            `result_count`,
-            `result_mode`,
-            `chart_type`
-        ) SELECT
-        #{newChartId},
-        GET_CHART_VIEW_COPY_NAME ( #{oldChartId} ),
-        #{panelId},
-        `table_id`,
-        `type`,
-        GET_CHART_VIEW_COPY_NAME ( #{oldChartId} ),
-        `x_axis`,
-        `x_axis_ext`,
-        `y_axis`,
-        `custom_attr`,
-        `custom_style`,
-        `custom_filter`,
-        `drill_fields`,
-        `create_by`,
-        `create_time`,
-        `update_time`,
-        `snapshot`,
-        `style_priority`,
-        `ext_stack`,
-        `ext_bubble`,
-        `y_axis_ext`,
-        `render`,
-        `result_count`,
-        `result_mode`,
-        'private'
-        FROM
-            chart_view
-        WHERE
-            id = #{oldChartId}
+        INSERT INTO chart_view (`id`,
+                                `name`,
+                                `scene_id`,
+                                `table_id`,
+                                `type`,
+                                `title`,
+                                `x_axis`,
+                                `x_axis_ext`,
+                                `y_axis`,
+                                `custom_attr`,
+                                `custom_style`,
+                                `custom_filter`,
+                                `drill_fields`,
+                                `create_by`,
+                                `create_time`,
+                                `update_time`,
+                                `snapshot`,
+                                `style_priority`,
+                                `ext_stack`,
+                                `ext_bubble`,
+                                `y_axis_ext`,
+                                `render`,
+                                `result_count`,
+                                `result_mode`,
+                                `chart_type`,
+                                `senior`)
+        SELECT #{newChartId},
+               GET_CHART_VIEW_COPY_NAME(#{oldChartId}),
+               #{panelId},
+               `table_id`,
+               `type`,
+               GET_CHART_VIEW_COPY_NAME(#{oldChartId}),
+               `x_axis`,
+               `x_axis_ext`,
+               `y_axis`,
+               `custom_attr`,
+               `custom_style`,
+               `custom_filter`,
+               `drill_fields`,
+               `create_by`,
+               `create_time`,
+               `update_time`,
+               `snapshot`,
+               `style_priority`,
+               `ext_stack`,
+               `ext_bubble`,
+               `y_axis_ext`,
+               `render`,
+               `result_count`,
+               `result_mode`,
+               'private',
+               `senior`
+        FROM chart_view
+        WHERE id = #{oldChartId}
     </insert>
 
     <select id="searchAdviceSceneId" resultType="String">
-        SELECT DISTINCT
-            ( scene_id )
-        FROM
-            ( SELECT GET_V_AUTH_MODEL_ID_P_USE ( #{userId}, 'chart' ) cids ) t,
-            panel_view
-            LEFT JOIN chart_view ON panel_view.chart_view_id = chart_view.id
-            LEFT JOIN chart_group ON chart_view.scene_id = chart_group.id
-        WHERE
-            FIND_IN_SET( chart_view.scene_id, cids )  and panel_view.panel_id =#{panelId}
-        ORDER BY
-            chart_group.create_time DESC
-            LIMIT 1
+        SELECT DISTINCT (scene_id)
+        FROM (SELECT GET_V_AUTH_MODEL_ID_P_USE(#{userId}, 'chart') cids) t,
+             panel_view
+                 LEFT JOIN chart_view ON panel_view.chart_view_id = chart_view.id
+                 LEFT JOIN chart_group ON chart_view.scene_id = chart_group.id
+        WHERE FIND_IN_SET(chart_view.scene_id, cids)
+          and panel_view.panel_id = #{panelId}
+        ORDER BY chart_group.create_time DESC LIMIT 1
     </select>
 
     <select id="checkSameDataSet" resultType="int">
-       select count(DISTINCT table_id)  from chart_view where id = #{viewIdSource} or id = #{viewIdTarget}
+        select count(DISTINCT table_id)
+        from chart_view
+        where id = #{viewIdSource}
+           or id = #{viewIdTarget}
     </select>
 
-    <insert id ='chartCopyWithPanel'>
-        INSERT INTO chart_view (
-            id,
-            `name`,
-            title,
-            scene_id,
-            table_id,
-            `type`,
-            render,
-            result_count,
-            result_mode,
-            create_by,
-            create_time,
-            update_time,
-            style_priority,
-            chart_type,
-            is_plugin,
-            x_axis,
-            x_axis_ext,
-            y_axis,
-            y_axis_ext,
-            ext_stack,
-            ext_bubble,
-            custom_attr,
-            custom_style,
-            custom_filter,
-            drill_fields,
-            SNAPSHOT
-            ) SELECT
-            pv_copy.chart_view_id AS id,
-            `name`,
-            title,
-            pv_copy.panel_id AS scene_id,
-            table_id,
-            `type`,
-            render,
-            result_count,
-            result_mode,
-            create_by,
-            create_time,
-            update_time,
-            style_priority,
-            chart_type,
-            is_plugin,
-            x_axis,
-            x_axis_ext,
-            y_axis,
-            y_axis_ext,
-            ext_stack,
-            ext_bubble,
-            custom_attr,
-            custom_style,
-            custom_filter,
-            drill_fields,
-        SNAPSHOT
-        FROM
-            (
-            SELECT
-                panel_id,
-                copy_from_view,
-                chart_view_id
-            FROM
-                panel_view
-            WHERE
-                copy_id = #{copyId}
-            ) pv_copy
-            LEFT JOIN chart_view ON chart_view.id = pv_copy.copy_from_view
+    <insert id='chartCopyWithPanel'>
+        INSERT INTO chart_view (id,
+                                `name`,
+                                title,
+                                scene_id,
+                                table_id,
+                                `type`,
+                                render,
+                                result_count,
+                                result_mode,
+                                create_by,
+                                create_time,
+                                update_time,
+                                style_priority,
+                                chart_type,
+                                is_plugin,
+                                x_axis,
+                                x_axis_ext,
+                                y_axis,
+                                y_axis_ext,
+                                ext_stack,
+                                ext_bubble,
+                                custom_attr,
+                                custom_style,
+                                custom_filter,
+                                drill_fields,
+                                SNAPSHOT)
+        SELECT pv_copy.chart_view_id AS id,
+               `name`,
+               title,
+               pv_copy.panel_id      AS scene_id,
+               table_id,
+               `type`,
+               render,
+               result_count,
+               result_mode,
+               create_by,
+               create_time,
+               update_time,
+               style_priority,
+               chart_type,
+               is_plugin,
+               x_axis,
+               x_axis_ext,
+               y_axis,
+               y_axis_ext,
+               ext_stack,
+               ext_bubble,
+               custom_attr,
+               custom_style,
+               custom_filter,
+               drill_fields,
+               SNAPSHOT
+        FROM (
+                 SELECT panel_id,
+                        copy_from_view,
+                        chart_view_id
+                 FROM panel_view
+                 WHERE copy_id = #{copyId}
+             ) pv_copy
+                 LEFT JOIN chart_view ON chart_view.id = pv_copy.copy_from_view
     </insert>
 
     <delete id="deleteCircleView">
-        delete chart_view from (select GET_CHART_GROUP_WITH_CHILDREN(#{pid}) cids) t,chart_view where FIND_IN_SET(chart_view.id,cids) and chart_type='public'
+        delete
+        chart_view from (select GET_CHART_GROUP_WITH_CHILDREN(
+        #{pid}
+        )
+        cids
+        )
+        t,
+        chart_view
+        where
+        FIND_IN_SET
+        (
+        chart_view
+        .
+        id,
+        cids
+        )
+        and
+        chart_type
+        =
+        'public'
     </delete>
 
     <delete id="deleteCircleGroup">
-        delete chart_group from (select GET_CHART_GROUP_WITH_CHILDREN(#{pid}) cids) t,chart_group where FIND_IN_SET(chart_group.id,cids)
+        delete
+        chart_group from (select GET_CHART_GROUP_WITH_CHILDREN(
+        #{pid}
+        )
+        cids
+        )
+        t,
+        chart_group
+        where
+        FIND_IN_SET
+        (
+        chart_group
+        .
+        id,
+        cids
+        )
     </delete>
 </mapper>

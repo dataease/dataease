@@ -240,6 +240,10 @@ export const DEFAULT_SPLIT = {
     show: true
   }
 }
+export const DEFAULT_FUNCTION_CFG = {
+  sliderShow: false,
+  sliderRange: [0, 10]
+}
 // chart config
 export const BASE_BAR = {
   title: {

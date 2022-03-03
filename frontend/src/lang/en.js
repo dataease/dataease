@@ -1029,7 +1029,17 @@ export default {
     table_item_align: 'Body Align',
     table_align_left: 'Left',
     table_align_center: 'Center',
-    table_align_right: 'Right'
+    table_align_right: 'Right',
+    senior: 'Senior',
+    senior_cfg: 'Senior Config',
+    function_cfg: 'Function Config',
+    analyse_cfg: 'Analyse',
+    slider: 'Slider',
+    slider_range: 'Range',
+    chart_no_senior: 'This chart type not support senior config,please look forward to.',
+    assist_line: 'Assist Line',
+    field_fixed: 'Fixed',
+    line_type_dotted: 'Dotted'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

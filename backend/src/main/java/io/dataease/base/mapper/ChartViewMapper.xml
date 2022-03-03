@@ -4,13 +4,13 @@
   <resultMap id="BaseResultMap" type="io.dataease.base.domain.ChartView">
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="title" jdbcType="VARCHAR" property="title" />
-    <result column="scene_id" jdbcType="VARCHAR" property="sceneId" />
     <result column="table_id" jdbcType="VARCHAR" property="tableId" />
     <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="render" jdbcType="VARCHAR" property="render" />
     <result column="result_count" jdbcType="INTEGER" property="resultCount" />
     <result column="result_mode" jdbcType="VARCHAR" property="resultMode" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="scene_id" jdbcType="VARCHAR" property="sceneId" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="update_time" jdbcType="BIGINT" property="updateTime" />
@@ -29,6 +29,7 @@
     <result column="custom_style" jdbcType="LONGVARCHAR" property="customStyle" />
     <result column="custom_filter" jdbcType="LONGVARCHAR" property="customFilter" />
     <result column="drill_fields" jdbcType="LONGVARCHAR" property="drillFields" />
+    <result column="senior" jdbcType="LONGVARCHAR" property="senior" />
     <result column="snapshot" jdbcType="LONGVARCHAR" property="snapshot" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -90,12 +91,12 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, title, scene_id, table_id, `type`, render, result_count, result_mode, 
+    id, `name`, table_id, `type`, render, result_count, result_mode, title, scene_id,
     create_by, create_time, update_time, style_priority, chart_type, is_plugin
   </sql>
   <sql id="Blob_Column_List">
-    x_axis, x_axis_ext, y_axis, y_axis_ext, ext_stack, ext_bubble, custom_attr, custom_style, 
-    custom_filter, drill_fields, snapshot
+    x_axis, x_axis_ext, y_axis, y_axis_ext, ext_stack, ext_bubble, custom_attr, custom_style,
+    custom_filter, drill_fields, senior, snapshot
   </sql>
   <select id="selectByExampleWithBLOBs" parameterType="io.dataease.base.domain.ChartViewExample" resultMap="ResultMapWithBLOBs">
     select
@@ -128,7 +129,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
-    select 
+    select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
@@ -146,24 +147,26 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.dataease.base.domain.ChartViewWithBLOBs">
-    insert into chart_view (id, `name`, title, 
-      scene_id, table_id, `type`, 
-      render, result_count, result_mode, 
-      create_by, create_time, update_time, 
-      style_priority, chart_type, is_plugin, 
-      x_axis, x_axis_ext, y_axis, 
-      y_axis_ext, ext_stack, ext_bubble, 
-      custom_attr, custom_style, custom_filter, 
-      drill_fields, snapshot)
-    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
-      #{sceneId,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
-      #{render,jdbcType=VARCHAR}, #{resultCount,jdbcType=INTEGER}, #{resultMode,jdbcType=VARCHAR}, 
-      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
-      #{stylePriority,jdbcType=VARCHAR}, #{chartType,jdbcType=VARCHAR}, #{isPlugin,jdbcType=BIT}, 
-      #{xAxis,jdbcType=LONGVARCHAR}, #{xAxisExt,jdbcType=LONGVARCHAR}, #{yAxis,jdbcType=LONGVARCHAR}, 
-      #{yAxisExt,jdbcType=LONGVARCHAR}, #{extStack,jdbcType=LONGVARCHAR}, #{extBubble,jdbcType=LONGVARCHAR}, 
-      #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR}, #{customFilter,jdbcType=LONGVARCHAR}, 
-      #{drillFields,jdbcType=LONGVARCHAR}, #{snapshot,jdbcType=LONGVARCHAR})
+    insert into chart_view (id, `name`, table_id,
+      `type`, render, result_count,
+      result_mode, title, scene_id,
+      create_by, create_time, update_time,
+      style_priority, chart_type, is_plugin,
+      x_axis, x_axis_ext, y_axis,
+      y_axis_ext, ext_stack, ext_bubble,
+      custom_attr, custom_style, custom_filter,
+      drill_fields, senior, snapshot
+      )
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR},
+      #{type,jdbcType=VARCHAR}, #{render,jdbcType=VARCHAR}, #{resultCount,jdbcType=INTEGER},
+      #{resultMode,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{sceneId,jdbcType=VARCHAR},
+      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT},
+      #{stylePriority,jdbcType=VARCHAR}, #{chartType,jdbcType=VARCHAR}, #{isPlugin,jdbcType=BIT},
+      #{xAxis,jdbcType=LONGVARCHAR}, #{xAxisExt,jdbcType=LONGVARCHAR}, #{yAxis,jdbcType=LONGVARCHAR},
+      #{yAxisExt,jdbcType=LONGVARCHAR}, #{extStack,jdbcType=LONGVARCHAR}, #{extBubble,jdbcType=LONGVARCHAR},
+      #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR}, #{customFilter,jdbcType=LONGVARCHAR},
+      #{drillFields,jdbcType=LONGVARCHAR}, #{senior,jdbcType=LONGVARCHAR}, #{snapshot,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.ChartViewWithBLOBs">
     insert into chart_view
@@ -173,12 +176,6 @@
       </if>
       <if test="name != null">
         `name`,
-      </if>
-      <if test="title != null">
-        title,
-      </if>
-      <if test="sceneId != null">
-        scene_id,
       </if>
       <if test="tableId != null">
         table_id,
@@ -194,6 +191,12 @@
       </if>
       <if test="resultMode != null">
         result_mode,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="sceneId != null">
+        scene_id,
       </if>
       <if test="createBy != null">
         create_by,
@@ -243,6 +246,9 @@
       <if test="drillFields != null">
         drill_fields,
       </if>
+      <if test="senior != null">
+        senior,
+      </if>
       <if test="snapshot != null">
         snapshot,
       </if>
@@ -253,12 +259,6 @@
       </if>
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="title != null">
-        #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="sceneId != null">
-        #{sceneId,jdbcType=VARCHAR},
       </if>
       <if test="tableId != null">
         #{tableId,jdbcType=VARCHAR},
@@ -274,6 +274,12 @@
       </if>
       <if test="resultMode != null">
         #{resultMode,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="sceneId != null">
+        #{sceneId,jdbcType=VARCHAR},
       </if>
       <if test="createBy != null">
         #{createBy,jdbcType=VARCHAR},
@@ -323,6 +329,9 @@
       <if test="drillFields != null">
         #{drillFields,jdbcType=LONGVARCHAR},
       </if>
+      <if test="senior != null">
+        #{senior,jdbcType=LONGVARCHAR},
+      </if>
       <if test="snapshot != null">
         #{snapshot,jdbcType=LONGVARCHAR},
       </if>
@@ -343,12 +352,6 @@
       <if test="record.name != null">
         `name` = #{record.name,jdbcType=VARCHAR},
       </if>
-      <if test="record.title != null">
-        title = #{record.title,jdbcType=VARCHAR},
-      </if>
-      <if test="record.sceneId != null">
-        scene_id = #{record.sceneId,jdbcType=VARCHAR},
-      </if>
       <if test="record.tableId != null">
         table_id = #{record.tableId,jdbcType=VARCHAR},
       </if>
@@ -363,6 +366,12 @@
       </if>
       <if test="record.resultMode != null">
         result_mode = #{record.resultMode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.title != null">
+        title = #{record.title,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sceneId != null">
+        scene_id = #{record.sceneId,jdbcType=VARCHAR},
       </if>
       <if test="record.createBy != null">
         create_by = #{record.createBy,jdbcType=VARCHAR},
@@ -412,6 +421,9 @@
       <if test="record.drillFields != null">
         drill_fields = #{record.drillFields,jdbcType=LONGVARCHAR},
       </if>
+      <if test="record.senior != null">
+        senior = #{record.senior,jdbcType=LONGVARCHAR},
+      </if>
       <if test="record.snapshot != null">
         snapshot = #{record.snapshot,jdbcType=LONGVARCHAR},
       </if>
@@ -424,13 +436,13 @@
     update chart_view
     set id = #{record.id,jdbcType=VARCHAR},
       `name` = #{record.name,jdbcType=VARCHAR},
-      title = #{record.title,jdbcType=VARCHAR},
-      scene_id = #{record.sceneId,jdbcType=VARCHAR},
       table_id = #{record.tableId,jdbcType=VARCHAR},
       `type` = #{record.type,jdbcType=VARCHAR},
       render = #{record.render,jdbcType=VARCHAR},
       result_count = #{record.resultCount,jdbcType=INTEGER},
       result_mode = #{record.resultMode,jdbcType=VARCHAR},
+      title = #{record.title,jdbcType=VARCHAR},
+      scene_id = #{record.sceneId,jdbcType=VARCHAR},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
       update_time = #{record.updateTime,jdbcType=BIGINT},
@@ -447,6 +459,7 @@
       custom_style = #{record.customStyle,jdbcType=LONGVARCHAR},
       custom_filter = #{record.customFilter,jdbcType=LONGVARCHAR},
       drill_fields = #{record.drillFields,jdbcType=LONGVARCHAR},
+      senior = #{record.senior,jdbcType=LONGVARCHAR},
       snapshot = #{record.snapshot,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -456,13 +469,13 @@
     update chart_view
     set id = #{record.id,jdbcType=VARCHAR},
       `name` = #{record.name,jdbcType=VARCHAR},
-      title = #{record.title,jdbcType=VARCHAR},
-      scene_id = #{record.sceneId,jdbcType=VARCHAR},
       table_id = #{record.tableId,jdbcType=VARCHAR},
       `type` = #{record.type,jdbcType=VARCHAR},
       render = #{record.render,jdbcType=VARCHAR},
       result_count = #{record.resultCount,jdbcType=INTEGER},
       result_mode = #{record.resultMode,jdbcType=VARCHAR},
+      title = #{record.title,jdbcType=VARCHAR},
+      scene_id = #{record.sceneId,jdbcType=VARCHAR},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
       update_time = #{record.updateTime,jdbcType=BIGINT},
@@ -479,12 +492,6 @@
       <if test="name != null">
         `name` = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="title != null">
-        title = #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="sceneId != null">
-        scene_id = #{sceneId,jdbcType=VARCHAR},
-      </if>
       <if test="tableId != null">
         table_id = #{tableId,jdbcType=VARCHAR},
       </if>
@@ -499,6 +506,12 @@
       </if>
       <if test="resultMode != null">
         result_mode = #{resultMode,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="sceneId != null">
+        scene_id = #{sceneId,jdbcType=VARCHAR},
       </if>
       <if test="createBy != null">
         create_by = #{createBy,jdbcType=VARCHAR},
@@ -548,6 +561,9 @@
       <if test="drillFields != null">
         drill_fields = #{drillFields,jdbcType=LONGVARCHAR},
       </if>
+      <if test="senior != null">
+        senior = #{senior,jdbcType=LONGVARCHAR},
+      </if>
       <if test="snapshot != null">
         snapshot = #{snapshot,jdbcType=LONGVARCHAR},
       </if>
@@ -557,13 +573,13 @@
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.dataease.base.domain.ChartViewWithBLOBs">
     update chart_view
     set `name` = #{name,jdbcType=VARCHAR},
-      title = #{title,jdbcType=VARCHAR},
-      scene_id = #{sceneId,jdbcType=VARCHAR},
       table_id = #{tableId,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
       render = #{render,jdbcType=VARCHAR},
       result_count = #{resultCount,jdbcType=INTEGER},
       result_mode = #{resultMode,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      scene_id = #{sceneId,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},
@@ -580,19 +596,20 @@
       custom_style = #{customStyle,jdbcType=LONGVARCHAR},
       custom_filter = #{customFilter,jdbcType=LONGVARCHAR},
       drill_fields = #{drillFields,jdbcType=LONGVARCHAR},
+      senior = #{senior,jdbcType=LONGVARCHAR},
       snapshot = #{snapshot,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.ChartView">
     update chart_view
     set `name` = #{name,jdbcType=VARCHAR},
-      title = #{title,jdbcType=VARCHAR},
-      scene_id = #{sceneId,jdbcType=VARCHAR},
       table_id = #{tableId,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
       render = #{render,jdbcType=VARCHAR},
       result_count = #{resultCount,jdbcType=INTEGER},
       result_mode = #{resultMode,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      scene_id = #{sceneId,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},

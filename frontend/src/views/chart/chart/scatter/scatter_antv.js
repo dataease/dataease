@@ -1,4 +1,13 @@
-import { getTheme, getLabel, getTooltip, getLegend, getXAxis, getYAxis, getPadding } from '@/views/chart/chart/common/common_antv'
+import {
+  getTheme,
+  getLabel,
+  getTooltip,
+  getLegend,
+  getXAxis,
+  getYAxis,
+  getPadding,
+  getSlider
+} from '@/views/chart/chart/common/common_antv'
 
 import { Scatter } from '@antv/g2plot'
 
@@ -14,6 +23,8 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
   const yAxis = getYAxis(chart)
   // data
   const data = chart.data.datas
+  // config
+  const slider = getSlider(chart)
   // options
   const options = {
     theme: theme,
@@ -27,6 +38,7 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
     legend: legend,
     xAxis: xAxis,
     yAxis: yAxis,
+    slider: slider,
     pieStyle: {
       lineWidth: 0
     },

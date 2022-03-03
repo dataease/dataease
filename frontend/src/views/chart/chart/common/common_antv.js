@@ -435,3 +435,20 @@ function transAxisPosition(chart, axis) {
     return axis.position
   }
 }
+
+export function getSlider(chart) {
+  let senior = {}
+  let cfg = false
+  if (chart.senior) {
+    senior = JSON.parse(chart.senior)
+    if (senior.functionCfg) {
+      if (senior.functionCfg.sliderShow) {
+        cfg = {
+          start: parseInt(senior.functionCfg.sliderRange[0]) / 100,
+          end: parseInt(senior.functionCfg.sliderRange[1]) / 100
+        }
+      }
+    }
+  }
+  return cfg
+}

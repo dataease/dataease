@@ -1032,7 +1032,17 @@ export default {
     table_item_align: '表格对齐方式',
     table_align_left: '左对齐',
     table_align_center: '居中',
-    table_align_right: '右对齐'
+    table_align_right: '右对齐',
+    senior: '高级',
+    senior_cfg: '高级设置',
+    function_cfg: '功能设置',
+    analyse_cfg: '分析预警',
+    slider: '缩略轴',
+    slider_range: '默认范围',
+    chart_no_senior: '当前图表类型暂无高级配置，敬请期待',
+    assist_line: '辅助线',
+    field_fixed: '固定值',
+    line_type_dotted: '点'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
