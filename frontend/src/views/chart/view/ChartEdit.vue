@@ -810,6 +810,35 @@
             </div>
           </el-row>
         </el-tab-pane>
+        <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 360px;">
+          <el-row class="view-panel">
+            <div
+              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))"
+              style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
+              class="attr-style theme-border-class"
+            >
+              <el-row>
+                <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
+                <el-collapse v-model="attrActiveNames" class="style-collapse">
+                  <el-collapse-item name="function" :title="$t('chart.function_cfg')">
+                    <function-cfg :param="param" class="attr-selector" :chart="chart" @onFunctionCfgChange="onFunctionCfgChange" />
+                  </el-collapse-item>
+                </el-collapse>
+              </el-row>
+              <el-row>
+                <span class="padding-lr">{{ $t('chart.analyse_cfg') }}</span>
+                <el-collapse v-model="styleActiveNames" class="style-collapse">
+                  <el-collapse-item name="analyse" :title="$t('chart.assist_line')">
+                    <assist-line :param="param" class="attr-selector" :chart="chart" @onAssistLineChange="onAssistLineChange" />
+                  </el-collapse-item>
+                </el-collapse>
+              </el-row>
+            </div>
+            <div v-else class="no-senior">
+              {{ $t('chart.chart_no_senior') }}
+            </div>
+          </el-row>
+        </el-tab-pane>
       </el-tabs>
 
       <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
@@ -1006,6 +1035,7 @@ import DatasetChartDetail from '../../dataset/common/DatasetChartDetail'
 import {
   DEFAULT_BACKGROUND_COLOR,
   DEFAULT_COLOR_CASE,
+  DEFAULT_FUNCTION_CFG,
   DEFAULT_LABEL,
   DEFAULT_LEGEND_STYLE,
   DEFAULT_SIZE,
@@ -1052,9 +1082,13 @@ import { compareItem } from '@/views/chart/chart/compare'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import DimensionExtItem from '@/views/chart/components/drag-item/DimensionExtItem'
 import PluginCom from '@/views/system/plugin/PluginCom'
+import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
+import AssistLine from '@/views/chart/components/senior/AssistLine'
 export default {
   name: 'ChartEdit',
   components: {
+    AssistLine,
+    FunctionCfg,
     DimensionExtItem,
     ChartComponentS2,
     CompareEdit,
@@ -1137,6 +1171,10 @@ export default {
           yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
           background: DEFAULT_BACKGROUND_COLOR,
           split: DEFAULT_SPLIT
+        },
+        senior: {
+          functionCfg: DEFAULT_FUNCTION_CFG,
+          assistLine: []
         },
         customFilter: [],
         render: 'antv',
@@ -1446,6 +1484,7 @@ export default {
       view.extStack = JSON.stringify(view.extStack)
       view.drillFields = JSON.stringify(view.drillFields)
       view.extBubble = JSON.stringify(view.extBubble)
+      view.senior = JSON.stringify(view.senior)
       delete view.data
       return view
     },
@@ -1471,6 +1510,7 @@ export default {
         this.view.customAttr = view.customAttr ? JSON.parse(view.customAttr) : {}
         this.view.customStyle = view.customStyle ? JSON.parse(view.customStyle) : {}
         this.view.customFilter = view.customFilter ? JSON.parse(view.customFilter) : {}
+        this.view.senior = view.senior ? JSON.parse(view.senior) : {}
         // 将视图传入echart组件
         this.chart = response.data
         this.data = response.data.data
@@ -1505,6 +1545,7 @@ export default {
       view.customAttr = JSON.stringify(this.view.customAttr)
       view.customStyle = JSON.stringify(this.view.customStyle)
       view.customFilter = JSON.stringify(this.view.customFilter)
+      view.senior = JSON.stringify(this.view.senior)
       view.data = this.data
       this.chart = view
     },
@@ -1556,6 +1597,7 @@ export default {
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
+          this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
           // 将视图传入echart组件
           this.chart = response.data
           this.data = response.data.data
@@ -1600,6 +1642,7 @@ export default {
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
+          this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
 
           // 将视图传入echart组件
           this.chart = response.data
@@ -1700,6 +1743,16 @@ export default {
 
     onChangeSplitForm(val) {
       this.view.customStyle.split = val
+      this.calcStyle()
+    },
+
+    onFunctionCfgChange(val) {
+      this.view.senior.functionCfg = val
+      this.calcStyle()
+    },
+
+    onAssistLineChange(val) {
+      this.view.senior.assistLine = val
       this.calcStyle()
     },
 
@@ -2379,7 +2432,7 @@ export default {
 
   .tab-header > > > .el-tabs__item {
     font-size: 12px;
-    padding: 0 60px!important;
+    padding: 0 40px!important;
   }
 
   .blackTheme .tab-header > > > .el-tabs__item {
@@ -2574,6 +2627,13 @@ export default {
 
   .radio-span > > > .el-radio__label {
     margin-left: 4px;
+  }
+
+  .no-senior {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    margin-top: 40px;
   }
 
 </style>

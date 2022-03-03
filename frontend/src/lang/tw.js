@@ -1029,7 +1029,17 @@ export default {
     table_item_align: '表格對齊方式',
     table_align_left: '左對齊',
     table_align_center: '居中',
-    table_align_right: '右對齊'
+    table_align_right: '右對齊',
+    senior: '高級',
+    senior_cfg: '高級設置',
+    function_cfg: '功能設置',
+    analyse_cfg: '分析預警',
+    slider: '縮略軸',
+    slider_range: '默認範圍',
+    chart_no_senior: '當前圖表類型暫無高級配置，敬請期待',
+    assist_line: '輔助線',
+    field_fixed: '固定值',
+    line_type_dotted: '點'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

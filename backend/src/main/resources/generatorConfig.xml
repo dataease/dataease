@@ -60,8 +60,8 @@
         </javaClientGenerator>
 
         <!--要生成的数据库表 -->
-        <table tableName="dataease_code_version"/>
-<!--        <table tableName="chart_view"/>-->
+<!--        <table tableName="dataease_code_version"/>-->
+        <table tableName="chart_view"/>
 <!--        <table tableName="panel_view"/>-->
 <!--        <table tableName="panel_link_jump"/>-->
 <!--        <table tableName="panel_link_jump_info"/>-->

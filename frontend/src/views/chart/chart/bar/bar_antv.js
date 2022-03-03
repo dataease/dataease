@@ -1,5 +1,5 @@
 import { Column, Bar } from '@antv/g2plot'
-import { getTheme, getLabel, getTooltip, getLegend, getXAxis, getYAxis, getPadding } from '@/views/chart/chart/common/common_antv'
+import { getTheme, getLabel, getTooltip, getLegend, getXAxis, getYAxis, getPadding, getSlider } from '@/views/chart/chart/common/common_antv'
 
 export function baseBarOptionAntV(plot, container, chart, action, isGroup, isStack) {
   // theme
@@ -13,6 +13,8 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   const yAxis = getYAxis(chart)
   // data
   const data = chart.data.datas
+  // config
+  const slider = getSlider(chart)
   // options
   const options = {
     theme: theme,
@@ -26,6 +28,7 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
     legend: legend,
     xAxis: xAxis,
     yAxis: yAxis,
+    slider: slider,
     interactions: [
       {
         type: 'element-active', cfg: {
@@ -108,6 +111,8 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   const yAxis = getYAxis(chart)
   // data
   const data = chart.data.datas
+  // config
+  const slider = getSlider(chart)
   // options
   const options = {
     theme: theme,
@@ -121,6 +126,7 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
     legend: legend,
     xAxis: xAxis,
     yAxis: yAxis,
+    slider: slider,
     interactions: [
       {
         type: 'element-active', cfg: {
