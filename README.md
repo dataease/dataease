@@ -39,12 +39,13 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 - Amazon Redshift
 - Hive
 - DB2
+- Api
 
 > 更多数据源支持持续增加中...
 
 ## UI 展示
 
-![de-ui](https://www.fit2cloud.com/dataease/images/screenshot/dataease-v1.gif)
+![de-ui](https://dataease.io/docs/img/index/%E7%95%8C%E9%9D%A2%E5%B1%95%E7%A4%BA.gif)
 
 ## 功能架构
 
