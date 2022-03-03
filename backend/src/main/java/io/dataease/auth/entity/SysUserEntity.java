@@ -1,6 +1,5 @@
 package io.dataease.auth.entity;
 
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -39,4 +38,7 @@ public class SysUserEntity implements Serializable {
 
     @ApiModelProperty(hidden = true)
     private Boolean isAdmin;
+
+    @ApiModelProperty(hidden = true)
+    private Integer from;
 }
