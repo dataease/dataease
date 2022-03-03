@@ -79,7 +79,7 @@
             timeToLiveSeconds="60"
             memoryStoreEvictionPolicy="FIFO"
     >
-        <cacheEventListenerFactory class="io.dataease.listener.LicCacheEventListener" />
+        <cacheEventListenerFactory class="io.dataease.listener.LicCacheEventListener"/>
     </cache>
 
     <cache
@@ -97,45 +97,157 @@
 
     <!--消息渠道缓存-->
     <cache
-        name="sys_msg_channel"
-        eternal="true"
-        maxElementsInMemory="100"
-        maxElementsOnDisk="1000"
-        overflowToDisk="true"
-        diskPersistent="false"
+            name="sys_msg_channel"
+            eternal="true"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="false"
     />
 
     <!--消息类型缓存-->
     <cache
-        name="sys_msg_type"
-        eternal="true"
-        maxElementsInMemory="100"
-        maxElementsOnDisk="1000"
-        overflowToDisk="true"
-        diskPersistent="false"
+            name="sys_msg_type"
+            eternal="true"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="false"
     />
 
     <!--消息类型缓存-->
     <cache
-        name="sys_msg_user_subscribe"
-        eternal="false"
-        maxElementsInMemory="100"
-        maxElementsOnDisk="10000"
-        overflowToDisk="true"
-        diskPersistent="false"
-        timeToIdleSeconds="28800"
-        timeToLiveSeconds="86400"
-        memoryStoreEvictionPolicy="LRU"
+            name="sys_msg_user_subscribe"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="10000"
+            overflowToDisk="true"
+            diskPersistent="false"
+            timeToIdleSeconds="28800"
+            timeToLiveSeconds="86400"
+            memoryStoreEvictionPolicy="LRU"
     />
 
     <!--消息类型缓存-->
     <cache
-        name="sys_map_areas"
-        eternal="true"
-        maxElementsInMemory="100"
-        maxElementsOnDisk="3000"
-        overflowToDisk="true"
-        diskPersistent="false"
+            name="sys_map_areas"
+            eternal="true"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="3000"
+            overflowToDisk="true"
+            diskPersistent="false"
+    />
+
+
+    <!--用户授权数据源缓存-->
+    <cache
+            name="user_link"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
+    <!--用户授权数据集缓存-->
+    <cache
+            name="user_dataset"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
+    <!--用户授权仪表板缓存-->
+    <cache
+            name="user_panel"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
+
+    <!--角色授权数据源缓存-->
+    <cache
+            name="role_link"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
+    <!--角色授权数据集缓存-->
+    <cache
+            name="role_dataset"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
+    <!--角色授权仪表板缓存-->
+    <cache
+            name="role_panel"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
+
+    <!--组织授权数据源缓存-->
+    <cache
+            name="dept_link"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
+    <!--组织授权数据集缓存-->
+    <cache
+            name="dept_dataset"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
+    <!--组织授权仪表板缓存-->
+    <cache
+            name="dept_panel"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
     />
 
 

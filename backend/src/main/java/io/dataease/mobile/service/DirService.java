@@ -12,15 +12,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class DirService {
 
+    private static final String[] filterDirNames = { "i18n_panel_list", "i18n_default_panel" };
+
     @Resource
     private MobileDirMapper mobileDirMapper;
-
 
     public List<String> permissions() {
         CurrentUserDto user = AuthUtils.getUser();
@@ -40,17 +42,17 @@ public class DirService {
     }
 
     public List<DirItemDTO> query(DirRequest request) {
-//        CurrentUserDto user = AuthUtils.getUser();
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         List<PanelEntity> panelEntities = new ArrayList<>();
         if (StringUtils.isNotBlank(request.getName())) {
-            panelEntities = mobileDirMapper.queryWithName(request.getName(),userId);
-        }else {
-            panelEntities = mobileDirMapper.query(request.getPid(),userId);
+            panelEntities = mobileDirMapper.queryWithName(request.getName(), userId);
+        } else {
+            panelEntities = mobileDirMapper.query(request.getPid(), userId);
         }
-        if (CollectionUtils.isEmpty(panelEntities)) return null;
-
-        List<DirItemDTO> dtos = panelEntities.stream().map(data -> {
+        if (CollectionUtils.isEmpty(panelEntities))
+            return null;
+        List<String> filterLists = Arrays.asList(filterDirNames);
+        List<DirItemDTO> dtos = panelEntities.stream().filter(dto -> !filterLists.contains(dto.getText())).map(data -> {
             DirItemDTO dirItemDTO = new DirItemDTO();
             dirItemDTO.setId(data.getId());
             dirItemDTO.setText(data.getText());
@@ -58,22 +60,10 @@ public class DirService {
             return dirItemDTO;
         }).collect(Collectors.toList());
         return dtos;
-
-//        if (user.getUserId() == 1 && StringUtils.equals("admin", user.getUsername())) {
-//            return dtos;
-//        }
-//        List<String> permissions = proxy().permissions();
-//        return dtos.stream().filter(
-//                dto -> permissions.stream().anyMatch(
-//                        permission -> StringUtils.equals(permission, dto.getId())
-//                )
-//        ).collect(Collectors.toList());
-
     }
 
     public DirService proxy() {
         return CommonBeanFactory.getBean(DirService.class);
     }
-
 
 }

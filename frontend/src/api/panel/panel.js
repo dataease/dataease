@@ -1,4 +1,8 @@
 import request from '@/utils/request'
+import { panelInit } from '@/components/canvas/utils/utils'
+import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
+import { queryPanelJumpInfo } from '@/api/panel/linkJump'
+import store from '@/store'
 
 export function deleteSubject(id) {
   return request({
@@ -52,9 +56,9 @@ export function groupTree(data, loading = true, timeout = 60000) {
   })
 }
 
-export function viewData(id, data) {
+export function viewData(id, panelId, data) {
   return request({
-    url: '/chart/view/getData/' + id,
+    url: '/chart/view/getData/' + id + '/' + panelId,
     method: 'post',
     hideMsg: true,
     data
@@ -128,3 +132,35 @@ export function delGroup(groupId) {
     method: 'post'
   })
 }
+
+export function initPanelData(panelId, callback) {
+  // 加载视图数据
+  findOne(panelId).then(response => {
+    // 初始化视图data和style 数据
+    panelInit(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle))
+    // 设置当前仪表板全局信息
+    store.dispatch('panel/setPanelInfo', {
+      id: response.data.id,
+      name: response.data.name,
+      privileges: response.data.privileges,
+      sourcePanelName: response.data.sourcePanelName
+    })
+    // 刷新联动信息
+    getPanelAllLinkageInfo(panelId).then(rsp => {
+      store.commit('setNowPanelTrackInfo', rsp.data)
+    })
+    // 刷新跳转信息
+    queryPanelJumpInfo(panelId).then(rsp => {
+      store.commit('setNowPanelJumpInfo', rsp.data)
+    })
+    callback(response)
+  })
+}
+
+export function queryPanelViewTree() {
+  return request({
+    url: '/panel/group/queryPanelViewTree',
+    method: 'post'
+  })
+}
+

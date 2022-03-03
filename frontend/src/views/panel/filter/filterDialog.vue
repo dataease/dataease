@@ -46,6 +46,7 @@
                       <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
                       <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
                       <svg-icon v-if="data.type === 'union'" icon-class="ds-union" class="ds-icon-union" />
+                      <svg-icon v-if="data.type === 'api'" icon-class="ds-api" class="ds-icon-api" />
                     </span>
                     <el-tooltip class="item" effect="dark" placement="top">
                       <div slot="content">{{ node.label }}</div>
@@ -184,7 +185,7 @@ import {
 } from 'vuex'
 import {
   groupTree,
-  fieldList,
+  fieldListWithPermission,
   post
 } from '@/api/dataset/dataset'
 import {
@@ -386,11 +387,28 @@ export default {
       return roots
     },
     loadViews() {
-      const viewIds = this.componentData
+      /* const viewIds = this.componentData
         .filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
-        .map(item => item.propValue.viewId)
+        .map(item => item.propValue.viewId) */
+      let viewIds = []; let tabViewIds = []
+      for (let index = 0; index < this.componentData.length; index++) {
+        const element = this.componentData[index]
+        if (element.type && element.propValue && element.propValue.viewId && element.type === 'view') {
+          viewIds.push(element.propValue.viewId)
+        }
+
+        if (element.type && element.type === 'de-tabs') {
+          tabViewIds = element.options.tabList.filter(item => item.content && item.content.type === 'view' && item.content.propValue && item.content.propValue.viewId).map(item => item.content.propValue.viewId)
+        }
+        viewIds = [...viewIds, ...tabViewIds]
+      }
       viewIds && viewIds.length > 0 && viewsWithIds(viewIds).then(res => {
         const datas = res.data
+        /* datas.forEach(item => {
+          if (tabViewIds.includes(item.id)) {
+            item.name = 'tabs(' + item.name + ')'
+          }
+        }) */
         this.viewInfos = datas
         this.childViews.viewInfos = datas
       })
@@ -489,7 +507,7 @@ export default {
     },
 
     loadField(tableId) {
-      fieldList(tableId).then(res => {
+      fieldListWithPermission(tableId).then(res => {
         let datas = res.data
         if (this.widget && this.widget.filterFieldMethod) {
           datas = this.widget.filterFieldMethod(datas)
@@ -498,7 +516,7 @@ export default {
       })
     },
     comLoadField(tableId) {
-      fieldList(tableId).then(res => {
+      fieldListWithPermission(tableId).then(res => {
         let datas = res.data
         if (this.widget && this.widget.filterFieldMethod) {
           datas = this.widget.filterFieldMethod(datas)

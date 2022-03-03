@@ -33,13 +33,13 @@
           v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 4"
           :label="$t('dataset.start_time')"
         >
-          <el-input
+          <el-input-number
             v-model="element.options.attrs.default.sDynamicPrefix"
-            type="number"
+            controls-position="right"
             size="mini"
             :min="0"
             :max="10"
-            @input="sDynamicPrefixChange"
+            @change="sDynamicPrefixChange"
           />
         </el-form-item>
 
@@ -86,13 +86,13 @@
           v-if="element.options.attrs.default.isDynamic && element.options.attrs.default.dkey === 4"
           :label="$t('dataset.end_time')"
         >
-          <el-input
+          <el-input-number
             v-model="element.options.attrs.default.eDynamicPrefix"
-            type="number"
+            controls-position="right"
             size="mini"
             :min="0"
             :max="10"
-            @input="eDynamicPrefixChange"
+            @change="eDynamicPrefixChange"
           />
         </el-form-item>
 

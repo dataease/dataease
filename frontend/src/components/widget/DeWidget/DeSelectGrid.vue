@@ -93,6 +93,9 @@ export default {
     },
     manualModify() {
       return !!this.element.options.manualModify
+    },
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
     }
   },
   watch: {
@@ -119,22 +122,32 @@ export default {
       if (!token && linkToken) {
         method = linkMultFieldValues
       }
+      const param = { fieldIds: this.element.options.attrs.fieldId.split(',') }
+      if (this.panelInfo.proxy) {
+        param.userId = this.panelInfo.proxy
+      }
       this.element.options.attrs.fieldId &&
           this.element.options.attrs.fieldId.length > 0 &&
-      method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
+      method(param).then(res => {
         this.datas = this.optionDatas(res.data)
       }) || (this.element.options.value = '')
     },
     'element.options.attrs.multiple': function(value, old) {
       if (typeof old === 'undefined' || value === old) return
-      // if (!this.inDraw) {
-      this.value = value ? [] : null
-      this.element.options.value = ''
-      // }
+      if (!this.inDraw) {
+        this.value = value ? [] : null
+        this.element.options.value = ''
+      } else {
+        this.value = this.fillValueDerfault()
+      }
 
       this.show = false
       this.$nextTick(() => {
         this.show = true
+        if (value) {
+          this.checkAll = this.value.length === this.datas.length
+          this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
+        }
       })
     }
   },
@@ -190,7 +203,6 @@ export default {
         this.element.options.manualModify = true
       }
       this.setCondition()
-      this.styleChange()
     },
 
     setCondition() {
@@ -215,10 +227,6 @@ export default {
         if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') { return null }
         return defaultV.split(',')[0]
       }
-    },
-
-    styleChange() {
-      this.$store.commit('recordStyleChange')
     },
     optionDatas(datas) {
       if (!datas) return null

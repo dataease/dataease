@@ -7,6 +7,7 @@ import io.dataease.auth.service.impl.AuthUserServiceImpl;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.base.mapper.ext.ExtTaskMapper;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.CronUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.job.sechedule.ScheduleManager;
@@ -14,6 +15,7 @@ import io.dataease.job.sechedule.strategy.TaskHandler;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
 import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.xpack.email.dto.request.XpackEmailTaskRequest;
 import io.dataease.plugins.xpack.email.dto.request.XpackPixelEntity;
 import io.dataease.plugins.xpack.email.dto.response.XpackEmailTemplateDTO;
 import io.dataease.plugins.xpack.email.service.EmailXpackService;
@@ -67,7 +69,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
         GlobalTaskEntity taskEntity = (GlobalTaskEntity) jobDataMap.get("taskEntity");
         ScheduleManager scheduleManager = SpringContextUtil.getBean(ScheduleManager.class);
-        if (taskExpire(taskEntity.getEndTime())) {
+        if (CronUtils.taskExpire(taskEntity.getEndTime())) {
             removeTask(scheduleManager, taskEntity);
             return;
         }
@@ -126,7 +128,10 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             SysUserEntity user) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         try {
-
+            XpackEmailTaskRequest taskForm = emailXpackService.taskForm(taskInstance.getTaskId());
+            if (ObjectUtils.isEmpty(taskForm) || CronUtils.taskExpire(taskForm.getEndTime())) {
+                return;
+            }
             String panelId = emailTemplateDTO.getPanelId();
             String url = panelUrl(panelId);
             String token = tokenByUser(user);
@@ -147,7 +152,6 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             emailService.sendWithImage(recipients, emailTemplateDTO.getTitle(),
                     contentStr, bytes);
 
-            Thread.sleep(10000);
             success(taskInstance);
         } catch (Exception e) {
             error(taskInstance, e);

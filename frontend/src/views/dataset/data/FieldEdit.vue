@@ -72,8 +72,8 @@
                 </el-option>
               </el-select>
               <span style="margin-left: 8px;">
-                <span v-if="scope.row.deType === 0">
-                  <svg-icon v-if="scope.row.deType === 0" icon-class="field_text" class="field-icon-text" />
+                <span v-if="scope.row.deType === 0 || scope.row.deType === 6">
+                  <svg-icon v-if="scope.row.deType === 0 || scope.row.deType === 6" icon-class="field_text" class="field-icon-text" />
                   <span class="field-class">{{ $t('dataset.text') }}</span>
                 </span>
                 <span v-if="scope.row.deType === 1">
@@ -95,8 +95,8 @@
           <el-table-column property="deExtractType" :label="$t('dataset.origin_field_type')" width="100">
             <template slot-scope="scope">
               <span v-if="scope.row.extField === 0">
-                <span v-if="scope.row.deExtractType === 0">
-                  <svg-icon v-if="scope.row.deExtractType === 0" icon-class="field_text" class="field-icon-text" />
+                <span v-if="scope.row.deExtractType === 0 || scope.row.deExtractType === 6">
+                  <svg-icon v-if="scope.row.deExtractType === 0 || scope.row.deExtractType === 6" icon-class="field_text" class="field-icon-text" />
                   <span class="field-class">{{ $t('dataset.text') }}</span>
                 </span>
                 <span v-if="scope.row.deExtractType === 1">
@@ -392,7 +392,7 @@ export default {
         cancelButtonText: this.$t('dataset.cancel'),
         type: 'warning'
       }).then(() => {
-        post('/dataset/field/delete/' + item.id, null).then(response => {
+        post('/dataset/field/delete/' + item.id + '/' + item.tableId, null).then(response => {
           this.$message({
             type: 'success',
             message: this.$t('chart.delete_success'),

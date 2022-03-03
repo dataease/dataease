@@ -2,7 +2,7 @@
   <div class="de-tabs-div">
     <el-tabs v-model="activeTabName" type="card" class="de-tabs">
       <el-tab-pane
-        v-for="(item, index) in tabList"
+        v-for="(item, index) in element.options.tabList"
         :key="item.name+index"
         :lazy="true"
         :name="item.name"
@@ -26,7 +26,7 @@
                 {{ $t('detabs.selectview') }}
               </el-dropdown-item>
 
-              <el-dropdown-item v-if="tabList.length > 1" :command="beforeHandleCommond('deleteCur', item)">
+              <el-dropdown-item v-if=" element.options.tabList.length > 1" :command="beforeHandleCommond('deleteCur', item)">
                 {{ $t('table.delete') }}
               </el-dropdown-item>
 
@@ -35,7 +35,26 @@
         </span>
 
         <div v-if="activeTabName === item.name" class="de-tab-content">
-          <user-view v-if="item.content && item.content.propValue && item.content.propValue.viewId" :ref="item.name" :in-tab="true" :is-edit="isEdit" :active="active" :element="item.content" :out-style="outStyle" />
+          <!-- <user-view
+            v-if="item.content && item.content.propValue && item.content.propValue.viewId"
+            :ref="item.name"
+            :in-tab="true"
+            :is-edit="isEdit"
+            :active="active"
+            :element="item.content"
+            :filters="item.content.filters"
+            :out-style="outStyle"
+          /> -->
+          <user-view
+            v-if="item.content && item.content.propValue && item.content.propValue.viewId"
+            :ref="item.name"
+            :in-tab="true"
+            :is-edit="isEdit"
+            :active="active"
+            :element="item.content"
+            :filters="filterMap[item.content.propValue && item.content.propValue.viewId] || []"
+            :out-style="outStyle"
+          />
         </div>
 
       </el-tab-pane>
@@ -95,7 +114,8 @@ import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import componentList from '@/components/canvas/custom-component/component-list'
 import { mapState } from 'vuex'
-
+import { chartCopy } from '@/api/chart/chart'
+import { buildFilterMap } from '@/utils/conditionUtil'
 export default {
   name: 'DeTabls',
   components: { ViewSelect },
@@ -130,15 +150,23 @@ export default {
       dialogVisible: false,
       textarea: '',
       curItem: null,
-      viewDialogVisible: false,
-      tabList: []
+      viewDialogVisible: false
+
     }
   },
   computed: {
     dropdownShow() {
       return this.isEdit && !this.mobileLayoutStatus
     },
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
+    filterMap() {
+      const map = buildFilterMap(this.componentData)
+      return map
+    },
     ...mapState([
+      'componentData',
       'curComponent',
       'mobileLayoutStatus'
     ])
@@ -152,8 +180,7 @@ export default {
   },
   created() {
     bus.$on('add-new-tab', this.addNewTab)
-    this.tabList = this.element.options && this.element.options.tabList
-    this.activeTabName = this.tabList[0].name
+    this.activeTabName = this.element.options.tabList[0].name
   },
   methods: {
     beforeHandleCommond(item, param) {
@@ -192,7 +219,8 @@ export default {
       const newComponentId = uuid.v1()
       const componentInfo = {
         type: 'view',
-        id: node.id
+        /* id: node.id */
+        id: node.innerId
       }
 
       componentList.forEach(componentTemp => {
@@ -210,11 +238,14 @@ export default {
       component.id = newComponentId
       component.style.width = '100%'
       component.style.height = '100%'
-      this.curItem.content = component
-      this.curItem.name = newComponentId
-      this.viewDialogVisible = false
-      this.activeTabName = newComponentId
-      this.styleChange()
+      chartCopy(node.innerId, this.panelInfo.id).then(res => {
+        component.propValue.viewId = res.data
+        this.curItem.content = component
+        this.curItem.name = newComponentId
+        this.viewDialogVisible = false
+        this.activeTabName = newComponentId
+        this.styleChange()
+      })
       // this.setComponentInfo()
     },
 
@@ -239,7 +270,7 @@ export default {
       while (len--) {
         if (this.element.options.tabList[len].name === param.name) {
           this.element.options.tabList.splice(len, 1)
-          this.tabList = this.element.options.tabList
+
           const activIndex = (len - 1 + this.element.options.tabList.length) % this.element.options.tabList.length
           this.activeTabName = this.element.options.tabList[activIndex].name
         }
@@ -256,7 +287,7 @@ export default {
         content: null
       }
       this.element.options.tabList.push(tab)
-      this.tabList = this.element.options.tabList
+
       this.styleChange()
     },
     styleChange() {

@@ -10,19 +10,16 @@
 
     <select id="searchOneWithPrivileges" resultMap="BaseResultMapDTO">
         select
-        chart_view.*,
-        get_auths(id,'chart',#{userId}) as `privileges`
+        chart_view.*
         from chart_view where id = #{id}
     </select>
 
     <select id="searchOne" resultMap="BaseResultMapDTO">
         select
         id, `name`, scene_id, table_id, `type`, title, create_by, create_time, update_time,
-        style_priority,x_axis, y_axis, custom_attr, custom_style, custom_filter, snapshot,
-        get_auths(id,'chart',#{userId}) as `privileges`
-        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'chart') cids) t,chart_view
+        style_priority,x_axis, y_axis, custom_attr, custom_style, custom_filter, snapshot
+        from chart_view
         <where>
-            FIND_IN_SET(chart_view.id,cids)
             <if test="sceneId != null">
                 and scene_id = #{sceneId,jdbcType=VARCHAR}
             </if>
@@ -94,6 +91,7 @@
             `type`,
             `title`,
             `x_axis`,
+            `x_axis_ext`,
             `y_axis`,
             `custom_attr`,
             `custom_style`,
@@ -109,15 +107,17 @@
             `y_axis_ext`,
             `render`,
             `result_count`,
-            `result_mode`
+            `result_mode`,
+            `chart_type`
         ) SELECT
         #{newChartId},
         GET_CHART_VIEW_COPY_NAME ( #{oldChartId} ),
-        `scene_id`,
+        #{panelId},
         `table_id`,
         `type`,
         GET_CHART_VIEW_COPY_NAME ( #{oldChartId} ),
         `x_axis`,
+        `x_axis_ext`,
         `y_axis`,
         `custom_attr`,
         `custom_style`,
@@ -133,7 +133,8 @@
         `y_axis_ext`,
         `render`,
         `result_count`,
-        `result_mode`
+        `result_mode`,
+        'private'
         FROM
             chart_view
         WHERE
@@ -158,4 +159,81 @@
     <select id="checkSameDataSet" resultType="int">
        select count(DISTINCT table_id)  from chart_view where id = #{viewIdSource} or id = #{viewIdTarget}
     </select>
+
+    <insert id ='chartCopyWithPanel'>
+        INSERT INTO chart_view (
+            id,
+            `name`,
+            title,
+            scene_id,
+            table_id,
+            `type`,
+            render,
+            result_count,
+            result_mode,
+            create_by,
+            create_time,
+            update_time,
+            style_priority,
+            chart_type,
+            is_plugin,
+            x_axis,
+            x_axis_ext,
+            y_axis,
+            y_axis_ext,
+            ext_stack,
+            ext_bubble,
+            custom_attr,
+            custom_style,
+            custom_filter,
+            drill_fields,
+            SNAPSHOT
+            ) SELECT
+            pv_copy.chart_view_id AS id,
+            `name`,
+            title,
+            pv_copy.panel_id AS scene_id,
+            table_id,
+            `type`,
+            render,
+            result_count,
+            result_mode,
+            create_by,
+            create_time,
+            update_time,
+            style_priority,
+            chart_type,
+            is_plugin,
+            x_axis,
+            x_axis_ext,
+            y_axis,
+            y_axis_ext,
+            ext_stack,
+            ext_bubble,
+            custom_attr,
+            custom_style,
+            custom_filter,
+            drill_fields,
+        SNAPSHOT
+        FROM
+            (
+            SELECT
+                panel_id,
+                copy_from_view,
+                chart_view_id
+            FROM
+                panel_view
+            WHERE
+                copy_id = #{copyId}
+            ) pv_copy
+            LEFT JOIN chart_view ON chart_view.id = pv_copy.copy_from_view
+    </insert>
+
+    <delete id="deleteCircleView">
+        delete chart_view from (select GET_CHART_GROUP_WITH_CHILDREN(#{pid}) cids) t,chart_view where FIND_IN_SET(chart_view.id,cids) and chart_type='public'
+    </delete>
+
+    <delete id="deleteCircleGroup">
+        delete chart_group from (select GET_CHART_GROUP_WITH_CHILDREN(#{pid}) cids) t,chart_group where FIND_IN_SET(chart_group.id,cids)
+    </delete>
 </mapper>

@@ -37,7 +37,6 @@ export default {
   methods: {
     // 切换main区内容
     switchMain(param) {
-      console.log(param)
       const {component, componentParam, tData} = param
       this.component = DataHome
       this.param = null

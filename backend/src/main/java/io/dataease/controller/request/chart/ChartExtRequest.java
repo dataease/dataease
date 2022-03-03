@@ -1,8 +1,10 @@
 package io.dataease.controller.request.chart;
 
+import io.dataease.dto.PermissionProxy;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -16,7 +18,7 @@ public class ChartExtRequest {
     @ApiModelProperty("视图额外过滤条件集合")
     private List<ChartExtFilterRequest> filter;
 
-    //联动过滤条件
+    // 联动过滤条件
     @ApiModelProperty("联动过滤条件集合")
     private List<ChartExtFilterRequest> linkageFilters;
 
@@ -37,4 +39,7 @@ public class ChartExtRequest {
 
     @ApiModelProperty("用户ID")
     private Long user = null;
+
+    @ApiModelProperty(hidden = true)
+    private PermissionProxy proxy;
 }

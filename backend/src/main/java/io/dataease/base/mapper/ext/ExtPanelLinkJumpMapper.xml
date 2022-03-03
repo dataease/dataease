@@ -36,7 +36,7 @@
             panel_link_jump_info.jump_type,
             panel_link_jump_info.target_panel_id,
             panel_link_jump_info.content,
-            panel_link_mapping.id as publicJumpId,
+            ifnull( panel_link_mapping.uuid, panel_link_mapping.id ) AS publicJumpId,
             ifnull( panel_link_jump_info.checked, 0 ) AS checked,
             panel_link_jump_target_view_info.target_view_id,
             panel_link_jump_target_view_info.target_field_id
@@ -163,4 +163,92 @@
             AND lji.target_panel_id = #{request.targetPanelId}
             AND lji.source_field_id = #{request.sourceFieldId}
     </select>
+
+    <insert id="copyLinkJump" >
+        insert into panel_link_jump (id, source_panel_id, source_view_id, link_jump_info, `checked`, copy_from, copy_id)
+            select
+            UUID() as id,
+            panel_view_copy.t_panel_id as source_panel_id,
+            panel_view_copy.t_chart_view_id as source_view_id,
+            panel_link_jump.link_jump_info,
+            panel_link_jump.checked,
+            panel_link_jump.id as copy_from,
+            #{copyId} as copy_id
+            from panel_link_jump inner join
+            (SELECT
+            pvs.panel_id as s_panel_id,
+            pvs.chart_view_id as s_chart_view_id,
+            pvt.panel_id as t_panel_id,
+            pvt.chart_view_id as t_chart_view_id
+        FROM
+            panel_view pvt
+            inner JOIN panel_view pvs ON pvt.copy_from = pvs.id
+            WHERE
+            pvt.copy_id = #{copyId}) panel_view_copy on panel_link_jump.source_panel_id = panel_view_copy.s_panel_id
+            and panel_link_jump.source_view_id = panel_view_copy.s_chart_view_id
+	</insert>
+
+    <insert id="copyLinkJumpInfo">
+        INSERT INTO panel_link_jump_info (
+            id,
+            link_jump_id,
+            link_type,
+            jump_type,
+            target_panel_id,
+            source_field_id,
+            content,
+            `checked`,
+            copy_from,
+            copy_id
+        ) SELECT
+        uuid() AS id,
+        plj_copy.t_id,
+        link_type,
+        jump_type,
+        target_panel_id,
+        source_field_id,
+        content,
+        `checked`,
+        id AS copy_from,
+        #{copyId}
+        FROM
+            panel_link_jump_info
+            inner JOIN (
+            SELECT
+                id AS t_id,
+                copy_from AS s_id
+            FROM
+                panel_link_jump
+            WHERE
+                copy_id = #{copyId}
+            ) plj_copy ON panel_link_jump_info.link_jump_id = plj_copy.s_id
+    </insert>
+
+    <insert id ="copyLinkJumpTarget">
+        INSERT INTO panel_link_jump_target_view_info (
+            target_id,
+            link_jump_info_id,
+            target_view_id,
+            target_field_id,
+            copy_from,
+            copy_id
+        ) SELECT
+        uuid() AS id,
+        plji_copy.t_id AS link_jump_info_id,
+        target_view_id,
+        target_field_id,
+        copy_from,
+        #{copyId} AS copy_id
+        FROM
+            panel_link_jump_target_view_info
+            inner JOIN (
+            SELECT
+                id AS t_id,
+                copy_from AS s_id
+            FROM
+                panel_link_jump_info
+            WHERE
+                copy_id = #{copyId}
+            ) plji_copy ON panel_link_jump_target_view_info.link_jump_info_id = plji_copy.s_id
+    </insert>
 </mapper>

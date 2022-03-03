@@ -10,6 +10,8 @@
     <result column="update_people" jdbcType="VARCHAR" property="updatePeople" />
     <result column="ext1" jdbcType="VARCHAR" property="ext1" />
     <result column="ext2" jdbcType="VARCHAR" property="ext2" />
+    <result column="copy_from" jdbcType="VARCHAR" property="copyFrom" />
+    <result column="copy_id" jdbcType="VARCHAR" property="copyId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,7 +72,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, panel_id, source_view_id, target_view_id, update_time, update_people, ext1, ext2
+    id, panel_id, source_view_id, target_view_id, update_time, update_people, ext1, ext2, 
+    copy_from, copy_id
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.PanelViewLinkageExample" resultMap="BaseResultMap">
     select
@@ -105,10 +108,12 @@
   <insert id="insert" parameterType="io.dataease.base.domain.PanelViewLinkage">
     insert into panel_view_linkage (id, panel_id, source_view_id, 
       target_view_id, update_time, update_people, 
-      ext1, ext2)
+      ext1, ext2, copy_from, 
+      copy_id)
     values (#{id,jdbcType=VARCHAR}, #{panelId,jdbcType=VARCHAR}, #{sourceViewId,jdbcType=VARCHAR}, 
       #{targetViewId,jdbcType=VARCHAR}, #{updateTime,jdbcType=BIGINT}, #{updatePeople,jdbcType=VARCHAR}, 
-      #{ext1,jdbcType=VARCHAR}, #{ext2,jdbcType=VARCHAR})
+      #{ext1,jdbcType=VARCHAR}, #{ext2,jdbcType=VARCHAR}, #{copyFrom,jdbcType=VARCHAR}, 
+      #{copyId,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelViewLinkage">
     insert into panel_view_linkage
@@ -137,6 +142,12 @@
       <if test="ext2 != null">
         ext2,
       </if>
+      <if test="copyFrom != null">
+        copy_from,
+      </if>
+      <if test="copyId != null">
+        copy_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -162,6 +173,12 @@
       </if>
       <if test="ext2 != null">
         #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="copyFrom != null">
+        #{copyFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="copyId != null">
+        #{copyId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -198,6 +215,12 @@
       <if test="record.ext2 != null">
         ext2 = #{record.ext2,jdbcType=VARCHAR},
       </if>
+      <if test="record.copyFrom != null">
+        copy_from = #{record.copyFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="record.copyId != null">
+        copy_id = #{record.copyId,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -212,7 +235,9 @@
       update_time = #{record.updateTime,jdbcType=BIGINT},
       update_people = #{record.updatePeople,jdbcType=VARCHAR},
       ext1 = #{record.ext1,jdbcType=VARCHAR},
-      ext2 = #{record.ext2,jdbcType=VARCHAR}
+      ext2 = #{record.ext2,jdbcType=VARCHAR},
+      copy_from = #{record.copyFrom,jdbcType=VARCHAR},
+      copy_id = #{record.copyId,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -241,6 +266,12 @@
       <if test="ext2 != null">
         ext2 = #{ext2,jdbcType=VARCHAR},
       </if>
+      <if test="copyFrom != null">
+        copy_from = #{copyFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="copyId != null">
+        copy_id = #{copyId,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -252,7 +283,9 @@
       update_time = #{updateTime,jdbcType=BIGINT},
       update_people = #{updatePeople,jdbcType=VARCHAR},
       ext1 = #{ext1,jdbcType=VARCHAR},
-      ext2 = #{ext2,jdbcType=VARCHAR}
+      ext2 = #{ext2,jdbcType=VARCHAR},
+      copy_from = #{copyFrom,jdbcType=VARCHAR},
+      copy_id = #{copyId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

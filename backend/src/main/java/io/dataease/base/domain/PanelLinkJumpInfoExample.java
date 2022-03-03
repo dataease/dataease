@@ -653,6 +653,146 @@ public class PanelLinkJumpInfoExample {
             addCriterion("`checked` not between", value1, value2, "checked");
             return (Criteria) this;
         }
+
+        public Criteria andCopyFromIsNull() {
+            addCriterion("copy_from is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyFromIsNotNull() {
+            addCriterion("copy_from is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyFromEqualTo(String value) {
+            addCriterion("copy_from =", value, "copyFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyFromNotEqualTo(String value) {
+            addCriterion("copy_from <>", value, "copyFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyFromGreaterThan(String value) {
+            addCriterion("copy_from >", value, "copyFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyFromGreaterThanOrEqualTo(String value) {
+            addCriterion("copy_from >=", value, "copyFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyFromLessThan(String value) {
+            addCriterion("copy_from <", value, "copyFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyFromLessThanOrEqualTo(String value) {
+            addCriterion("copy_from <=", value, "copyFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyFromLike(String value) {
+            addCriterion("copy_from like", value, "copyFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyFromNotLike(String value) {
+            addCriterion("copy_from not like", value, "copyFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyFromIn(List<String> values) {
+            addCriterion("copy_from in", values, "copyFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyFromNotIn(List<String> values) {
+            addCriterion("copy_from not in", values, "copyFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyFromBetween(String value1, String value2) {
+            addCriterion("copy_from between", value1, value2, "copyFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyFromNotBetween(String value1, String value2) {
+            addCriterion("copy_from not between", value1, value2, "copyFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdIsNull() {
+            addCriterion("copy_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdIsNotNull() {
+            addCriterion("copy_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdEqualTo(String value) {
+            addCriterion("copy_id =", value, "copyId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdNotEqualTo(String value) {
+            addCriterion("copy_id <>", value, "copyId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdGreaterThan(String value) {
+            addCriterion("copy_id >", value, "copyId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdGreaterThanOrEqualTo(String value) {
+            addCriterion("copy_id >=", value, "copyId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdLessThan(String value) {
+            addCriterion("copy_id <", value, "copyId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdLessThanOrEqualTo(String value) {
+            addCriterion("copy_id <=", value, "copyId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdLike(String value) {
+            addCriterion("copy_id like", value, "copyId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdNotLike(String value) {
+            addCriterion("copy_id not like", value, "copyId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdIn(List<String> values) {
+            addCriterion("copy_id in", values, "copyId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdNotIn(List<String> values) {
+            addCriterion("copy_id not in", values, "copyId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdBetween(String value1, String value2) {
+            addCriterion("copy_id between", value1, value2, "copyId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCopyIdNotBetween(String value1, String value2) {
+            addCriterion("copy_id not between", value1, value2, "copyId");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

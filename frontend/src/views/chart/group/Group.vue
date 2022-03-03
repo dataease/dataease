@@ -188,20 +188,6 @@
               <el-input v-model="chartName" style="height: 34px" size="mini" />
             </el-form-item>
           </el-col>
-          <el-col v-if="optFrom==='panel'" :span="12">
-            <el-form-item :label="$t('chart.belong_group')">
-              <treeselect
-                v-model="currGroup.id"
-                :clearable="false"
-                :options="chartGroupTreeAvailable"
-                :normalizer="normalizer"
-                :placeholder="$t('chart.select_group')"
-                :no-children-text="$t('commons.treeselect.no_children_text')"
-                :no-options-text="$t('commons.treeselect.no_options_text')"
-                :no-results-text="$t('commons.treeselect.no_results_text')"
-              />
-            </el-form-item>
-          </el-col>
         </el-form>
       </el-row>
 
@@ -232,7 +218,7 @@
                 v-model="view.type"
                 style="width: 100%"
               >
-                <chart-type :chart="view" style="height: 350px;" />
+                <chart-type ref="cu-chart-type" :chart="view" style="height: 350px;" />
               </el-radio-group>
             </div>
           </el-row>
@@ -434,6 +420,14 @@ export default {
       currentKey: null
     }
   },
+  computed: {
+    chartType() {
+      return this.view.type
+    },
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    }
+  },
   watch: {
     saveStatus() {
     },
@@ -450,6 +444,9 @@ export default {
     searchType(val) {
       this.searchPids = []
       this.$refs.chartTreeRef.filter(this.filterText)
+    },
+    chartType(val) {
+      this.view.isPlugin = val && this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(val)
     }
 
   },
@@ -550,7 +547,8 @@ export default {
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
           view.title = view.name
-          post('/chart/view/save', view).then(response => {
+          view.sceneId = view.pid
+          post('/chart/view/save/' + this.panelInfo.id, view).then(response => {
             this.closeTable()
             this.$message({
               message: this.$t('dataset.save_success'),
@@ -746,6 +744,7 @@ export default {
       view.sceneId = this.currGroup.id
       view.tableId = this.table.id
       view.type = this.view.type
+      view.isPlugin = this.view.isPlugin
       view.render = this.view.render
       view.resultMode = 'custom'
       view.resultCount = 1000
@@ -767,6 +766,7 @@ export default {
       })
       view.stylePriority = 'view' // 默认样式优先级视图
       view.xaxis = JSON.stringify([])
+      view.xaxisExt = JSON.stringify([])
       view.yaxis = JSON.stringify([])
       view.yaxisExt = JSON.stringify([])
       view.extStack = JSON.stringify([])
@@ -775,7 +775,7 @@ export default {
       view.extBubble = JSON.stringify([])
       this.setChartDefaultOptions(view)
       const _this = this
-      post('/chart/view/save', view).then(response => {
+      post('/chart/view/save/' + this.panelInfo.id, view).then(response => {
         this.closeCreateChart()
         this.$store.dispatch('chart/setTableId', null)
         this.$store.dispatch('chart/setTableId', this.table.id)
@@ -908,7 +908,7 @@ export default {
     saveMoveDs() {
       const newSceneId = this.tDs.id
       this.dsForm.sceneId = newSceneId
-      post('/chart/view/save', this.dsForm).then(res => {
+      post('/chart/view/save/' + this.panelInfo.id, this.dsForm).then(res => {
         this.closeMoveDs()
         this.expandedArray.push(newSceneId)
         this.treeNode()

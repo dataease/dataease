@@ -2,6 +2,7 @@ package io.dataease.commons.utils;
 
 import io.dataease.commons.model.ITreeBase;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,6 +19,9 @@ public class TreeUtils{
      */
     public static<T extends ITreeBase> List<T> mergeTree(List<T> tree,String ... rootPid) {
         Assert.notNull(rootPid, "Root Pid cannot be null");
+        if(CollectionUtils.isEmpty(tree)){
+            return null;
+        }
         List<T> result = new ArrayList<>();
         // 构建id-节点map映射
         Map<String, T> treePidMap = tree.stream().collect(Collectors.toMap(T::getId, t -> t));

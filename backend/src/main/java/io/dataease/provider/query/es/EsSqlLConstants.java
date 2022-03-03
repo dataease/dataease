@@ -21,7 +21,7 @@ public class EsSqlLConstants extends SQLConstants {
 
     public static final String ROUND = "ROUND(%s, %s)";
 
-    public static final String DEFAULT_DATE_FORMAT = "YYYY-MM-dd HH:mm:ss";
+    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public static final String WHERE_VALUE_NULL = "(NULL,'')";
 

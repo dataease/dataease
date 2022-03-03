@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 
 @Component
-@Order(value = 1)
+@Order(value = 2)
 public class DataSourceInitStartListener implements ApplicationListener<ApplicationReadyEvent> {
     @Resource
     private DatasourceService datasourceService;

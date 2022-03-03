@@ -1,6 +1,6 @@
 package io.dataease.commons.utils;
 
-import io.dataease.dto.datasource.TableFiled;
+import io.dataease.dto.datasource.TableField;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.i18n.Translator;
 import org.apache.poi.hssf.eventusermodel.*;
@@ -94,7 +94,7 @@ public class ExcelXlsReader implements HSSFListener {
     @SuppressWarnings("unused")
     private String sheetName;
 
-    public List<TableFiled> fields = new ArrayList<>();
+    public List<TableField> fields = new ArrayList<>();
     public List<List<String>> data = new ArrayList<>();
     public List<ExcelSheetData> totalSheets = new ArrayList<>();
     /**
@@ -103,11 +103,11 @@ public class ExcelXlsReader implements HSSFListener {
     private boolean isDateFormat = false;
 
 
-    public List<TableFiled> getFields() {
+    public List<TableField> getFields() {
         return fields;
     }
 
-    public void setFields(List<TableFiled> fields) {
+    public void setFields(List<TableField> fields) {
         this.fields = fields;
     }
 
@@ -308,13 +308,13 @@ public class ExcelXlsReader implements HSSFListener {
 
             if(curRow == 0){
                 for (String s : cellList) {
-                    TableFiled tableFiled = new TableFiled();
-                    tableFiled.setFieldType("TEXT");
-                    tableFiled.setFieldSize(65533);
-                    tableFiled.setFieldName(s);
-                    tableFiled.setRemarks(s);
-                    this.fields.add(tableFiled);
-                    totalSheets.get(totalSheets.size() -1).getFields().add(tableFiled);
+                    TableField tableField = new TableField();
+                    tableField.setFieldType("TEXT");
+                    tableField.setFieldSize(65533);
+                    tableField.setFieldName(s);
+                    tableField.setRemarks(s);
+                    this.fields.add(tableField);
+                    totalSheets.get(totalSheets.size() -1).getFields().add(tableField);
                 }
             }
 

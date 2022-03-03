@@ -27,19 +27,9 @@
             "style": {
                 "navigationBarTitleText": "",
                 "app-plus": {
-                    "titleNView": {
-                        "type": "transparent",
-                        "buttons": [{
-                            "type": "share"
-                        }]
-                    }
-                },
-                "h5": {
-                    "titleNView": {
-                        "type": "transparent",
-                        "buttons": []
-                    }
-                }
+					"titleNView": false,
+					"bounce": "none"
+				}
             }
         },
         {
@@ -183,18 +173,18 @@
 		"list": [{
 				"pagePath": "pages/tabBar/home/index",
 				"iconPath": "static/home.png",
-				"selectedIconPath": "static/home.png",
+				"selectedIconPath": "static/home_select.png",
 				"text": "%navigate.menuHome%"
 			},
 			{
 				"pagePath": "pages/tabBar/dir/index",
 				"iconPath": "static/dir.png",
-				"selectedIconPath": "static/dir.png",
+				"selectedIconPath": "static/dir_select.png",
 				"text": "%navigate.menuDir%"
 			}, {
 				"pagePath": "pages/tabBar/me/index",
 				"iconPath": "static/me.png",
-				"selectedIconPath": "static/me.png",
+				"selectedIconPath": "static/me_select.png",
 				"text": "%navigate.menuMe%"
 			}
 		]

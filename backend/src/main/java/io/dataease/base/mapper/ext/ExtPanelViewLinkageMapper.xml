@@ -110,4 +110,89 @@
         WHERE
             panel_view_linkage.panel_id = #{panelId}
     </select>
+
+    <insert id="copyViewLinkage">
+        INSERT INTO panel_view_linkage (
+                id,
+                panel_id,
+                source_view_id,
+                target_view_id,
+                update_time,
+                update_people,
+                ext1,
+                ext2,
+                copy_from,
+                copy_id
+            ) SELECT
+            UUID() AS id,
+            pv_source_copy.t_panel_id AS panel_id,
+            pv_source_copy.t_chart_view_id AS source_view_id,
+            pv_target_copy.t_chart_view_id target_view_id,
+            update_time,
+            update_people,
+            ext1,
+            ext2,
+            id as copy_from,
+            #{copyId} as copy_id
+            FROM
+                panel_view_linkage
+                INNER JOIN (
+                SELECT
+                    pvs.panel_id AS s_panel_id,
+                    pvs.chart_view_id AS s_chart_view_id,
+                    pvt.panel_id AS t_panel_id,
+                    pvt.chart_view_id AS t_chart_view_id
+                FROM
+                    panel_view pvt
+                    inner JOIN panel_view pvs ON pvt.copy_from = pvs.id
+                WHERE
+                    pvt.copy_id = #{copyId}
+                ) pv_source_copy ON panel_view_linkage.panel_id = pv_source_copy.s_panel_id
+                AND panel_view_linkage.source_view_id = pv_source_copy.s_chart_view_id
+                INNER JOIN (
+                SELECT
+                    pvs.panel_id AS s_panel_id,
+                    pvs.chart_view_id AS s_chart_view_id,
+                    pvt.panel_id AS t_panel_id,
+                    pvt.chart_view_id AS t_chart_view_id
+                FROM
+                    panel_view pvt
+                    inner JOIN panel_view pvs ON pvt.copy_from = pvs.id
+                WHERE
+                    pvt.copy_id = #{copyId}
+                ) pv_target_copy ON panel_view_linkage.panel_id = pv_target_copy.s_panel_id
+                AND panel_view_linkage.target_view_id = pv_target_copy.s_chart_view_id
+
+    </insert>
+
+    <insert id ="copyViewLinkageField">
+        INSERT INTO panel_view_linkage_field (
+            id,
+            linkage_id,
+            source_field,
+            target_field,
+            update_time,
+            copy_from,
+            copy_id
+        ) SELECT
+        uuid() AS id,
+        pvlf_copy.t_id,
+        source_field,
+        target_field,
+        update_time,
+        id AS copy_from,
+        #{copyId} AS copy_id
+        FROM
+            panel_view_linkage_field
+            INNER JOIN (
+            SELECT
+                id AS t_id,
+                copy_from AS s_id
+            FROM
+                panel_view_linkage
+            WHERE
+                copy_id = #{copyId}
+            ) pvlf_copy ON panel_view_linkage_field.linkage_id = pvlf_copy.s_id
+
+    </insert>
 </mapper>

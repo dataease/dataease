@@ -19,7 +19,9 @@ const dialogPanel = {
     manualModify: false
   },
   defaultClass: 'text-filter',
-  component: 'de-input-search'
+  component: 'de-input-search',
+  miniSizex: 1,
+  miniSizey: 1
 }
 const drawPanel = {
   type: 'custom',
@@ -64,6 +66,20 @@ class TextInputServiceImpl extends WidgetService {
     return fields.filter(field => {
       return field['deType'] === 0
     })
+  }
+  getParam(element) {
+    const value = this.fillValueDerfault(element)
+    const param = {
+      component: element,
+      value: !value ? [] : Array.isArray(value) ? value : [value],
+      operator: 'like'
+    }
+    return param
+  }
+  fillValueDerfault(element) {
+    const defaultV = element.options.value === null ? '' : element.options.value.toString()
+    if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return null
+    return defaultV.split(',')[0]
   }
 }
 const textInputServiceImpl = new TextInputServiceImpl()

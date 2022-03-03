@@ -18,7 +18,8 @@
         "tw": "繁體中文",
         "zh": "简体中文",
         "sysLanguage": "Follow System",
-        "tips": "Tips"
+        "tips": "Tips",
+        "loading": "loading"
         
     },
     "login": {

@@ -4,6 +4,7 @@ import io.dataease.commons.constants.DatasourceTypes;
 import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.provider.query.DDLProvider;
 import io.dataease.provider.query.QueryProvider;
+import io.dataease.provider.query.api.ApiProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -25,6 +26,8 @@ public class ProviderFactory implements ApplicationContextAware {
         switch (datasourceType) {
             case es:
                 return context.getBean("es", DatasourceProvider.class);
+            case api:
+                return context.getBean("api", DatasourceProvider.class);
             default:
                 return context.getBean("jdbc", DatasourceProvider.class);
         }
@@ -57,6 +60,8 @@ public class ProviderFactory implements ApplicationContextAware {
                 return context.getBean("hiveQuery", QueryProvider.class);
             case db2:
                 return context.getBean("db2Query", QueryProvider.class);
+            case api:
+                return context.getBean("apiQuery", ApiProvider.class);
             default:
                 return context.getBean("mysqlQuery", QueryProvider.class);
         }

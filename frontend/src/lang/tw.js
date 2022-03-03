@@ -131,6 +131,7 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
+    stop: '停止',
     first_login_tips: '您使用的是初始密碼，記得修改密碼哦',
     roger_that: '知道了',
     apply: '應用',
@@ -347,6 +348,8 @@ export default {
     ukey_title: 'API Keys',
     thumbnail: '縮略圖',
     confirm_delete: '確認刪除',
+    confirm_stop: '確認停止',
+    stop_success: '停止成功',
     treeselect: {
       no_children_text: '沒有子節點',
       no_options_text: '沒有可用選項',
@@ -462,7 +465,7 @@ export default {
     display: '顯示設置',
     ldap: 'LDAP設置',
     oidc: 'OIDC設置',
-    theme: '主题设置'
+    theme: '主題設置'
   },
   license: {
     i18n_no_license_record: '沒有 License 記錄',
@@ -1011,7 +1014,22 @@ export default {
     enum_exp: '字段枚舉值',
     pls_slc: '請選擇',
     filter_exp: '過濾值',
-    filter_type: '過濾方式'
+    filter_type: '過濾方式',
+    filter_value_can_not_str: '數值類型字段過濾值不能包含文本',
+    enum_value_can_not_null: '字段枚舉值不能為空',
+    table_config: '表格配置',
+    table_column_width_config: '列寬調整',
+    table_column_adapt: '自適應',
+    table_column_custom: '自定義',
+    chart_table_pivot: '透視表',
+    table_pivot_row: '數據行',
+    field_error_tips: '該字段所對應的數據集原始字段發生變更（包括維度、指標，字段類型，字段被刪除等），建議重新編輯',
+    table_border_color: '邊框顏色',
+    table_header_align: '表頭對齊方式',
+    table_item_align: '表格對齊方式',
+    table_align_left: '左對齊',
+    table_align_center: '居中',
+    table_align_right: '右對齊'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
@@ -1040,6 +1058,7 @@ export default {
     custom_data: '自定義數據集',
     pls_slc_tbl_left: '請從左側選擇錶',
     add_db_table: '添加數據庫數據集',
+    add_api_table: '添加API數據集',
     pls_slc_data_source: '請選擇數據源',
     table: '錶',
     edit: '編輯',
@@ -1234,7 +1253,8 @@ export default {
     union_error: '關聯關繫與關聯字段不能為空',
     union_repeat: '當前數據集已被關聯，請勿重復關聯',
     preview_result: '預覽結果',
-    sql_ds_union_error: '直連模式下SQL數據集，不支持關聯'
+    sql_ds_union_error: '直連模式下SQL數據集，不支持關聯',
+    api_data: 'API 數據集'
   },
   datasource: {
     datasource: '數據源',
@@ -1264,7 +1284,7 @@ export default {
     delete_warning: '確定要刪除嗎?',
     input_name: '請輸入名稱',
     input_limit_2_25: '2-25字符',
-    input_limit_0_50: '0-50字符',
+    input_limit_2_50: '2-50字符',
     oracle_connection_type: '服務名/SID',
     oracle_sid: 'SID',
     oracle_service_name: '服務名',
@@ -1290,7 +1310,39 @@ export default {
     no_less_then_0: '高級設置中的參數不能小於零',
     port_no_less_then_0: '端口不能小於零',
     priority: '高級設置',
-    extra_params: '額外的JDBC連接字符串'
+    extra_params: '額外的JDBC連接字符串',
+    please_input_dataPath: '請輸入 JsonPath 數據路徑',
+    warning: '包含無效數據機',
+    data_table: '數據表',
+    data_table_name: '數據表名稱',
+    method: '請求方式',
+    url: 'URL',
+    add_api_table: '添加 API 數據表',
+    edit_api_table: '編輯 API 數據表',
+    base_info: '基礎信息',
+    request: '請求',
+    path_all_info: '請輸入完整地址',
+    req_param: '請求參數',
+    headers: '請求頭',
+    key: '鍵',
+    value: '值',
+    data_path: '提取數據',
+    data_path_desc: '請用 JsonPath 填寫數據路徑',
+    body_form_data: 'form-data',
+    body_x_www_from_urlencoded: 'x-www-form-urlencoded',
+    body_json: 'json',
+    body_xml: 'xml',
+    body_raw: 'row',
+    request_body: '請求提',
+    auth_config: '認證配置',
+    auth_config_info: '請求需要進行權限校驗',
+    verified: '認證',
+    verification_method: '認證方式',
+    username: '用戶名',
+    api_table_not_empty: 'API 數據表不能為空',
+    has_repeat_name: 'API 數據表名稱重複',
+    valid: '有效',
+    invalid: '無效'
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',
@@ -1455,7 +1507,7 @@ export default {
     linkage: '聯動',
     jump: '跳轉',
     cancel_linkage: '取消聯動',
-    switch_picture: '更换图片',
+    switch_picture: '更換圖片',
     remove_all_linkage: '清除所有聯動',
     exit_un_march_linkage_field: '存在未匹配聯動關繫的字段',
     details: '詳情',
@@ -1508,7 +1560,11 @@ export default {
     public_link_tips: '當前是公共鏈接模式，目標儀錶闆未設置公共鏈接，無法跳轉',
     input_title: '請輸入標題',
     show_title: '顯示標題',
-    default_settings: '默認值設置'
+    default_settings: '默認值設置',
+    choose_background: '选择组件背景',
+    choose_background_tips: '组件自有的背景设置会覆盖当前设置',
+    setting_background: '设置背景',
+    setting_jump: '跳转设置'
   },
   plugin: {
     local_install: '本地安裝',
@@ -1544,20 +1600,21 @@ export default {
     themeLight: '淺色',
     themeDark: '深色',
     themeCustom: '自定義',
-    openHomePage: '显示首页'
+    openHomePage: '顯示首頁'
 
   },
   auth: {
-    authConfig: '權限配置',
+    authConfig: '按用户配置權限',
+    sourceConfig: '按资源配置權限',
     authQuickConfig: '權限快捷配置',
     dept: '組織',
     role: '角色',
     user: '用戶',
-    linkAuth: '數據源權限',
-    datasetAuth: '數據集權限',
-    chartAuth: '視圖權限',
-    panelAuth: '儀錶闆權限',
-    menuAuth: '菜單和操作權限',
+    linkAuth: '數據源',
+    datasetAuth: '數據集',
+    chartAuth: '視圖',
+    panelAuth: '儀錶闆',
+    menuAuth: '菜單和操作',
     deptHead: '所有組織',
     roleHead: '所有角色',
     userHead: '所有用戶',
@@ -1749,7 +1806,8 @@ export default {
     search_by_name: '根據名稱搜索',
     exec_time: '執行時間',
     status: '執行狀態',
-    pixel_error: '分辨率支持{800 - 10000} * {500 - 6250}'
+    pixel_error: '分辨率支持{800 - 10000} * {500 - 6250}',
+    next_exec_time: '下次執行時間'
 
   },
   emailtask: {
@@ -1803,7 +1861,7 @@ export default {
   dynamic_year: {
     fix: '固定年份',
     dynamic: '動態年份',
-    current: '當年',
+    current: '今年',
     last: '去年'
   },
   dynamic_month: {
@@ -1817,23 +1875,24 @@ export default {
     welcome_title: '歡迎使用DataEase',
     welcome_hint: '人人可用的開源數據可視化分析工具',
     demo_video: '演示視頻',
+    quick_start: '快速入門',
     online_document: '在線文檔',
     latest_developments: '最新動態',
     teaching_video: '教學視頻',
     enterprise_edition: '企業版',
-    contact_us: '聯系我們',
-    demo_video_hint: '如何3分鐘製作一個DataEase 數據看板、並分享給他人',
+    contact_us: '聯繫我們',
+    demo_video_hint: '如何3分鐘製作一個DataEase 數據看闆、並分享給他人',
     online_document_hint: '涵蓋DataEase的安裝步驟、用戶手冊、使用教程、常見問題的解決方案、以及二次開發等',
     teaching_video_bottom_hint: '更多視頻資料',
-    enterprise_edition_hint1: '提供企業級應用場景X-Pack增強包',
+    enterprise_edition_hint1: '提供企業級應用場景 X-Pack 增強包',
     enterprise_edition_hint2: '提供高等級原廠服務支持',
-    enterprise_edition_hint3: '提供DataEase 運維安全最佳實踐',
+    enterprise_edition_hint3: '提供 DataEase 最佳實踐建議',
     open_source_community: '開源社區',
     click_show: '點擊查看',
     show_more: '查看更多',
     click_inner: '點擊進入',
-    email: '邮箱：',
-    tel: '电话：',
-    web: '网址：'
+    email: '郵箱：',
+    tel: '電話：',
+    web: '網址：'
   }
 }

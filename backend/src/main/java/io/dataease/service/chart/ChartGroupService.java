@@ -3,6 +3,7 @@ package io.dataease.service.chart;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartGroupMapper;
 import io.dataease.base.mapper.ext.ExtChartGroupMapper;
+import io.dataease.base.mapper.ext.ExtChartViewMapper;
 import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
@@ -15,6 +16,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
@@ -36,6 +38,8 @@ public class ChartGroupService {
     private ExtDataSetGroupMapper extDataSetGroupMapper;
     @Resource
     private SysAuthService sysAuthService;
+    @Resource
+    private ExtChartViewMapper extChartViewMapper;
 
     public ChartGroupDTO save(ChartGroup chartGroup) {
         checkName(chartGroup);
@@ -53,26 +57,13 @@ public class ChartGroupService {
         return ChartGroupDTO;
     }
 
-    public void delete(String id) {
+    @Transactional
+    public void deleteCircle(String id) {
         Assert.notNull(id, "id cannot be null");
-        sysAuthService.checkTreeNoManageCount("chart",id);
-
-        ChartGroup cg = chartGroupMapper.selectByPrimaryKey(id);
-        ChartGroupRequest ChartGroup = new ChartGroupRequest();
-        BeanUtils.copyBean(ChartGroup, cg);
-        Map<String, String> stringStringMap = extDataSetGroupMapper.searchIds(id, "chart");
-        String[] split = stringStringMap.get("ids").split(",");
-        List<String> ids = new ArrayList<>();
-        for (String dsId : split) {
-            if (StringUtils.isNotEmpty(dsId)) {
-                ids.add(dsId);
-            }
-        }
-        ChartGroupExample ChartGroupExample = new ChartGroupExample();
-        ChartGroupExample.createCriteria().andIdIn(ids);
-        chartGroupMapper.deleteByExample(ChartGroupExample);
-        // 删除所有chart
-        deleteChart(ids);
+        //存量视图删除
+        extChartViewMapper.deleteCircleView(id);
+        //存量分组删除
+        extChartViewMapper.deleteCircleGroup(id);
     }
 
     public void deleteChart(List<String> sceneIds) {
@@ -129,10 +120,6 @@ public class ChartGroupService {
         }
         if (ObjectUtils.isNotEmpty(chartGroup.getLevel())) {
             criteria.andLevelEqualTo(chartGroup.getLevel());
-        }
-        List<ChartGroup> list = chartGroupMapper.selectByExample(chartGroupExample);
-        if (list.size() > 0) {
-            throw new RuntimeException(Translator.get("i18n_name_cant_repeat_same_group"));
         }
     }
 }

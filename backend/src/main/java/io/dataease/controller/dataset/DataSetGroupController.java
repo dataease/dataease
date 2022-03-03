@@ -1,13 +1,18 @@
 package io.dataease.controller.dataset;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.DePermission;
+import io.dataease.auth.annotation.DePermissions;
 import io.dataease.base.domain.DatasetGroup;
+import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.service.dataset.DataSetGroupService;
 import io.dataease.service.dataset.ExtractDataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.Logical;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -28,24 +33,29 @@ public class DataSetGroupController {
     @Resource
     private ExtractDataService extractDataService;
 
+    @DePermissions(value = {
+            @DePermission(type = DePermissionType.DATASET, value = "id"),
+            @DePermission(type = DePermissionType.DATASET, value = "pid", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    }, logical = Logical.AND)
     @ApiOperation("保存")
     @PostMapping("/save")
     public DataSetGroupDTO save(@RequestBody DatasetGroup datasetGroup) {
         return dataSetGroupService.save(datasetGroup);
     }
 
-    @ApiOperation("查询树")
+    @ApiIgnore
     @PostMapping("/tree")
     public List<DataSetGroupDTO> tree(@RequestBody DataSetGroupRequest datasetGroup) {
         return dataSetGroupService.tree(datasetGroup);
     }
 
-    @ApiOperation("查询树节点")
+    @ApiIgnore
     @PostMapping("/treeNode")
     public List<DataSetGroupDTO> treeNode(@RequestBody DataSetGroupRequest datasetGroup) {
         return dataSetGroupService.treeNode(datasetGroup);
     }
 
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("删除")
     @PostMapping("/delete/{id}")
     public void tree(@PathVariable String id) throws Exception {
@@ -58,7 +68,7 @@ public class DataSetGroupController {
         return dataSetGroupService.getScene(id);
     }
 
-    @ApiOperation("检测kettle")
+    @ApiIgnore
     @PostMapping("/isKettleRunning")
     public boolean isKettleRunning() {
         return extractDataService.isKettleRunning();

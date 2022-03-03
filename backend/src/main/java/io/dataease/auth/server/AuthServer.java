@@ -117,6 +117,7 @@ public class AuthServer implements AuthApi {
         // 记录token操作时间
         result.put("token", token);
         ServletUtils.setToken(token);
+        authUserService.clearCache(user.getUserId());
         return result;
     }
 

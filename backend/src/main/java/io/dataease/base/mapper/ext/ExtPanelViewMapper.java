@@ -19,4 +19,7 @@ public interface ExtPanelViewMapper {
     void deleteWithPanelId(String panelId);
 
     void savePanelView(@Param("panelViews") List<PanelViewInsertDTO> panelViews);
+
+    void copyFromPanel(@Param("newPanelId") String newPanelId,@Param("sourcePanelId") String sourcePanelId,@Param("copyId") String copyId);
+
 }

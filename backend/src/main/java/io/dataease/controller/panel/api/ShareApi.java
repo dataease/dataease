@@ -1,9 +1,12 @@
 package io.dataease.controller.panel.api;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.DePermission;
 import io.dataease.base.domain.PanelShare;
+import io.dataease.commons.constants.DePermissionType;
 import io.dataease.controller.request.panel.PanelShareFineDto;
 import io.dataease.controller.request.panel.PanelShareRemoveRequest;
+import io.dataease.controller.request.panel.PanelShareSearchRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelShareDto;
 import io.dataease.dto.panel.PanelShareOutDTO;
@@ -25,8 +28,6 @@ import java.util.List;
 @RequestMapping("/api/share")
 public interface ShareApi {
 
-
-
     @ApiOperation("查询分享给我")
     @PostMapping("/treeList")
     List<PanelShareDto> treeList(BaseGridRequest request);
@@ -35,23 +36,19 @@ public interface ShareApi {
     @PostMapping("/shareOut")
     List<PanelSharePo> shareOut();
 
-
-
     @ApiOperation("根据资源查询分享")
     @PostMapping("/queryWithResourceId")
-    List<PanelShare> queryWithResourceId(BaseGridRequest request);
+    List<PanelShare> queryWithResourceId(PanelShareSearchRequest request);
 
     @ApiOperation("查询分享目标")
     @PostMapping("/queryTargets/{panelId}")
     @ApiImplicitParam(paramType = "path", value = "仪表板ID", name = "panelId", required = true, dataType = "String")
     List<PanelShareOutDTO> queryTargets(@PathVariable("panelId") String panelId);
 
-
+    @DePermission(type = DePermissionType.PANEL, value = "resourceId")
     @ApiOperation("创建分享")
     @PostMapping("/fineSave")
     void fineSave(PanelShareFineDto panelShareFineDto);
-
-
 
     @ApiOperation("删除分享")
     @PostMapping("/removeShares")

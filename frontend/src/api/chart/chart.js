@@ -9,16 +9,6 @@ export function post(url, data) {
   })
 }
 
-export function ajaxGetData(id, data) {
-  return request({
-    url: '/chart/view/getOneWithPermission/' + id,
-    method: 'post',
-    loading: true,
-    hideMsg: true,
-    data
-  })
-}
-
 export function getChartTree(data) {
   return request({
     url: 'api',
@@ -28,11 +18,11 @@ export function getChartTree(data) {
   })
 }
 
-export function chartCopy(id) {
+export function chartCopy(id, panelId) {
   return request({
-    url: '/chart/view/chartCopy/' + id,
+    url: '/chart/view/chartCopy/' + id + '/' + panelId,
     method: 'post',
-    loading: true
+    loading: false
   })
 }
 export function chartGroupTree(data) {
@@ -60,12 +50,28 @@ export function checkSameDataSet(viewIdSource, viewIdTarget) {
   })
 }
 
-export function ajaxGetDataOnly(id, data) {
+export function ajaxGetDataOnly(id, panelId, data) {
   return request({
-    url: '/chart/view/getData/' + id,
+    url: '/chart/view/getData/' + id + '/' + panelId,
     method: 'post',
     loading: true,
     hideMsg: true,
     data
   })
 }
+
+export function pluginTypes() {
+  return request({
+    url: '/plugin/view/types',
+    method: 'post'
+  })
+}
+
+export function deleteCircle(id) {
+  return request({
+    url: '/chart/group/deleteCircle/' + id,
+    method: 'post',
+    loading: true
+  })
+}
+

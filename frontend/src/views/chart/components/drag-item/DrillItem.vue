@@ -1,19 +1,8 @@
 <template>
   <span>
-    <el-tag v-if="!hasDataPermission('manage',param.privileges)" size="small" class="item-axis" :type="item.groupType === 'q'?'success':''">
-      <span style="float: left">
-        <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-        <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-        <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
-        <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-        <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
-        <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
-      </span>
-      <span class="item-span-style" :title="item.name">{{ item.name }}</span>
-    </el-tag>
-    <el-dropdown v-else trigger="click" size="mini" @command="clickItem">
+    <el-dropdown trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
-        <el-tag size="small" class="item-axis" :type="item.groupType === 'q'?'success':''">
+        <el-tag size="small" class="item-axis" :type="tagType">
           <span style="float: left">
             <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
             <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
@@ -23,6 +12,7 @@
             <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
           </span>
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
+          <field-error-tips v-if="tagType === 'danger'" />
           <i class="el-icon-arrow-down el-icon--right" style="position: absolute;top: 6px;right: 10px;" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
@@ -36,8 +26,12 @@
 </template>
 
 <script>
+import { getItemType } from '@/views/chart/components/drag-item/utils'
+import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
+
 export default {
   name: 'DrillItem',
+  components: { FieldErrorTips },
   props: {
     param: {
       type: Object,
@@ -50,10 +44,30 @@ export default {
     index: {
       type: Number,
       required: true
+    },
+    dimensionData: {
+      type: Array,
+      required: true
+    },
+    quotaData: {
+      type: Array,
+      required: true
     }
   },
   data() {
     return {
+      tagType: getItemType(this.dimensionData, this.quotaData, this.item)
+    }
+  },
+  watch: {
+    dimensionData: function() {
+      this.getItemTagType()
+    },
+    quotaData: function() {
+      this.getItemTagType()
+    },
+    item: function() {
+      this.getItemTagType()
     }
   },
   mounted() {
@@ -79,6 +93,9 @@ export default {
     removeItem() {
       this.item.index = this.index
       this.$emit('onDimensionItemRemove', this.item)
+    },
+    getItemTagType() {
+      this.tagType = getItemType(this.dimensionData, this.quotaData, this.item)
     }
   }
 }

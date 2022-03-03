@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { userLists } from '@/api/system/user'
+import { userListsWithOutPage } from '@/api/system/user'
 import { formatCondition } from '@/utils/index'
 import { loadShares } from '@/api/panel/share'
 /* import { saveShare, loadShares } from '@/api/panel/share' */
@@ -69,10 +69,10 @@ export default {
     search(condition) {
       const temp = formatCondition(condition)
       const param = temp || {}
-      userLists(1, 0, param).then(response => {
+      userListsWithOutPage(param).then(response => {
         const data = response.data
-        this.data = data.listObject.filter(ele => ele.id !== this.$store.getters.user.userId)
-        this.tableData = data.listObject.filter(ele => ele.id !== this.$store.getters.user.userId)
+        this.data = data.filter(ele => ele.id !== this.$store.getters.user.userId)
+        this.tableData = data.filter(ele => ele.id !== this.$store.getters.user.userId)
         this.queryShareNodeIds()
       })
     },
@@ -100,9 +100,7 @@ export default {
     },
 
     queryShareNodeIds(callBack) {
-      const conditionResourceId = { field: 'panel_group_id', operator: 'eq', value: this.resourceId }
-      const conditionType = { field: 'type', operator: 'eq', value: this.type }
-      const param = { conditions: [conditionResourceId, conditionType] }
+      const param = { resourceId: this.resourceId, type: this.type }
       loadShares(param).then(res => {
         const shares = res.data
         const nodeIds = shares.map(share => share.targetId)

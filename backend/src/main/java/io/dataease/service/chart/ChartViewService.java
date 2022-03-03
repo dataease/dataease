@@ -2,6 +2,9 @@ package io.dataease.service.chart;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.auth.entity.SysUserEntity;
+import io.dataease.auth.service.AuthUserService;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.base.mapper.ext.ExtChartGroupMapper;
@@ -18,6 +21,7 @@ import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.controller.response.ChartDetail;
 import io.dataease.controller.response.DataSetDetail;
 import io.dataease.dto.chart.*;
+import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.i18n.Translator;
@@ -43,8 +47,6 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import static io.dataease.commons.constants.ColumnPermissionConstants.Desensitization_desc;
-
 /**
  * @Author gin
  * @Date 2021/3/1 12:34 下午
@@ -67,6 +69,8 @@ public class ChartViewService {
     private DataSetTableUnionService dataSetTableUnionService;
     @Resource
     private PermissionService permissionService;
+    @Resource
+    private AuthUserService authUserService;
 
     //默认使用非公平
     private ReentrantLock lock = new ReentrantLock();
@@ -75,13 +79,14 @@ public class ChartViewService {
         checkName(chartView);
         long timestamp = System.currentTimeMillis();
         chartView.setUpdateTime(timestamp);
-        int i = chartViewMapper.updateByPrimaryKeySelective(chartView);
-        if (i == 0) {
+        if (ObjectUtils.isEmpty(chartView.getId())) {
             chartView.setId(UUID.randomUUID().toString());
             chartView.setCreateBy(AuthUtils.getUser().getUsername());
             chartView.setCreateTime(timestamp);
             chartView.setUpdateTime(timestamp);
             chartViewMapper.insertSelective(chartView);
+        } else {
+            chartViewMapper.updateByPrimaryKeySelective(chartView);
         }
         Optional.ofNullable(chartView.getId()).ifPresent(id -> {
             CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
@@ -216,8 +221,15 @@ public class ChartViewService {
         if (ObjectUtils.isEmpty(view)) {
             throw new RuntimeException(Translator.get("i18n_chart_delete"));
         }
-        List<ChartViewFieldDTO> xAxis = new Gson().fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {}.getType());
-        List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {}.getType());
+        List<ChartViewFieldDTO> xAxis = new Gson().fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
+        }.getType());
+        if (StringUtils.equalsIgnoreCase(view.getType(), "table-pivot")) {
+            List<ChartViewFieldDTO> xAxisExt = new Gson().fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
+            }.getType());
+            xAxis.addAll(xAxisExt);
+        }
+        List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
+        }.getType());
         if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")) {
             List<ChartViewFieldDTO> yAxisExt = new Gson().fromJson(view.getYAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
             }.getType());
@@ -235,13 +247,16 @@ public class ChartViewService {
 
         DatasetTableField datasetTableFieldObj = DatasetTableField.builder().tableId(view.getTableId()).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableFieldObj);
-        DatasetTable datasetTable = dataSetTableService.get(view.getTableId());
+        // 获取数据集,需校验权限
+        DataSetTableDTO table = dataSetTableService.getWithPermission(view.getTableId(), requestList.getUser());
+        checkPermission("use", table, requestList.getUser());
 
         //列权限
         List<String> desensitizationList = new ArrayList<>();
-        fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), requestList.getUser());
+        List<DatasetTableField> columnPermissionFields = permissionService.filterColumnPermissons(fields, desensitizationList, table.getId(), requestList.getUser());
         //将没有权限的列删掉
-        List<String> dataeaseNames = fields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList());
+        List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList());
+        dataeaseNames.add("*");
         fieldCustomFilter = fieldCustomFilter.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
         extStack = extStack.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
         extBubble = extBubble.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
@@ -249,8 +264,8 @@ public class ChartViewService {
 
 
         //行权限
-        List<ChartFieldCustomFilterDTO> permissionFields = permissionService.getCustomFilters(fields, datasetTable, requestList.getUser());
-        fieldCustomFilter.addAll(permissionFields);
+        List<ChartFieldCustomFilterDTO> rowPermissionFields = permissionService.getCustomFilters(fields, table, requestList.getUser());
+        fieldCustomFilter.addAll(rowPermissionFields);
 
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
             ele.setField(dataSetTableFieldsService.get(ele.getId()));
@@ -301,14 +316,19 @@ public class ChartViewService {
                         filterRequest.setFieldId(fId);
 
                         DatasetTableField datasetTableField = dataSetTableFieldsService.get(fId);
-                        filterRequest.setDatasetTableField(datasetTableField);
-                        if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
-                            if (CollectionUtils.isNotEmpty(filterRequest.getViewIds())) {
-                                if (filterRequest.getViewIds().contains(view.getId())) {
+                        if (datasetTableField == null) {
+                            continue;
+                        }
+                        if (!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
+                            filterRequest.setDatasetTableField(datasetTableField);
+                            if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
+                                if (CollectionUtils.isNotEmpty(filterRequest.getViewIds())) {
+                                    if (filterRequest.getViewIds().contains(view.getId())) {
+                                        extFilterList.add(filterRequest);
+                                    }
+                                } else {
                                     extFilterList.add(filterRequest);
                                 }
-                            } else {
-                                extFilterList.add(filterRequest);
                             }
                         }
                     }
@@ -320,14 +340,16 @@ public class ChartViewService {
         if (ObjectUtils.isNotEmpty(requestList.getLinkageFilters())) {
             for (ChartExtFilterRequest request : requestList.getLinkageFilters()) {
                 DatasetTableField datasetTableField = dataSetTableFieldsService.get(request.getFieldId());
-                request.setDatasetTableField(datasetTableField);
-                if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
-                    if (CollectionUtils.isNotEmpty(request.getViewIds())) {
-                        if (request.getViewIds().contains(view.getId())) {
+                if (!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
+                    request.setDatasetTableField(datasetTableField);
+                    if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
+                        if (CollectionUtils.isNotEmpty(request.getViewIds())) {
+                            if (request.getViewIds().contains(view.getId())) {
+                                extFilterList.add(request);
+                            }
+                        } else {
                             extFilterList.add(request);
                         }
-                    } else {
-                        extFilterList.add(request);
                     }
                 }
             }
@@ -374,11 +396,6 @@ public class ChartViewService {
             }
         }
 
-        // 获取数据集,需校验权限
-        DatasetTable table = dataSetTableService.get(view.getTableId());
-        if (ObjectUtils.isEmpty(table)) {
-            throw new RuntimeException(Translator.get("i18n_dataset_delete_or_no_permission"));
-        }
         // 判断连接方式，直连或者定时抽取 table.mode
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         List<String[]> data = new ArrayList<>();
@@ -474,7 +491,7 @@ public class ChartViewService {
             // 仪表板有参数不实用缓存
             if (!cache || CollectionUtils.isNotEmpty(requestList.getFilter())
                     || CollectionUtils.isNotEmpty(requestList.getLinkageFilters())
-                    || CollectionUtils.isNotEmpty(requestList.getDrill())) {
+                    || CollectionUtils.isNotEmpty(requestList.getDrill()) || CollectionUtils.isNotEmpty(rowPermissionFields) || fields.size() != columnPermissionFields.size()) {
                 data = datasourceProvider.getData(datasourceRequest);
             } else {
                 try {
@@ -803,34 +820,68 @@ public class ChartViewService {
                 }
             }
 
-            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
-                AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
-                axisChartDataDTO.setField(a.toString());
-                axisChartDataDTO.setName(a.toString());
+            if (StringUtils.containsIgnoreCase(view.getType(), "table")) {
+                for (int i = 0; i < xAxis.size() + yAxis.size(); i++) {
+                    AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
+                    axisChartDataDTO.setField(a.toString());
+                    axisChartDataDTO.setName(a.toString());
 
-                List<ChartDimensionDTO> dimensionList = new ArrayList<>();
-                List<ChartQuotaDTO> quotaList = new ArrayList<>();
+                    List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+                    List<ChartQuotaDTO> quotaList = new ArrayList<>();
 
-                for (int j = 0; j < xAxis.size(); j++) {
-                    ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
-                    chartDimensionDTO.setId(xAxis.get(j).getId());
-                    chartDimensionDTO.setValue(row[j]);
-                    dimensionList.add(chartDimensionDTO);
+                    for (int j = 0; j < xAxis.size(); j++) {
+                        ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                        chartDimensionDTO.setId(xAxis.get(j).getId());
+                        chartDimensionDTO.setValue(row[j]);
+                        dimensionList.add(chartDimensionDTO);
+                    }
+                    axisChartDataDTO.setDimensionList(dimensionList);
+
+                    int j = i - xAxis.size();
+                    if (j > -1) {
+                        ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
+                        chartQuotaDTO.setId(yAxis.get(j).getId());
+                        quotaList.add(chartQuotaDTO);
+                        axisChartDataDTO.setQuotaList(quotaList);
+                        try {
+                            axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
+                        } catch (Exception e) {
+                            axisChartDataDTO.setValue(new BigDecimal(0));
+                        }
+                        axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                    }
+                    datas.add(axisChartDataDTO);
                 }
-                axisChartDataDTO.setDimensionList(dimensionList);
+            } else {
+                for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                    AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
+                    axisChartDataDTO.setField(a.toString());
+                    axisChartDataDTO.setName(a.toString());
 
-                int j = i - xAxis.size();
-                ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
-                chartQuotaDTO.setId(yAxis.get(j).getId());
-                quotaList.add(chartQuotaDTO);
-                axisChartDataDTO.setQuotaList(quotaList);
-                try {
-                    axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
-                } catch (Exception e) {
-                    axisChartDataDTO.setValue(new BigDecimal(0));
+                    List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+                    List<ChartQuotaDTO> quotaList = new ArrayList<>();
+
+                    for (int j = 0; j < xAxis.size(); j++) {
+                        ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                        chartDimensionDTO.setId(xAxis.get(j).getId());
+                        chartDimensionDTO.setValue(row[j]);
+                        dimensionList.add(chartDimensionDTO);
+                    }
+                    axisChartDataDTO.setDimensionList(dimensionList);
+
+                    int j = i - xAxis.size();
+                    ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
+                    chartQuotaDTO.setId(yAxis.get(j).getId());
+                    quotaList.add(chartQuotaDTO);
+                    axisChartDataDTO.setQuotaList(quotaList);
+                    try {
+                        axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
+                    } catch (Exception e) {
+                        axisChartDataDTO.setValue(new BigDecimal(0));
+                    }
+                    axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                    datas.add(axisChartDataDTO);
                 }
-                axisChartDataDTO.setCategory(yAxis.get(j).getName());
-                datas.add(axisChartDataDTO);
             }
         }
         map.put("datas", datas);
@@ -1606,10 +1657,6 @@ public class ChartViewService {
         if (StringUtils.isNotEmpty(chartView.getName())) {
             criteria.andNameEqualTo(chartView.getName());
         }
-        List<ChartViewWithBLOBs> list = chartViewMapper.selectByExampleWithBLOBs(chartViewExample);
-        if (list.size() > 0) {
-            throw new RuntimeException(Translator.get("i18n_name_cant_repeat_same_group"));
-        }
     }
 
     public ChartDetail getChartDetail(String id) {
@@ -1634,9 +1681,9 @@ public class ChartViewService {
         return chartViewMapper.selectByPrimaryKey(id);
     }
 
-    public String chartCopy(String id) {
+    public String chartCopy(String id, String panelId) {
         String newChartId = UUID.randomUUID().toString();
-        extChartViewMapper.chartCopy(newChartId, id);
+        extChartViewMapper.chartCopy(newChartId, id, panelId);
         return newChartId;
     }
 
@@ -1649,6 +1696,20 @@ public class ChartViewService {
             return "YES";
         } else {
             return "NO";
+        }
+    }
+
+    // check permission
+    private void checkPermission(String needPermission, DataSetTableDTO table,  Long userId) {
+        if (ObjectUtils.isEmpty(table)) {
+            throw new RuntimeException(Translator.get("i18n_dataset_delete"));
+        }
+        SysUserEntity user = AuthUtils.getUser();
+        user = userId != null ? authUserService.getUserById(userId) : user;
+        if (!user.getIsAdmin()) {
+            if (ObjectUtils.isEmpty(table.getPrivileges()) || !table.getPrivileges().contains(needPermission)) {
+                throw new RuntimeException(Translator.get("i18n_dataset_no_permission"));
+            }
         }
     }
 }

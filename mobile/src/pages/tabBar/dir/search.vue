@@ -89,7 +89,7 @@ export default {
             const param = {name: val}
             requestDir(param).then(res => {
                 let dataObj = res.data
-                dataObj.map(item => {
+                dataObj && dataObj.map(item => {
                     item.name = item.text
                     return util.dataHandle(item, val);
                 });
@@ -136,7 +136,7 @@ export default {
 	 * 点击软键盘搜索按键触发
 	 */
 	onNavigationBarSearchInputConfirmed(e) {
-		let text = e.text;
+		/* let text = e.text;
 		if (!text) {
 			this.isHistory = true;
 			this.historyList = [];
@@ -161,7 +161,7 @@ export default {
 					}
 				}
 			});
-		}
+		} */
 	},
 	/**
 	 *  点击导航栏 buttons 时触发

@@ -1,6 +1,6 @@
 package io.dataease.dto.dataset;
 
-import io.dataease.dto.datasource.TableFiled;
+import io.dataease.dto.datasource.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -14,7 +14,7 @@ public class ExcelSheetData {
     @ApiModelProperty("数据集合")
     private List<List<String>> data;
     @ApiModelProperty("字段集合")
-    private List<TableFiled> fields;
+    private List<TableField> fields;
     @ApiModelProperty("是否sheet")
     private boolean isSheet = true;
     @ApiModelProperty("json数组")

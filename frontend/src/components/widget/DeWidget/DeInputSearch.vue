@@ -64,7 +64,7 @@ export default {
   },
   created() {
     if (this.element.options.value) {
-      this.value = this.element.options.value
+      this.value = this.fillValueDerfault()
       this.search()
     }
   },

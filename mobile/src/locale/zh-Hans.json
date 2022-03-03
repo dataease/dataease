@@ -19,7 +19,8 @@
         "tw": "繁體中文",
         "zh": "简体中文",
         "sysLanguage": "跟随系统",
-        "tips": "提示"
+        "tips": "提示",
+        "loading": "加载中"
     },
     "login": {
         "title": "用户登录",

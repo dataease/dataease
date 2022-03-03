@@ -157,8 +157,10 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
         size: parseInt(s.lineSymbolSize),
         shape: s.lineSymbol
       }
-      options.lineStyle = {
-        lineWidth: parseInt(s.lineWidth)
+      options.line = {
+        style: {
+          lineWidth: parseInt(s.lineWidth)
+        }
       }
     }
   }

@@ -10,6 +10,8 @@
     <result column="source_field_id" jdbcType="VARCHAR" property="sourceFieldId" />
     <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="checked" jdbcType="BIT" property="checked" />
+    <result column="copy_from" jdbcType="VARCHAR" property="copyFrom" />
+    <result column="copy_id" jdbcType="VARCHAR" property="copyId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -71,7 +73,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, link_jump_id, link_type, jump_type, target_panel_id, source_field_id, content, 
-    `checked`
+    `checked`, copy_from, copy_id
   </sql>
   <select id="selectByExample" parameterType="io.dataease.base.domain.PanelLinkJumpInfoExample" resultMap="BaseResultMap">
     select
@@ -106,10 +108,12 @@
   <insert id="insert" parameterType="io.dataease.base.domain.PanelLinkJumpInfo">
     insert into panel_link_jump_info (id, link_jump_id, link_type, 
       jump_type, target_panel_id, source_field_id, 
-      content, `checked`)
+      content, `checked`, copy_from, 
+      copy_id)
     values (#{id,jdbcType=VARCHAR}, #{linkJumpId,jdbcType=VARCHAR}, #{linkType,jdbcType=VARCHAR}, 
       #{jumpType,jdbcType=VARCHAR}, #{targetPanelId,jdbcType=VARCHAR}, #{sourceFieldId,jdbcType=VARCHAR}, 
-      #{content,jdbcType=VARCHAR}, #{checked,jdbcType=BIT})
+      #{content,jdbcType=VARCHAR}, #{checked,jdbcType=BIT}, #{copyFrom,jdbcType=VARCHAR}, 
+      #{copyId,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelLinkJumpInfo">
     insert into panel_link_jump_info
@@ -138,6 +142,12 @@
       <if test="checked != null">
         `checked`,
       </if>
+      <if test="copyFrom != null">
+        copy_from,
+      </if>
+      <if test="copyId != null">
+        copy_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -163,6 +173,12 @@
       </if>
       <if test="checked != null">
         #{checked,jdbcType=BIT},
+      </if>
+      <if test="copyFrom != null">
+        #{copyFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="copyId != null">
+        #{copyId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -199,6 +215,12 @@
       <if test="record.checked != null">
         `checked` = #{record.checked,jdbcType=BIT},
       </if>
+      <if test="record.copyFrom != null">
+        copy_from = #{record.copyFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="record.copyId != null">
+        copy_id = #{record.copyId,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -213,7 +235,9 @@
       target_panel_id = #{record.targetPanelId,jdbcType=VARCHAR},
       source_field_id = #{record.sourceFieldId,jdbcType=VARCHAR},
       content = #{record.content,jdbcType=VARCHAR},
-      `checked` = #{record.checked,jdbcType=BIT}
+      `checked` = #{record.checked,jdbcType=BIT},
+      copy_from = #{record.copyFrom,jdbcType=VARCHAR},
+      copy_id = #{record.copyId,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -242,6 +266,12 @@
       <if test="checked != null">
         `checked` = #{checked,jdbcType=BIT},
       </if>
+      <if test="copyFrom != null">
+        copy_from = #{copyFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="copyId != null">
+        copy_id = #{copyId,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -253,7 +283,9 @@
       target_panel_id = #{targetPanelId,jdbcType=VARCHAR},
       source_field_id = #{sourceFieldId,jdbcType=VARCHAR},
       content = #{content,jdbcType=VARCHAR},
-      `checked` = #{checked,jdbcType=BIT}
+      `checked` = #{checked,jdbcType=BIT},
+      copy_from = #{copyFrom,jdbcType=VARCHAR},
+      copy_id = #{copyId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

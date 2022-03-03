@@ -131,6 +131,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    stop: '停止',
     first_login_tips: '您使用的是初始密码，记得修改密码哦',
     roger_that: '知道了',
     apply: '应用',
@@ -348,6 +349,8 @@ export default {
     ukey_title: 'API Keys',
     thumbnail: '缩略图',
     confirm_delete: '确认删除',
+    confirm_stop: '确认停止',
+    stop_success: '停止成功',
     treeselect: {
       no_children_text: '没有子节点',
       no_options_text: '没有可用选项',
@@ -675,6 +678,7 @@ export default {
     custom_data: '自定义数据集',
     pls_slc_tbl_left: '请从左侧选视图',
     add_db_table: '添加数据库数据集',
+    add_api_table: '添加API数据集',
     pls_slc_data_source: '请选择数据源',
     table: '表',
     edit: '编辑',
@@ -1013,7 +1017,22 @@ export default {
     enum_exp: '字段枚举值',
     pls_slc: '请选择',
     filter_exp: '过滤值',
-    filter_type: '过滤方式'
+    filter_type: '过滤方式',
+    filter_value_can_not_str: '数值类型字段过滤值不能包含文本',
+    enum_value_can_not_null: '字段枚举值不能为空',
+    table_config: '表格配置',
+    table_column_width_config: '列宽调整',
+    table_column_adapt: '自适应',
+    table_column_custom: '自定义',
+    chart_table_pivot: '透视表',
+    table_pivot_row: '数据行',
+    field_error_tips: '该字段所对应的数据集原始字段发生变更（包括维度、指标，字段类型，字段被删除等），建议重新编辑',
+    table_border_color: '边框颜色',
+    table_header_align: '表头对齐方式',
+    table_item_align: '表格对齐方式',
+    table_align_left: '左对齐',
+    table_align_center: '居中',
+    table_align_right: '右对齐'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1237,7 +1256,8 @@ export default {
     union_error: '关联关系与关联字段不能为空',
     union_repeat: '当前数据集已被关联，请勿重复关联',
     preview_result: '预览结果',
-    sql_ds_union_error: '直连模式下SQL数据集，不支持关联'
+    sql_ds_union_error: '直连模式下SQL数据集，不支持关联',
+    api_data: 'API 数据集'
   },
   datasource: {
     datasource: '数据源',
@@ -1268,7 +1288,7 @@ export default {
     delete_warning: '确定要删除吗?',
     input_name: '请输入名称',
     input_limit_2_25: '2-25字符',
-    input_limit_0_50: '0-50字符',
+    input_limit_2_50: '2-50字符',
     oracle_connection_type: '服务名/SID',
     oracle_sid: 'SID',
     oracle_service_name: '服务名',
@@ -1298,7 +1318,39 @@ export default {
     direct: '直连模式',
     extract: '抽取模式',
     all_compute_mode: '直连、抽取模式',
-    extra_params: '额外的JDBC连接字符串'
+    extra_params: '额外的JDBC连接字符串',
+    please_input_dataPath: '请输入 JsonPath 数据路径',
+    warning: '包含无效数据集',
+    data_table: '数据表',
+    data_table_name: '数据表名称',
+    method: '请求方式',
+    url: 'URL',
+    add_api_table: '添加API数据表',
+    edit_api_table: '编辑API数据表',
+    base_info: '基础信息',
+    request: '请求',
+    path_all_info: '请填入完整地址',
+    req_param: '请求参数',
+    headers: '请求头',
+    key: '键',
+    value: '值',
+    data_path: '提取数据',
+    data_path_desc: '请用JsonPath填写数据路径',
+    body_form_data: 'form-data',
+    body_x_www_from_urlencoded: 'x-www-form-urlencoded',
+    body_json: 'json',
+    body_xml: 'xml',
+    body_raw: 'row',
+    request_body: '请求体',
+    auth_config: '认证配置',
+    auth_config_info: '请求需要进行权限校验',
+    verified: '认证',
+    verification_method: '认证方式',
+    username: '用户名',
+    api_table_not_empty: 'API 数据表不能为空',
+    has_repeat_name: 'API 数据表名称重复',
+    valid: '有效',
+    invalid: '无效'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',
@@ -1517,7 +1569,11 @@ export default {
     public_link_tips: '当前是公共链接模式，目标仪表板未设置公共链接，无法跳转',
     input_title: '请输入标题',
     show_title: '显示标题',
-    default_settings: '默认值设置'
+    default_settings: '默认值设置',
+    choose_background: '选择组件背景',
+    choose_background_tips: '组件自有的背景设置会覆盖当前设置',
+    setting_background: '设置背景',
+    setting_jump: '跳转设置'
   },
   plugin: {
     local_install: '本地安装',
@@ -1557,16 +1613,17 @@ export default {
 
   },
   auth: {
-    authConfig: '权限配置',
+    authConfig: '按用户配置权限',
+    sourceConfig: '按资源配置权限',
     authQuickConfig: '权限快捷配置',
     dept: '组织',
     role: '角色',
     user: '用户',
-    linkAuth: '数据源权限',
-    datasetAuth: '数据集权限',
-    chartAuth: '视图权限',
-    panelAuth: '仪表板权限',
-    menuAuth: '菜单和操作权限',
+    linkAuth: '数据源',
+    datasetAuth: '数据集',
+    chartAuth: '视图',
+    panelAuth: '仪表板',
+    menuAuth: '菜单和操作',
     deptHead: '所有组织',
     roleHead: '所有角色',
     userHead: '所有用户',
@@ -1759,7 +1816,8 @@ export default {
     search_by_name: '根据名称搜索',
     exec_time: '执行时间',
     status: '执行状态',
-    pixel_error: '分辨率支持{800 - 10000} * {500 - 6250}'
+    pixel_error: '分辨率支持{800 - 10000} * {500 - 6250}',
+    next_exec_time: '下次执行时间'
 
   },
   emailtask: {
@@ -1813,7 +1871,7 @@ export default {
   dynamic_year: {
     fix: '固定年份',
     dynamic: '动态年份',
-    current: '当年',
+    current: '今年',
     last: '去年'
   },
   dynamic_month: {
@@ -1827,6 +1885,7 @@ export default {
     welcome_title: '欢迎使用DataEase',
     welcome_hint: '人人可用的开源数据可视化分析工具',
     demo_video: '演示视频',
+    quick_start: '快速入门',
     online_document: '在线文档',
     latest_developments: '最新动态',
     teaching_video: '教学视频',
@@ -1835,9 +1894,9 @@ export default {
     demo_video_hint: '如何3分钟制作一个DataEase 数据看板、并分享给他人',
     online_document_hint: '涵盖DataEase的安装步骤、用户手册、使用教程、常见问题的解决方案、以及二次开发等',
     teaching_video_bottom_hint: '更多视频资料',
-    enterprise_edition_hint1: '提供企业级应用场景X-Pack增强包',
+    enterprise_edition_hint1: '提供企业级应用场景 X-Pack 增强包',
     enterprise_edition_hint2: '提供高等级原厂服务支持',
-    enterprise_edition_hint3: '提供DataEase 运维安全最佳实践',
+    enterprise_edition_hint3: '提供 DataEase 最佳实践建议',
     open_source_community: '开源社区',
     click_show: '点击查看',
     show_more: '查看更多',

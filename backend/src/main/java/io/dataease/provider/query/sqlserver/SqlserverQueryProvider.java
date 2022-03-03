@@ -172,7 +172,7 @@ public class SqlserverQueryProvider extends QueryProvider {
     @Override
     public String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
         String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
-        return String.format("SELECT top %s * from %s ", limit.toString(), schema + "." + table);
+        return String.format("SELECT top %s * from %s ", limit.toString(), schema + "." + String.format(SqlServerSQLConstants.KEYWORD_TABLE, table));
     }
 
     @Override

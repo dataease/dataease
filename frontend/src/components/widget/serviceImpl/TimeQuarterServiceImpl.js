@@ -28,7 +28,9 @@ const drawPanel = {
     textAlign: '',
     color: ''
   },
-  component: 'de-quarter'
+  component: 'de-quarter',
+  miniSizex: 1,
+  miniSizey: 1
 }
 
 class TimeQuarterServiceImpl extends WidgetService {

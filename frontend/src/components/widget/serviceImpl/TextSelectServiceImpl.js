@@ -1,6 +1,5 @@
 
 import { WidgetService } from '../service/WidgetService'
-
 const leftPanel = {
   icon: 'iconfont icon-xialakuang',
   label: 'detextselect.label',
@@ -24,7 +23,9 @@ const dialogPanel = {
     manualModify: false
   },
   defaultClass: 'text-filter',
-  component: 'de-select'
+  component: 'de-select',
+  miniSizex: 1,
+  miniSizey: 1
 }
 const drawPanel = {
   type: 'custom',
@@ -78,6 +79,27 @@ class TextSelectServiceImpl extends WidgetService {
         text: item
       }
     })
+  }
+
+  getParam(element) {
+    const value = this.fillValueDerfault(element)
+    const param = {
+      component: element,
+      value: !value ? [] : Array.isArray(value) ? value : value.toString().split(','),
+      operator: element.options.attrs.multiple ? 'in' : 'eq'
+    }
+    return param
+  }
+
+  fillValueDerfault(element) {
+    const defaultV = element.options.value === null ? '' : element.options.value.toString()
+    if (element.options.attrs.multiple) {
+      if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
+      return defaultV.split(',')
+    } else {
+      if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return null
+      return defaultV.split(',')[0]
+    }
   }
 }
 const textSelectServiceImpl = new TextSelectServiceImpl()

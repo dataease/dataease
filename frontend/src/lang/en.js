@@ -131,6 +131,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    stop: 'Stop',
     first_login_tips: 'Please change the initial password',
     roger_that: 'Roger That',
     apply: 'Apply',
@@ -347,6 +348,8 @@ export default {
     ukey_title: 'API Keys',
     thumbnail: 'thumbnail',
     confirm_delete: 'Confirm delete',
+    confirm_stop: 'Confirm stop',
+    stop_success: 'Stop success',
     treeselect: {
       no_children_text: 'No sub-options.',
       no_options_text: 'No options available.',
@@ -1011,7 +1014,22 @@ export default {
     enum_exp: 'Enum',
     pls_slc: 'Please Select',
     filter_exp: 'Filter Value',
-    filter_type: 'Filter Type'
+    filter_type: 'Filter Type',
+    filter_value_can_not_str: 'Value type can not input string',
+    enum_value_can_not_null: 'Enum Value can not empty.',
+    table_config: 'Table Config',
+    table_column_width_config: 'Column Width',
+    table_column_adapt: 'Adapt',
+    table_column_custom: 'Custom',
+    chart_table_pivot: 'Pivot Table',
+    table_pivot_row: 'Data Row',
+    field_error_tips: 'This field is changed(Include dimension、quota，field type，deleted),please edit again.',
+    table_border_color: 'Border Color',
+    table_header_align: 'Header Align',
+    table_item_align: 'Body Align',
+    table_align_left: 'Left',
+    table_align_center: 'Center',
+    table_align_right: 'Right'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1040,6 +1058,7 @@ export default {
     custom_data: 'Custom Dataset',
     pls_slc_tbl_left: 'Please select the chart from the left',
     add_db_table: 'Add Database Dataset',
+    add_api_table: 'Add API Dataset',
     pls_slc_data_source: 'Please select data source',
     table: 'Table',
     edit: 'Edit',
@@ -1234,7 +1253,8 @@ export default {
     union_error: 'Union relation and field can not be empty',
     union_repeat: 'This dataset is already union，do not union repeat',
     preview_result: 'Preview',
-    sql_ds_union_error: 'Direct connect SQL dataset can not be union'
+    sql_ds_union_error: 'Direct connect SQL dataset can not be union',
+    api_data: 'API dataset'
   },
   datasource: {
     datasource: 'Data Source',
@@ -1263,7 +1283,7 @@ export default {
     delete_warning: 'Confirm to delete?',
     input_name: 'Please input name',
     input_limit_2_25: '2-25 chars',
-    input_limit_0_50: '0-50 chars',
+    input_limit_2_50: '2-50 chars',
     oracle_connection_type: 'Service Name/SID',
     oracle_sid: 'SID',
     oracle_service_name: 'Service Name',
@@ -1289,7 +1309,39 @@ export default {
     no_less_then_0: 'Parameters in advanced settings cannot be less than zero',
     port_no_less_then_0: 'Port cannot be less than zero',
     priority: 'Advanced setting',
-    extra_params: 'Extra JDBC connection string'
+    extra_params: 'Extra JDBC connection string',
+    please_input_dataPath: 'Please enter the JsonPath data path',
+    warning: 'Contains invalid datasets',
+    data_table: 'Dataset Table',
+    data_table_name: 'Dataset Table name',
+    method: 'Request mode',
+    url: 'URL',
+    add_api_table: 'Add API table',
+    edit_api_table: 'Edit API table',
+    base_info: 'Basic information',
+    request: 'Request',
+    path_all_info: 'Please fill in the full address',
+    req_param: 'Request parameters',
+    headers: 'Request header',
+    key: 'Key',
+    value: 'Value',
+    data_path: 'Extract data',
+    data_path_desc: 'Please fill in the data path with Jsonpath',
+    body_form_data: 'form-data',
+    body_x_www_from_urlencoded: 'x-www-form-urlencoded',
+    body_json: 'json',
+    body_xml: 'xml',
+    body_raw: 'row',
+    request_body: 'Request Body',
+    auth_config: 'Auth config',
+    auth_config_info: 'Permission verification is required for the request',
+    verified: 'Verified',
+    verification_method: 'Verification Method',
+    username: 'Username',
+    api_table_not_empty: 'API data table cannot be empty',
+    has_repeat_name: 'Duplicate API data table name',
+    valid: 'Valid',
+    invalid: 'Invalid'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',
@@ -1507,7 +1559,9 @@ export default {
     public_link_tips: 'Currently in public link mode, the target panel does not have a public link and cannot jump to it',
     input_title: 'Input Title',
     show_title: 'Show Title',
-    default_settings: 'Default Settings'
+    default_settings: 'Default Settings',
+    choose_background: 'Choose Component Background',
+    choose_background_tips: 'The component`s own background settings will overwrite the current settings'
   },
   plugin: {
     local_install: 'Local installation',
@@ -1522,7 +1576,9 @@ export default {
     release_time: 'Time',
     un_install: 'Uninstall',
     uninstall_confirm: 'Comfirm to uninstall the plugin?',
-    uninstall_cancel: 'Cancel uninstall plugin'
+    uninstall_cancel: 'Cancel uninstall plugin',
+    setting_background: 'BackGround',
+    setting_jump: 'Jump Setting'
   },
   display: {
     logo: 'Head system logo',
@@ -1539,16 +1595,17 @@ export default {
 
   },
   auth: {
-    authConfig: 'Auth Config',
+    authConfig: 'Configure Permissions By User',
+    sourceConfig: 'Configure Permissions By Source',
     authQuickConfig: 'Auth Quick Config',
     dept: 'Dept',
     role: 'Role',
     user: 'User',
-    linkAuth: 'Datasource Permissions',
-    datasetAuth: 'Dataset Permissions',
-    chartAuth: 'Chart Permissions',
-    panelAuth: 'Dashboard Permissions',
-    menuAuth: 'Menu and operation permission',
+    linkAuth: 'Datasource',
+    datasetAuth: 'Dataset',
+    chartAuth: 'Chart',
+    panelAuth: 'Panel',
+    menuAuth: 'Menu And Operation',
     deptHead: 'All Dept',
     roleHead: 'All Role',
     userHead: 'All User',
@@ -1739,7 +1796,8 @@ export default {
     search_by_name: 'Search by name',
     exec_time: 'Execute time',
     status: 'Execute status',
-    pixel_error: 'Pixel only support {800 - 10000} * {500 - 6250}'
+    pixel_error: 'Pixel only support {800 - 10000} * {500 - 6250}',
+    next_exec_time: 'Next execute time'
 
   },
   emailtask: {
@@ -1808,6 +1866,7 @@ export default {
     welcome_title: 'Welcome To Use DataEase',
     welcome_hint: 'Open source data visual analysis tool available to everyone',
     demo_video: 'Demo',
+    quick_start: 'Quick Start',
     online_document: 'Online',
     latest_developments: 'Latest',
     teaching_video: 'Teaching',
@@ -1816,9 +1875,9 @@ export default {
     demo_video_hint: 'How to make a DataEase dashboard in 3 minutes and share it with others',
     online_document_hint: 'It covers the installation steps, user manuals, tutorials, solutions to common problems, and secondary development of DataEase',
     teaching_video_bottom_hint: 'More videos',
-    enterprise_edition_hint1: 'Provide enterprise application scenario x-pack enhancement package',
+    enterprise_edition_hint1: 'Provide enterprise application scenario X-Pack enhancement package',
     enterprise_edition_hint2: 'Provide high-level original factory service support',
-    enterprise_edition_hint3: 'Provide dataease O & M security best practices',
+    enterprise_edition_hint3: 'Provide DateEase best practice recommendations',
     open_source_community: 'Open source community',
     click_show: 'Click To View',
     show_more: 'Show More',

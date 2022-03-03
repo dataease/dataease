@@ -22,4 +22,7 @@ public interface ExtPanelViewLinkageMapper {
 
     void deleteViewLinkageField(@Param("panelId") String panelId,@Param("sourceViewId") String sourceViewId);
 
+    void copyViewLinkage(@Param("copyId") String copyId);
+
+    void copyViewLinkageField(@Param("copyId") String copyId);
 }

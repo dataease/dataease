@@ -287,7 +287,7 @@ export default {
         cancelButtonText: this.$t('dataset.cancel'),
         type: 'warning'
       }).then(() => {
-        post('dataset/union/delete/' + item.id, {}).then(response => {
+        post('dataset/union/delete', item).then(response => {
           this.$message({
             type: 'success',
             message: this.$t('dataset.delete_success'),

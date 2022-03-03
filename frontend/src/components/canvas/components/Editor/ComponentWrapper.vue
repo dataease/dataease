@@ -5,35 +5,38 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
-    <close-bar v-if="previewVisible" @closePreview="closePreview" />
-    <de-out-widget
-      v-if="config.type==='custom'"
-      :id="'component' + config.id"
-      class="component-custom"
-      :style="getComponentStyleDefault(config.style)"
-      style="overflow: hidden"
-      :out-style="config.style"
-      :element="config"
-      :in-screen="inScreen"
-      :edit-mode="'preview'"
-      :h="config.style.height"
-    />
-    <component
-      :is="config.component"
-      v-else
-      ref="wrapperChild"
-      :out-style="config.style"
-      :style="getComponentStyleDefault(config.style)"
-      :prop-value="config.propValue"
-      :is-edit="false"
-      :active="componentActiveFlag"
-      :element="config"
-      :search-count="searchCount"
-      :h="config.style.height"
-      :edit-mode="'preview'"
-      :terminal="terminal"
-    />
+    <div :style="commonStyle">
+      <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
+      <close-bar v-if="previewVisible" @closePreview="closePreview" />
+      <de-out-widget
+        v-if="config.type==='custom'"
+        :id="'component' + config.id"
+        class="component-custom"
+        :style="getComponentStyleDefault(config.style)"
+        style="overflow: hidden"
+        :out-style="config.style"
+        :element="config"
+        :in-screen="inScreen"
+        :edit-mode="'preview'"
+        :h="config.style.height"
+      />
+      <component
+        :is="config.component"
+        v-else
+        ref="wrapperChild"
+        :out-style="config.style"
+        :style="getComponentStyleDefault(config.style)"
+        :prop-value="config.propValue"
+        :is-edit="false"
+        :active="componentActiveFlag"
+        :element="config"
+        :search-count="searchCount"
+        :h="config.style.height"
+        :edit-mode="'preview'"
+        :filters="filters"
+        :terminal="terminal"
+      />
+    </div>
   </div>
 </template>
 
@@ -74,6 +77,10 @@ export default {
     terminal: {
       type: String,
       default: 'pc'
+    },
+    filters: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -82,6 +89,21 @@ export default {
     }
   },
   computed: {
+    commonStyle() {
+      const style = {
+        width: '100%',
+        height: '100%'
+      }
+      if (this.config.commonBackground && this.config.commonBackground.enable) {
+        if (this.config.commonBackground.backgroundType === 'innerImage') {
+          style['background'] = `url(${this.config.commonBackground.innerImage}) no-repeat`
+        } else if (this.config.commonBackground.backgroundType === 'outerImage') {
+          style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat`
+        }
+        style['background-size'] = `100% 100%`
+      }
+      return style
+    },
     componentActiveFlag() {
       return (this.curComponent && this.config === this.curComponent) && !this.previewVisible
     },
@@ -150,11 +172,7 @@ export default {
           height: '100%'
         }
       } else {
-        if (this.terminal === 'pc') {
-          return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
-        } else {
-          return getStyle(style, ['top', 'left', 'width', 'height', 'rotate', 'fontSize'])
-        }
+        return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       }
     },
 

@@ -89,5 +89,6 @@ export default {
   }
   .full-div{
     background-size:100% 100% !important;
+    padding: 5px 0px 5px 0px !important;
   }
 </style>

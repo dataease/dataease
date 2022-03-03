@@ -10,6 +10,7 @@ import { uuid } from 'vue-uuid'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import { queryPanelJumpInfo, queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
+import { panelInit } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'LinkView',
@@ -38,15 +39,17 @@ export default {
       loadResource(this.resourceId).then(res => {
         this.$store.dispatch('panel/setPanelInfo', {
           id: res.data.id,
-          name: res.data.name
+          name: res.data.name,
+          privileges: res.data.privileges
         })
+
+        panelInit(JSON.parse(res.data.panelData), JSON.parse(res.data.panelStyle))
+        // 设置浏览器title为当前仪表板名称
+        document.title = res.data.name
         // 刷新联动信息
         getPanelAllLinkageInfo(this.resourceId).then(rsp => {
           this.$store.commit('setNowPanelTrackInfo', rsp.data)
         })
-        this.$store.commit('setComponentData', this.resetID(JSON.parse(res.data.panelData)))
-        // this.$store.commit('setComponentData', JSON.parse(res.data.panelData))
-        this.$store.commit('setCanvasStyle', JSON.parse(res.data.panelStyle))
         // 刷新跳转信息
         queryPanelJumpInfo(this.resourceId).then(rsp => {
           this.$store.commit('setNowPanelJumpInfo', rsp.data)

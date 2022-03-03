@@ -32,7 +32,7 @@ export default {
     return {
       cardList: [
         {
-          head: this.$t('wizard.demo_video'),
+          head: this.$t('wizard.quick_start'),
           content: this.$t('wizard.demo_video_hint'),
           bottom: '',
           href: 'https://www.bilibili.com/video/BV1UB4y1K7jA',
@@ -42,7 +42,7 @@ export default {
           head: this.$t('wizard.online_document'),
           content: this.$t('wizard.online_document_hint'),
           bottom: '',
-          href: 'https://dataease.io/docs/dev_manual/dev_manual/',
+          href: 'https://dataease.io/docs/index.html',
           component: 'CardDetail'
         },
         {
@@ -54,9 +54,9 @@ export default {
         },
         {
           head: this.$t('wizard.teaching_video'),
-          content: '<a href="https://live.vhall.com/v3/lives/subscribe/533874762" target="_blank"><span style="line-height: 30px">40分钟带你玩转 DataEase </span></a><br><a href="https://live.vhall.com/v3/lives/subscribe/903960272" target="_blank">用DataEase开源工具可视化 ClickHouse数据</a>',
+          content: '<a href="https://www.bilibili.com/video/BV1pb4y1E7Zg?spm_id_from=333.999.0.0" target="_blank">【DataEase教学视频】视图钻取</a><br><a href="https://www.bilibili.com/video/BV1rm4y1f7a7?spm_id_from=333.999.0.0" target="_blank">【DataEase教学视频】视图组件联动</a><br><a href="https://www.bilibili.com/video/BV1Xq4y187H9?spm_id_from=333.999.0.0" target="_blank">【DataEase教学视频】移动端布局设置</a>',
           bottom: '',
-          href: 'https://e.vhall.com/v3/user/home/45637107',
+          href: 'https://space.bilibili.com/510493147/channel/collectiondetail?sid=150431',
           component: 'CardDetail'
         },
         {

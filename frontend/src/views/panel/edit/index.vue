@@ -25,7 +25,7 @@
           <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px">
             <!-- 视图图表 start -->
             <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
-              <el-button :class="show&&showIndex===0? 'button-show':'button-closed'" circle class="el-icon-circle-plus-outline" size="mini" @click="showPanel(0)" />
+              <el-button circle class="el-icon-circle-plus-outline" size="mini" @click="newChart()" />
             </div>
             <div class="button-text" style="position: relative; margin: 18px auto 16px;">
               <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
@@ -66,6 +66,21 @@
               <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
             </div>
             <!-- 其他组件 end -->
+
+            <!-- 视图复用 start -->
+            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
+              <el-button :class="show&&showIndex===0? 'button-show':'button-closed'" circle class="el-icon-copy-document" size="mini" @click="showPanel(0)" />
+            </div>
+            <div class="button-text" style="position: relative; margin: 18px auto 16px;">
+              <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+                <!--                {{ $t('panel.view') }}-->
+                复用
+              </div>
+            </div>
+            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
+            </div>
+            <!-- 视图复用 end -->
           </div>
         </div>
       </de-aside-container>
@@ -217,19 +232,22 @@ import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
 import { deepCopy, panelInit } from '@/components/canvas/utils/utils'
-import componentList, { BASE_MOBILE_STYLE, HYPERLINKS } from '@/components/canvas/custom-component/component-list' // 左侧列表数据
+import componentList, {
+  BASE_MOBILE_STYLE,
+  COMMON_BACKGROUND,
+  HYPERLINKS
+} from '@/components/canvas/custom-component/component-list' // 左侧列表数据
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
-import { findOne } from '@/api/panel/panel'
-import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
+import { initPanelData } from '@/api/panel/panel'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
 import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
 import ChartGroup from '@/views/chart/group/Group'
-import { searchAdviceSceneId } from '@/api/chart/chart'
+import { chartCopy, searchAdviceSceneId } from '@/api/chart/chart'
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
 import '@/components/canvas/styles/animate.css'
@@ -239,7 +257,6 @@ import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
 import TextAttr from '@/components/canvas/components/TextAttr'
-import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 import ComponentWait from '@/views/panel/edit/ComponentWait'
 import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
 
@@ -346,7 +363,7 @@ export default {
     mobileCanvasStyle() {
       let style
       if (this.canvasStyleData.openCommonStyle) {
-        if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
+        if (this.canvasStyleData.panel.backgroundType === 'image' && typeof (this.canvasStyleData.panel.imageUrl) === 'string') {
           style = {
             background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`
           }
@@ -368,7 +385,7 @@ export default {
       }
 
       if (this.canvasStyleData.openCommonStyle) {
-        if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
+        if (this.canvasStyleData.panel.backgroundType === 'image' && typeof (this.canvasStyleData.panel.imageUrl) === 'string') {
           style = {
             background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`,
             ...style
@@ -413,9 +430,6 @@ export default {
       } else {
         removeClass(document.body, 'showRightPanel')
       }
-    },
-    panelInfo(newVal, oldVal) {
-      this.init(newVal.id)
     },
     '$store.state.styleChangeTimes'() {
       if (this.$store.state.styleChangeTimes > 0) {
@@ -467,42 +481,19 @@ export default {
   },
   methods: {
     init(panelId) {
-      this.initHasStar()
+      const _this = this
+      _this.initHasStar()
       // 如果临时画布有数据 则使用临时画布数据（视图编辑的时候 会保存临时画布数据）
       const componentDataTemp = this.$store.state.panel.componentDataTemp
       const canvasStyleDataTemp = this.$store.state.panel.canvasStyleDataTemp
       if (componentDataTemp && canvasStyleDataTemp) {
-        const componentDatas = JSON.parse(componentDataTemp)
-        panelInit(componentDatas)
-        this.$store.commit('setComponentData', this.resetID(componentDatas))
-        const temp = JSON.parse(canvasStyleDataTemp)
-        temp.refreshTime = (temp.refreshTime || 5)
-        temp.refreshViewLoading = (temp.refreshViewLoading || false)
-        temp.refreshUnit = (temp.refreshUnit || 'minute')
-
-        this.$store.commit('setCanvasStyle', temp)
+        panelInit(JSON.parse(componentDataTemp), JSON.parse(canvasStyleDataTemp))
         // 清空临时画布数据
-        this.$store.dispatch('panel/setComponentDataTemp', null)
-        this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
+        _this.$store.dispatch('panel/setComponentDataTemp', null)
+        _this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
       } else if (panelId) {
-        findOne(panelId).then(response => {
-          const componentDatas = JSON.parse(response.data.panelData)
-          panelInit(componentDatas)
-          this.$store.commit('setComponentData', this.resetID(componentDatas))
-          const panelStyle = JSON.parse(response.data.panelStyle)
-          panelStyle.refreshTime = (panelStyle.refreshTime || 5)
-          panelStyle.refreshViewLoading = (panelStyle.refreshViewLoading || false)
-          panelStyle.refreshUnit = (panelStyle.refreshUnit || 'minute')
-          this.$store.commit('setCanvasStyle', panelStyle)
-          this.$store.commit('recordSnapshot', 'init')// 记录快照
-          // 刷新联动信息
-          getPanelAllLinkageInfo(panelId).then(rsp => {
-            this.$store.commit('setNowPanelTrackInfo', rsp.data)
-          })
-          // 刷新跳转信息
-          queryPanelJumpInfo(panelId).then(rsp => {
-            this.$store.commit('setNowPanelJumpInfo', rsp.data)
-          })
+        initPanelData(panelId, function() {
+          _this.$store.commit('recordSnapshot', 'init')// 记录快照
         })
       }
     },
@@ -517,7 +508,7 @@ export default {
       })
     },
     initHasStar() {
-      starStatus(this.panelInfo.id, false).then(res => {
+      this.panelInfo && this.panelInfo.id && starStatus(this.panelInfo.id, false).then(res => {
         this.hasStar = res.data
       })
     },
@@ -628,6 +619,7 @@ export default {
         this.currentFilterCom.id = newComponentId
         this.currentFilterCom.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
         this.currentFilterCom.mobileStyle = BASE_MOBILE_STYLE
+        this.currentFilterCom.commonBackground = this.currentFilterCom.commonBackground || deepCopy(COMMON_BACKGROUND)
 
         if (this.currentWidget.filterDialog) {
           this.show = false
@@ -656,8 +648,20 @@ export default {
       component.id = newComponentId
       // 新拖入的组件矩阵状态 和仪表板当前的矩阵状态 保持一致
       component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
-      this.$store.commit('addComponent', { component })
-      this.$store.commit('recordSnapshot', 'handleDrop')
+      // 统一设置背景信息
+      component.commonBackground = component.commonBackground || deepCopy(COMMON_BACKGROUND)
+
+      // 视图统一调整为复制
+      if (componentInfo.type === 'view') {
+        chartCopy(component.propValue.viewId, this.panelInfo.id).then(res => {
+          component.propValue.viewId = res.data
+          this.$store.commit('addComponent', { component })
+          this.$store.commit('recordSnapshot', 'handleDrop')
+        })
+      } else {
+        this.$store.commit('addComponent', { component })
+        this.$store.commit('recordSnapshot', 'handleDrop')
+      }
       this.clearCurrentInfo()
     },
     clearCurrentInfo() {
@@ -804,12 +808,9 @@ export default {
       }
     },
     newChart() {
-      this.adviceGroupId = null
+      this.adviceGroupId = this.panelInfo.id
       this.show = false
-      searchAdviceSceneId(this.panelInfo.id).then(res => {
-        this.adviceGroupId = res.data
-        this.$refs['chartGroup'].selectTable()
-      })
+      this.$refs['chartGroup'].selectTable()
     },
     newViewInfo(newViewInfo) {
       let component
@@ -868,13 +869,14 @@ export default {
 
     // 如果内部样式有变化 1秒钟后保存一个镜像
     recordStyleChange(index) {
-      this.timeMachine = setTimeout(() => {
-        if (index === this.$store.state.styleChangeTimes) {
-          this.$store.commit('recordSnapshot', 'recordStyleChange')
+      if (index === this.$store.state.styleChangeTimes) {
+        this.timeMachine = setTimeout(() => {
+          // console.log('recordSnapshot')
+          this.$store.commit('recordSnapshot')
           this.$store.state.styleChangeTimes = 0
-        }
-        this.destroyTimeMachine()
-      }, 1000)
+          this.destroyTimeMachine()
+        }, 1000)
+      }
     },
     handleDragOver(e) {
       e.preventDefault()

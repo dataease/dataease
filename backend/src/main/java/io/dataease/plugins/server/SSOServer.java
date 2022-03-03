@@ -30,7 +30,9 @@ import io.dataease.plugins.xpack.oidc.dto.SSOToken;
 import io.dataease.plugins.xpack.oidc.dto.SSOUserInfo;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 import io.dataease.service.sys.SysUserService;
+import springfox.documentation.annotations.ApiIgnore;
 
+@ApiIgnore
 @RequestMapping("/sso")
 @Controller
 public class SSOServer {

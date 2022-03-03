@@ -15,9 +15,15 @@ public interface ExtPanelGroupMapper {
     //会级联删除pid 下的所有数据
     int deleteCircle(@Param("pid") String pid);
 
-    PanelGroupDTO panelGroup(String id);
+    PanelGroupDTO findOneWithPrivileges(@Param("panelId") String panelId,@Param("userId") String userId);
 
     void copyPanelView(@Param("pid") String panelId);
+
+    //移除未使用的视图
+    void removeUselessViews(@Param("panelId") String panelId);
+
+    List<PanelGroupDTO> panelGroupInit();
+
 
 
 }

@@ -24,9 +24,11 @@ import DeComplexSelect from '@/components/business/condition-table/DeComplexSele
 import '@/components/canvas/custom-component' // 注册自定义组件
 
 import '@/utils/DateUtil'
+import draggable from 'vuedraggable'
 Vue.config.productionTip = false
 Vue.use(VueClipboard)
 Vue.use(widgets)
+Vue.component('draggable', draggable)
 Vue.prototype.$api = api
 
 import * as echarts from 'echarts'

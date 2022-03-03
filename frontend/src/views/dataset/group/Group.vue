@@ -99,6 +99,10 @@
                               <svg-icon icon-class="ds-union" class="ds-icon-union" />
                               {{ $t('dataset.union_data') }}
                             </el-dropdown-item>
+                            <el-dropdown-item :command="beforeClickAddData('api',data)">
+                              <svg-icon icon-class="ds-api" class="ds-icon-api" />
+                              {{ $t('dataset.api_data') }}
+                            </el-dropdown-item>
                           </el-dropdown-menu>
                         </el-dropdown>
                       </el-dropdown-item>
@@ -137,6 +141,7 @@
                   <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
                   <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
                   <svg-icon v-if="data.modelInnerType === 'union'" icon-class="ds-union" class="ds-icon-union" />
+                  <svg-icon v-if="data.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
                 </span>
                 <span v-if="data.modelInnerType === 'db' || data.modelInnerType === 'sql'">
                   <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
@@ -426,6 +431,7 @@ export default {
       this.$refs['tableForm'].validate((valid) => {
         if (valid) {
           table.isRename = true
+          table.sceneId = table.pid
           alter(table).then(response => {
             this.closeTable()
             this.$message({
@@ -560,6 +566,9 @@ export default {
           break
         case 'union':
           this.addData('AddUnion')
+          break
+        case 'api':
+          this.addData('AddApi')
           break
       }
     },

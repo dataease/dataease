@@ -14,7 +14,7 @@ public interface ExtChartViewMapper {
 
     ChartViewDTO searchOne(ChartViewRequest request);
 
-    void chartCopy(@Param("newChartId")String newChartId,@Param("oldChartId")String oldChartId);
+    void chartCopy(@Param("newChartId")String newChartId,@Param("oldChartId")String oldChartId,@Param("panelId")String panelId);
 
     @Select("select id from chart_view where table_id = #{tableId}")
     List<String> allViewIds(@Param("tableId") String tableId);
@@ -24,4 +24,10 @@ public interface ExtChartViewMapper {
     int checkSameDataSet(@Param("viewIdSource") String viewIdSource,@Param("viewIdTarget") String viewIdTarget);
 
     ChartViewDTO searchOneWithPrivileges(@Param("userId") String userId,@Param("id") String id );
+
+    void chartCopyWithPanel(@Param("copyId") String copyId);
+
+    void deleteCircleView(@Param("pid") String pid);
+
+    void deleteCircleGroup(@Param("pid") String pid);
 }

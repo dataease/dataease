@@ -6,6 +6,7 @@
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="creator" property="creator" />
+        <result column="user_id"  jdbcType="BIGINT" property="userId" />
     </resultMap>
 
     <resultMap id="targetMap" type="io.dataease.dto.panel.PanelShareOutDTO">
@@ -34,9 +35,10 @@
     </delete>
 
     <select id="query" resultMap="treeNodeMap">
-        select distinct s.panel_group_id as id, IFNULL(s.granter,g.create_by) as creator, g.name
+        select distinct s.panel_group_id as id, u.nick_name as creator, g.name, u.user_id
         from panel_share s
         left join panel_group g on g.id = s.panel_group_id
+        left join sys_user u on u.username = IFNULL(s.granter,g.create_by)
         where
         ( s.target_id = #{userId} and s.type = 0 ) or
         ( s.target_id = #{deptId} and s.type = 2 ) or
@@ -60,14 +62,17 @@
 
     </select>
 
-    <select id="queryWithResource" parameterType="io.dataease.base.mapper.ext.query.GridExample" resultMap="io.dataease.base.mapper.PanelShareMapper.BaseResultMap">
-        select * from panel_share
-        <if test="_parameter != null">
-            <include refid="io.dataease.base.mapper.ext.query.GridSql.gridCondition" />
+    <select id="queryWithResource" parameterType="io.dataease.controller.request.panel.PanelShareSearchRequest" resultMap="io.dataease.base.mapper.PanelShareMapper.BaseResultMap">
+        select s.* 
+        from panel_share s
+        left join panel_group g on g.id = s.panel_group_id
+        where 
+        s.panel_group_id = #{resourceId}
+         <if test="type != null">
+            and s.type = #{type}
         </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
+        and (( s.granter is not null and s.granter = #{currentUserName} ) or ( s.granter is null and g.create_by = #{currentUserName} ))
+        order by s.create_time desc
 
 
     </select>
@@ -88,6 +93,7 @@
             ) as target_name
         from panel_share s
         where s.panel_group_id = #{panelId}
+        and s.granter = #{userName}
 
 
     </select>

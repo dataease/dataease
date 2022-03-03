@@ -50,7 +50,8 @@
 <script>
 import { loadTree, loadShareOutTree, removeShares } from '@/api/panel/share'
 import { uuid } from 'vue-uuid'
-import { get } from '@/api/panel/panel'
+import { initPanelData } from '@/api/panel/panel'
+import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import bus from '@/utils/bus'
 export default {
   name: 'ShareTree',
@@ -103,21 +104,17 @@ export default {
       return loadShareOutTree()
     },
     handleNodeClick(data) {
-      get('panel/group/findOne/' + data.id).then(response => {
-        this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
-        this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
-
-        this.$store.dispatch('panel/setPanelInfo', data)
+      if (!data || !data.userId || !data.id) {
+        return
+      }
+      const param = { userId: data.userId }
+      proxyInitPanelData(data.id, param, function() {
         bus.$emit('set-panel-show-type', 1)
       })
       this.$refs['botTree'].setCurrentKey(null)
     },
     viewMyShare(data) {
-      get('panel/group/findOne/' + data.id).then(response => {
-        this.$store.commit('setComponentData', this.resetID(JSON.parse(response.data.panelData)))
-        this.$store.commit('setCanvasStyle', JSON.parse(response.data.panelStyle))
-
-        this.$store.dispatch('panel/setPanelInfo', data)
+      initPanelData(data.id, function() {
         bus.$emit('set-panel-show-type', 2)
       })
       this.$refs['topTree'].setCurrentKey(null)

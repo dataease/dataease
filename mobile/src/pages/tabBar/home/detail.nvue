@@ -1,35 +1,46 @@
 <template>
-	<view class="page dataease-main">
-        <uni-list>
-            <uni-list-item class="person-title" :title="banner.title" />
-        </uni-list>
+	<view>
+       
+		<uni-nav-bar :fixed="true" left-icon="arrowleft"  @clickLeft="back" :title="banner.title" >
+			<block slot="right">
+				<uni-row class="demo-uni-row" >
+					<uni-col :span="12">
+						<view @click="enshrine">
+						<uni-icons v-if="hasStar"  type="star-filled" size="18" color="#007AFF"></uni-icons>
+						<uni-icons v-else type="star"  size="18" color="#999"></uni-icons>
+						</view>
+					</uni-col>
+					
+					<uni-col :span="12"  style="margin: 0 10rpx;">
+						<view @click="refresh">
+						<uni-icons type="reload" size="18" color="#999" ></uni-icons>
+						</view>
+					</uni-col>
+				</uni-row>
+				
+			</block>
+			
+		</uni-nav-bar>
 		
-		<view class="article-content">
-            <view v-if="url">
-                <web-view
-                :webview-styles="webViewStyles"
-                style="height: calc(100vh - 112px);"
-                >
-                </web-view>
-            </view>
-		</view>
-		<!-- #ifdef MP-WEIXIN || MP-QQ -->
-		<ad v-if="htmlNodes.length > 0" unit-id="adunit-01b7a010bf53d74e"></ad>
-		<!-- #endif -->
+		<scroll-view 
+		
+		:scroll-top="scrollTop" 
+		scroll-y="true" 
+		class="scroll-Y" 
+		@scrolltoupper="upper" 
+		@scrolltolower="lower"
+		@scroll="scroll">
+			
+			<!-- <web-view v-if="url" :style="{height: 'calc(100vh - ' + ktxStatusHeight +'px)'}" /> -->
+			<!-- <web-view v-if="url" style="height: 100vh;" /> -->
+			<web-view v-if="url" :style="{height: viewHeight}" />
 
-        <view  class="card-actions">
-            <view v-if="banner.index === 2" class="card-actions-item">
+		</scroll-view>
+		
+		
+		
 
-            </view>
-            <view v-else class="card-actions-item" @click="enshrine">
-                <uni-icons v-if="hasStar" type="star-filled" size="18" color="#007AFF"></uni-icons>
-                <uni-icons v-else type="star" size="18" color="#999"></uni-icons>
-            </view>
-            
-            <view class="card-actions-item" @click="refresh">
-                <uni-icons type="reload" size="18" color="#999"></uni-icons>
-            </view>
-        </view>
+       
 	</view>
 </template>
 
@@ -72,16 +83,16 @@
 				title: '',
 				banner: {},
 				htmlNodes: [],
-                webViewStyles: {
-                    
-                    progress: {
-                        color: '#FF3333'
-                    },
-                    height: '700px'
-                },
+                
                 url: '',
                 hasStar: false,
-                refreshCount: 0
+                refreshCount: 0,
+				scrollTop: 0,
+				old: {
+					scrollTop: 0
+				},
+				viewHeight: null,
+				ktxStatusHeight: null
 			}
 		},
 		onLoad(event) {
@@ -91,7 +102,7 @@
 			try {
 				this.banner = JSON.parse(decodeURIComponent(payload));
                 uni.showLoading({
-					title: 'loading'
+					title: this.$t('commons.loading')
 				});
                 this.loadLinkUrl()
 			} catch (error) {
@@ -100,12 +111,12 @@
 			uni.setNavigationBarTitle({
 				title: this.banner.title
 			});
-			// this.getDetail();
             this.addRecent()
             uni.$emit('loadHomeIndex', {
                 index: 1
             })
             this.loadStarStatus()
+			this.caclViewHeight()
 
 
 		},
@@ -117,68 +128,10 @@
             uni.navigateBack()
             
         },
-		onShareAppMessage() {
-			return {
-				title: this.banner.title,
-				path: DETAIL_PAGE_PATH + '?detailDate=' + JSON.stringify(this.banner)
-			}
-		},
-		onNavigationBarButtonTap(event) {
-			const buttonIndex = event.index;
-			if (buttonIndex === 0) {
-				// 分享 H5 的页面
-				const shareProviders = [];
-				uni.getProvider({
-					service: 'share',
-					success: (result) => {
-						// 目前仅考虑分享到微信
-						if (result.provider && result.provider.length && ~result.provider.indexOf('weixin')) {
-							const channels = _handleShareChannels(result.provider);
-							uni.showActionSheet({
-								itemList: channels.map(channel => {
-									return channel.text;
-								}),
-								success: (result) => {
-									const tapIndex = result.tapIndex;
-									uni.share({
-										provider: 'weixin',
-										type: 0,
-										title: this.banner.title,
-										scene: tapIndex === 0 ? 'WXSceneSession' : 'WXSenceTimeline',
-										href: 'https://uniapp.dcloud.io/h5' + DETAIL_PAGE_PATH + '?detailDate=' + JSON.stringify(this.banner),
-										imageUrl: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/b6304f00-5168-11eb-bd01-97bc1429a9ff.png'
-									});
-								}
-							});
-						} else {
-							uni.showToast({
-								title: '未检测到可用的微信分享服务'
-							});
-						}
-					},
-					fail: (error) => {
-						uni.showToast({
-							title: '获取分享服务失败'
-						});
-					}
-				});
-			}
-		},
+		
+		
 		methods: {
-			getDetail() {
-				uni.request({
-					url: 'https://unidemo.dcloud.net.cn/api/news/36kr/' + this.banner.post_id,
-					success: (data) => {
-						if (data.statusCode == 200) {
-							var htmlString = data.data.content.replace(/\\/g, "").replace(/<img/g, "<img style=\"display:none;\"");
-							//this.htmlNodes = htmlParser(htmlString);
-						}
-					},
-					fail: () => {
-						console.log('fail');
-					}
-				});
-			},
+			
             addRecent() {
                 const item = {id: this.banner.id, title: this.banner.title, index: this.banner.index}
                 addRecent(item)
@@ -189,7 +142,7 @@
                     if(!this.hasStar) {
                         uni.showToast({
                             icon: 'success',
-                            title: '收藏成功'
+                            title: this.$t('detail.starSuccess')
                         })
                     }
                     this.loadStarStatus()
@@ -201,7 +154,7 @@
             },
             refresh() {
                 uni.showLoading({
-					title: 'loading'
+					title: this.$t('commons.loading')
 				});
                 
                 this.url = null
@@ -214,18 +167,30 @@
                 })
             },
             loadLinkUrl() {
+				
+				
                 this.url = process.env.VUE_APP_BASE_API + 'tempMobileLink/' + this.banner.id + "/" + getToken()
                 const url = this.url
+				/* uni.hideLoading() */
                 setTimeout(() => {
                     const iframe = document.getElementsByTagName("iframe")[0]
-                    
+                    // iframe.style.height = (ktxScreentHeight - ktxStatusHeight) + 'px'
                     iframe.src = url
-                    iframe.onload = e => {
-                        uni.hideLoading()
+                    iframe.onload = e => {						
+                        uni.hideLoading()						
                     }                                        
                 }, 1000);
 
             },
+			caclViewHeight() {
+				let systemInfo = uni.getSystemInfoSync()
+				const h5Height = systemInfo.windowHeight - systemInfo.statusBarHeight
+				if(systemInfo.navigationBarHeight) {
+					h5Height = h5Height - systemInfo.navigationBarHeight
+				}
+				this.viewHeight = h5Height + 'px'
+				
+			},
             back() {   
                 // #ifdef H5  
                 let canBack = true  
@@ -244,57 +209,32 @@
                 return
                 // #endif  
                 uni.navigateBack(1)  
-            }
+            },
+			upper: function(e) {
+				console.log(e)
+			},
+			lower: function(e) {
+				console.log(e)
+			},
+			scroll: function(e) {
+				console.log(e)
+				this.old.scrollTop = e.detail.scrollTop
+			},
+			goTop: function(e) {
+				this.scrollTop = this.old.scrollTop
+				this.$nextTick(() => {
+					this.scrollTop = 0
+				});
+				uni.showToast({
+					icon:"none",
+					title:"纵向滚动 scrollTop 值已被修改为 0"
+				})
+			}
 		}
 	}
 </script>
 
 <style>
-.dataease-main {
-    
-    position: fixed;
-    left: var(--window-left);
-    right: var(--window-right);
-    padding: 5px;
-    height: calc(100vh - 10px);
-    
-}
-
-.person-title {
-    font-weight: 700;
-    font-size: 15px;
-    text-align: center;
-    overflow: hidden;
-    white-space: nowrap;
-    
-    text-overflow: ellipsis;
-    
-}
-.article-content {
-    height: calc(100vh - 110px);
-    margin: 5px 0;
-    background: #ffffff;
-}
-.card-actions {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    height: 45px;
-    border-top: 1px #eee solid;
-    background: #ffffff;
-}
-.card-actions-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-.card-actions-item-text {
-    font-size: 12px;
-    color: #666;
-    margin-left: 5px;
-}
-
 
 
 </style>

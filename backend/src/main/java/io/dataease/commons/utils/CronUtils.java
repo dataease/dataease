@@ -1,10 +1,15 @@
 package io.dataease.commons.utils;
 
+import io.dataease.plugins.common.entity.GlobalTaskEntity;
+import org.apache.commons.lang3.ObjectUtils;
 import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.TriggerBuilder;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -56,6 +61,55 @@ public class CronUtils {
 
         }
         return  date;
+    }
+
+    public static String cron(GlobalTaskEntity taskEntity) {
+        if (taskEntity.getRateType() == -1) {
+            return taskEntity.getRateVal();
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        Date date = null;
+        try {
+            date = sdf.parse(taskEntity.getRateVal());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar instance = Calendar.getInstance();
+        instance.setTime(date);
+
+        if (taskEntity.getRateType() == 0) {
+            return instance.get(Calendar.SECOND) + " " +
+                    instance.get(Calendar.MINUTE) + " " +
+                    instance.get(Calendar.HOUR_OF_DAY) + " * * ?";
+        }
+        if (taskEntity.getRateType() == 1) {
+            return instance.get(Calendar.SECOND) + " " +
+                    instance.get(Calendar.MINUTE) + " " +
+                    instance.get(Calendar.HOUR_OF_DAY) + " ? * " +
+                    getDayOfWeek(instance);
+        }
+        if (taskEntity.getRateType() == 2) {
+            return instance.get(Calendar.SECOND) + " " +
+                    instance.get(Calendar.MINUTE) + " " +
+                    instance.get(Calendar.HOUR_OF_DAY) + " " +
+                    instance.get(Calendar.DATE) + " * ?";
+        }
+
+        return null;
+    }
+    private static String getDayOfWeek(Calendar instance) {
+        int index = instance.get(Calendar.DAY_OF_WEEK);
+        index = (index + 1) % 7;
+        return String.valueOf(index);
+    }
+
+    // 判断任务是否过期
+    public static Boolean taskExpire(Long endTime) {
+        if (ObjectUtils.isEmpty(endTime))
+            return false;
+        Long now = System.currentTimeMillis();
+        return now > endTime;
     }
 
 

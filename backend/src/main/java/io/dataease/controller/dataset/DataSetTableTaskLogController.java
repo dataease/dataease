@@ -3,7 +3,10 @@ package io.dataease.controller.dataset;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.DePermission;
 import io.dataease.base.domain.DatasetTableTaskLog;
+import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.base.BaseGridRequest;
@@ -28,21 +31,23 @@ public class DataSetTableTaskLogController {
     @Resource
     private DataSetTableTaskLogService dataSetTableTaskLogService;
 
+    @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("save")
     public DatasetTableTaskLog save(@RequestBody DatasetTableTaskLog datasetTableTaskLog) {
         return dataSetTableTaskLogService.save(datasetTableTaskLog);
     }
 
-    @ApiOperation("删除")
-    @PostMapping("delete/{id}")
-    public void delete(@PathVariable String id) {
-        dataSetTableTaskLogService.delete(id);
-    }
-
     @ApiOperation("分页查询")
     @PostMapping("list/{type}/{goPage}/{pageSize}")
     public Pager<List<DataSetTaskLogDTO>> list(@RequestBody BaseGridRequest request, @PathVariable String type, @PathVariable int goPage, @PathVariable int pageSize) {
+        Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
+        return PageUtils.setPageInfo(page, dataSetTableTaskLogService.listTaskLog(request, type));
+    }
+
+    @ApiOperation("分页查询")
+    @PostMapping("listForDataset/{type}/{goPage}/{pageSize}")
+    public Pager<List<DataSetTaskLogDTO>> listForDataset(@RequestBody BaseGridRequest request, @PathVariable String type, @PathVariable int goPage, @PathVariable int pageSize) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, dataSetTableTaskLogService.listTaskLog(request, type));
     }

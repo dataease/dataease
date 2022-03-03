@@ -47,7 +47,7 @@ export default {
 
       // 如果是用户视图 测先进行底层复制
       if (data.type === 'view') {
-        chartCopy(data.propValue.viewId).then(res => {
+        chartCopy(data.propValue.viewId, state.panel.panelInfo.id).then(res => {
           const newView = deepCopy(data)
           newView.id = uuid.v1()
           newView.propValue.viewId = res.data
