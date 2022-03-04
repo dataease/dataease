@@ -141,7 +141,7 @@ public class AuthServer implements AuthApi {
     @Override
     public Boolean useInitPwd() {
         CurrentUserDto user = AuthUtils.getUser();
-        if (null == user) {
+        if (null == user || 0 != user.getFrom()) {
             return false;
         }
         String md5 = CodingUtil.md5(DEFAULT_PWD);

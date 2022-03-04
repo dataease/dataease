@@ -1,6 +1,6 @@
 <template>
   <div class="de-tabs-div">
-    <el-tabs v-model="activeTabName" type="card" class="de-tabs">
+    <el-tabs v-model="activeTabName" type="card" class="de-tabs" @tab-click="handleClick">
       <el-tab-pane
         v-for="(item, index) in element.options.tabList"
         :key="item.name+index"
@@ -295,6 +295,15 @@ export default {
     },
     chartResize() {
       // this.$refs[this.activeTabName]
+    },
+    handleClick(tab) {
+      const name = tab.name
+      this.element.options.tabList.forEach(item => {
+        if (item && item.name === name && item.content && item.content.propValue && item.content.propValue.viewId) {
+          this.filterMap[item.content.propValue.viewId] = item.content.filters
+        }
+      })
+      // console.log(tab)
     }
 
   }
