@@ -7,7 +7,8 @@ import {
   getXAxis,
   getYAxis,
   getPadding,
-  getSlider
+  getSlider,
+  getAnalyse
 } from '@/views/chart/chart/common/common_antv'
 
 export function baseLineOptionAntV(plot, container, chart, action) {
@@ -24,6 +25,7 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   const data = chart.data.datas
   // config
   const slider = getSlider(chart)
+  const analyse = getAnalyse(chart)
   // options
   const options = {
     point: {},
@@ -39,6 +41,7 @@ export function baseLineOptionAntV(plot, container, chart, action) {
     xAxis: xAxis,
     yAxis: yAxis,
     slider: slider,
+    annotations: analyse,
     interactions: [
       {
         type: 'element-active', cfg: {
@@ -114,6 +117,7 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
   const data = chart.data.datas
   // config
   const slider = getSlider(chart)
+  const analyse = getAnalyse(chart)
   // options
   const options = {
     point: {},
@@ -129,6 +133,7 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
     xAxis: xAxis,
     yAxis: yAxis,
     slider: slider,
+    annotations: analyse,
     interactions: [
       {
         type: 'element-active', cfg: {

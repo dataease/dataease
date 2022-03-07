@@ -102,6 +102,34 @@ export default {
       this.editLineDialog = false
     },
     changeLine() {
+      // check line config
+      for (let i = 0; i < this.lineArr.length; i++) {
+        const ele = this.lineArr[i]
+        if (!ele.name || ele.name === '') {
+          this.$message({
+            message: this.$t('chart.name_can_not_empty'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+        if (!ele.value) {
+          this.$message({
+            message: this.$t('chart.value_can_not_empty'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+        if (parseFloat(ele.value).toString() === 'NaN') {
+          this.$message({
+            message: this.$t('chart.value_error'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+      }
       this.assistLine = JSON.parse(JSON.stringify(this.lineArr))
       this.changeAssistLine()
       this.closeEditLine()

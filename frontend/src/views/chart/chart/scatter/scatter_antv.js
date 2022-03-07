@@ -6,7 +6,8 @@ import {
   getXAxis,
   getYAxis,
   getPadding,
-  getSlider
+  getSlider,
+  getAnalyse
 } from '@/views/chart/chart/common/common_antv'
 
 import { Scatter } from '@antv/g2plot'
@@ -25,6 +26,7 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
   const data = chart.data.datas
   // config
   const slider = getSlider(chart)
+  const analyse = getAnalyse(chart)
   // options
   const options = {
     theme: theme,
@@ -39,6 +41,7 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
     xAxis: xAxis,
     yAxis: yAxis,
     slider: slider,
+    annotations: analyse,
     pieStyle: {
       lineWidth: 0
     },

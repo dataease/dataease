@@ -1,5 +1,5 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { componentStyle } from '../common/common'
+import { componentStyle, seniorCfg } from '../common/common'
 
 let bubbleArray = []
 let terminalType = 'pc'
@@ -57,6 +57,7 @@ export function baseScatterOption(chart_option, chart, terminal = 'pc') {
   }
   // console.log(chart_option);
   componentStyle(chart_option, chart)
+  seniorCfg(chart_option, chart)
   return chart_option
 }
 

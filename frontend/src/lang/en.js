@@ -1039,7 +1039,9 @@ export default {
     chart_no_senior: 'This chart type not support senior config,please look forward to.',
     assist_line: 'Assist Line',
     field_fixed: 'Fixed',
-    line_type_dotted: 'Dotted'
+    line_type_dotted: 'Dotted',
+    value_can_not_empty: 'Value can not be empty',
+    value_error: 'Value illegal'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
