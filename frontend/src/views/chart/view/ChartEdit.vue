@@ -2633,7 +2633,10 @@ export default {
     width: 100%;
     text-align: center;
     font-size: 12px;
-    margin-top: 40px;
+    padding-top: 40px;
+    overflow:auto;
+    border-right: 1px solid #e6e6e6;
+    height: 100%;
   }
 
 </style>

@@ -1039,7 +1039,9 @@ export default {
     chart_no_senior: '當前圖表類型暫無高級配置，敬請期待',
     assist_line: '輔助線',
     field_fixed: '固定值',
-    line_type_dotted: '點'
+    line_type_dotted: '點',
+    value_can_not_empty: '值不能為空',
+    value_error: '值必須為數值'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

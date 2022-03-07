@@ -1042,7 +1042,9 @@ export default {
     chart_no_senior: '当前图表类型暂无高级配置，敬请期待',
     assist_line: '辅助线',
     field_fixed: '固定值',
-    line_type_dotted: '点'
+    line_type_dotted: '点',
+    value_can_not_empty: '值不能为空',
+    value_error: '值必须为数值'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
