@@ -53,14 +53,24 @@ export function baseGaugeOption(chart_option, chart) {
       // threshold
       if (chart.senior) {
         const range = []
+        let index = 0
+        let flag = false
         const senior = JSON.parse(chart.senior)
         const threshold = JSON.parse(JSON.stringify(senior.threshold ? senior.threshold : DEFAULT_THRESHOLD))
         if (threshold.gaugeThreshold && threshold.gaugeThreshold !== '') {
           const arr = threshold.gaugeThreshold.split(',')
+          const per = parseFloat(chart.data.series[0].data[0]) / parseFloat(chart_option.series[0].max)
           for (let i = 0; i < arr.length; i++) {
             const ele = arr[i]
             const p = parseInt(ele) / 100
             range.push([p, hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha)])
+            if (!flag && per <= p) {
+              flag = true
+              index = i
+            }
+          }
+          if (!flag) {
+            index = arr.length
           }
 
           range.push([1, hexColorToRGBA(customAttr.color.colors[arr.length % 9], customAttr.color.alpha)])
@@ -71,7 +81,7 @@ export function baseGaugeOption(chart_option, chart) {
           }
 
           chart_option.series[0].itemStyle = {
-            color: 'auto'
+            color: hexColorToRGBA(customAttr.color.colors[index], customAttr.color.alpha)
           }
           chart_option.series[0].progress = {
             show: false
