@@ -3,7 +3,6 @@ package io.dataease.service.dataset;
 import com.google.gson.Gson;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.auth.api.dto.CurrentUserDto;
-import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
@@ -51,9 +50,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -1181,6 +1181,14 @@ public class DataSetTableService {
                 DEException.throwException(
                         Translator.get("i18n_custom_ds_delete") + String.format(":table id [%s]", tableId));
             }
+            CurrentUserDto user = AuthUtils.getUser();
+            if (user != null && !user.getIsAdmin()) {
+                DataSetTableDTO withPermission = getWithPermission(datasetTable.getId(), user.getUserId());
+                if (ObjectUtils.isEmpty(withPermission.getPrivileges()) || !withPermission.getPrivileges().contains("use")) {
+                    DEException.throwException(
+                            Translator.get("i18n_dataset_no_permission") + String.format(":table name [%s]", withPermission.getName()));
+                }
+            }
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(unionDTO.getCurrentDsField());
 
             String[] array = fields.stream()
@@ -1308,6 +1316,14 @@ public class DataSetTableService {
             if (ObjectUtils.isEmpty(datasetTable)) {
                 DEException.throwException(
                         Translator.get("i18n_custom_ds_delete") + String.format(":table id [%s]", tableId));
+            }
+            CurrentUserDto user = AuthUtils.getUser();
+            if (user != null && !user.getIsAdmin()) {
+                DataSetTableDTO withPermission = getWithPermission(datasetTable.getId(), user.getUserId());
+                if (ObjectUtils.isEmpty(withPermission.getPrivileges()) || !withPermission.getPrivileges().contains("use")) {
+                    DEException.throwException(
+                            Translator.get("i18n_dataset_no_permission") + String.format(":table name [%s]", withPermission.getName()));
+                }
             }
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(unionDTO.getCurrentDsField());
 
