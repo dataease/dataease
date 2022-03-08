@@ -1,5 +1,6 @@
 import { componentStyle } from '../common/common'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { DEFAULT_THRESHOLD } from '@/views/chart/chart/chart'
 
 export function baseGaugeOption(chart_option, chart) {
   // 处理shape attr
@@ -53,7 +54,7 @@ export function baseGaugeOption(chart_option, chart) {
       if (chart.senior) {
         const range = []
         const senior = JSON.parse(chart.senior)
-        const threshold = JSON.parse(JSON.stringify(senior.threshold))
+        const threshold = JSON.parse(JSON.stringify(senior.threshold ? senior.threshold : DEFAULT_THRESHOLD))
         if (threshold.gaugeThreshold && threshold.gaugeThreshold !== '') {
           const arr = threshold.gaugeThreshold.split(',')
           for (let i = 0; i < arr.length; i++) {
