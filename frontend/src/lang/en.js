@@ -1041,7 +1041,10 @@ export default {
     field_fixed: 'Fixed',
     line_type_dotted: 'Dotted',
     value_can_not_empty: 'Value can not be empty',
-    value_error: 'Value illegal'
+    value_error: 'Value illegal',
+    threshold: 'Threshold',
+    threshold_range: 'Range',
+    gauge_threshold_format_error: 'Format Error'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

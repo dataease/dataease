@@ -813,11 +813,11 @@
         <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 360px;">
           <el-row class="view-panel">
             <div
-              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))"
+              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge'))"
               style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
               class="attr-style theme-border-class"
             >
-              <el-row>
+              <el-row v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))">
                 <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
                 <el-collapse v-model="attrActiveNames" class="style-collapse">
                   <el-collapse-item name="function" :title="$t('chart.function_cfg')">
@@ -825,11 +825,14 @@
                   </el-collapse-item>
                 </el-collapse>
               </el-row>
-              <el-row>
+              <el-row v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge'))">
                 <span class="padding-lr">{{ $t('chart.analyse_cfg') }}</span>
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
-                  <el-collapse-item name="analyse" :title="$t('chart.assist_line')">
+                  <el-collapse-item v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))" name="analyse" :title="$t('chart.assist_line')">
                     <assist-line :param="param" class="attr-selector" :chart="chart" @onAssistLineChange="onAssistLineChange" />
+                  </el-collapse-item>
+                  <el-collapse-item v-if="view.type && (view.type.includes('gauge'))" name="threshold" :title="$t('chart.threshold')">
+                    <threshold :param="param" class="attr-selector" :chart="chart" @onThresholdChange="onThresholdChange" />
                   </el-collapse-item>
                 </el-collapse>
               </el-row>
@@ -1040,6 +1043,7 @@ import {
   DEFAULT_LEGEND_STYLE,
   DEFAULT_SIZE,
   DEFAULT_SPLIT,
+  DEFAULT_THRESHOLD,
   DEFAULT_TITLE_STYLE,
   DEFAULT_TOOLTIP,
   DEFAULT_XAXIS_STYLE,
@@ -1084,9 +1088,11 @@ import DimensionExtItem from '@/views/chart/components/drag-item/DimensionExtIte
 import PluginCom from '@/views/system/plugin/PluginCom'
 import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
+import Threshold from '@/views/chart/components/senior/Threshold'
 export default {
   name: 'ChartEdit',
   components: {
+    Threshold,
     AssistLine,
     FunctionCfg,
     DimensionExtItem,
@@ -1174,7 +1180,8 @@ export default {
         },
         senior: {
           functionCfg: DEFAULT_FUNCTION_CFG,
-          assistLine: []
+          assistLine: [],
+          threshold: DEFAULT_THRESHOLD
         },
         customFilter: [],
         render: 'antv',
@@ -1753,6 +1760,11 @@ export default {
 
     onAssistLineChange(val) {
       this.view.senior.assistLine = val
+      this.calcStyle()
+    },
+
+    onThresholdChange(val) {
+      this.view.senior.threshold = val
       this.calcStyle()
     },
 

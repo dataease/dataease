@@ -33,11 +33,39 @@ export function baseGaugeOptionAntV(plot, container, chart, action) {
       labelContent = false
     }
   }
+  const per = (parseFloat(data) / parseFloat(max))
+
+  const range = [0]
+  let index = 0
+  let flag = false
+  let hasThreshold = false
+
+  if (chart.senior) {
+    const senior = JSON.parse(chart.senior)
+    const threshold = JSON.parse(JSON.stringify(senior.threshold))
+    if (threshold.gaugeThreshold && threshold.gaugeThreshold !== '') {
+      hasThreshold = true
+      const arr = threshold.gaugeThreshold.split(',')
+      for (let i = 0; i < arr.length; i++) {
+        const ele = arr[i]
+        const p = parseInt(ele) / 100
+        range.push(p)
+        if (!flag && per <= p) {
+          flag = true
+          index = i
+        }
+      }
+      if (!flag) {
+        index = arr.length
+      }
+    }
+  }
+  range.push(1)
 
   // options
   const options = {
     theme: theme,
-    percent: (parseFloat(data) / parseFloat(max)),
+    percent: per,
     startAngle: startAngel,
     endAngle: endAngel,
     appendPadding: getPadding(chart),
@@ -51,6 +79,24 @@ export function baseGaugeOptionAntV(plot, container, chart, action) {
     // gaugeStyle: {
     //   lineCap: 'round'
     // }
+  }
+  if (hasThreshold) {
+    options.range = {
+      color: theme.styleSheet.paletteQualitative10,
+      ticks: range
+    }
+    options.indicator = {
+      pointer: {
+        style: {
+          stroke: theme.styleSheet.paletteQualitative10[index % 9]
+        }
+      },
+      pin: {
+        style: {
+          stroke: theme.styleSheet.paletteQualitative10[index % 9]
+        }
+      }
+    }
   }
 
   // 开始渲染

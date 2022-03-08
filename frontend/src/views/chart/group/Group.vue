@@ -309,7 +309,8 @@ import {
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_BACKGROUND_COLOR,
   DEFAULT_SPLIT,
-  DEFAULT_FUNCTION_CFG
+  DEFAULT_FUNCTION_CFG,
+  DEFAULT_THRESHOLD
 } from '../chart/chart'
 
 export default {
@@ -767,7 +768,8 @@ export default {
       })
       view.senior = JSON.stringify({
         functionCfg: DEFAULT_FUNCTION_CFG,
-        assistLine: []
+        assistLine: [],
+        threshold: DEFAULT_THRESHOLD
       })
       view.stylePriority = 'view' // 默认样式优先级视图
       view.xaxis = JSON.stringify([])
