@@ -1044,7 +1044,10 @@ export default {
     field_fixed: '固定值',
     line_type_dotted: '点',
     value_can_not_empty: '值不能为空',
-    value_error: '值必须为数值'
+    value_error: '值必须为数值',
+    threshold: '阈值',
+    threshold_range: '阈值区间',
+    gauge_threshold_format_error: '格式错误'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

@@ -244,6 +244,9 @@ export const DEFAULT_FUNCTION_CFG = {
   sliderShow: false,
   sliderRange: [0, 10]
 }
+export const DEFAULT_THRESHOLD = {
+  gaugeThreshold: ''
+}
 // chart config
 export const BASE_BAR = {
   title: {

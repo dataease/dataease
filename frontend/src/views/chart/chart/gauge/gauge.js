@@ -49,6 +49,34 @@ export function baseGaugeOption(chart_option, chart) {
         value: chart.data.series[0].data[0]
       }
       chart_option.series[0].data.push(y)
+      // threshold
+      if (chart.senior) {
+        const range = []
+        const senior = JSON.parse(chart.senior)
+        const threshold = JSON.parse(JSON.stringify(senior.threshold))
+        if (threshold.gaugeThreshold && threshold.gaugeThreshold !== '') {
+          const arr = threshold.gaugeThreshold.split(',')
+          for (let i = 0; i < arr.length; i++) {
+            const ele = arr[i]
+            const p = parseInt(ele) / 100
+            range.push([p, hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha)])
+          }
+
+          range.push([1, hexColorToRGBA(customAttr.color.colors[arr.length % 9], customAttr.color.alpha)])
+          chart_option.series[0].axisLine = {
+            lineStyle: {
+              color: range
+            }
+          }
+
+          chart_option.series[0].itemStyle = {
+            color: 'auto'
+          }
+          chart_option.series[0].progress = {
+            show: false
+          }
+        }
+      }
     }
   }
   // console.log(chart_option);
