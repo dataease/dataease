@@ -75,6 +75,19 @@ export function baseGaugeOption(chart_option, chart) {
           chart_option.series[0].progress = {
             show: false
           }
+          chart_option.series[0].axisTick = {
+            lineStyle: {
+              color: 'auto'
+            }
+          }
+          chart_option.series[0].splitLine = {
+            lineStyle: {
+              color: 'auto'
+            }
+          }
+          chart_option.series[0].axisLabel = {
+            color: 'auto'
+          }
         }
       }
     }
