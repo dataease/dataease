@@ -1,5 +1,6 @@
 import { TableSheet, S2Event, PivotSheet } from '@antv/s2'
 import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table'
+import { DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 
 export function baseTableInfo(s2, container, chart, action, tableData) {
   const containerDom = document.getElementById(container)
@@ -281,11 +282,31 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
     data: tableData
   }
 
+  // total config
+  let totalCfg = {}
+  const chartObj = JSON.parse(JSON.stringify(chart))
+  if (chartObj.customAttr) {
+    let customAttr = null
+    if (Object.prototype.toString.call(chartObj.customAttr) === '[object Object]') {
+      customAttr = JSON.parse(JSON.stringify(chartObj.customAttr))
+    } else {
+      customAttr = JSON.parse(chartObj.customAttr)
+    }
+    if (customAttr.totalCfg) {
+      totalCfg = customAttr.totalCfg
+    } else {
+      totalCfg = JSON.parse(JSON.stringify(DEFAULT_TOTAL))
+    }
+  }
+  totalCfg.row.subTotalsDimensions = r
+  totalCfg.col.subTotalsDimensions = c
+
   // options
   const s2Options = {
     width: containerDom.offsetWidth,
     height: containerDom.offsetHeight,
-    style: getSize(chart)
+    style: getSize(chart),
+    totals: totalCfg
   }
 
   // 开始渲染
