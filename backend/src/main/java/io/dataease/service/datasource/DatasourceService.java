@@ -94,7 +94,7 @@ public class DatasourceService {
                 switch (datasourceType) {
                     case mysql:
                     case mariadb:
-                    case de_doris:
+                    case engine_doris:
                     case ds_doris:
                         datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), MysqlConfiguration.class)) );
                         break;

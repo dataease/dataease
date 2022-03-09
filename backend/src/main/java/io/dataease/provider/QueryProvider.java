@@ -1,4 +1,4 @@
-package io.dataease.provider.query;
+package io.dataease.provider;
 
 import com.google.gson.Gson;
 import io.dataease.base.domain.ChartViewWithBLOBs;

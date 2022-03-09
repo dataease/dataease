@@ -1,4 +1,4 @@
-package io.dataease.provider.query;
+package io.dataease.provider;
 
 import java.util.ArrayList;
 import java.util.List;

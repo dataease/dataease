@@ -8,14 +8,15 @@ public enum DatasourceTypes {
     ds_doris("ds_doris", "ds_doris", "com.mysql.jdbc.Driver", "`", "`", "'", "'"),
     pg("pg", "pg", "org.postgresql.Driver", "\"", "\"", "\"", "\""),
     sqlServer("sqlServer", "sqlServer", "com.microsoft.sqlserver.jdbc.SQLServerDriver", "\"", "\"", "\"", "\""),
-    de_doris("de_doris", "de_doris", "com.mysql.jdbc.Driver", "`", "`", "", ""),
     oracle("oracle", "oracle", "oracle.jdbc.driver.OracleDriver", "\"", "\"", "\"", "\""),
     mongo("mongo", "mongodb", "com.mongodb.jdbc.MongoDriver", "`", "`", "\"", "\""),
     ck("ch", "ch", "ru.yandex.clickhouse.ClickHouseDriver", "`", "`", "'", "'"),
     db2("db2", "db2", "com.ibm.db2.jcc.DB2Driver", "\"", "\"", "\"", "\""),
     es("es", "es", "", "\"", "\"", "\"", "\""),
     redshift("redshift", "redshift", "org.postgresql.Driver", "\"", "\"", "\"", "\""),
-    api("api", "api", "", "\"", "\"", "\"", "\"");
+    api("api", "api", "", "\"", "\"", "\"", "\""),
+    engine_doris("engine_doris", "engine_doris", "com.mysql.jdbc.Driver", "`", "`", "", ""),
+    engine_mysql("mysql", "mysql", "com.mysql.jdbc.Driver", "`", "`", "'", "'");
 
 
     private String feature;

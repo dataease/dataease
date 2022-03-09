@@ -23,28 +23,6 @@ public class CommonConfig {
     private Environment env; // 保存了配置文件的信息
     private static String root_path = "/opt/dataease/data/kettle/";
 
-    @Bean(name = "DorisDatasource")
-    @ConditionalOnMissingBean
-    public Datasource configuration() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("dataSourceType", "jdbc");
-        jsonObject.put("dataBase", env.getProperty("doris.db", "doris"));
-        jsonObject.put("username", env.getProperty("doris.user", "root"));
-        jsonObject.put("password", env.getProperty("doris.password", "dataease"));
-        jsonObject.put("host", env.getProperty("doris.host", "doris"));
-        jsonObject.put("port", env.getProperty("doris.port", "9030"));
-        jsonObject.put("httpPort", env.getProperty("doris.httpPort", "8030"));
-
-        Datasource datasource = new Datasource();
-        datasource.setId("doris");
-        datasource.setName("doris");
-        datasource.setDesc("doris");
-        datasource.setType("de_doris");
-        datasource.setConfiguration(jsonObject.toJSONString());
-        return datasource;
-    }
-
-
     @Bean
     @ConditionalOnMissingBean
     public KettleFileRepository kettleFileRepository() throws Exception {

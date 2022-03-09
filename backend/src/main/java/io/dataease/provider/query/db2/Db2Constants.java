@@ -1,6 +1,6 @@
 package io.dataease.provider.query.db2;
 
-import io.dataease.provider.query.SQLConstants;
+import io.dataease.provider.SQLConstants;
 
 import static io.dataease.commons.constants.DatasourceTypes.db2;
 

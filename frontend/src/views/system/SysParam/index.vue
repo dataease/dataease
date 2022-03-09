@@ -6,6 +6,10 @@
         <basic-setting />
       </el-tab-pane>
 
+      <el-tab-pane :lazy="true" :label="$t('system_parameter_setting.simple_mode_datasource')" name="first">
+        <email-setting />
+      </el-tab-pane>
+
       <el-tab-pane :lazy="true" :label="$t('system_parameter_setting.mailbox_service_settings')" name="first">
         <email-setting />
       </el-tab-pane>

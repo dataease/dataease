@@ -5,7 +5,6 @@ import io.dataease.base.domain.DatasetTable;
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.Datasource;
 import io.dataease.commons.constants.ColumnPermissionConstants;
-import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.provider.datasource.DatasourceProvider;
@@ -15,7 +14,8 @@ import io.dataease.service.dataset.*;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
-import io.dataease.provider.query.QueryProvider;
+import io.dataease.provider.QueryProvider;
+import io.dataease.service.engine.EngineService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +40,8 @@ public class DirectFieldService implements DataSetFieldService {
     private DataSetTableUnionService dataSetTableUnionService;
     @Resource
     private PermissionService permissionService;
+    @Resource
+    private EngineService engineService;
 
     @Override
     public List<Object> fieldValues(String fieldId, Long userId, Boolean userPermissions) throws Exception {
@@ -100,7 +102,7 @@ public class DirectFieldService implements DataSetFieldService {
             }
         } else if (datasetTable.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
-            Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+            Datasource ds = engineService.getDeEngine();
             datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);

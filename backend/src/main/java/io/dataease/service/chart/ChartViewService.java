@@ -2,7 +2,6 @@ package io.dataease.service.chart;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.base.domain.*;
@@ -14,7 +13,6 @@ import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.JdbcConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
-import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.request.chart.*;
 import io.dataease.controller.request.datasource.DatasourceRequest;
@@ -28,12 +26,13 @@ import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.datasource.DatasourceProvider;
-import io.dataease.provider.query.QueryProvider;
+import io.dataease.provider.QueryProvider;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.dataset.DataSetTableUnionService;
 import io.dataease.service.dataset.PermissionService;
 import io.dataease.service.datasource.DatasourceService;
+import io.dataease.service.engine.EngineService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -71,6 +70,8 @@ public class ChartViewService {
     private PermissionService permissionService;
     @Resource
     private AuthUserService authUserService;
+    @Resource
+    private EngineService engineService;
 
     //默认使用非公平
     private ReentrantLock lock = new ReentrantLock();
@@ -471,7 +472,7 @@ public class ChartViewService {
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
-            Datasource ds = (Datasource) CommonBeanFactory.getBean("DorisDatasource");
+            Datasource ds = engineService.getDeEngine();
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest.setDatasource(ds);
             String tableName = "ds_" + table.getId().replaceAll("-", "_");
