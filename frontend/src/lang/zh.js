@@ -1047,7 +1047,18 @@ export default {
     value_error: '值必须为数值',
     threshold: '阈值',
     threshold_range: '阈值区间',
-    gauge_threshold_format_error: '格式错误'
+    gauge_threshold_format_error: '格式错误',
+    total_cfg: '总计配置',
+    col_cfg: '列汇总',
+    row_cfg: '行汇总',
+    total_show: '总计',
+    total_position: '位置',
+    total_label: '别名',
+    sub_total_show: '小计',
+    total_pos_top: '顶部',
+    total_pos_bottom: '底部',
+    total_pos_left: '左侧',
+    total_pos_right: '右侧'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

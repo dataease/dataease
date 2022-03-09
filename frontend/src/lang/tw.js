@@ -1044,7 +1044,18 @@ export default {
     value_error: '值必須為數值',
     threshold: '閾值',
     threshold_range: '閾值區間',
-    gauge_threshold_format_error: '格式錯誤'
+    gauge_threshold_format_error: '格式錯誤',
+    total_cfg: '總計配置',
+    col_cfg: '列匯總',
+    row_cfg: '行匯總',
+    total_show: '總計',
+    total_position: '位置',
+    total_label: '別名',
+    sub_total_show: '小計',
+    total_pos_top: '頂部',
+    total_pos_bottom: '底部',
+    total_pos_left: '左側',
+    total_pos_right: '右側'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

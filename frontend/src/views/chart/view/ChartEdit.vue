@@ -676,6 +676,18 @@
                       @onTooltipChange="onTooltipChange"
                     />
                   </el-collapse-item>
+                  <el-collapse-item
+                    v-show="view.type === 'table-pivot'"
+                    name="totalCfg"
+                    :title="$t('chart.total_cfg')"
+                  >
+                    <total-cfg
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onTotalCfgChange="onTotalCfgChange"
+                    />
+                  </el-collapse-item>
                 </el-collapse>
               </el-row>
               <el-row>
@@ -1046,6 +1058,7 @@ import {
   DEFAULT_THRESHOLD,
   DEFAULT_TITLE_STYLE,
   DEFAULT_TOOLTIP,
+  DEFAULT_TOTAL,
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE
@@ -1089,9 +1102,11 @@ import PluginCom from '@/views/system/plugin/PluginCom'
 import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
 import Threshold from '@/views/chart/components/senior/Threshold'
+import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
 export default {
   name: 'ChartEdit',
   components: {
+    TotalCfg,
     Threshold,
     AssistLine,
     FunctionCfg,
@@ -1167,7 +1182,8 @@ export default {
           color: DEFAULT_COLOR_CASE,
           size: DEFAULT_SIZE,
           label: DEFAULT_LABEL,
-          tooltip: DEFAULT_TOOLTIP
+          tooltip: DEFAULT_TOOLTIP,
+          totalCfg: DEFAULT_TOTAL
         },
         customStyle: {
           text: DEFAULT_TITLE_STYLE,
@@ -1725,6 +1741,11 @@ export default {
 
     onTooltipChange(val) {
       this.view.customAttr.tooltip = val
+      this.calcStyle()
+    },
+
+    onTotalCfgChange(val) {
+      this.view.customAttr.totalCfg = val
       this.calcStyle()
     },
 

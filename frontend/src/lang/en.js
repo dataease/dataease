@@ -1044,7 +1044,18 @@ export default {
     value_error: 'Value illegal',
     threshold: 'Threshold',
     threshold_range: 'Range',
-    gauge_threshold_format_error: 'Format Error'
+    gauge_threshold_format_error: 'Format Error',
+    total_cfg: 'Total Config',
+    col_cfg: 'Column',
+    row_cfg: 'Row',
+    total_show: 'Total',
+    total_position: 'Position',
+    total_label: 'Alias',
+    sub_total_show: 'Sub Total',
+    total_pos_top: 'Top',
+    total_pos_bottom: 'Bottom',
+    total_pos_left: 'Left',
+    total_pos_right: 'Right'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
