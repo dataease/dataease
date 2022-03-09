@@ -310,7 +310,8 @@ import {
   DEFAULT_BACKGROUND_COLOR,
   DEFAULT_SPLIT,
   DEFAULT_FUNCTION_CFG,
-  DEFAULT_THRESHOLD
+  DEFAULT_THRESHOLD,
+  DEFAULT_TOTAL
 } from '../chart/chart'
 
 export default {
@@ -755,7 +756,8 @@ export default {
         tableColor: DEFAULT_COLOR_CASE,
         size: DEFAULT_SIZE,
         label: DEFAULT_LABEL,
-        tooltip: DEFAULT_TOOLTIP
+        tooltip: DEFAULT_TOOLTIP,
+        totalCfg: DEFAULT_TOTAL
       })
       view.customStyle = JSON.stringify({
         text: DEFAULT_TITLE_STYLE,
