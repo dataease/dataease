@@ -311,6 +311,7 @@
                         <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.area') }}</span>
                         <span v-else-if="view.type && view.type.includes('treemap')">{{ $t('chart.drag_block_treemap_label') }}</span>
                         <span v-else-if="view.type && view.type === 'word-cloud'">{{ $t('chart.drag_block_word_cloud_label') }}</span>
+                        <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
                         /
                         <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
                         <span
@@ -347,7 +348,7 @@
                       </div>
                     </el-row>
                     <!--yaxis-->
-                    <el-row v-if="view.type !=='table-info'" class="padding-lr" style="margin-top: 6px;">
+                    <el-row v-if="view.type !=='table-info' && view.type !=='label'" class="padding-lr" style="margin-top: 6px;">
                       <span style="width: 80px;text-align: right;">
                         <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
                         <span
@@ -555,7 +556,7 @@
                       </div>
                     </el-row>
                     <el-row
-                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud' && view.type !== 'table-pivot'"
+                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud' && view.type !== 'table-pivot' && view.type !=='label'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -656,7 +657,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'word-cloud'"
+                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -676,7 +677,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge'"
+                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
@@ -809,7 +810,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall' && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
+                    v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall' && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
                     name="legend"
                     :title="$t('chart.legend')"
                   >
@@ -841,7 +842,7 @@
             </div>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 360px;">
+        <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 300px;">
           <el-row class="view-panel">
             <div
               v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge'))"
@@ -886,7 +887,7 @@
               class="chart-class"
             />
             <chart-component
-              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'"
+              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'echarts'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -894,7 +895,7 @@
               @onChartClick="chartClick"
             />
             <chart-component-g2
-              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'"
+              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'antv'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -902,7 +903,7 @@
               @onChartClick="chartClick"
             />
             <chart-component-s2
-              v-else-if="httpRequest.status && chart.type && chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'"
+              v-else-if="httpRequest.status && chart.type && chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'antv'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -917,6 +918,11 @@
             />
             <label-normal
               v-else-if="httpRequest.status && chart.type && chart.type.includes('text')"
+              :chart="chart"
+              class="table-class"
+            />
+            <label-normal-text
+              v-else-if="httpRequest.status && chart.type && chart.type === 'label'"
               :chart="chart"
               class="table-class"
             />
@@ -1131,9 +1137,11 @@ import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
 import Threshold from '@/views/chart/components/senior/Threshold'
 import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
+import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 export default {
   name: 'ChartEdit',
   components: {
+    LabelNormalText,
     TotalCfg,
     Threshold,
     AssistLine,
@@ -2548,7 +2556,7 @@ export default {
 
   .tab-header > > > .el-tabs__item {
     font-size: 12px;
-    padding: 0 60px !important;
+    padding: 0 40px !important;
   }
 
   .blackTheme .tab-header > > > .el-tabs__item {
