@@ -237,7 +237,7 @@
           </el-row>
           <el-row>
             <div class="view-selected-message-class">
-              <span style="font-size: 14px;margin-left: 10px;font-weight: bold;line-height: 20px">{{$t('panel.select_view')}}</span>
+              <span style="font-size: 14px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.select_view') }}</span>
             </div>
           </el-row>
         </div>
@@ -976,17 +976,21 @@ export default {
       this.clearCurrentInfo()
       this.$store.commit('setCurComponent', { component: component, index: this.componentData.length - 1 })
 
-      // 编辑时临时保存 当前修改的画布
-      this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
-      this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
-      if (this.curComponent.type === 'view') {
-        this.$store.dispatch('chart/setViewId', null)
-        this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
-        bus.$emit('PanelSwitchComponent', {
-          name: 'ChartEdit',
-          param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }
-        })
-      }
+      // 打开属性栏
+      bus.$emit('change_panel_right_draw', true)
+
+      //
+      // // 编辑时临时保存 当前修改的画布
+      // this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
+      // this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
+      // if (this.curComponent.type === 'view') {
+      //   this.$store.dispatch('chart/setViewId', null)
+      //   this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
+      //   bus.$emit('PanelSwitchComponent', {
+      //     name: 'ChartEdit',
+      //     param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }
+      //   })
+      // }
     },
     canvasScroll(event) {
       this.scrollLeft = event.target.scrollLeft

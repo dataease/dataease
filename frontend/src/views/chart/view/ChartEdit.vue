@@ -1,5 +1,5 @@
 <template>
-  <el-row v-loading="loading" style="height: 100%;overflow-y: hidden;width: 100%;">
+  <el-row v-loading="loading" style="height: 100%;overflow-y: hidden;width: 100%;border-left: 1px solid #E6E6E6">
     <el-tooltip :content="$t('chart.draw_back')">
       <el-button class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 5px;z-index: 1000" size="mini" circle @click="closePanelEdit" />
     </el-tooltip>

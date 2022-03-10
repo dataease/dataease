@@ -79,7 +79,7 @@ public class ChartViewService {
     private ReentrantLock lock = new ReentrantLock();
 
     // 直接保存统一到缓存表
-    public ChartViewDTO save(ChartViewCacheWithBLOBs chartView) {
+    public ChartViewDTO save(ChartViewCacheRequest chartView) {
         long timestamp = System.currentTimeMillis();
         chartView.setUpdateTime(timestamp);
         chartViewCacheMapper.updateByPrimaryKeySelective(chartView);
@@ -87,6 +87,22 @@ public class ChartViewService {
             CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
         });
         return getOne(chartView.getId(),"panel_edit");
+    }
+
+
+    public ChartViewWithBLOBs newOne(ChartViewWithBLOBs chartView) {
+        long timestamp = System.currentTimeMillis();
+        chartView.setUpdateTime(timestamp);
+        chartView.setId(UUID.randomUUID().toString());
+        chartView.setCreateBy(AuthUtils.getUser().getUsername());
+        chartView.setCreateTime(timestamp);
+        chartView.setUpdateTime(timestamp);
+        chartViewMapper.insertSelective(chartView);
+
+        // 新建的视图也存入缓存表中
+        extChartViewMapper.copyToCache(chartView.getId());
+
+        return chartView;
     }
 
 
@@ -1761,6 +1777,7 @@ public class ChartViewService {
 
     public void resetViewCache (String viewId){
         extChartViewMapper.deleteViewCache(viewId);
+
         extChartViewMapper.copyToCache(viewId);
     }
 }

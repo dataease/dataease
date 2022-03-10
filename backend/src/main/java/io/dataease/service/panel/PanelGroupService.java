@@ -104,9 +104,11 @@ public class PanelGroupService {
     @DeCleaner(DePermissionType.PANEL)
 //    @Transactional
     public PanelGroup saveOrUpdate(PanelGroupRequest request) {
-        Boolean mobileLayout = panelViewService.syncPanelViews(request);
-        request.setMobileLayout(mobileLayout);
         String panelId = request.getId();
+        if(StringUtils.isNotEmpty(panelId)){
+            Boolean mobileLayout = panelViewService.syncPanelViews(request);
+            request.setMobileLayout(mobileLayout);
+        }
         if (StringUtils.isEmpty(panelId)) {
             // 新建
             checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, null, request.getNodeType());

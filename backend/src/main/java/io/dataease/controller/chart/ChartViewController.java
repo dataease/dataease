@@ -9,6 +9,7 @@ import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.request.chart.ChartCalRequest;
 import io.dataease.controller.request.chart.ChartExtRequest;
+import io.dataease.controller.request.chart.ChartViewCacheRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
 import io.dataease.controller.response.ChartDetail;
 import io.dataease.dto.chart.ChartViewDTO;
@@ -36,8 +37,15 @@ public class ChartViewController {
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("/save/{panelId}")
-    public ChartViewDTO save(@PathVariable String panelId, @RequestBody ChartViewCacheWithBLOBs chartViewWithBLOBs) {
-        return chartViewService.save(chartViewWithBLOBs);
+    public ChartViewDTO save(@PathVariable String panelId, @RequestBody ChartViewCacheRequest request) {
+        return chartViewService.save(request);
+    }
+
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
+    @ApiOperation("新建视图")
+    @PostMapping("/newOne/{panelId}")
+    public ChartViewWithBLOBs save(@PathVariable String panelId, @RequestBody ChartViewWithBLOBs chartViewWithBLOBs) {
+        return chartViewService.newOne(chartViewWithBLOBs);
     }
 
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)

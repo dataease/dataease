@@ -784,7 +784,7 @@ export default {
       view.extBubble = JSON.stringify([])
       this.setChartDefaultOptions(view)
       const _this = this
-      post('/chart/view/save/' + this.panelInfo.id, view).then(response => {
+      post('/chart/view/newOne/' + this.panelInfo.id, view).then(response => {
         this.closeCreateChart()
         this.$store.dispatch('chart/setTableId', null)
         this.$store.dispatch('chart/setTableId', this.table.id)
