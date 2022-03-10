@@ -27,7 +27,64 @@
     </select>
 
     <insert id="copyToCache">
-        Insert into chart_view_cache select * from chart_view where chart_view.id   = #{id}
+        INSERT INTO chart_view_cache (
+            id,
+            `name`,
+            title,
+            scene_id,
+            table_id,
+            `type`,
+            render,
+            result_count,
+            result_mode,
+            create_by,
+            create_time,
+            update_time,
+            style_priority,
+            chart_type,
+            is_plugin,
+            x_axis,
+            x_axis_ext,
+            y_axis,
+            y_axis_ext,
+            ext_stack,
+            ext_bubble,
+            custom_attr,
+            custom_style,
+            custom_filter,
+            drill_fields,
+            senior,
+            SNAPSHOT
+            ) SELECT
+            id,
+            `name`,
+            title,
+            scene_id,
+            table_id,
+            `type`,
+            render,
+            result_count,
+            result_mode,
+            create_by,
+            create_time,
+            update_time,
+            style_priority,
+            chart_type,
+            is_plugin,
+            x_axis,
+            x_axis_ext,
+            y_axis,
+            y_axis_ext,
+            ext_stack,
+            ext_bubble,
+            custom_attr,
+            custom_style,
+            custom_filter,
+            drill_fields,
+            senior,
+        SNAPSHOT  from chart_view
+        WHERE
+            chart_view.id   = #{id}
     </insert>
 
 <!--    <select id="searchOne" resultMap="BaseResultMapDTO">-->
