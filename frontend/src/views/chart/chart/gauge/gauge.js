@@ -1,5 +1,6 @@
 import { componentStyle } from '../common/common'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { DEFAULT_THRESHOLD } from '@/views/chart/chart/chart'
 
 export function baseGaugeOption(chart_option, chart) {
   // 处理shape attr
@@ -49,6 +50,57 @@ export function baseGaugeOption(chart_option, chart) {
         value: chart.data.series[0].data[0]
       }
       chart_option.series[0].data.push(y)
+      // threshold
+      if (chart.senior) {
+        const range = []
+        let index = 0
+        let flag = false
+        const senior = JSON.parse(chart.senior)
+        const threshold = JSON.parse(JSON.stringify(senior.threshold ? senior.threshold : DEFAULT_THRESHOLD))
+        if (threshold.gaugeThreshold && threshold.gaugeThreshold !== '') {
+          const arr = threshold.gaugeThreshold.split(',')
+          const per = parseFloat(chart.data.series[0].data[0]) / parseFloat(chart_option.series[0].max)
+          for (let i = 0; i < arr.length; i++) {
+            const ele = arr[i]
+            const p = parseInt(ele) / 100
+            range.push([p, hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)])
+            if (!flag && per <= p) {
+              flag = true
+              index = i
+            }
+          }
+          if (!flag) {
+            index = arr.length
+          }
+
+          range.push([1, hexColorToRGBA(customAttr.color.colors[arr.length % customAttr.color.colors.length], customAttr.color.alpha)])
+          chart_option.series[0].axisLine = {
+            lineStyle: {
+              color: range
+            }
+          }
+
+          chart_option.series[0].itemStyle = {
+            color: hexColorToRGBA(customAttr.color.colors[index], customAttr.color.alpha)
+          }
+          chart_option.series[0].progress = {
+            show: false
+          }
+          chart_option.series[0].axisTick = {
+            lineStyle: {
+              color: 'auto'
+            }
+          }
+          chart_option.series[0].splitLine = {
+            lineStyle: {
+              color: 'auto'
+            }
+          }
+          chart_option.series[0].axisLabel = {
+            color: 'auto'
+          }
+        }
+      }
     }
   }
   // console.log(chart_option);

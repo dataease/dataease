@@ -323,11 +323,14 @@ public class DatasourceService {
     public void initAllDataSourceConnectionPool() {
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
         datasources.forEach(datasource -> {
-            try {
-                handleConnectionPool(datasource, "add");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            commonThreadPool.addTask(()->{
+                System.out.println(System.currentTimeMillis());
+                try {
+                    handleConnectionPool(datasource, "add");
+                } catch (Exception e) {
+                    LogUtil.error("Failed to init datasource: " + datasource.getName(), e);
+                }
+            });
         });
     }
 

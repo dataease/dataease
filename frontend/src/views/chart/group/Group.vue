@@ -308,7 +308,10 @@ import {
   DEFAULT_YAXIS_STYLE,
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_BACKGROUND_COLOR,
-  DEFAULT_SPLIT
+  DEFAULT_SPLIT,
+  DEFAULT_FUNCTION_CFG,
+  DEFAULT_THRESHOLD,
+  DEFAULT_TOTAL
 } from '../chart/chart'
 
 export default {
@@ -753,7 +756,8 @@ export default {
         tableColor: DEFAULT_COLOR_CASE,
         size: DEFAULT_SIZE,
         label: DEFAULT_LABEL,
-        tooltip: DEFAULT_TOOLTIP
+        tooltip: DEFAULT_TOOLTIP,
+        totalCfg: DEFAULT_TOTAL
       })
       view.customStyle = JSON.stringify({
         text: DEFAULT_TITLE_STYLE,
@@ -763,6 +767,11 @@ export default {
         yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
         background: DEFAULT_BACKGROUND_COLOR,
         split: DEFAULT_SPLIT
+      })
+      view.senior = JSON.stringify({
+        functionCfg: DEFAULT_FUNCTION_CFG,
+        assistLine: [],
+        threshold: DEFAULT_THRESHOLD
       })
       view.stylePriority = 'view' // 默认样式优先级视图
       view.xaxis = JSON.stringify([])

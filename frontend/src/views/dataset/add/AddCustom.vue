@@ -84,7 +84,7 @@ export default {
       height: 500,
       data: [],
       fields: [],
-      customType: ['db', 'sql', 'excel']
+      customType: ['db', 'sql', 'excel', 'api']
     }
   },
   watch: {

@@ -244,146 +244,6 @@ public class ChartViewExample {
             return (Criteria) this;
         }
 
-        public Criteria andTitleIsNull() {
-            addCriterion("title is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleIsNotNull() {
-            addCriterion("title is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleEqualTo(String value) {
-            addCriterion("title =", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleNotEqualTo(String value) {
-            addCriterion("title <>", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleGreaterThan(String value) {
-            addCriterion("title >", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleGreaterThanOrEqualTo(String value) {
-            addCriterion("title >=", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleLessThan(String value) {
-            addCriterion("title <", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleLessThanOrEqualTo(String value) {
-            addCriterion("title <=", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleLike(String value) {
-            addCriterion("title like", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleNotLike(String value) {
-            addCriterion("title not like", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleIn(List<String> values) {
-            addCriterion("title in", values, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleNotIn(List<String> values) {
-            addCriterion("title not in", values, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleBetween(String value1, String value2) {
-            addCriterion("title between", value1, value2, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleNotBetween(String value1, String value2) {
-            addCriterion("title not between", value1, value2, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdIsNull() {
-            addCriterion("scene_id is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdIsNotNull() {
-            addCriterion("scene_id is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdEqualTo(String value) {
-            addCriterion("scene_id =", value, "sceneId");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdNotEqualTo(String value) {
-            addCriterion("scene_id <>", value, "sceneId");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdGreaterThan(String value) {
-            addCriterion("scene_id >", value, "sceneId");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdGreaterThanOrEqualTo(String value) {
-            addCriterion("scene_id >=", value, "sceneId");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdLessThan(String value) {
-            addCriterion("scene_id <", value, "sceneId");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdLessThanOrEqualTo(String value) {
-            addCriterion("scene_id <=", value, "sceneId");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdLike(String value) {
-            addCriterion("scene_id like", value, "sceneId");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdNotLike(String value) {
-            addCriterion("scene_id not like", value, "sceneId");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdIn(List<String> values) {
-            addCriterion("scene_id in", values, "sceneId");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdNotIn(List<String> values) {
-            addCriterion("scene_id not in", values, "sceneId");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdBetween(String value1, String value2) {
-            addCriterion("scene_id between", value1, value2, "sceneId");
-            return (Criteria) this;
-        }
-
-        public Criteria andSceneIdNotBetween(String value1, String value2) {
-            addCriterion("scene_id not between", value1, value2, "sceneId");
-            return (Criteria) this;
-        }
-
         public Criteria andTableIdIsNull() {
             addCriterion("table_id is null");
             return (Criteria) this;
@@ -721,6 +581,146 @@ public class ChartViewExample {
 
         public Criteria andResultModeNotBetween(String value1, String value2) {
             addCriterion("result_mode not between", value1, value2, "resultMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleIsNull() {
+            addCriterion("title is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleIsNotNull() {
+            addCriterion("title is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleEqualTo(String value) {
+            addCriterion("title =", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleNotEqualTo(String value) {
+            addCriterion("title <>", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleGreaterThan(String value) {
+            addCriterion("title >", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleGreaterThanOrEqualTo(String value) {
+            addCriterion("title >=", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleLessThan(String value) {
+            addCriterion("title <", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleLessThanOrEqualTo(String value) {
+            addCriterion("title <=", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleLike(String value) {
+            addCriterion("title like", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleNotLike(String value) {
+            addCriterion("title not like", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleIn(List<String> values) {
+            addCriterion("title in", values, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleNotIn(List<String> values) {
+            addCriterion("title not in", values, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleBetween(String value1, String value2) {
+            addCriterion("title between", value1, value2, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleNotBetween(String value1, String value2) {
+            addCriterion("title not between", value1, value2, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdIsNull() {
+            addCriterion("scene_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdIsNotNull() {
+            addCriterion("scene_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdEqualTo(String value) {
+            addCriterion("scene_id =", value, "sceneId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdNotEqualTo(String value) {
+            addCriterion("scene_id <>", value, "sceneId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdGreaterThan(String value) {
+            addCriterion("scene_id >", value, "sceneId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdGreaterThanOrEqualTo(String value) {
+            addCriterion("scene_id >=", value, "sceneId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdLessThan(String value) {
+            addCriterion("scene_id <", value, "sceneId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdLessThanOrEqualTo(String value) {
+            addCriterion("scene_id <=", value, "sceneId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdLike(String value) {
+            addCriterion("scene_id like", value, "sceneId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdNotLike(String value) {
+            addCriterion("scene_id not like", value, "sceneId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdIn(List<String> values) {
+            addCriterion("scene_id in", values, "sceneId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdNotIn(List<String> values) {
+            addCriterion("scene_id not in", values, "sceneId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdBetween(String value1, String value2) {
+            addCriterion("scene_id between", value1, value2, "sceneId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSceneIdNotBetween(String value1, String value2) {
+            addCriterion("scene_id not between", value1, value2, "sceneId");
             return (Criteria) this;
         }
 

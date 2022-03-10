@@ -77,6 +77,11 @@ export function getCustomTheme(chart) {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableItemFontSize,
         textAlign: itemAlign
+      },
+      bolderText: {
+        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fontSize: DEFAULT_SIZE.tableItemFontSize,
+        textAlign: itemAlign
       }
     }
   }
@@ -114,6 +119,7 @@ export function getCustomTheme(chart) {
       theme.dataCell.cell.backgroundColor = i_c
       theme.dataCell.cell.horizontalBorderColor = b_c
       theme.dataCell.cell.verticalBorderColor = b_c
+      theme.dataCell.bolderText.fill = c.tableFontColor
       theme.dataCell.text.fill = c.tableFontColor
     }
     // size
@@ -137,6 +143,8 @@ export function getCustomTheme(chart) {
       theme.colCell.text.fontSize = parseInt(s.tableTitleFontSize)
       theme.colCell.text.textAlign = h_a
 
+      theme.dataCell.bolderText.fontSize = parseInt(s.tableItemFontSize)
+      theme.dataCell.bolderText.textAlign = i_a
       theme.dataCell.text.fontSize = parseInt(s.tableItemFontSize)
       theme.dataCell.text.textAlign = i_a
     }

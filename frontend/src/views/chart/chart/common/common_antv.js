@@ -435,3 +435,67 @@ function transAxisPosition(chart, axis) {
     return axis.position
   }
 }
+
+export function getSlider(chart) {
+  let senior = {}
+  let cfg = false
+  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix'))) {
+    senior = JSON.parse(chart.senior)
+    if (senior.functionCfg) {
+      if (senior.functionCfg.sliderShow) {
+        cfg = {
+          start: parseInt(senior.functionCfg.sliderRange[0]) / 100,
+          end: parseInt(senior.functionCfg.sliderRange[1]) / 100
+        }
+      }
+    }
+  }
+  return cfg
+}
+
+export function getAnalyse(chart) {
+  let senior = {}
+  const assistLine = []
+  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix'))) {
+    senior = JSON.parse(chart.senior)
+    if (senior.assistLine && senior.assistLine.length > 0) {
+      senior.assistLine.forEach(ele => {
+        assistLine.push({
+          type: 'line',
+          start: ['start', parseFloat(ele.value)],
+          end: ['end', parseFloat(ele.value)],
+          style: {
+            stroke: ele.color,
+            lineDash: getLineDash(ele.lineType)
+          }
+        })
+        assistLine.push({
+          type: 'text',
+          position: ['start', parseFloat(ele.value)],
+          content: parseFloat(ele.value),
+          offsetY: -2,
+          offsetX: 2,
+          style: {
+            textBaseline: 'bottom',
+            fill: ele.color,
+            fontSize: 10
+          }
+        })
+      })
+    }
+  }
+  return assistLine
+}
+
+function getLineDash(type) {
+  switch (type) {
+    case 'solid':
+      return [0, 0]
+    case 'dashed':
+      return [10, 8]
+    case 'dotted':
+      return [2, 2]
+    default:
+      return [0, 0]
+  }
+}

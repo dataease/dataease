@@ -33,7 +33,7 @@ export function baseRadarOption(chart_option, chart) {
       }
       // color
       y.itemStyle = {
-        color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha)
+        color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
       }
       // label
       if (customAttr.label) {

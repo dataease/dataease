@@ -695,6 +695,18 @@
                       @onTooltipChange="onTooltipChange"
                     />
                   </el-collapse-item>
+                  <el-collapse-item
+                    v-show="view.type === 'table-pivot'"
+                    name="totalCfg"
+                    :title="$t('chart.total_cfg')"
+                  >
+                    <total-cfg
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onTotalCfgChange="onTotalCfgChange"
+                    />
+                  </el-collapse-item>
                 </el-collapse>
               </el-row>
               <el-row>
@@ -826,6 +838,38 @@
                   </el-collapse-item>
                 </el-collapse>
               </el-row>
+            </div>
+          </el-row>
+        </el-tab-pane>
+        <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 360px;">
+          <el-row class="view-panel">
+            <div
+              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge'))"
+              style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
+              class="attr-style theme-border-class"
+            >
+              <el-row v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))">
+                <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
+                <el-collapse v-model="attrActiveNames" class="style-collapse">
+                  <el-collapse-item name="function" :title="$t('chart.function_cfg')">
+                    <function-cfg :param="param" class="attr-selector" :chart="chart" @onFunctionCfgChange="onFunctionCfgChange" />
+                  </el-collapse-item>
+                </el-collapse>
+              </el-row>
+              <el-row v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge'))">
+                <span class="padding-lr">{{ $t('chart.analyse_cfg') }}</span>
+                <el-collapse v-model="styleActiveNames" class="style-collapse">
+                  <el-collapse-item v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))" name="analyse" :title="$t('chart.assist_line')">
+                    <assist-line :param="param" class="attr-selector" :chart="chart" @onAssistLineChange="onAssistLineChange" />
+                  </el-collapse-item>
+                  <el-collapse-item v-if="view.type && (view.type.includes('gauge'))" name="threshold" :title="$t('chart.threshold')">
+                    <threshold :param="param" class="attr-selector" :chart="chart" @onThresholdChange="onThresholdChange" />
+                  </el-collapse-item>
+                </el-collapse>
+              </el-row>
+            </div>
+            <div v-else class="no-senior">
+              {{ $t('chart.chart_no_senior') }}
             </div>
           </el-row>
         </el-tab-pane>
@@ -1032,12 +1076,15 @@ import DatasetChartDetail from '../../dataset/common/DatasetChartDetail'
 import {
   DEFAULT_BACKGROUND_COLOR,
   DEFAULT_COLOR_CASE,
+  DEFAULT_FUNCTION_CFG,
   DEFAULT_LABEL,
   DEFAULT_LEGEND_STYLE,
   DEFAULT_SIZE,
   DEFAULT_SPLIT,
+  DEFAULT_THRESHOLD,
   DEFAULT_TITLE_STYLE,
   DEFAULT_TOOLTIP,
+  DEFAULT_TOTAL,
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE
@@ -1080,9 +1127,17 @@ import DimensionExtItem from '@/views/chart/components/drag-item/DimensionExtIte
 import PluginCom from '@/views/system/plugin/PluginCom'
 import { mapState } from 'vuex'
 
+import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
+import AssistLine from '@/views/chart/components/senior/AssistLine'
+import Threshold from '@/views/chart/components/senior/Threshold'
+import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
 export default {
   name: 'ChartEdit',
   components: {
+    TotalCfg,
+    Threshold,
+    AssistLine,
+    FunctionCfg,
     DimensionExtItem,
     ChartComponentS2,
     CompareEdit,
@@ -1160,7 +1215,8 @@ export default {
           color: DEFAULT_COLOR_CASE,
           size: DEFAULT_SIZE,
           label: DEFAULT_LABEL,
-          tooltip: DEFAULT_TOOLTIP
+          tooltip: DEFAULT_TOOLTIP,
+          totalCfg: DEFAULT_TOTAL
         },
         customStyle: {
           text: DEFAULT_TITLE_STYLE,
@@ -1170,6 +1226,11 @@ export default {
           yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
           background: DEFAULT_BACKGROUND_COLOR,
           split: DEFAULT_SPLIT
+        },
+        senior: {
+          functionCfg: DEFAULT_FUNCTION_CFG,
+          assistLine: [],
+          threshold: DEFAULT_THRESHOLD
         },
         customFilter: [],
         render: 'antv',
@@ -1489,6 +1550,7 @@ export default {
       view.extStack = JSON.stringify(view.extStack)
       view.drillFields = JSON.stringify(view.drillFields)
       view.extBubble = JSON.stringify(view.extBubble)
+      view.senior = JSON.stringify(view.senior)
       delete view.data
       return view
     },
@@ -1514,7 +1576,8 @@ export default {
     //   this.view.customAttr = view.customAttr ? JSON.parse(view.customAttr) : {}
     //   this.view.customStyle = view.customStyle ? JSON.parse(view.customStyle) : {}
     //   this.view.customFilter = view.customFilter ? JSON.parse(view.customFilter) : {}
-    //   // 将视图传入echart组件
+    // this.view.senior = view.senior ? JSON.parse(view.senior) : {}
+    // 将视图传入echart组件
     //   this.chart = response.data
     //   this.data = response.data.data
     //   // console.log(JSON.stringify(this.chart))
@@ -1555,6 +1618,7 @@ export default {
       view.customAttr = JSON.stringify(this.view.customAttr)
       view.customStyle = JSON.stringify(this.view.customStyle)
       view.customFilter = JSON.stringify(this.view.customFilter)
+      view.senior = JSON.stringify(this.view.senior)
       // view.data = this.data
       this.chart = view
 
@@ -1617,6 +1681,7 @@ export default {
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
+          this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
           // 将视图传入echart组件
           this.chart = response.data
           this.data = response.data.data
@@ -1661,6 +1726,7 @@ export default {
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
+          this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
 
           // 将视图传入echart组件
           this.chart = response.data
@@ -1739,6 +1805,11 @@ export default {
       this.calcStyle()
     },
 
+    onTotalCfgChange(val) {
+      this.view.customAttr.totalCfg = val
+      this.calcStyle()
+    },
+
     onChangeXAxisForm(val) {
       this.view.customStyle.xAxis = val
       this.calcStyle()
@@ -1761,6 +1832,21 @@ export default {
 
     onChangeSplitForm(val) {
       this.view.customStyle.split = val
+      this.calcStyle()
+    },
+
+    onFunctionCfgChange(val) {
+      this.view.senior.functionCfg = val
+      this.calcStyle()
+    },
+
+    onAssistLineChange(val) {
+      this.view.senior.assistLine = val
+      this.calcStyle()
+    },
+
+    onThresholdChange(val) {
+      this.view.senior.threshold = val
       this.calcStyle()
     },
 
@@ -2678,6 +2764,16 @@ export default {
 
   ::v-deep .el-input-number--mini {
     width: 80px !important;
+  }
+
+  .no-senior {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    padding-top: 40px;
+    overflow:auto;
+    border-right: 1px solid #e6e6e6;
+    height: 100%;
   }
 
 </style>
