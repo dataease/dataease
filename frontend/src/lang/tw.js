@@ -1056,7 +1056,9 @@ export default {
     total_pos_top: '頂部',
     total_pos_bottom: '底部',
     total_pos_left: '左側',
-    total_pos_right: '右側'
+    total_pos_right: '右側',
+    chart_label: '文本卡',
+    drag_block_label: '標簽'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

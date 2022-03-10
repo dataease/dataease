@@ -1056,7 +1056,9 @@ export default {
     total_pos_top: 'Top',
     total_pos_bottom: 'Bottom',
     total_pos_left: 'Left',
-    total_pos_right: 'Right'
+    total_pos_right: 'Right',
+    chart_label: 'Label',
+    drag_block_label: 'Label'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
