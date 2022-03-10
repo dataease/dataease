@@ -225,9 +225,9 @@
         </el-row>
       </de-main-container>
 
-      <div v-if="!this.mobileLayoutStatus&&this.rightDrawOpen" class="tools-window-main">
+      <div v-if="!mobileLayoutStatus&&rightDrawOpen" class="tools-window-main">
         <div v-if="showViewToolsAside">
-          <chart-edit v-if="this.curComponent" ref="chartEditRef" :edit-from="'panel'" :param="chartEditParam" />
+          <chart-edit v-if="curComponent" ref="chartEditRef" :edit-from="'panel'" :param="chartEditParam" />
         </div>
         <div v-if="!showViewToolsAside">
           <el-row style="height: 40px">
@@ -562,6 +562,7 @@ export default {
     this.$store.commit('resetViewEditInfo')
   },
   mounted() {
+    debugger
     // this.insertToBody()
     bus.$on('component-on-drag', () => {
       this.show = false
@@ -618,6 +619,10 @@ export default {
         initPanelData(panelId, function() {
           // 初始化视图缓存
           initViewCache(panelId)
+          // 初始化保存状态
+          setTimeout(() => {
+            _this.$store.commit('refreshSaveStatus')
+          }, 500)
           // initPanelComponentsData(panelId, function(rsp) {
           //   _this.$store.commit('initPanelComponents', rsp)// 初始化仪表板组件视图数据
           //   _this.$store.commit('recordSnapshot', 'init')// 记录快照

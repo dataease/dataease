@@ -1281,7 +1281,8 @@ export default {
       drill: false,
       hasEdit: false,
       quotaItemCompare: {},
-      showEditQuotaCompare: false
+      showEditQuotaCompare: false,
+      preChartId: ''
 
     }
   },
@@ -1297,14 +1298,13 @@ export default {
     ])
   },
   watch: {
-    'param': function() {
+    'param': function(val) {
       if (this.param.optType === 'new') {
         //
-      } else {
-        this.resetDrill()
-        this.initFromPanel()
-        // this.getData(this.param.id)
-        this.getChart(this.param.id)
+      } else if (this.param.id !== this.preChartId) {
+        this.preChartId = this.param.id
+        this.chartInit()
+        // console.log('fromwatch:' + JSON.stringify(val))
       }
     },
     searchField(val) {
@@ -1323,12 +1323,11 @@ export default {
     // this.initAreas()
   },
   mounted() {
+    debugger
     this.bindPluginEvent()
-    // this.get(this.$store.state.chart.viewId);
-    // this.getData(this.param.id)
-    // this.getChart(this.param.id)
-    // this.myEcharts();
     this.initFromPanel()
+    this.chartInit()
+    // console.log('mounted')
   },
   activated() {
   },
@@ -1336,6 +1335,11 @@ export default {
   methods: {
     initFromPanel() {
       this.hasEdit = (this.panelViewEditInfo[this.param.id] || false)
+    },
+    chartInit() {
+      this.resetDrill()
+      this.initFromPanel()
+      this.getChart(this.param.id)
     },
     bindPluginEvent() {
       bus.$on('show-dimension-edit-filter', this.showDimensionEditFilter)

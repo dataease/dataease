@@ -105,9 +105,9 @@ public class PanelGroupService {
 //    @Transactional
     public PanelGroup saveOrUpdate(PanelGroupRequest request) {
         String panelId = request.getId();
+        List<String> viewIds = null;
         if(StringUtils.isNotEmpty(panelId)){
-            Boolean mobileLayout = panelViewService.syncPanelViews(request);
-            request.setMobileLayout(mobileLayout);
+            viewIds = panelViewService.syncPanelViews(request);
         }
         if (StringUtils.isEmpty(panelId)) {
             // 新建
@@ -166,7 +166,7 @@ public class PanelGroupService {
         }
 
         //移除没有用到的仪表板私有视图
-//        extPanelGroupMapper.removeUselessViews(panelId);
+        extPanelGroupMapper.removeUselessViews(panelId,viewIds);
         return panelGroupDTOList.get(0);
     }
 
@@ -189,11 +189,17 @@ public class PanelGroupService {
     public void deleteCircle(String id) {
         Assert.notNull(id, "id cannot be null");
         sysAuthService.checkTreeNoManageCount("panel", id);
+
+        //清理view 和 view cache
+        extPanelGroupMapper.deleteCircleView(id);
+        extPanelGroupMapper.deleteCircleViewCache(id);
+
         // 同时会删除对应默认仪表盘
         extPanelGroupMapper.deleteCircle(id);
         storeService.removeByPanelId(id);
         shareService.delete(id, null);
         panelLinkService.deleteByResourceId(id);
+
 
         //清理跳转信息
         extPanelLinkJumpMapper.deleteJumpTargetViewInfoWithPanel(id);

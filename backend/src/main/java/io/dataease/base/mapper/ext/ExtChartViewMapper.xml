@@ -126,11 +126,11 @@
                                 `chart_type`,
                                 `senior`)
         SELECT #{newChartId},
-               GET_CHART_VIEW_COPY_NAME(#{oldChartId}),
+               `name`,
                #{panelId},
                `table_id`,
                `type`,
-               GET_CHART_VIEW_COPY_NAME(#{oldChartId}),
+               `title`,
                `x_axis`,
                `x_axis_ext`,
                `y_axis`,
@@ -151,7 +151,7 @@
                `result_mode`,
                'private',
                `senior`
-        FROM chart_view
+        FROM chart_view_cache
         WHERE id = #{oldChartId}
     </insert>
 
@@ -293,8 +293,7 @@
     </select>
 
     <delete id="deleteCacheWithPanel">
-        DELETE cvc,
-        pv
+        DELETE cvc
         FROM
             chart_view_cache cvc
             INNER JOIN panel_view pv ON cvc.id = pv.chart_view_id

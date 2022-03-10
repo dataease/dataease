@@ -84,7 +84,8 @@ public class PanelViewService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Boolean syncPanelViews(PanelGroupWithBLOBs panelGroup) {
+    public List<String> syncPanelViews(PanelGroupWithBLOBs panelGroup) {
+        List<String> viewIds = new ArrayList<>();
         Boolean mobileLayout = null;
         String panelId = panelGroup.getId();
         Assert.notNull(panelId, "panelId cannot be null");
@@ -120,12 +121,13 @@ public class PanelViewService {
             if (CollectionUtils.isNotEmpty(panelViewInsertDTOList)) {
                 extPanelViewMapper.savePanelView(panelViewInsertDTOList);
                 //将视图从cache表中更新到正式表中
-                List<String> viewIds = panelViewInsertDTOList.stream().map(panelView ->panelView.getChartViewId()).collect(Collectors.toList());
+                viewIds = panelViewInsertDTOList.stream().map(panelView ->panelView.getChartViewId()).collect(Collectors.toList());
                 extChartViewMapper.copyCacheToView(viewIds);
                 extChartViewMapper.deleteCacheWithPanel(panelId);
             }
         }
-        return mobileLayout;
+        panelGroup.setMobileLayout(mobileLayout);
+        return viewIds;
     }
 
     public List<PanelViewTableDTO> detailList(String panelId) {

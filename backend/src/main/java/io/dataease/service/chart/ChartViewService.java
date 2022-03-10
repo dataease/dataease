@@ -39,6 +39,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -98,7 +99,6 @@ public class ChartViewService {
         chartView.setCreateTime(timestamp);
         chartView.setUpdateTime(timestamp);
         chartViewMapper.insertSelective(chartView);
-
         // 新建的视图也存入缓存表中
         extChartViewMapper.copyToCache(chartView.getId());
 
@@ -221,6 +221,7 @@ public class ChartViewService {
         return extChartViewMapper.searchOneWithPrivileges(userId, id);
     }
 
+    @Transactional
     public ChartViewDTO getOne(String id,String queryFrom){
         ChartViewDTO result;
         //仪表板编辑页面 从缓存表中取数据 缓存表中没有数据则进行插入
@@ -1742,6 +1743,7 @@ public class ChartViewService {
     public String chartCopy(String id, String panelId) {
         String newChartId = UUID.randomUUID().toString();
         extChartViewMapper.chartCopy(newChartId, id, panelId);
+        extChartViewMapper.copyToCache(newChartId);
         return newChartId;
     }
 
