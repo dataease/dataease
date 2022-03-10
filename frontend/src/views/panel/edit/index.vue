@@ -225,8 +225,8 @@
         </el-row>
       </de-main-container>
 
-      <div v-show="!this.mobileLayoutStatus&&this.rightDrawOpen" class="tools-window-main">
-        <div v-show="showViewToolsAside">
+      <div v-if="!this.mobileLayoutStatus&&this.rightDrawOpen" class="tools-window-main">
+        <div v-if="showViewToolsAside">
           <chart-edit v-if="this.curComponent" ref="chartEditRef" :edit-from="'panel'" :param="chartEditParam" />
         </div>
         <div v-if="!showViewToolsAside">

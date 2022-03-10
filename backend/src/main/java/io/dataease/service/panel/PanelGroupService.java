@@ -166,7 +166,7 @@ public class PanelGroupService {
         }
 
         //移除没有用到的仪表板私有视图
-        extPanelGroupMapper.removeUselessViews(panelId);
+//        extPanelGroupMapper.removeUselessViews(panelId);
         return panelGroupDTOList.get(0);
     }
 
