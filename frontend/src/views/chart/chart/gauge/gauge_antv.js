@@ -88,12 +88,12 @@ export function baseGaugeOptionAntV(plot, container, chart, action) {
     options.indicator = {
       pointer: {
         style: {
-          stroke: theme.styleSheet.paletteQualitative10[index % 9]
+          stroke: theme.styleSheet.paletteQualitative10[index % theme.styleSheet.paletteQualitative10.length]
         }
       },
       pin: {
         style: {
-          stroke: theme.styleSheet.paletteQualitative10[index % 9]
+          stroke: theme.styleSheet.paletteQualitative10[index % theme.styleSheet.paletteQualitative10.length]
         }
       }
     }

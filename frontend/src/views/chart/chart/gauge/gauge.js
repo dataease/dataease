@@ -63,7 +63,7 @@ export function baseGaugeOption(chart_option, chart) {
           for (let i = 0; i < arr.length; i++) {
             const ele = arr[i]
             const p = parseInt(ele) / 100
-            range.push([p, hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha)])
+            range.push([p, hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)])
             if (!flag && per <= p) {
               flag = true
               index = i
@@ -73,7 +73,7 @@ export function baseGaugeOption(chart_option, chart) {
             index = arr.length
           }
 
-          range.push([1, hexColorToRGBA(customAttr.color.colors[arr.length % 9], customAttr.color.alpha)])
+          range.push([1, hexColorToRGBA(customAttr.color.colors[arr.length % customAttr.color.colors.length], customAttr.color.alpha)])
           chart_option.series[0].axisLine = {
             lineStyle: {
               color: range

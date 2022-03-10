@@ -41,7 +41,7 @@ export function basePieOption(chart_option, chart) {
         y.name = chart.data.x[i]
         // color
         y.itemStyle = {
-          color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha),
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
           borderRadius: 0
         }
         y.type = 'pie'
@@ -94,7 +94,7 @@ export function rosePieOption(chart_option, chart) {
         y.name = chart.data.x[i]
         // color
         y.itemStyle = {
-          color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha),
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
           borderRadius: customAttr.size.pieRoseRadius
         }
         y.type = 'pie'
