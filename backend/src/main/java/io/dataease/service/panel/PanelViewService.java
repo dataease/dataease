@@ -7,6 +7,7 @@ import io.dataease.base.domain.PanelGroupWithBLOBs;
 import io.dataease.base.domain.PanelView;
 import io.dataease.base.domain.PanelViewExample;
 import io.dataease.base.mapper.PanelViewMapper;
+import io.dataease.base.mapper.ext.ExtChartViewMapper;
 import io.dataease.base.mapper.ext.ExtPanelViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
@@ -38,6 +39,9 @@ public class PanelViewService {
 
     @Resource
     private PanelViewMapper panelViewMapper;
+
+    @Resource
+    private ExtChartViewMapper extChartViewMapper;
 
     private final static String SCENE_TYPE = "scene";
 
@@ -115,6 +119,10 @@ public class PanelViewService {
             extPanelViewMapper.deleteWithPanelId(panelId);
             if (CollectionUtils.isNotEmpty(panelViewInsertDTOList)) {
                 extPanelViewMapper.savePanelView(panelViewInsertDTOList);
+                //将视图从cache表中更新到正式表中
+                List<String> viewIds = panelViewInsertDTOList.stream().map(panelView ->panelView.getChartViewId()).collect(Collectors.toList());
+                extChartViewMapper.copyCacheToView(viewIds);
+                extChartViewMapper.deleteCacheWithPanel(panelId);
             }
         }
         return mobileLayout;

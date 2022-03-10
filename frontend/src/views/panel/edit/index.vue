@@ -1,7 +1,10 @@
 <template>
   <el-row>
     <el-header class="de-header">
-      <el-col :span="8" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;color: #606266;font-size: 16px">
+      <el-col
+        :span="8"
+        style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;color: #606266;font-size: 16px"
+      >
         <span style="line-height: 35px;">
           {{ $t('commons.name') }} ：{{ panelInfo.name || '测试仪表板' }}
         </span>
@@ -19,66 +22,113 @@
       </el-col>
     </el-header>
     <de-container>
-      <!--左侧导航栏-->
       <de-aside-container class="ms-aside-container">
         <div v-if="showAside" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
-          <div style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px">
+          <div
+            style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px"
+          >
             <!-- 视图图表 start -->
-            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
+            <div
+              class="button-div-class"
+              style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;"
+            >
               <el-button circle class="el-icon-circle-plus-outline" size="mini" @click="newChart()" />
             </div>
             <div class="button-text" style="position: relative; margin: 18px auto 16px;">
-              <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+              <div
+                style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
+              >
                 {{ $t('panel.view') }}
               </div>
             </div>
             <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
-              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
+              <div
+                style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
+              />
             </div>
             <!-- 视图图表 end -->
             <!-- 过滤组件 start -->
 
-            <div class="button-div-class" style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; ">
-              <el-button circle :class="show&&showIndex===1? 'button-show':'button-closed'" class="el-icon-s-tools" size="mini" @click="showPanel(1)" />
+            <div
+              class="button-div-class"
+              style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; "
+            >
+              <el-button
+                circle
+                :class="show&&showIndex===1? 'button-show':'button-closed'"
+                class="el-icon-s-tools"
+                size="mini"
+                @click="showPanel(1)"
+              />
             </div>
             <div class="button-text" style=" position: relative; margin: 18px auto 16px;">
-              <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+              <div
+                style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
+              >
                 {{ $t('panel.module') }}
               </div>
             </div>
 
             <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
-              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
+              <div
+                style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
+              />
             </div>
             <!-- 过滤组件 end -->
             <!-- 其他组件 start -->
 
-            <div class="button-div-class" style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; ">
-              <el-button circle :class="show&&showIndex===3? 'button-show':'button-closed'" class="el-icon-brush" size="mini" @click="showPanel(3)" />
+            <div
+              class="button-div-class"
+              style="  width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px; "
+            >
+              <el-button
+                circle
+                :class="show&&showIndex===3? 'button-show':'button-closed'"
+                class="el-icon-brush"
+                size="mini"
+                @click="showPanel(3)"
+              />
             </div>
             <div class="button-text" style=" position: relative; margin: 18px auto 16px;">
-              <div style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+              <div
+                style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
+              >
                 {{ $t('panel.other_module') }}
               </div>
             </div>
 
             <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
-              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
+              <div
+                style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
+              />
             </div>
             <!-- 其他组件 end -->
 
             <!-- 视图复用 start -->
-            <div class="button-div-class" style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;">
-              <el-button :class="show&&showIndex===0? 'button-show':'button-closed'" circle class="el-icon-copy-document" size="mini" @click="showPanel(0)" />
+            <div
+              class="button-div-class"
+              style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;"
+            >
+              <el-button
+                :class="show&&showIndex===0? 'button-show':'button-closed'"
+                circle
+                class="el-icon-copy-document"
+                size="mini"
+                @click="showPanel(0)"
+              />
             </div>
             <div class="button-text" style="position: relative; margin: 18px auto 16px;">
-              <div style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;">
+              <div
+                style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
+              >
                 <!--                {{ $t('panel.view') }}-->
                 复用
               </div>
             </div>
             <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
-              <div style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;" />
+              <div
+                style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
+              />
             </div>
             <!-- 视图复用 end -->
           </div>
@@ -141,12 +191,26 @@
                 class="this_mobile_canvas_main"
                 :style="mobileCanvasStyle"
               >
-                <Editor v-if="mobileEditorShow" id="editorMobile" ref="editorMobile" :matrix-count="mobileMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" @canvasDragging="canvasDragging" />
+                <Editor
+                  v-if="mobileEditorShow"
+                  id="editorMobile"
+                  ref="editorMobile"
+                  :matrix-count="mobileMatrixCount"
+                  :out-style="outStyle"
+                  :scroll-top="scrollTop"
+                  @canvasDragging="canvasDragging"
+                />
               </el-row>
               <el-row class="this_mobile_canvas_inner_bottom">
                 <el-col :span="12">
                   <i v-if="!hasStar" class="el-icon-star-off" size="mini" @click="star" />
-                  <i v-if="hasStar" class="el-icon-star-on" style="color: #0a7be0;font-size: 18px" size="mini" @click="unstar" />
+                  <i
+                    v-if="hasStar"
+                    class="el-icon-star-on"
+                    style="color: #0a7be0;font-size: 18px"
+                    size="mini"
+                    @click="unstar"
+                  />
                 </el-col>
                 <el-col :span="12" style="float: right">
                   <i class="el-icon-refresh-right" size="mini" @click="mobileRefresh" />
@@ -160,6 +224,24 @@
           </el-col>
         </el-row>
       </de-main-container>
+
+      <div v-show="!this.mobileLayoutStatus&&this.rightDrawOpen" class="tools-window-main">
+        <div v-show="showViewToolsAside">
+          <chart-edit v-if="this.curComponent" ref="chartEditRef" :edit-from="'panel'" :param="chartEditParam" />
+        </div>
+        <div v-if="!showViewToolsAside">
+          <el-row style="height: 40px">
+            <el-tooltip :content="$t('chart.draw_back')">
+              <el-button class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 5px;" size="mini" circle @click="changeRightDrawOpen(false)" />
+            </el-tooltip>
+          </el-row>
+          <el-row>
+            <div class="view-selected-message-class">
+              <span style="font-size: 14px;margin-left: 10px;font-weight: bold;line-height: 20px">{{$t('panel.select_view')}}</span>
+            </div>
+          </el-row>
+        </div>
+      </div>
     </de-container>
 
     <el-dialog
@@ -202,9 +284,21 @@
     </el-dialog>
 
     <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="previewVisible">
-      <Preview v-if="previewVisible" :in-screen="!previewVisible" :show-type="canvasStyleData.selfAdaption?'full':'width'" />
+      <Preview
+        v-if="previewVisible"
+        :in-screen="!previewVisible"
+        :show-type="canvasStyleData.selfAdaption?'full':'width'"
+      />
     </fullscreen>
-    <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
+    <input
+      id="input"
+      ref="files"
+      type="file"
+      accept="image/*"
+      hidden
+      @click="e => {e.target.value = '';}"
+      @change="handleFileChange"
+    >
 
     <!--矩形样式组件-->
     <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
@@ -240,7 +334,7 @@ import componentList, {
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
-import { initPanelData } from '@/api/panel/panel'
+import { initPanelComponentsData, initPanelData, initViewCache } from '@/api/panel/panel'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
@@ -259,6 +353,7 @@ import generateID from '@/components/canvas/utils/generateID'
 import TextAttr from '@/components/canvas/components/TextAttr'
 import ComponentWait from '@/views/panel/edit/ComponentWait'
 import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
+import ChartEdit from '@/views/chart/view/ChartEdit'
 
 export default {
   name: 'PanelEdit',
@@ -278,7 +373,8 @@ export default {
     AssistComponent,
     PanelTextEditor,
     TextAttr,
-    ChartGroup
+    ChartGroup,
+    ChartEdit
   },
   data() {
     return {
@@ -332,14 +428,28 @@ export default {
         'de-video'
       ],
       enableSureButton: false,
-      filterFromDrag: false
+      filterFromDrag: false,
+      activeToolsName: 'view',
+      rightDrawOpen: false
     }
   },
 
   computed: {
     // 侧边显示控制
+    chartEditParam() {
+      return this.curComponent ? { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' } : {}
+    },
+    // 侧边显示控制
     showAside() {
       return !this.linkageSettingStatus && !this.mobileLayoutStatus
+    },
+    // 显示仪表板工具栏
+    showPanelToolsAside() {
+      return !this.curComponent
+    },
+    // 显示视图工具栏
+    showViewToolsAside() {
+      return this.curComponent && this.curComponent.type === 'view'
     },
     showAttr() {
       if (this.mobileLayoutStatus) {
@@ -449,6 +559,7 @@ export default {
 
     this.$store.commit('setCurComponent', { component: null, index: null })
     this.$store.commit('clearLinkageSettingInfo', false)
+    this.$store.commit('resetViewEditInfo')
   },
   mounted() {
     // this.insertToBody()
@@ -466,6 +577,10 @@ export default {
     bus.$on('previewFullScreenClose', () => {
       this.previewVisible = false
     })
+
+    bus.$on('change_panel_right_draw', (param) => {
+      this.changeRightDrawOpen(param)
+    })
     const _this = this
     const erd = elementResizeDetectorMaker()
     // 监听div变动事件
@@ -480,6 +595,14 @@ export default {
     elx && elx.remove()
   },
   methods: {
+    changeRightDrawOpen(param) {
+      this.rightDrawOpen = param
+      if (this.rightDrawOpen) {
+        setTimeout(() => {
+          this.outStyle.width = this.outStyle.width + 0.000001
+        }, 0)
+      }
+    },
     init(panelId) {
       const _this = this
       _this.initHasStar()
@@ -493,7 +616,12 @@ export default {
         _this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
       } else if (panelId) {
         initPanelData(panelId, function() {
-          _this.$store.commit('recordSnapshot', 'init')// 记录快照
+          // 初始化视图缓存
+          initViewCache(panelId)
+          // initPanelComponentsData(panelId, function(rsp) {
+          //   _this.$store.commit('initPanelComponents', rsp)// 初始化仪表板组件视图数据
+          //   _this.$store.commit('recordSnapshot', 'init')// 记录快照
+          // })
         })
       }
     },
@@ -854,7 +982,10 @@ export default {
       if (this.curComponent.type === 'view') {
         this.$store.dispatch('chart/setViewId', null)
         this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
-        bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }})
+        bus.$emit('PanelSwitchComponent', {
+          name: 'ChartEdit',
+          param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }
+        })
       }
     },
     canvasScroll(event) {
@@ -934,212 +1065,250 @@ export default {
     border-bottom: 1px solid #E6E6E6;
 
   }
+
   .blackTheme .de-header {
-      background-color: var(--SiderBG) !important;
-      color: var(--TextActive);
+    background-color: var(--SiderBG) !important;
+    color: var(--TextActive);
   }
 
   .showLeftPanel {
-  overflow: hidden;
-  position: relative;
-  width: 100%;
-}
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
 </style>
 
 <style lang="scss" scoped>
-.leftPanel-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  transition: opacity .3s cubic-bezier(.7, .3, .1, 1);
-  background: rgba(0, 0, 0, .2);
-  z-index: -1;
-}
-
-.leftPanel {
-  width: 100%;
-  max-width: 300px;
-  height: calc(100vh - 35px);
-  position: fixed;
-  top: 91px;
-  left: 60px;
-  box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, .05);
-  transition: all .25s cubic-bezier(.7, .3, .1, 1);
-  transform: translate(100%);
-  background: var(--SiderBG, #fff);
-  z-index: 1003;
-}
-
-.show {
-  transition: all .3s cubic-bezier(.7, .3, .1, 1);
-
   .leftPanel-background {
-    z-index: 1002;
-    opacity: 1;
-    width: 100%;
-    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity .3s cubic-bezier(.7, .3, .1, 1);
+    background: rgba(0, 0, 0, .2);
+    z-index: -1;
   }
 
   .leftPanel {
-    transform: translate(0);
+    width: 100%;
+    max-width: 300px;
+    height: calc(100vh - 35px);
+    position: fixed;
+    top: 91px;
+    left: 60px;
+    box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, .05);
+    transition: all .25s cubic-bezier(.7, .3, .1, 1);
+    transform: translate(100%);
+    background: var(--SiderBG, #fff);
+    z-index: 1003;
   }
-}
 
-.mobile_canvas_main{
-  width: 80%;
-  height: 90%;
-  margin-left: 10%;
-  margin-top: 3%;
-}
+  .show {
+    transition: all .3s cubic-bezier(.7, .3, .1, 1);
 
-.this_mobile_canvas{
-  border-radius:30px;
-  min-width: 300px;
-  max-width: 350px;
-  min-height: 600px;
-  max-height: 700px;
-  overflow: hidden;
-  background-color: #000000;
-  background-size:100% 100% !important;
-}
+    .leftPanel-background {
+      z-index: 1002;
+      opacity: 1;
+      width: 100%;
+      height: 100%;
+    }
 
-.this_mobile_canvas_inner_top{
-  vertical-align: middle;
-  text-align: center;
-  background-color: #f7f8fa;
-  height: 30px;
-  line-height: 30px;
-  font-size: 14px;
-  width: 100%;
-}
-
-.this_mobile_canvas_top{
-  height: 30px;
-  width: 100%;
-}
-
-.this_mobile_canvas_inner_bottom{
-  background-color: #f7f8fa;
-  line-height: 30px;
-  vertical-align: middle;
-  color: gray;
-  height: 30px;
-  width: 100%;
-}
-
-.this_mobile_canvas_bottom{
-  height: 30px;
-  width: 100%;
-}
-
-.this_mobile_canvas_main{
-  overflow-x: hidden;
-  overflow-y: auto;
-  height:  calc(100% - 120px);;
-  background-color: #d7d9e3;
-  background-size:100% 100% !important;
-}
-
-.this_mobile_canvas_cell{
-  text-align: center;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.this_mobile_canvas_wait_cell{
-  background-size:100% 100% !important;
-  border: 2px solid #9ea6b2
-}
-
-.this_canvas{
-  width: 100%;
-  height: calc(100vh - 35px);
-  overflow-x: hidden;
-  overflow-y: auto;
-  background-size:100% 100% !important;
-}
-.el-main{
-  height: calc(100vh - 35px);
-  padding: 0!important;
-  overflow: auto;
-  position: relative;
-}
-
-.el-main ::v-deep .el-drawer__wrapper{
-  width: 310px!important;
-}
-.el-main ::v-deep .el-drawer__body{
-  overflow-y: auto;
-}
-.button-show{
-    background-color: var(--ContentBG, #ebf2fe)!important;
-}
-
-.button-closed{
-  background-color: var(--SiderBG, #ffffff)!important;
-}
-.style-aside{
-  width: 250px;
-  max-width:250px!important;
-  border: 1px solid var(--TableBorderColor, #E6E6E6);
-  padding: 10px;
-  transition: all 0.3s;
-
-}
-.placeholder{
-  font-size: 14px;
-  color: gray;
-}
-.show {
-  transform: translateX(0);
-}
-
-.hidden {
-  transform: translateX(100%);
-}
-
-.style-edit-dialog {
-  width: 300px!important;
-  height: 400px!important;
-
-  .el-dialog__header{
-    padding: 10px 20px !important;
-
-    .el-dialog__headerbtn {
-      top: 15px !important;
+    .leftPanel {
+      transform: translate(0);
     }
   }
-  .el-dialog__body{
-    padding: 1px 15px !important;
+
+  .mobile_canvas_main {
+    width: 80%;
+    height: 90%;
+    margin-left: 10%;
+    margin-top: 3%;
   }
-}
-.style-hidden{
-  overflow-x: hidden;
-}
-.button-text {
+
+  .this_mobile_canvas {
+    border-radius: 30px;
+    min-width: 300px;
+    max-width: 350px;
+    min-height: 600px;
+    max-height: 700px;
+    overflow: hidden;
+    background-color: #000000;
+    background-size: 100% 100% !important;
+  }
+
+  .this_mobile_canvas_inner_top {
+    vertical-align: middle;
+    text-align: center;
+    background-color: #f7f8fa;
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+    width: 100%;
+  }
+
+  .this_mobile_canvas_top {
+    height: 30px;
+    width: 100%;
+  }
+
+  .this_mobile_canvas_inner_bottom {
+    background-color: #f7f8fa;
+    line-height: 30px;
+    vertical-align: middle;
+    color: gray;
+    height: 30px;
+    width: 100%;
+  }
+
+  .this_mobile_canvas_bottom {
+    height: 30px;
+    width: 100%;
+  }
+
+  .this_mobile_canvas_main {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: calc(100% - 120px);;
+    background-color: #d7d9e3;
+    background-size: 100% 100% !important;
+  }
+
+  .this_mobile_canvas_cell {
+    text-align: center;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .this_mobile_canvas_wait_cell {
+    background-size: 100% 100% !important;
+    border: 2px solid #9ea6b2
+  }
+
+  .this_canvas {
+    width: 100%;
+    height: calc(100vh - 35px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-size: 100% 100% !important;
+  }
+
+  .el-main {
+    height: calc(100vh - 35px);
+    padding: 0 !important;
+    overflow: auto;
+    position: relative;
+  }
+
+  .el-main ::v-deep .el-drawer__wrapper {
+    width: 310px !important;
+  }
+
+  .el-main ::v-deep .el-drawer__body {
+    overflow-y: auto;
+  }
+
+  .button-show {
+    background-color: var(--ContentBG, #ebf2fe) !important;
+  }
+
+  .button-closed {
+    background-color: var(--SiderBG, #ffffff) !important;
+  }
+
+  .style-aside {
+    width: 250px;
+    max-width: 250px !important;
+    border: 1px solid var(--TableBorderColor, #E6E6E6);
+    padding: 10px;
+    transition: all 0.3s;
+
+  }
+
+  .placeholder {
+    font-size: 14px;
+    color: gray;
+  }
+
+  .show {
+    transform: translateX(0);
+  }
+
+  .hidden {
+    transform: translateX(100%);
+  }
+
+  .style-edit-dialog {
+    width: 300px !important;
+    height: 400px !important;
+
+    .el-dialog__header {
+      padding: 10px 20px !important;
+
+      .el-dialog__headerbtn {
+        top: 15px !important;
+      }
+    }
+
+    .el-dialog__body {
+      padding: 1px 15px !important;
+    }
+  }
+
+  .style-hidden {
+    overflow-x: hidden;
+  }
+
+  .button-text {
     color: var(--TextActive);
-}
-  .mobile-canvas{
+  }
+
+  .mobile-canvas {
     width: 300px;
     height: 600px;
   }
 
-.info-class{
-  text-align: center;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #FFFFFF;
-  font-size: 12px;
-  color: #9ea6b2;
-}
+  .info-class {
+    text-align: center;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #FFFFFF;
+    font-size: 12px;
+    color: #9ea6b2;
+  }
 
-::-webkit-scrollbar {
-  width: 2px!important;
-  height: 2px!important;
-}
+  ::-webkit-scrollbar {
+    width: 2px !important;
+    height: 2px !important;
+  }
+
+  .tools-window-main {
+    width: 300px;
+    background-color: #FFFFFF;
+    transition: 1s;
+  }
+
+  .tools-window-tabs {
+    height: calc(100vh - 100px);
+    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  > > > .el-tabs__item {
+    padding: 0 15px;
+  }
+  .view-selected-message-class {
+    font-size: 12px;
+    color: #9ea6b2;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 100px);
+  }
 
 </style>

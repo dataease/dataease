@@ -372,6 +372,9 @@ export default {
       bus.$on('plugin-add-view-track-filter', param => {
         param.viewId && param.viewId === this.element.propValue.viewId && this.addViewTrackFilter(param)
       })
+      bus.$on('view-in-cache', param => {
+        param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
+      })
     },
 
     addViewTrackFilter(linkageParam) {
@@ -431,7 +434,8 @@ export default {
         }
         const requestInfo = {
           ...this.filter,
-          cache: cache
+          cache: cache,
+          queryFrom: this.isEdit ? 'panel_edit' : 'panel'
         }
         if (this.panelInfo.proxy) {
           // method = viewInfo
@@ -711,6 +715,18 @@ export default {
 
     renderComponent() {
       return this.chart.render
+    },
+    getDataEdit(param) {
+      this.$store.state.styleChangeTimes++
+      if (param.type === 'propChange') {
+        this.getData(param.viewId, false)
+      } else if (param.type === 'styleChange') {
+        this.chart.customAttr = param.viewInfo.customAttr
+        this.chart.customStyle = param.viewInfo.customStyle
+        this.sourceCustomAttrStr = this.chart.customAttr
+        this.sourceCustomStyleStr = this.chart.customStyle
+        this.mergeScale()
+      }
     }
   }
 }

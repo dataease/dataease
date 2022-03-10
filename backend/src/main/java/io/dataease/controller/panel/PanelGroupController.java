@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author: wangjiahao
@@ -90,6 +91,13 @@ public class PanelGroupController {
     @I18n
     public List<VAuthModelDTO> queryPanelViewTree() {
         return panelGroupService.queryPanelViewTree();
+    }
+
+    @ApiOperation("仪表板组件信息")
+    @GetMapping("/queryPanelComponents/{id}")
+    @I18n
+    public Map queryPanelComponents(@PathVariable String id){
+        return panelGroupService.queryPanelComponents(id);
     }
 
 }

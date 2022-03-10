@@ -57,6 +57,7 @@
       @linkJumpSet="linkJumpSet(item)"
       @boardSet="boardSet(item)"
       @canvasDragging="canvasDragging"
+      @editComponent="editComponent(index,item)"
     >
       <component
         :is="item.component"
@@ -1284,6 +1285,11 @@ export default {
     resizeView(index, item) {
       if (item.type === 'view' || item.type === 'de-show-date') {
         this.$refs.wrapperChild[index].chartResize()
+      }
+    },
+    editComponent(index, item) {
+      if (item.type === 'view') {
+        this.$refs.wrapperChild[index].editChart()
       }
     },
     handleDragOver(e) {

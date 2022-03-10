@@ -14,14 +14,17 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
+import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.chart.ChartViewDTO;
+import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseRequest;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.service.chart.ChartViewService;
+import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,10 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -81,6 +81,11 @@ public class PanelGroupService {
     private ExtPanelViewLinkageMapper extPanelViewLinkageMapper;
     @Resource
     private ExtChartViewMapper extChartViewMapper;
+    @Resource
+    private ExtDataSetTableMapper extDataSetTableMapper;
+    @Resource
+    private DataSetTableService dataSetTableService;
+
 
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
@@ -99,13 +104,8 @@ public class PanelGroupService {
     @DeCleaner(DePermissionType.PANEL)
 //    @Transactional
     public PanelGroup saveOrUpdate(PanelGroupRequest request) {
-        try {
-            Boolean mobileLayout = panelViewService.syncPanelViews(request);
-            request.setMobileLayout(mobileLayout);
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("更新panelView出错panelId：{}", request.getId());
-        }
+        Boolean mobileLayout = panelViewService.syncPanelViews(request);
+        request.setMobileLayout(mobileLayout);
         String panelId = request.getId();
         if (StringUtils.isEmpty(panelId)) {
             // 新建
@@ -340,5 +340,43 @@ public class PanelGroupService {
 
         LogUtil.info("=====v1.8版本 仪表板私有化【结束】=====");
     }
+
+    // 获取仪表板的视图信息
+    public Map queryPanelComponents(String panelId) {
+        try {
+            Map result, tableWithFields, viewWithViewInfo, tableWithTableInfo;
+            //查找所有view
+            List<ChartViewDTO> views = extChartViewMapper.searchViewsWithPanelId(panelId);
+            viewWithViewInfo = views.stream().collect(Collectors.toMap(ChartViewDTO::getId, ChartViewDTO -> ChartViewDTO));
+            //查找所有dataset
+            List<DataSetTableDTO> tables = extDataSetTableMapper.searchDataSetTableWithPanelId(panelId, String.valueOf(AuthUtils.getUser().getUserId()));
+            tableWithTableInfo = tables.stream().collect(Collectors.toMap(DataSetTableDTO::getId, DataSetTableDTO -> DataSetTableDTO));
+            //查找所有datasetFields
+            tableWithFields = new HashMap();
+            if (CollectionUtils.isNotEmpty(tables)) {
+                for (DataSetTableDTO table : tables) {
+                    DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
+                    dataSetTableRequest.setId(table.getId());
+                    Map<String, List<DatasetTableField>> tableDataSetFields = dataSetTableService.getFieldsFromDE(dataSetTableRequest);
+                    tableWithFields.put(table.getId(), tableDataSetFields);
+                }
+            }
+
+            result = new HashMap();
+            result.put("tableWithFields", tableWithFields);
+            result.put("viewWithViewInfo", viewWithViewInfo);
+            result.put("tableWithTableInfo", tableWithTableInfo);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogUtil.error(e);
+        }
+        return null;
+    }
+
+    public void findPanelAttachInfo(String panelId) {
+
+    }
+
 
 }

@@ -1,7 +1,10 @@
 <template>
   <el-row v-loading="loading" style="height: 100%;overflow-y: hidden;width: 100%;">
+    <el-tooltip :content="$t('chart.draw_back')">
+      <el-button class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 5px;z-index: 1000" size="mini" circle @click="closePanelEdit" />
+    </el-tooltip>
+    <!--    <i class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 11px"></i>-->
     <el-row style="height: 40px;" class="padding-lr">
-      <span class="title-text" style="line-height: 40px;">{{ view.name }}</span>
       <el-popover
         placement="right-start"
         width="400"
@@ -10,25 +13,30 @@
         @hide="hideTab"
       >
         <dataset-chart-detail type="chart" :data="view" :tab-status="tabStatus" />
-        <i slot="reference" class="el-icon-warning icon-class" style="margin-left: 4px;cursor: pointer;" />
+        <i
+          slot="reference"
+          class="el-icon-warning icon-class"
+          style="position:absolute; margin-left: 30px; top:14px;cursor: pointer;"
+        />
       </el-popover>
+      <span class="title-text view-title-name" style="line-height: 40px;">{{ view.name }}</span>
       <span style="float: right;line-height: 40px;">
-        <el-button size="mini" @click="close">
-          {{ $t('chart.close') }}
-        </el-button>
-        <el-button size="mini" :disabled="!hasEdit" @click="reset">
+        <!--        <el-button size="mini" @click="closePanelEdit">-->
+        <!--          {{ $t('chart.draw_back') }}-->
+        <!--        </el-button>-->
+        <el-button type="warning" round size="mini" :disabled="!hasEdit" @click="reset">
           {{ $t('chart.recover') }}
         </el-button>
-        <el-button size="mini" type="primary" @click="closeEdit">
-          {{ $t('commons.save') }}
-        </el-button>
+        <!--        <el-button size="mini" type="primary" @click="closeEdit">-->
+        <!--          {{ $t('commons.save') }}-->
+        <!--        </el-button>-->
       </span>
     </el-row>
-    <el-row class="view-panel">
+    <el-row class="view-panel-row">
       <el-tabs :stretch="true" class="tab-header">
-        <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 360px">
+        <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 300px">
           <el-row class="view-panel">
-            <el-col class="theme-border-class" style="width: 180px;border-right: 1px solid #E6E6E6;">
+            <el-col class="theme-border-class" :span="12" style="border-right: 1px solid #E6E6E6;">
               <div style="display: flex;align-items: center;justify-content: center;padding: 6px;">
                 <el-input
                   v-model="searchField"
@@ -117,7 +125,8 @@
             </el-col>
 
             <el-col
-              style="height: 100%;width: 180px;border-right: 1px solid #E6E6E6;"
+              :span="12"
+              style="height: 100%;border-right: 1px solid #E6E6E6;"
               class="theme-border-class"
             >
               <div style="height: 60px;overflow:auto" class="padding-lr theme-border-class">
@@ -218,7 +227,11 @@
                     </el-row>
                   </el-row>
 
-                  <plugin-com v-if="view.isPlugin" :component-name="view.type + '-data'" :obj="{view, param, chart, dimensionData, quotaData}" />
+                  <plugin-com
+                    v-if="view.isPlugin"
+                    :component-name="view.type + '-data'"
+                    :obj="{view, param, chart, dimensionData, quotaData}"
+                  />
                   <div v-else>
 
                     <el-row v-if="view.type ==='map'" class="padding-lr">
@@ -352,7 +365,9 @@
                         <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.chart_data') }}</span>
                         <span v-else-if="view.type && view.type.includes('tree')">{{ $t('chart.drag_block_treemap_size') }}</span>
                         <span v-else-if="view.type && view.type === 'chart-mix'">{{ $t('chart.drag_block_value_axis_main') }}</span>
-                        <span v-else-if="view.type && view.type === 'liquid'">{{ $t('chart.drag_block_progress') }}</span>
+                        <span
+                          v-else-if="view.type && view.type === 'liquid'"
+                        >{{ $t('chart.drag_block_progress') }}</span>
                         <span v-else-if="view.type && view.type === 'word-cloud'">{{ $t('chart.drag_block_word_cloud_size') }}</span>
                         /
                         <span>{{ $t('chart.quota') }}</span>
@@ -462,7 +477,11 @@
                       </div>
                     </el-row>
                     <!--extBubble-->
-                    <el-row v-if="view.type && view.type.includes('scatter')" class="padding-lr" style="margin-top: 6px;">
+                    <el-row
+                      v-if="view.type && view.type.includes('scatter')"
+                      class="padding-lr"
+                      style="margin-top: 6px;"
+                    >
                       <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.bubble_size') }}</span>
                         /
@@ -578,7 +597,7 @@
             </el-col>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 360px;">
+        <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 300px">
           <el-row class="view-panel">
             <plugin-com
               v-if="view.isPlugin"
@@ -812,7 +831,7 @@
         </el-tab-pane>
       </el-tabs>
 
-      <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
+      <el-col v-if="editFrom==='view'" style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <div ref="imageWrapper" style="height: 100%">
             <plugin-com
@@ -991,7 +1010,14 @@
 </template>
 
 <script>
-import { ajaxGetDataOnly, post } from '@/api/chart/chart'
+import {
+  ajaxGetDataOnly,
+  post,
+  getChartDetails,
+  save2Cache,
+  resetViewCache,
+  resetViewCacheCallBack
+} from '@/api/chart/chart'
 import DimensionItem from '../components/drag-item/DimensionItem'
 import QuotaItem from '../components/drag-item/QuotaItem'
 import FilterItem from '../components/drag-item/FilterItem'
@@ -1052,6 +1078,8 @@ import { compareItem } from '@/views/chart/chart/compare'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import DimensionExtItem from '@/views/chart/components/drag-item/DimensionExtItem'
 import PluginCom from '@/views/system/plugin/PluginCom'
+import { mapState } from 'vuex'
+
 export default {
   name: 'ChartEdit',
   components: {
@@ -1102,6 +1130,11 @@ export default {
     param: {
       type: Object,
       required: true
+    },
+    editFrom: {
+      type: String,
+      required: false,
+      default: 'view'
     }
   },
   data() {
@@ -1197,7 +1230,10 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
-    }
+    },
+    ...mapState([
+      'panelViewEditInfo'
+    ])
   },
   watch: {
     'param': function() {
@@ -1205,7 +1241,9 @@ export default {
         //
       } else {
         this.resetDrill()
-        this.getData(this.param.id)
+        this.initFromPanel()
+        // this.getData(this.param.id)
+        this.getChart(this.param.id)
       }
     },
     searchField(val) {
@@ -1226,13 +1264,18 @@ export default {
   mounted() {
     this.bindPluginEvent()
     // this.get(this.$store.state.chart.viewId);
-    this.getData(this.param.id)
+    // this.getData(this.param.id)
+    // this.getChart(this.param.id)
     // this.myEcharts();
+    this.initFromPanel()
   },
   activated() {
   },
 
   methods: {
+    initFromPanel() {
+      this.hasEdit = (this.panelViewEditInfo[this.param.id] || false)
+    },
     bindPluginEvent() {
       bus.$on('show-dimension-edit-filter', this.showDimensionEditFilter)
       bus.$on('show-rename', this.showRename)
@@ -1449,50 +1492,57 @@ export default {
       delete view.data
       return view
     },
-    calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
-      this.hasEdit = true
-      const view = this.buildParam(getData, trigger, needRefreshGroup, switchType)
+    // calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
+    // this.hasEdit = true
+    // const view = this.buildParam(getData, trigger, needRefreshGroup, switchType)
+    // if (!view) return
+    // post('/chart/view/calcData/' + this.panelInfo.id, {
+    //   view: view,
+    //   requestList: {
+    //     filter: [],
+    //     drill: this.drillClickDimensionList
+    //   }
+    // }).then(response => {
+    //   const view = JSON.parse(JSON.stringify(response.data))
+    //   this.view.xaxis = view.xaxis ? JSON.parse(view.xaxis) : []
+    //   this.view.xaxisExt = view.xaxisExt ? JSON.parse(view.xaxisExt) : []
+    //   this.view.yaxis = view.yaxis ? JSON.parse(view.yaxis) : []
+    //   this.view.yaxisExt = view.yaxisExt ? JSON.parse(view.yaxisExt) : []
+    //   this.view.extStack = view.extStack ? JSON.parse(view.extStack) : []
+    //   this.view.drillFields = view.drillFields ? JSON.parse(view.drillFields) : []
+    //   this.view.extBubble = view.extBubble ? JSON.parse(view.extBubble) : []
+    //   this.view.customAttr = view.customAttr ? JSON.parse(view.customAttr) : {}
+    //   this.view.customStyle = view.customStyle ? JSON.parse(view.customStyle) : {}
+    //   this.view.customFilter = view.customFilter ? JSON.parse(view.customFilter) : {}
+    //   // 将视图传入echart组件
+    //   this.chart = response.data
+    //   this.data = response.data.data
+    //   // console.log(JSON.stringify(this.chart))
+    //   this.httpRequest.status = true
+    //   if (this.chart.privileges) {
+    //     this.param.privileges = this.chart.privileges
+    //   }
+    //   if (!response.data.drill) {
+    //     this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
+    //
+    //     this.resetDrill()
+    //   }
+    //   this.drill = response.data.drill
+    //   this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
+    //
+    //   this.closeChangeChart()
+    // })
+    // },
+    calcData() {
+      this.changeEditStatus(true)
+      const view = this.buildParam(true, 'chart', false, false)
       if (!view) return
-      post('/chart/view/calcData/' + this.panelInfo.id, {
-        view: view,
-        requestList: {
-          filter: [],
-          drill: this.drillClickDimensionList
-        }
-      }).then(response => {
-        const view = JSON.parse(JSON.stringify(response.data))
-        this.view.xaxis = view.xaxis ? JSON.parse(view.xaxis) : []
-        this.view.xaxisExt = view.xaxisExt ? JSON.parse(view.xaxisExt) : []
-        this.view.yaxis = view.yaxis ? JSON.parse(view.yaxis) : []
-        this.view.yaxisExt = view.yaxisExt ? JSON.parse(view.yaxisExt) : []
-        this.view.extStack = view.extStack ? JSON.parse(view.extStack) : []
-        this.view.drillFields = view.drillFields ? JSON.parse(view.drillFields) : []
-        this.view.extBubble = view.extBubble ? JSON.parse(view.extBubble) : []
-        this.view.customAttr = view.customAttr ? JSON.parse(view.customAttr) : {}
-        this.view.customStyle = view.customStyle ? JSON.parse(view.customStyle) : {}
-        this.view.customFilter = view.customFilter ? JSON.parse(view.customFilter) : {}
-        // 将视图传入echart组件
-        this.chart = response.data
-        this.data = response.data.data
-        // console.log(JSON.stringify(this.chart))
-        this.httpRequest.status = true
-        if (this.chart.privileges) {
-          this.param.privileges = this.chart.privileges
-        }
-        if (!response.data.drill) {
-          this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
-
-          this.resetDrill()
-        }
-        this.drill = response.data.drill
-        this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
-
-        this.closeChangeChart()
+      save2Cache(this.panelInfo.id, view).then(() => {
+        bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
     },
-
     calcStyle() {
-      this.hasEdit = true
+      this.changeEditStatus(true)
       // 将视图传入echart...组件
       const view = JSON.parse(JSON.stringify(this.view))
       view.xaxis = JSON.stringify(this.view.xaxis)
@@ -1505,8 +1555,15 @@ export default {
       view.customAttr = JSON.stringify(this.view.customAttr)
       view.customStyle = JSON.stringify(this.view.customStyle)
       view.customFilter = JSON.stringify(this.view.customFilter)
-      view.data = this.data
+      // view.data = this.data
       this.chart = view
+
+      // 保存到缓存表
+      const viewSave = this.buildParam(true, 'chart', false, false)
+      if (!viewSave) return
+      save2Cache(this.panelInfo.id, viewSave)
+
+      bus.$emit('view-in-cache', { type: 'styleChange', viewId: this.param.id, viewInfo: view })
     },
 
     closeEdit() {
@@ -1529,6 +1586,9 @@ export default {
         this.$success(this.$t('commons.save_success'))
       })
     },
+    closePanelEdit() {
+      bus.$emit('change_panel_right_draw', false)
+    },
     close() {
       this.closeChangeChart()
       // 从仪表板入口关闭
@@ -1542,7 +1602,8 @@ export default {
       if (id) {
         ajaxGetDataOnly(id, this.panelInfo.id, {
           filter: [],
-          drill: this.drillClickDimensionList
+          drill: this.drillClickDimensionList,
+          queryFrom: 'panelEdit'
         }).then(response => {
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
@@ -1585,9 +1646,9 @@ export default {
         this.view = {}
       }
     },
-    getChart(id) {
+    getChart(id, queryFrom = 'panel_edit') {
       if (id) {
-        post('/chart/view/get/' + id + '/' + this.panelInfo.id, {}).then(response => {
+        getChartDetails(id, this.panelInfo.id, { queryFrom: queryFrom }).then(response => {
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
@@ -2166,7 +2227,10 @@ export default {
       // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(this.currentAcreaNode.code)
       const current = this.$refs.dynamicChart
       if (this.view.isPlugin) {
-        current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: this.currentAcreaNode.code })
+        current && current.callPluginInner({
+          methodName: 'registerDynamicMap',
+          methodParam: this.currentAcreaNode.code
+        })
       } else {
         current && current.registerDynamicMap && current.registerDynamicMap(this.currentAcreaNode.code)
       }
@@ -2190,7 +2254,10 @@ export default {
         // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(nextNode.code)
         const current = this.$refs.dynamicChart
         if (this.view.isPlugin) {
-          nextNode && current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: nextNode.code })
+          nextNode && current && current.callPluginInner({
+            methodName: 'registerDynamicMap',
+            methodParam: nextNode.code
+          })
         } else {
           nextNode && current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
         }
@@ -2215,9 +2282,17 @@ export default {
     },
 
     reset() {
-      this.getData(this.param.id)
+      this.changeEditStatus(false)
+      this.getChart(this.param.id, 'panel')
+      const _this = this
+      resetViewCacheCallBack(this.param.id, this.panelInfo.id, function(rsp) {
+        bus.$emit('view-in-cache', { type: 'propChange', viewId: _this.param.id })
+      })
     },
-
+    changeEditStatus(status) {
+      this.hasEdit = status
+      this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
+    },
     changeChartType() {
       this.setChartDefaultOptions()
       this.calcData(true, 'chart', true, true)
@@ -2274,9 +2349,17 @@ export default {
     margin-left: 10px;
   }
 
+  .view-panel-row {
+    display: flex;
+    background-color: #f7f8fa;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100vh - 75px);
+  }
+
   .view-panel {
     display: flex;
-    height: calc(100% - 40px);
+    height: calc(100% - 80px);
     background-color: #f7f8fa;
   }
 
@@ -2379,7 +2462,7 @@ export default {
 
   .tab-header > > > .el-tabs__item {
     font-size: 12px;
-    padding: 0 60px!important;
+    padding: 0 60px !important;
   }
 
   .blackTheme .tab-header > > > .el-tabs__item {
@@ -2395,7 +2478,6 @@ export default {
   }
 
   .tab-header > > > .el-tabs__content {
-    height: 100%;
   }
 
   .draggable-group {
@@ -2569,11 +2651,33 @@ export default {
   }
 
   .result-count {
-    width: 80px;
+    width: 60px;
   }
 
   .radio-span > > > .el-radio__label {
     margin-left: 4px;
+  }
+
+  .view-title-name {
+    display: -moz-inline-box;
+    display: inline-block;
+    width: 130px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-left: 45px;
+  }
+
+  ::v-deep .item-axis {
+    width: 128px !important;
+  }
+
+  ::v-deep .el-slider__input {
+    width: 80px !important;
+  }
+
+  ::v-deep .el-input-number--mini {
+    width: 80px !important;
   }
 
 </style>

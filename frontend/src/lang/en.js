@@ -1029,7 +1029,8 @@ export default {
     table_item_align: 'Body Align',
     table_align_left: 'Left',
     table_align_center: 'Center',
-    table_align_right: 'Right'
+    table_align_right: 'Right',
+    draw_back: 'Draw Back'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1578,7 +1579,8 @@ export default {
     uninstall_confirm: 'Comfirm to uninstall the plugin?',
     uninstall_cancel: 'Cancel uninstall plugin',
     setting_background: 'BackGround',
-    setting_jump: 'Jump Setting'
+    setting_jump: 'Jump Setting',
+    select_view: 'Select View'
   },
   display: {
     logo: 'Head system logo',

@@ -145,12 +145,12 @@ export default {
     init() {
       if (this.data.id) {
         if (this.type === 'dataset') {
-          post('/dataset/table/datasetDetail/' + this.data.id, null).then(res => {
+          post('/dataset/table/datasetDetail/' + this.data.id, null,false).then(res => {
             this.detail = res.data
             this.info = JSON.parse(res.data.table.info)
           })
         } else if (this.type === 'chart') {
-          post('/chart/view/chartDetail/' + this.data.id + '/' + this.panelInfo.id, null).then(res => {
+          post('/chart/view/chartDetail/' + this.data.id + '/' + this.panelInfo.id, null,false).then(res => {
             this.detail = res.data
             this.info = JSON.parse(res.data.table.info)
           })

@@ -531,7 +531,7 @@ export default {
         width: this.computedMainSlotWidth,
         height: this.computedMainSlotHeight
       }
-      if (this.element.commonBackground && this.element.commonBackground.enable) {
+      if (this.element.commonBackground&&this.element.commonBackground.enable) {
         if (this.element.commonBackground.backgroundType === 'innerImage') {
           style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat`
         } else if (this.element.commonBackground.backgroundType === 'outerImage') {

@@ -42,4 +42,5 @@ public class ChartExtRequest {
 
     @ApiModelProperty(hidden = true)
     private PermissionProxy proxy;
+
 }

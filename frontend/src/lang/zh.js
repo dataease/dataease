@@ -1032,7 +1032,8 @@ export default {
     table_item_align: '表格对齐方式',
     table_align_left: '左对齐',
     table_align_center: '居中',
-    table_align_right: '右对齐'
+    table_align_right: '右对齐',
+    draw_back: '收回'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1573,7 +1574,8 @@ export default {
     choose_background: '选择组件背景',
     choose_background_tips: '组件自有的背景设置会覆盖当前设置',
     setting_background: '设置背景',
-    setting_jump: '跳转设置'
+    setting_jump: '跳转设置',
+    select_view: '请选择视图...'
   },
   plugin: {
     local_install: '本地安装',
