@@ -1030,7 +1030,7 @@ export default {
     table_align_left: '左對齊',
     table_align_center: '居中',
     table_align_right: '右對齊',
-    draw_back: '收回'
+    draw_back: '收回',
     senior: '高級',
     senior_cfg: '高級設置',
     function_cfg: '功能設置',

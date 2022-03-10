@@ -1030,7 +1030,7 @@ export default {
     table_align_left: 'Left',
     table_align_center: 'Center',
     table_align_right: 'Right',
-    draw_back: 'Draw Back'
+    draw_back: 'Draw Back',
     senior: 'Senior',
     senior_cfg: 'Senior Config',
     function_cfg: 'Function Config',

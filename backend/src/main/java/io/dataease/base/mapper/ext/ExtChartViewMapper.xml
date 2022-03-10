@@ -332,7 +332,8 @@
             cv.custom_style = cve.custom_style,
             cv.custom_filter = cve.custom_filter,
             cv.drill_fields = cve.drill_fields,
-            cv.SNAPSHOT = cve.SNAPSHOT where cve.id = cv.id  and cv.id in
+           cv.senior = cve.senior,
+        cv.SNAPSHOT = cve.SNAPSHOT where cve.id = cv.id  and cv.id in
         <foreach collection="viewIds" item="viewId" open='(' separator=',' close=')'>
             #{viewId}
         </foreach>

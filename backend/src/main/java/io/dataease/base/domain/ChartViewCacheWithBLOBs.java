@@ -29,6 +29,8 @@ public class ChartViewCacheWithBLOBs extends ChartViewCache implements Serializa
 
     private String drillFields;
 
+    private String senior;
+
     private String snapshot;
 
     private static final long serialVersionUID = 1L;
