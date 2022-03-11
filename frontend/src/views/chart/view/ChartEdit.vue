@@ -2749,7 +2749,10 @@ export default {
   }
 
   .result-count {
-    width: 60px;
+    width: 50px;
+  }
+  .result-count >>> input {
+    padding:0 4px;
   }
 
   .radio-span > > > .el-radio__label {

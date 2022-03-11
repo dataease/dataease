@@ -6,7 +6,7 @@
           <el-checkbox v-model="functionForm.sliderShow" @change="changeFunctionCfg">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <el-form-item v-show="functionForm.sliderShow" :label="$t('chart.slider_range')+'(%)'" class="form-item form-item-slider">
-          <el-slider v-model="functionForm.sliderRange" :min="0" :max="100" input-size="mini" range @change="changeFunctionCfg" />
+          <el-slider v-model="functionForm.sliderRange" style="width: 90%" :min="0" :max="100" input-size="mini" range @change="changeFunctionCfg" />
         </el-form-item>
       </el-form>
     </el-col>

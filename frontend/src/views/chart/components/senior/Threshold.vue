@@ -4,7 +4,7 @@
       <el-form ref="thresholdForm" :model="thresholdForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.threshold_range')+'(%)'" class="form-item">
           <span>0,</span>
-          <el-input v-model="thresholdForm.gaugeThreshold" style="width: 160px;margin: 0 10px;" :placeholder="$t('chart.threshold_range')" size="mini" clearable @change="changeThreshold" />
+          <el-input v-model="thresholdForm.gaugeThreshold" style="width: 100px;margin: 0 10px;" :placeholder="$t('chart.threshold_range')" size="mini" clearable @change="changeThreshold" />
           <span>,100</span>
           <el-tooltip class="item" effect="dark" placement="bottom">
             <div slot="content">
