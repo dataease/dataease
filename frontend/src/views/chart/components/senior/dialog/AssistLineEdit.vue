@@ -81,7 +81,7 @@ export default {
       this.lineArr = JSON.parse(JSON.stringify(this.line))
     },
     addLine() {
-      this.lineArr.push(this.lineObj)
+      this.lineArr.push(JSON.parse(JSON.stringify(this.lineObj)))
       this.changeAssistLine()
     },
     removeLine(index) {
