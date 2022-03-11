@@ -728,6 +728,7 @@ export default {
       } else if (param.type === 'styleChange') {
         this.chart.customAttr = param.viewInfo.customAttr
         this.chart.customStyle = param.viewInfo.customStyle
+        this.chart.senior = param.viewInfo.senior
         this.sourceCustomAttrStr = this.chart.customAttr
         this.sourceCustomStyleStr = this.chart.customStyle
         this.mergeScale()
