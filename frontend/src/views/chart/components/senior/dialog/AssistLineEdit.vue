@@ -58,7 +58,7 @@ export default {
         name: '辅助线',
         field: '0', // 固定值
         axis: 'y', // 主轴
-        value: 0,
+        value: '0',
         lineType: 'solid',
         color: '#ff0000'
       },
@@ -81,7 +81,7 @@ export default {
       this.lineArr = JSON.parse(JSON.stringify(this.line))
     },
     addLine() {
-      this.lineArr.push(this.lineObj)
+      this.lineArr.push(JSON.parse(JSON.stringify(this.lineObj)))
       this.changeAssistLine()
     },
     removeLine(index) {
