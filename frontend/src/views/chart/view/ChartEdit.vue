@@ -2560,7 +2560,7 @@ export default {
 
   .tab-header > > > .el-tabs__item {
     font-size: 12px;
-    padding: 0 40px !important;
+    padding: 0 20px !important;
   }
 
   .blackTheme .tab-header > > > .el-tabs__item {
