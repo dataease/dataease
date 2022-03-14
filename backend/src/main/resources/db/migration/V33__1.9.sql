@@ -33,3 +33,16 @@ CREATE TABLE `chart_view_cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+CREATE TABLE `de_engine` (
+ `id` varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
+ `name` varchar(50) DEFAULT NULL COMMENT '名称',
+ `desc` varchar(50) DEFAULT NULL COMMENT '描述',
+ `type` varchar(50) NOT NULL COMMENT '类型',
+ `configuration` longtext NOT NULL COMMENT '详细信息',
+ `create_time` bigint(13) DEFAULT NULL COMMENT 'Create timestamp',
+ `update_time` bigint(13) DEFAULT NULL COMMENT 'Update timestamp',
+ `create_by` varchar(50) DEFAULT NULL COMMENT '创建人ID',
+ `status` varchar(45) DEFAULT NULL COMMENT '状态',
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
