@@ -100,6 +100,8 @@ public class ExcelXlsxReader extends DefaultHandler {
      */
     private String formatString;
 
+
+
     //定义前一个元素和当前元素的位置，用来计算其中空的单元格数量，如A6和A8等
     private String preRef = null, ref = null;
 

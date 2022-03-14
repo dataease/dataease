@@ -323,7 +323,6 @@ public class DatasourceService {
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
         datasources.forEach(datasource -> {
             commonThreadPool.addTask(()->{
-                System.out.println(System.currentTimeMillis());
                 try {
                     handleConnectionPool(datasource, "add");
                 } catch (Exception e) {

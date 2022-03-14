@@ -395,6 +395,7 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
                 if (dataSource != null) {
                     dataSource.close();
+                    jdbcConnection.remove(datasourceRequest.getDatasource().getId());
                 }
                 break;
             default:
@@ -426,6 +427,7 @@ public class JdbcProvider extends DatasourceProvider {
             case mysql:
             case mariadb:
             case engine_doris:
+            case engine_mysql:
             case ds_doris:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 username = mysqlConfiguration.getUsername();
@@ -529,6 +531,7 @@ public class JdbcProvider extends DatasourceProvider {
         switch (datasourceType) {
             case mysql:
             case mariadb:
+            case engine_mysql:
             case engine_doris:
             case ds_doris:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
@@ -604,6 +607,7 @@ public class JdbcProvider extends DatasourceProvider {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
+            case engine_mysql:
             case mariadb:
                 JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
                 return String.format("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' ;", jdbcConfiguration.getDataBase());
@@ -657,6 +661,7 @@ public class JdbcProvider extends DatasourceProvider {
             case mysql:
             case mariadb:
             case engine_doris:
+            case engine_mysql:
             case ds_doris:
             case ck:
                 return null;

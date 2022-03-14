@@ -172,7 +172,7 @@ public class DataSetTableController {
     @ApiOperation("检测doris")
     @PostMapping("checkDorisTableIsExists/{id}")
     public Boolean checkDorisTableIsExists(@PathVariable String id) throws Exception {
-        return dataSetTableService.checkDorisTableIsExists(id);
+        return dataSetTableService.checkEngineTableIsExists(id);
     }
 
     @ApiOperation("搜索")

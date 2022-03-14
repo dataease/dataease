@@ -101,7 +101,7 @@ export default {
     return {
       form:
         {
-          type: 'mysql',
+          type: 'engine_mysql',
           configuration: {
             host: '',
             dataBase: '',
@@ -129,30 +129,31 @@ export default {
       disabledSave: false,
       loading: false,
       rules: {
-        host: [
+        'configuration.host': [
           {
             required: true,
-            message: this.$t('system_parameter_setting.host'),
+            message: this.$t('datasource.please_input_host'),
             trigger: ['change', 'blur']
           }
         ],
-        port: [
+        'configuration.port': [
           {
             required: true,
-            message: this.$t('system_parameter_setting.port'),
+            message: this.$t('datasource.please_input_port'),
             trigger: ['change', 'blur']
           }
         ],
-        account: [
+        'configuration.dataBase': [
           {
             required: true,
-            message: this.$t('system_parameter_setting.account'),
+            message: this.$t('datasource.please_input_data_base'),
             trigger: ['change', 'blur']
-          }]
+          }
+        ]
       },
       allTypes: [
         {
-          name: 'mysql',
+          name: 'engine_mysql',
           label: 'MySQL',
           type: 'jdbc',
           extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
