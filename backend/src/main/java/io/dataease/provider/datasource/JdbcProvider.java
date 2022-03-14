@@ -11,7 +11,7 @@ import io.dataease.dto.datasource.*;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.provider.ProviderFactory;
-import io.dataease.provider.query.QueryProvider;
+import io.dataease.provider.QueryProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -226,7 +226,7 @@ public class JdbcProvider extends DatasourceProvider {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
-            case de_doris:
+            case engine_doris:
             case ds_doris:
             case mariadb:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
@@ -425,7 +425,7 @@ public class JdbcProvider extends DatasourceProvider {
         switch (datasourceType) {
             case mysql:
             case mariadb:
-            case de_doris:
+            case engine_doris:
             case ds_doris:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 username = mysqlConfiguration.getUsername();
@@ -529,7 +529,7 @@ public class JdbcProvider extends DatasourceProvider {
         switch (datasourceType) {
             case mysql:
             case mariadb:
-            case de_doris:
+            case engine_doris:
             case ds_doris:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 dataSource.setUrl(mysqlConfiguration.getJdbc());
@@ -607,7 +607,7 @@ public class JdbcProvider extends DatasourceProvider {
             case mariadb:
                 JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
                 return String.format("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' ;", jdbcConfiguration.getDataBase());
-            case de_doris:
+            case engine_doris:
             case ds_doris:
             case hive:
                 return "show tables";
@@ -656,7 +656,7 @@ public class JdbcProvider extends DatasourceProvider {
         switch (datasourceType) {
             case mysql:
             case mariadb:
-            case de_doris:
+            case engine_doris:
             case ds_doris:
             case ck:
                 return null;

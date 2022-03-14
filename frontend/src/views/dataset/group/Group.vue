@@ -87,7 +87,7 @@
                               <svg-icon icon-class="ds-sql" class="ds-icon-sql" />
                               {{ $t('dataset.sql_data') }}
                             </el-dropdown-item>
-                            <el-dropdown-item :command="beforeClickAddData('excel',data)" :disabled="!kettleRunning">
+                            <el-dropdown-item :command="beforeClickAddData('excel',data)" :disabled="!kettleRunning && engineMode!=='simple'">
                               <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
                               {{ $t('dataset.excel_data') }}
                             </el-dropdown-item>
@@ -232,6 +232,7 @@ import { loadTable, getScene, addGroup, delGroup, delTable, post, isKettleRunnin
 import GroupMoveSelector from './GroupMoveSelector'
 import DsMoveSelector from './DsMoveSelector'
 import { queryAuthModel } from '@/api/authModel/authModel'
+import {engineMode} from "@/api/system/engine";
 
 export default {
   name: 'Group',
@@ -304,6 +305,7 @@ export default {
       },
       isTreeSearch: false,
       kettleRunning: false,
+      engineMode: 'local',
       searchPids: [], // 查询命中的pid
       filterText: '',
       searchType: 'all',
@@ -333,6 +335,9 @@ export default {
   },
   created() {
     this.kettleState()
+    engineMode().then(res => {
+      this.engineMode = res.data
+    })
   },
   mounted() {
     this.treeNode(true)

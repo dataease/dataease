@@ -649,7 +649,8 @@ export default {
     port: '端口號不能爲空',
     account: '賬戶不能爲空',
     test_recipients: '測試收件人',
-    tip: '提示：僅用來作爲測試郵件收件人'
+    tip: '提示：僅用來作爲測試郵件收件人',
+    engine_mode_setting: '引擎設置'
   },
   chart: {
     save_snapshot: '保存縮略圖',

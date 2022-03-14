@@ -1,4 +1,4 @@
-package io.dataease.provider.query;
+package io.dataease.provider;
 
 import io.dataease.base.domain.ChartViewWithBLOBs;
 import io.dataease.base.domain.DatasetTableField;
