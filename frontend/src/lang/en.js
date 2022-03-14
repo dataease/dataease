@@ -647,7 +647,8 @@ export default {
     port: 'Port number cannot be empty',
     account: 'Account cannot be empty',
     test_recipients: 'Test recipients',
-    tip: 'Tip: use as test mail recipient only'
+    tip: 'Tip: use as test mail recipient only',
+    engine_mode_setting: 'Engine Setting'
   },
   chart: {
     save_snapshot: 'Save Snapshot',

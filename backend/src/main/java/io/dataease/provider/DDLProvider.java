@@ -18,4 +18,6 @@ public abstract class DDLProvider {
     public abstract String replaceTable(String name);
 
     public abstract String createTableSql(String name, List<DatasetTableField> datasetTableFields);
+
+    public abstract String insertSql(String name, List<String[]> dataList, int page, int pageNumber);
 }

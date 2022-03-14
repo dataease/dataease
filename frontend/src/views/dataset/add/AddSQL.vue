@@ -35,7 +35,7 @@
             <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
               <el-option :label="$t('dataset.direct_connect')" value="0"/>
               <el-option :label="$t('dataset.sync_data')" value="1"
-                         :disabled="!kettleRunning || selectedDatasource.type==='es' || selectedDatasource.type==='ck'|| selectedDatasource.type==='mongo'|| selectedDatasource.type==='redshift' || selectedDatasource.type==='hive'"/>
+                         :disabled="disabledSync"/>
             </el-select>
           </el-form-item>
 
@@ -124,6 +124,7 @@ import 'codemirror/keymap/emacs.js'
 import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
+import {engineMode} from "@/api/system/engine";
 
 export default {
   name: 'AddSQL',
@@ -157,7 +158,9 @@ export default {
       syncType: 'sync_now',
       height: 500,
       kettleRunning: false,
-      selectedDatasource: {}
+      selectedDatasource: {},
+      engineMode: 'local',
+      disabledSync: true
     }
   },
   computed: {
@@ -187,6 +190,9 @@ export default {
   },
   created() {
     this.kettleState()
+    engineMode().then(res => {
+      this.engineMode = res.data
+    })
   },
   methods: {
     kettleState() {
@@ -198,6 +204,11 @@ export default {
       for (let i = 0; i < this.options.length; i++) {
         if (this.options[i].id === this.dataSource) {
           this.selectedDatasource = this.options[i]
+          if (this.engineMode === 'simple' || (!this.kettleRunning || this.disabledSyncDs.indexOf(this.selectedDatasource.type) !== -1 )) {
+            this.disabledSync = true
+          } else {
+            this.disabledSync = false
+          }
         }
       }
     },

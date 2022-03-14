@@ -28,7 +28,7 @@
         </el-form-item>
         <el-form-item class="form-item">
           <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
-            <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning || selectedDatasource.type==='es' || selectedDatasource.type==='ck' || selectedDatasource.type==='mongo' || selectedDatasource.type==='redshift' || selectedDatasource.type==='hive'" />
+            <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning && engineMode!=='simple'" />
           </el-select>
         </el-form-item>
 
@@ -66,6 +66,7 @@
 
 <script>
 import { listApiDatasource, post, isKettleRunning } from '@/api/dataset/dataset'
+import {engineMode} from "@/api/system/engine";
 
 export default {
   name: 'AddApi',
@@ -86,6 +87,7 @@ export default {
       syncType: 'sync_now',
       tableData: [],
       kettleRunning: false,
+      engineMode: 'local',
       selectedDatasource: {}
     }
   },
@@ -119,6 +121,9 @@ export default {
   },
   created() {
     this.kettleState()
+    engineMode().then(res => {
+      this.engineMode = res.data
+    })
   },
   methods: {
     initDataSource() {

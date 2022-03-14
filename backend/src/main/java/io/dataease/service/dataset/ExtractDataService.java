@@ -160,7 +160,7 @@ public class ExtractDataService {
         }
         UpdateType updateType = UpdateType.valueOf(type);
         DatasetTableTaskLog datasetTableTaskLog;
-        if(datasetTableFields == null){
+        if (datasetTableFields == null) {
             datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTable.getId()).build());
         }
         datasetTableFields = datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
@@ -180,25 +180,29 @@ public class ExtractDataService {
                     datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, ops);
                     createEngineTable(TableUtils.tableName(datasetTableId), datasetTableFields);
                     createEngineTable(TableUtils.tmpName(TableUtils.tableName(datasetTableId)), datasetTableFields);
-                    generateTransFile("all_scope", datasetTable, datasource, datasetTableFields, null);
-                    generateJobFile("all_scope", datasetTable, datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(",")));
                     Long execTime = System.currentTimeMillis();
-                    extractData(datasetTable, "all_scope");
+                    if (!engineService.isSimpleMode()) {
+                        generateTransFile("all_scope", datasetTable, datasource, datasetTableFields, null);
+                        generateJobFile("all_scope", datasetTable, datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(",")));
+                        extractData(datasetTable, "all_scope");
+                    } else {
+                        extractExcelDataForSimpleMode(datasetTable, "all_scope");
+                    }
                     replaceTable(TableUtils.tableName(datasetTableId));
                     saveSuccessLog(datasetTableTaskLog);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
-                    if(ops.equalsIgnoreCase("替换")){
+                    if (ops.equalsIgnoreCase("替换")) {
                         List<DatasetTableField> oldFileds = getDatasetTableFields(datasetTable.getId());
                         List<DatasetTableField> toAdd = new ArrayList<>();
                         List<DatasetTableField> toDelete = new ArrayList<>();
                         for (DatasetTableField oldFiled : oldFileds) {
                             boolean delete = true;
                             for (DatasetTableField datasetTableField : datasetTableFields) {
-                                if(oldFiled.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldFiled.getDeExtractType().equals(datasetTableField.getDeExtractType())){
+                                if (oldFiled.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldFiled.getDeExtractType().equals(datasetTableField.getDeExtractType())) {
                                     delete = false;
                                 }
                             }
-                            if(delete){
+                            if (delete) {
                                 toDelete.add(oldFiled);
                             }
                         }
@@ -206,11 +210,11 @@ public class ExtractDataService {
                         for (DatasetTableField datasetTableField : datasetTableFields) {
                             boolean add = true;
                             for (DatasetTableField oldFiled : oldFileds) {
-                                if(oldFiled.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldFiled.getDeExtractType().equals(datasetTableField.getDeExtractType())){
+                                if (oldFiled.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldFiled.getDeExtractType().equals(datasetTableField.getDeExtractType())) {
                                     add = false;
                                 }
                             }
-                            if(add){
+                            if (add) {
                                 toAdd.add(datasetTableField);
                             }
                         }
@@ -230,10 +234,14 @@ public class ExtractDataService {
             case add_scope: // 增量更新
                 try {
                     datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, ops);
-                    generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, null);
-                    generateJobFile("incremental_add", datasetTable, datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(",")));
                     Long execTime = System.currentTimeMillis();
-                    extractData(datasetTable, "incremental_add");
+                    if (!engineService.isSimpleMode()) {
+                        generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, null);
+                        generateJobFile("incremental_add", datasetTable, datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(",")));
+                        extractData(datasetTable, "incremental_add");
+                    } else {
+                        extractExcelDataForSimpleMode(datasetTable, "incremental_add");
+                    }
                     saveSuccessLog(datasetTableTaskLog);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                 } catch (Exception e) {
@@ -309,21 +317,39 @@ public class ExtractDataService {
                     lastExecStatus = JobStatus.Error;
                     execTime = null;
                 } finally {
-                    try { deleteFile("all_scope", datasetTableId); }catch (Exception ignore){ System.out.println(ignore.getMessage());}
-                    try { sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, msg); }catch (Exception ignore){ System.out.println(ignore.getMessage());}
-                    try { dataSetTableTaskService.updateTaskStatus(datasetTableTask, lastExecStatus); }catch (Exception ignore){
+                    try {
+                        deleteFile("all_scope", datasetTableId);
+                    } catch (Exception ignore) {
                         System.out.println(ignore.getMessage());
                     }
-                    try { updateTableStatus(datasetTableId, datasetTable, lastExecStatus, execTime); }catch (Exception ignore){ System.out.println(ignore.getMessage());}
-                    try { dropDorisTable(TableUtils.tmpName(TableUtils.tableName(datasetTableId))); }catch (Exception ignore){ System.out.println(ignore.getMessage());}
+                    try {
+                        sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, msg);
+                    } catch (Exception ignore) {
+                        System.out.println(ignore.getMessage());
+                    }
+                    try {
+                        dataSetTableTaskService.updateTaskStatus(datasetTableTask, lastExecStatus);
+                    } catch (Exception ignore) {
+                        System.out.println(ignore.getMessage());
+                    }
+                    try {
+                        updateTableStatus(datasetTableId, datasetTable, lastExecStatus, execTime);
+                    } catch (Exception ignore) {
+                        System.out.println(ignore.getMessage());
+                    }
+                    try {
+                        dropDorisTable(TableUtils.tmpName(TableUtils.tableName(datasetTableId)));
+                    } catch (Exception ignore) {
+                        System.out.println(ignore.getMessage());
+                    }
                 }
                 break;
 
             case add_scope: // 增量更新
                 try {
-                    if(datasource.getType().equalsIgnoreCase(DatasourceTypes.api.name())){
+                    if (datasource.getType().equalsIgnoreCase(DatasourceTypes.api.name())) {
                         extractData(datasetTable, datasource, datasetTableFields, "incremental_add", null);
-                    }else{
+                    } else {
                         DatasetTableIncrementalConfig datasetTableIncrementalConfig = dataSetTableService.incrementalConfig(datasetTableId);
                         if (datasetTable.getLastUpdateTime() == null || datasetTable.getLastUpdateTime() == 0) {
                             throw new Exception("未进行全量同步");
@@ -351,10 +377,23 @@ public class ExtractDataService {
                     lastExecStatus = JobStatus.Error;
                     execTime = null;
                 } finally {
-                    try { deleteFile("incremental_add", datasetTableId); deleteFile("incremental_delete", datasetTableId); }catch (Exception ignore){}
-                    try { sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, msg); }catch (Exception ignore){}
-                    try { dataSetTableTaskService.updateTaskStatus(datasetTableTask, lastExecStatus); }catch (Exception ignore){}
-                    try { updateTableStatus(datasetTableId, datasetTable, lastExecStatus, execTime); }catch (Exception ignore){}
+                    try {
+                        deleteFile("incremental_add", datasetTableId);
+                        deleteFile("incremental_delete", datasetTableId);
+                    } catch (Exception ignore) {
+                    }
+                    try {
+                        sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, msg);
+                    } catch (Exception ignore) {
+                    }
+                    try {
+                        dataSetTableTaskService.updateTaskStatus(datasetTableTask, lastExecStatus);
+                    } catch (Exception ignore) {
+                    }
+                    try {
+                        updateTableStatus(datasetTableId, datasetTable, lastExecStatus, execTime);
+                    } catch (Exception ignore) {
+                    }
                 }
                 break;
         }
@@ -366,7 +405,7 @@ public class ExtractDataService {
 
     }
 
-    private List<DatasetTableField> getDatasetTableFields(String datasetTableId){
+    private List<DatasetTableField> getDatasetTableFields(String datasetTableId) {
         List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTableId).build());
         datasetTableFields = datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
         datasetTableFields.sort((o1, o2) -> {
@@ -381,53 +420,32 @@ public class ExtractDataService {
         return datasetTableFields;
     }
 
-    private void extractData(DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String extractType, String selectSQL) throws Exception{
-        if(datasource.getType().equalsIgnoreCase(DatasourceTypes.api.name())){
-            extractDataByDE(datasetTable, datasource, datasetTableFields, extractType);
+    private void extractData(DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String extractType, String selectSQL) throws Exception {
+        if (datasource.getType().equalsIgnoreCase(DatasourceTypes.api.name())) {
+            extractApiData(datasetTable, datasource, datasetTableFields, extractType);
             return;
         }
         extractDataByKettle(datasetTable, datasource, datasetTableFields, extractType, selectSQL);
     }
 
-    private void extractDataByDEForSimpleMode(List<String[]> dataList)throws Exception{
-        Datasource engine = engineService.getDeEngine();
-        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(engine);
-        DDLProvider ddlProvider = ProviderFactory.getDDLProvider(engine.getType());
-        int i = 0;
-        for (String[] strings : dataList) {
-
-            String content = "";
-            for (int i=0;i< strings.length;i++){
-                content = content +  strings[i] + separator;
-            }
-
-            datasourceRequest.setQuery(ddlProvider.createTableSql(tableName, datasetTableFields));
-            if(i==100 || ){
-                jdbcProvider.exec(datasourceRequest);
-            }
-
-        }
-
-
-
-    }
-    private void  extractDataByDE(DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String extractType)throws Exception{
+    private void extractApiData(DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String extractType) throws Exception {
         List<ApiDefinition> lists = JSONObject.parseArray(datasource.getConfiguration(), ApiDefinition.class);
         lists = lists.stream().filter(item -> item.getName().equalsIgnoreCase(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable())).collect(Collectors.toList());
-        if(CollectionUtils.isEmpty(lists)){
+        if (CollectionUtils.isEmpty(lists)) {
             throw new Exception("未找到API数据表");
         }
-        if(lists.size() > 1 ){
+        if (lists.size() > 1) {
             throw new Exception("存在重名的API数据表");
         }
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(datasource);
         datasourceRequest.setTable(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable());
-        Map<String, List> result  = datasourceProvider.fetchResultAndField(datasourceRequest);
+        Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
         List<String[]> dataList = result.get("dataList");
+        if (engineService.isSimpleMode()) {
+            extractDataForSimpleMode(extractType, datasetTable.getId(), dataList);
+        }
 
         Datasource engine = engineService.getDeEngine();
         DorisConfiguration dorisConfiguration = new Gson().fromJson(engine.getConfiguration(), DorisConfiguration.class);
@@ -450,8 +468,8 @@ public class ExtractDataService {
         BufferedWriter bw = new BufferedWriter(new FileWriter(dataFile));
         for (String[] strings : dataList) {
             String content = "";
-            for (int i=0;i< strings.length;i++){
-                content = content +  strings[i] + separator;
+            for (int i = 0; i < strings.length; i++) {
+                content = content + strings[i] + separator;
             }
             content = content + Md5Utils.md5(content);
             bw.write(content);
@@ -473,7 +491,7 @@ public class ExtractDataService {
         try {
             Process process = Runtime.getRuntime().exec(root_path + datasetTable.getId() + ".sh");
             process.waitFor();
-            if(process.waitFor() != 0){
+            if (process.waitFor() != 0) {
                 BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));
                 String errMsg = "";
                 String line = "";
@@ -486,16 +504,45 @@ public class ExtractDataService {
                 }
                 throw new Exception(errMsg);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throw e;
-        }finally {
+        } finally {
             File deleteFile = new File(root_path + datasetTable.getId() + ".sh");
             FileUtils.forceDelete(deleteFile);
         }
 
     }
 
-    private void extractDataByKettle(DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String extractType, String selectSQL)throws Exception{
+    private void extractDataForSimpleMode(String extractType, String datasetId, List<String[]> dataList) throws Exception {
+        String tableName;
+        switch (extractType) {
+            case "all_scope":
+                tableName = TableUtils.tmpName(TableUtils.tableName(datasetId));
+                break;
+            default:
+                tableName = TableUtils.tableName(datasetId);
+                break;
+        }
+        Datasource engine = engineService.getDeEngine();
+        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(engine);
+        DDLProvider ddlProvider = ProviderFactory.getDDLProvider(engine.getType());
+        int pageNumber = 100; //一次插入 100条
+        int totalPage;
+        if (dataList.size() % pageNumber > 0) {
+            totalPage = dataList.size() / pageNumber + 1;
+        } else {
+            totalPage = dataList.size() / pageNumber;
+        }
+
+        for (int page = 1; page <= totalPage; page++) {
+            datasourceRequest.setQuery(ddlProvider.insertSql(tableName, dataList, page, pageNumber));
+            jdbcProvider.exec(datasourceRequest);
+        }
+    }
+
+    private void extractDataByKettle(DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String extractType, String selectSQL) throws Exception {
         generateTransFile(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
         generateJobFile(extractType, datasetTable, datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(",")));
         extractData(datasetTable, extractType);
@@ -564,7 +611,6 @@ public class ExtractDataService {
     }
 
 
-
     private void createEngineTable(String tableName, List<DatasetTableField> datasetTableFields) throws Exception {
         Datasource engine = engineService.getDeEngine();
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
@@ -595,8 +641,8 @@ public class ExtractDataService {
         datasourceRequest.setDatasource(engine);
         DDLProvider ddlProvider = ProviderFactory.getDDLProvider(engine.getType());
         String[] replaceTableSql = ddlProvider.replaceTable(dorisTableName).split(";");
-        for(int i=0;i<replaceTableSql.length;i++){
-            if(StringUtils.isNotEmpty(replaceTableSql[i])){
+        for (int i = 0; i < replaceTableSql.length; i++) {
+            if (StringUtils.isNotEmpty(replaceTableSql[i])) {
                 datasourceRequest.setQuery(replaceTableSql[i]);
                 jdbcProvider.exec(datasourceRequest);
             }
@@ -656,19 +702,27 @@ public class ExtractDataService {
         return datasetTableTaskLog;
     }
 
-    private void extractDataForSimpleMode(DatasetTable datasetTable, String extractType)throws Exception{
-        //API
-
-        //EXCEL
-
+    private void extractExcelDataForSimpleMode(DatasetTable datasetTable, String extractType) throws Exception {
+        List<String[]> data = new ArrayList<>();
+        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+        List<ExcelSheetData> excelSheetDataList = dataTableInfoDTO.getExcelSheetDataList();
+        ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
+        for (ExcelSheetData excelSheetData : excelSheetDataList) {
+            excelXlsxReader.process(new FileInputStream(excelSheetData.getPath()));
+            for (ExcelSheetData sheet : excelXlsxReader.totalSheets) {
+                if (sheet.getExcelLable().equalsIgnoreCase(excelSheetData.getExcelLable())) {
+                    for (List<String> dataItem : sheet.getData()) {
+                        data.add(dataItem.toArray(new String[dataItem.size()]));
+                    }
+                }
+            }
+        }
+        extractDataForSimpleMode(extractType, datasetTable.getId(), data);
     }
 
     private void extractData(DatasetTable datasetTable, String extractType) throws Exception {
-        if(StringUtils.isNotEmpty(datasetTable.getDataSourceId())){
+        if (StringUtils.isNotEmpty(datasetTable.getDataSourceId())) {
             datasourceService.validate(datasetTable.getDataSourceId());
-        }
-        if(engineService.isSimpleMode()){
-            extractDataForSimpleMode(datasetTable, extractType);
         }
         KettleFileRepository repository = CommonBeanFactory.getBean(KettleFileRepository.class);
         RepositoryDirectoryInterface repositoryDirectoryInterface = repository.loadRepositoryDirectoryTree();
@@ -743,7 +797,7 @@ public class ExtractDataService {
     }
 
     private void generateJobFile(String extractType, DatasetTable datasetTable, String columnFields) throws Exception {
-        if(engineService.isSimpleMode()){
+        if (engineService.isSimpleMode()) {
             return;
         }
         String outFile;
@@ -830,7 +884,7 @@ public class ExtractDataService {
     }
 
     private void generateTransFile(String extractType, DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String selectSQL) throws Exception {
-        if(engineService.isSimpleMode()){
+        if (engineService.isSimpleMode()) {
             return;
         }
         TransMeta transMeta = new TransMeta();
@@ -976,7 +1030,7 @@ public class ExtractDataService {
         return fromStep;
     }
 
-    private StepMeta excelInputStep(String Info, List<DatasetTableField> datasetTableFields){
+    private StepMeta excelInputStep(String Info, List<DatasetTableField> datasetTableFields) {
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(Info, DataTableInfoDTO.class);
         List<ExcelSheetData> excelSheetDataList = dataTableInfoDTO.getExcelSheetDataList();
         String suffix = excelSheetDataList.get(0).getPath().substring(excelSheetDataList.get(0).getPath().lastIndexOf(".") + 1);
@@ -986,10 +1040,10 @@ public class ExtractDataService {
         List<String> files = new ArrayList<>();
         List<String> filesRequired = new ArrayList<>();
         for (ExcelSheetData excelSheetData : excelSheetDataList) {
-            if(!sheetNames.contains(excelSheetData.getExcelLable())){
+            if (!sheetNames.contains(excelSheetData.getExcelLable())) {
                 sheetNames.add(excelSheetData.getExcelLable());
             }
-            if(!files.contains(excelSheetData.getPath())){
+            if (!files.contains(excelSheetData.getPath())) {
                 files.add(excelSheetData.getPath());
                 filesRequired.add("Y");
             }
@@ -1003,7 +1057,7 @@ public class ExtractDataService {
             excelInputMeta.setSheetName(sheetNames.toArray(new String[sheetNames.size()]));
         }
         excelInputMeta.setPassword("Encrypted");
-        excelInputMeta.setFileName( files.toArray(new String[files.size()]));
+        excelInputMeta.setFileName(files.toArray(new String[files.size()]));
         excelInputMeta.setFileRequired(filesRequired.toArray(new String[filesRequired.size()]));
         excelInputMeta.setStartsWithHeader(true);
         excelInputMeta.setIgnoreEmptyRows(true);
@@ -1035,9 +1089,9 @@ public class ExtractDataService {
         textFileOutputMeta.setSeparator(separator);
         textFileOutputMeta.setExtension(extention);
 
-        if (datasource.getType().equalsIgnoreCase(DatasourceTypes.oracle.name()) ) {
+        if (datasource.getType().equalsIgnoreCase(DatasourceTypes.oracle.name())) {
             TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
-            for(int i=0;i< datasetTableFields.size();i++){
+            for (int i = 0; i < datasetTableFields.size(); i++) {
                 TextFileField textFileField = new TextFileField();
                 textFileField.setName(datasetTableFields.get(i).getOriginName());
                 textFileField.setType("String");
@@ -1049,9 +1103,9 @@ public class ExtractDataService {
             outputFields[datasetTableFields.size()] = textFileField;
 
             textFileOutputMeta.setOutputFields(outputFields);
-        }else if (datasource.getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name()) || datasource.getType().equalsIgnoreCase(DatasourceTypes.pg.name()) || datasource.getType().equalsIgnoreCase(DatasourceTypes.mysql.name())){
+        } else if (datasource.getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name()) || datasource.getType().equalsIgnoreCase(DatasourceTypes.pg.name()) || datasource.getType().equalsIgnoreCase(DatasourceTypes.mysql.name())) {
             TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
-            for(int i=0;i< datasetTableFields.size();i++){
+            for (int i = 0; i < datasetTableFields.size(); i++) {
                 TextFileField textFileField = new TextFileField();
                 textFileField.setName(datasetTableFields.get(i).getDataeaseName());
                 if (datasetTableFields.get(i).getDeExtractType().equals(DeTypeConstants.DE_TIME)) {
@@ -1069,9 +1123,9 @@ public class ExtractDataService {
             outputFields[datasetTableFields.size()] = textFileField;
 
             textFileOutputMeta.setOutputFields(outputFields);
-        }else if(datasource.getType().equalsIgnoreCase(DatasourceTypes.excel.name())) {
+        } else if (datasource.getType().equalsIgnoreCase(DatasourceTypes.excel.name())) {
             TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
-            for(int i=0;i< datasetTableFields.size();i++){
+            for (int i = 0; i < datasetTableFields.size(); i++) {
                 TextFileField textFileField = new TextFileField();
                 textFileField.setName(datasetTableFields.get(i).getDataeaseName());
                 if (datasetTableFields.get(i).getDeExtractType().equals(DeTypeConstants.DE_INT)) {
@@ -1089,7 +1143,7 @@ public class ExtractDataService {
             outputFields[datasetTableFields.size()] = textFileField;
 
             textFileOutputMeta.setOutputFields(outputFields);
-        }else {
+        } else {
             textFileOutputMeta.setOutputFields(new TextFileField[0]);
         }
 
@@ -1104,7 +1158,7 @@ public class ExtractDataService {
         String excelCompletion = "";
 
         for (DatasetTableField datasetTableField : datasetTableFields) {
-            if(datasetTableField.getDeExtractType().equals(DeTypeConstants.DE_BINARY)){
+            if (datasetTableField.getDeExtractType().equals(DeTypeConstants.DE_BINARY)) {
                 handleBinaryTypeCode.append("\n").append(handleBinaryType.replace("FIELD", datasetTableField.getDataeaseName()));
             }
         }
@@ -1145,7 +1199,7 @@ public class ExtractDataService {
     }
 
     public void deleteFile(String type, String dataSetTableId) {
-        if(kettleFilesKeep){
+        if (kettleFilesKeep) {
             return;
         }
         String transName = null;
@@ -1176,29 +1230,33 @@ public class ExtractDataService {
         deleteFile(root_path + transName + ".ktr");
     }
 
-    private void deleteExcelFile(DatasetTable datasetTable, List<String>datasetTableIds){
+    private void deleteExcelFile(DatasetTable datasetTable, List<String> datasetTableIds) {
         List<DatasetTable> datasetTables = dataSetTableService.list(datasetTableIds);
         for (ExcelSheetData excelSheetData : new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getExcelSheetDataList()) {
             Boolean allIsFinished = true;
             for (DatasetTable table : datasetTables) {
-                for(ExcelSheetData data : new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class).getExcelSheetDataList()){
-                    if(data.getPath().equalsIgnoreCase(excelSheetData.getPath())){
-                        if(StringUtils.isEmpty(table.getSyncStatus()) || table.getSyncStatus().equalsIgnoreCase(JobStatus.Underway.name())){
+                for (ExcelSheetData data : new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class).getExcelSheetDataList()) {
+                    if (data.getPath().equalsIgnoreCase(excelSheetData.getPath())) {
+                        if (StringUtils.isEmpty(table.getSyncStatus()) || table.getSyncStatus().equalsIgnoreCase(JobStatus.Underway.name())) {
                             allIsFinished = false;
                         }
                     }
                 }
             }
-            if(allIsFinished){
+            if (allIsFinished) {
                 deleteFile(excelSheetData.getPath());
-            }else {
-               try { Thread.sleep(5000); }catch (Exception ignore){}
+            } else {
+                try {
+                    Thread.sleep(5000);
+                } catch (Exception ignore) {
+                }
                 deleteExcelFile(datasetTable, datasetTableIds);
             }
         }
     }
-    private void deleteFile(String filePath){
-        if(StringUtils.isEmpty(filePath)){
+
+    private void deleteFile(String filePath) {
+        if (StringUtils.isEmpty(filePath)) {
             return;
         }
         try {
@@ -1207,6 +1265,7 @@ public class ExtractDataService {
         } catch (Exception e) {
         }
     }
+
     public boolean isKettleRunning() {
         try {
             if (!InetAddress.getByName(carte).isReachable(1000)) {
