@@ -34,6 +34,41 @@ CREATE TABLE `chart_view_cache` (
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+ALTER TABLE `panel_view`
+ADD COLUMN `data_from` varchar(255) NULL  DEFAULT 'chart'  COMMENT '当前数据来源 chart 视图 template 模板' AFTER `copy_id`;
+
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for panel_group_extend
+-- ----------------------------
+DROP TABLE IF EXISTS `panel_group_extend`;
+CREATE TABLE `panel_group_extend` (
+  `id` varchar(50) NOT NULL,
+  `panel_id` varchar(50) DEFAULT NULL,
+  `template_id` varchar(50) DEFAULT NULL COMMENT '模板来源id',
+  `template_dynamic_data` longtext COMMENT '模板动态数据',
+  `template_version` varchar(255) DEFAULT NULL COMMENT '模板版本号(预留)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for panel_group_extend_data
+-- ----------------------------
+DROP TABLE IF EXISTS `panel_group_extend_data`;
+CREATE TABLE `panel_group_extend_data` (
+  `id` varchar(50) NOT NULL,
+  `panel_id` varchar(50) DEFAULT NULL,
+  `view_id` varchar(50) DEFAULT NULL,
+  `view_details` longtext,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
 CREATE TABLE `de_engine` (
  `id` varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
  `name` varchar(50) DEFAULT NULL COMMENT '名称',

@@ -3,10 +3,7 @@ package io.dataease.service.panel;
 import com.alibaba.fastjson.JSON;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.*;
-import io.dataease.base.mapper.ChartViewMapper;
-import io.dataease.base.mapper.PanelGroupMapper;
-import io.dataease.base.mapper.PanelViewMapper;
-import io.dataease.base.mapper.VAuthModelMapper;
+import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.*;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.PanelConstants;
@@ -16,16 +13,19 @@ import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
+import io.dataease.dto.PanelGroupExtendDataDTO;
 import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseRequest;
+import io.dataease.dto.panel.po.PanelViewInsertDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.sys.SysAuthService;
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
@@ -85,6 +85,10 @@ public class PanelGroupService {
     private ExtDataSetTableMapper extDataSetTableMapper;
     @Resource
     private DataSetTableService dataSetTableService;
+    @Resource
+    private PanelTemplateMapper templateMapper;
+    @Resource
+    private ExtPanelGroupExtendDataMapper extPanelGroupExtendDataMapper;
 
 
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
@@ -105,17 +109,13 @@ public class PanelGroupService {
 //    @Transactional
     public PanelGroup saveOrUpdate(PanelGroupRequest request) {
         String panelId = request.getId();
-        List<String> viewIds = null;
         if(StringUtils.isNotEmpty(panelId)){
-            viewIds = panelViewService.syncPanelViews(request);
+            panelViewService.syncPanelViews(request);
         }
         if (StringUtils.isEmpty(panelId)) {
             // 新建
             checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, null, request.getNodeType());
-            panelId = UUID.randomUUID().toString();
-            request.setId(panelId);
-            request.setCreateTime(System.currentTimeMillis());
-            request.setCreateBy(AuthUtils.getUser().getUsername());
+            panelId = newPanel(request);
             panelGroupMapper.insert(request);
         } else if ("toDefaultPanel".equals(request.getOptType())) {
             panelId = UUID.randomUUID().toString();
@@ -164,9 +164,6 @@ public class PanelGroupService {
         if (!CollectionUtils.isNotEmpty(panelGroupDTOList)) {
             DataEaseException.throwException("未查询到用户对应的资源权限，请尝试刷新重新保存");
         }
-
-        //移除没有用到的仪表板私有视图
-        extPanelGroupMapper.removeUselessViews(panelId,viewIds);
         return panelGroupDTOList.get(0);
     }
 
@@ -303,6 +300,53 @@ public class PanelGroupService {
         return newPanelId;
     }
 
+    public String newPanel(PanelGroupRequest request){
+        String newPanelId = UUIDUtil.getUUIDAsString();
+        String newFrom = request.getNewFrom();
+        String templateStyle = null;
+        String templateData = null;
+        String dynamicData = null;
+        if(PanelConstants.NEW_PANEL_FROM.NEW.equals(newFrom)){
+
+        }else{
+            //内部模板新建
+            if(PanelConstants.NEW_PANEL_FROM.NEW_INNER_TEMPLATE.equals(newFrom)){
+                PanelTemplateWithBLOBs panelTemplate = templateMapper.selectByPrimaryKey(request.getTemplateId());
+                templateStyle = panelTemplate.getTemplateStyle();
+                templateData = panelTemplate.getTemplateData();
+                dynamicData = panelTemplate.getDynamicData();
+            }else if(PanelConstants.NEW_PANEL_FROM.NEW_OUTER_TEMPLATE.equals(newFrom)){
+                templateStyle = request.getPanelStyle();
+                templateData = request.getPanelData();
+                dynamicData = request.getDynamicData();
+            }
+            Map<String,String> dynamicDataMap = JSON.parseObject(dynamicData,Map.class);
+            List<PanelViewInsertDTO> panelViews = new ArrayList<>();
+            List<PanelGroupExtendDataDTO> viewsData = new ArrayList<>();
+            for(Map.Entry<String, String> entry : dynamicDataMap.entrySet()){
+                String originViewId = entry.getKey();
+                String originViewData = entry.getValue();
+                String position = JSON.parseObject(originViewData).getString("position");
+                String newViewId = UUIDUtil.getUUIDAsString();
+                //TODO 数据处理 1.替换viewId 2.加入panelView 数据(数据来源为template) 3.加入模板view data数据
+                templateData = templateData.replaceAll(originViewId,newViewId);
+                panelViews.add(new PanelViewInsertDTO(newViewId,newPanelId,position,"template"));
+                viewsData.add(new PanelGroupExtendDataDTO(newPanelId,newViewId,originViewData));
+            }
+            if(CollectionUtils.isNotEmpty(panelViews)){
+                extPanelViewMapper.savePanelView(panelViews);
+            }
+            if(CollectionUtils.isNotEmpty(viewsData)){
+                extPanelGroupExtendDataMapper.savePanelExtendData(viewsData);
+            }
+            request.setPanelData(templateData);
+            request.setPanelStyle(templateStyle);
+        }
+        request.setId(newPanelId);
+        request.setCreateTime(System.currentTimeMillis());
+        request.setCreateBy(AuthUtils.getUser().getUsername());
+        return newPanelId;
+    }
 
     public void sysInit1HistoryPanel() {
         LogUtil.info("=====v1.8版本 仪表板私有化【开始】=====");

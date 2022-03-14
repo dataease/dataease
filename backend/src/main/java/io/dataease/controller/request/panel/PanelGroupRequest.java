@@ -17,6 +17,13 @@ public class PanelGroupRequest extends PanelGroupDTO {
     private String userId;
     @ApiModelProperty("操作类型")
     private String optType;
+    @ApiModelProperty("新建来源")
+    private String newFrom;
+    @ApiModelProperty("模板动态数据")
+    private String dynamicData;
+    @ApiModelProperty("内部模板ID")
+    private String templateId;
+
 
     public PanelGroupRequest() {
     }

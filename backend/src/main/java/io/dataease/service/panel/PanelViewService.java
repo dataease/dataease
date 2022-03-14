@@ -8,6 +8,7 @@ import io.dataease.base.domain.PanelView;
 import io.dataease.base.domain.PanelViewExample;
 import io.dataease.base.mapper.PanelViewMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
+import io.dataease.base.mapper.ext.ExtPanelGroupMapper;
 import io.dataease.base.mapper.ext.ExtPanelViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
@@ -42,6 +43,8 @@ public class PanelViewService {
 
     @Resource
     private ExtChartViewMapper extChartViewMapper;
+
+    private ExtPanelGroupMapper extPanelGroupMapper;
 
     private final static String SCENE_TYPE = "scene";
 
@@ -127,6 +130,8 @@ public class PanelViewService {
             }
         }
         panelGroup.setMobileLayout(mobileLayout);
+        //移除没有用到的仪表板私有视图
+        extPanelGroupMapper.removeUselessViews(panelId,viewIds);
         return viewIds;
     }
 
