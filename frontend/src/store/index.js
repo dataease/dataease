@@ -101,7 +101,9 @@ const data = {
     },
     scrollAutoMove: 0,
     // 视图是否编辑记录
-    panelViewEditInfo: {}
+    panelViewEditInfo: {},
+    // 仪表板视图明细
+    panelViewDetailsInfo: {}
   },
   mutations: {
     ...animation.mutations,

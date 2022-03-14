@@ -187,7 +187,8 @@ export default {
     },
     ...mapState([
       'componentData',
-      'canvasStyleData'
+      'canvasStyleData',
+      'panelViewDetailsInfo'
     ])
   },
   watch: {
@@ -246,7 +247,7 @@ export default {
               nodeType: 'template',
               level: 1,
               pid: null,
-              dynamicData: ''
+              dynamicData: JSON.stringify(this.panelViewDetailsInfo)
             }
           }
         })
@@ -265,10 +266,10 @@ export default {
               snapshot: snapshot,
               panelStyle: JSON.stringify(this.canvasStyleData),
               panelData: JSON.stringify(this.componentData),
-              dynamicData: ''
+              dynamicData: JSON.stringify(this.panelViewDetailsInfo)
             }
             const blob = new Blob([JSON.stringify(this.templateInfo)], { type: '' })
-            FileSaver.saveAs(blob, this.$store.state.panel.panelInfo.name + '-TEMPLATE.DE')
+            FileSaver.saveAs(blob, this.$store.state.panel.panelInfo.name + '-TEMPLATE.DET')
           }
         })
       }, 50)

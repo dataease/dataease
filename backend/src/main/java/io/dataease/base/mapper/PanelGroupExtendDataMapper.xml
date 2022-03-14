@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.base.mapper.PanelGroupExtendDataMapper">
+  <resultMap id="BaseResultMap" type="io.dataease.base.domain.PanelGroupExtendData">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="panel_id" jdbcType="VARCHAR" property="panelId" />
+    <result column="view_id" jdbcType="VARCHAR" property="viewId" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.PanelGroupExtendData">
+    <result column="view_details" jdbcType="LONGVARCHAR" property="viewDetails" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, panel_id, view_id
+  </sql>
+  <sql id="Blob_Column_List">
+    view_details
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="io.dataease.base.domain.PanelGroupExtendDataExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from panel_group_extend_data
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="io.dataease.base.domain.PanelGroupExtendDataExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from panel_group_extend_data
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from panel_group_extend_data
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from panel_group_extend_data
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="io.dataease.base.domain.PanelGroupExtendDataExample">
+    delete from panel_group_extend_data
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="io.dataease.base.domain.PanelGroupExtendData">
+    insert into panel_group_extend_data (id, panel_id, view_id, 
+      view_details)
+    values (#{id,jdbcType=VARCHAR}, #{panelId,jdbcType=VARCHAR}, #{viewId,jdbcType=VARCHAR}, 
+      #{viewDetails,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelGroupExtendData">
+    insert into panel_group_extend_data
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="panelId != null">
+        panel_id,
+      </if>
+      <if test="viewId != null">
+        view_id,
+      </if>
+      <if test="viewDetails != null">
+        view_details,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="panelId != null">
+        #{panelId,jdbcType=VARCHAR},
+      </if>
+      <if test="viewId != null">
+        #{viewId,jdbcType=VARCHAR},
+      </if>
+      <if test="viewDetails != null">
+        #{viewDetails,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="io.dataease.base.domain.PanelGroupExtendDataExample" resultType="java.lang.Long">
+    select count(*) from panel_group_extend_data
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update panel_group_extend_data
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.panelId != null">
+        panel_id = #{record.panelId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.viewId != null">
+        view_id = #{record.viewId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.viewDetails != null">
+        view_details = #{record.viewDetails,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update panel_group_extend_data
+    set id = #{record.id,jdbcType=VARCHAR},
+      panel_id = #{record.panelId,jdbcType=VARCHAR},
+      view_id = #{record.viewId,jdbcType=VARCHAR},
+      view_details = #{record.viewDetails,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update panel_group_extend_data
+    set id = #{record.id,jdbcType=VARCHAR},
+      panel_id = #{record.panelId,jdbcType=VARCHAR},
+      view_id = #{record.viewId,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.base.domain.PanelGroupExtendData">
+    update panel_group_extend_data
+    <set>
+      <if test="panelId != null">
+        panel_id = #{panelId,jdbcType=VARCHAR},
+      </if>
+      <if test="viewId != null">
+        view_id = #{viewId,jdbcType=VARCHAR},
+      </if>
+      <if test="viewDetails != null">
+        view_details = #{viewDetails,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.dataease.base.domain.PanelGroupExtendData">
+    update panel_group_extend_data
+    set panel_id = #{panelId,jdbcType=VARCHAR},
+      view_id = #{viewId,jdbcType=VARCHAR},
+      view_details = #{viewDetails,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.PanelGroupExtendData">
+    update panel_group_extend_data
+    set panel_id = #{panelId,jdbcType=VARCHAR},
+      view_id = #{viewId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

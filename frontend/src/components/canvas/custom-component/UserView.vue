@@ -269,7 +269,8 @@ export default {
       'publicLinkStatus',
       'previewCanvasScale',
       'mobileLayoutStatus',
-      'componentData'
+      'componentData',
+      'panelViewDetailsInfo'
     ])
   },
 
@@ -450,6 +451,9 @@ export default {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
+            this.chart['position'] = this.inTab ? 'tab' : 'panel'
+            // 记录当前数据
+            this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
             this.sourceCustomAttrStr = this.chart.customAttr
             this.sourceCustomStyleStr = this.chart.customStyle
             this.chart.drillFields = this.chart.drillFields ? JSON.parse(this.chart.drillFields) : []

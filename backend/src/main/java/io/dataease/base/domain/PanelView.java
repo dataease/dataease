@@ -29,6 +29,8 @@ public class PanelView implements Serializable {
 
     private String copyId;
 
+    private String dataFrom;
+
     private byte[] content;
 
     private static final long serialVersionUID = 1L;

@@ -24,5 +24,12 @@ public class PanelViewInsertDTO extends PanelView {
         super.setPanelId(panelGroupId);
         super.setPosition(position);
     }
+    public PanelViewInsertDTO(String chartViewId,String panelGroupId,String position,String dataFrom) {
+        super();
+        super.setChartViewId(chartViewId);
+        super.setPanelId(panelGroupId);
+        super.setPosition(position);
+        super.setDataFrom(dataFrom);
+    }
 
 }

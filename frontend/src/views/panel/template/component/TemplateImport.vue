@@ -7,7 +7,7 @@
       </el-col>
       <el-col :span="4">
         <el-button style="margin-left: 10px" class="el-icon-upload" size="small" type="primary" @click="goFile">{{ $t('panel.upload_template') }}</el-button>
-        <input id="input" ref="files" type="file" accept=".DE" hidden @change="handleFileChange">
+        <input id="input" ref="files" type="file" accept=".DET" hidden @change="handleFileChange">
       </el-col>
     </el-row>
     <el-row class="preview" :style="classBackground" />
