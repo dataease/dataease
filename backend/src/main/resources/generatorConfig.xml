@@ -63,5 +63,6 @@
         <table tableName="de_engine">
             <columnOverride column="configuration" property="configuration" javaType="java.lang.String"/>
         </table>
+        <table tableName="chart_view_cache"/>
     </context>
 </generatorConfiguration>

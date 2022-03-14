@@ -43,6 +43,10 @@ public class CommonConstants {
 
         // 仪表板
         public static final String PANEL = "panel";
+
+        // 仪表板编辑
+        public static final String PANEL_EDIT = "panel_edit";
+
     }
 
     //视图数据查询模式
@@ -53,5 +57,16 @@ public class CommonConstants {
 
         // 自定义
         public static final String CUSTOM = "custom";
+    }
+
+    //视图数据查询来源
+    public static final class VIEW_EDIT_FROM {
+
+        // 仪表板
+        public static final String PANEL = "panel";
+
+        // 仪表板编辑
+        public static final String CACHE = "cache";
+
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 public interface ExtChartViewMapper {
     List<ChartViewDTO> search(ChartViewRequest request);
 
-    ChartViewDTO searchOne(ChartViewRequest request);
+//    ChartViewDTO searchOne(ChartViewRequest request);
 
     void chartCopy(@Param("newChartId")String newChartId,@Param("oldChartId")String oldChartId,@Param("panelId")String panelId);
 
@@ -25,9 +25,24 @@ public interface ExtChartViewMapper {
 
     ChartViewDTO searchOneWithPrivileges(@Param("userId") String userId,@Param("id") String id );
 
+    ChartViewDTO searchOne(@Param("id") String id );
+
     void chartCopyWithPanel(@Param("copyId") String copyId);
 
     void deleteCircleView(@Param("pid") String pid);
 
     void deleteCircleGroup(@Param("pid") String pid);
+
+    List<ChartViewDTO> searchViewsWithPanelId(@Param("panelId") String panelId);
+
+    ChartViewDTO searchOneFromCache(@Param("id") String id );
+
+    void copyToCache(@Param("id") String id );
+
+    void deleteCacheWithPanel(@Param("panelId") String panelId );
+
+    void deleteViewCache(@Param("viewId") String viewId );
+
+    void copyCacheToView(@Param("viewIds") List<String> viewIds );
+
 }

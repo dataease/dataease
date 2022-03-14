@@ -7,6 +7,7 @@ import io.dataease.base.domain.PanelGroupWithBLOBs;
 import io.dataease.base.domain.PanelView;
 import io.dataease.base.domain.PanelViewExample;
 import io.dataease.base.mapper.PanelViewMapper;
+import io.dataease.base.mapper.ext.ExtChartViewMapper;
 import io.dataease.base.mapper.ext.ExtPanelViewMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
@@ -38,6 +39,9 @@ public class PanelViewService {
 
     @Resource
     private PanelViewMapper panelViewMapper;
+
+    @Resource
+    private ExtChartViewMapper extChartViewMapper;
 
     private final static String SCENE_TYPE = "scene";
 
@@ -80,7 +84,8 @@ public class PanelViewService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Boolean syncPanelViews(PanelGroupWithBLOBs panelGroup) {
+    public List<String> syncPanelViews(PanelGroupWithBLOBs panelGroup) {
+        List<String> viewIds = new ArrayList<>();
         Boolean mobileLayout = null;
         String panelId = panelGroup.getId();
         Assert.notNull(panelId, "panelId cannot be null");
@@ -115,9 +120,14 @@ public class PanelViewService {
             extPanelViewMapper.deleteWithPanelId(panelId);
             if (CollectionUtils.isNotEmpty(panelViewInsertDTOList)) {
                 extPanelViewMapper.savePanelView(panelViewInsertDTOList);
+                //将视图从cache表中更新到正式表中
+                viewIds = panelViewInsertDTOList.stream().map(panelView ->panelView.getChartViewId()).collect(Collectors.toList());
+                extChartViewMapper.copyCacheToView(viewIds);
+                extChartViewMapper.deleteCacheWithPanel(panelId);
             }
         }
-        return mobileLayout;
+        panelGroup.setMobileLayout(mobileLayout);
+        return viewIds;
     }
 
     public List<PanelViewTableDTO> detailList(String panelId) {

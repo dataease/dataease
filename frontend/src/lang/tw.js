@@ -1031,6 +1031,7 @@ export default {
     table_align_left: '左對齊',
     table_align_center: '居中',
     table_align_right: '右對齊',
+    draw_back: '收回',
     senior: '高級',
     senior_cfg: '高級設置',
     function_cfg: '功能設置',
@@ -1042,7 +1043,23 @@ export default {
     field_fixed: '固定值',
     line_type_dotted: '點',
     value_can_not_empty: '值不能為空',
-    value_error: '值必須為數值'
+    value_error: '值必須為數值',
+    threshold: '閾值',
+    threshold_range: '閾值區間',
+    gauge_threshold_format_error: '格式錯誤',
+    total_cfg: '總計配置',
+    col_cfg: '列匯總',
+    row_cfg: '行匯總',
+    total_show: '總計',
+    total_position: '位置',
+    total_label: '別名',
+    sub_total_show: '小計',
+    total_pos_top: '頂部',
+    total_pos_bottom: '底部',
+    total_pos_left: '左側',
+    total_pos_right: '右側',
+    chart_label: '文本卡',
+    drag_block_label: '標簽'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
@@ -1577,7 +1594,8 @@ export default {
     choose_background: '选择组件背景',
     choose_background_tips: '组件自有的背景设置会覆盖当前设置',
     setting_background: '设置背景',
-    setting_jump: '跳转设置'
+    setting_jump: '跳转设置',
+    select_view: '请选择视图...'
   },
   plugin: {
     local_install: '本地安裝',

@@ -62,6 +62,7 @@
       class="table-class"
     />
     <label-normal v-else-if="labelShowFlag" :ref="element.propValue.id" :chart="chart" class="table-class" />
+    <label-normal-text v-else-if="labelTextShowFlag" :ref="element.propValue.id" :chart="chart" class="table-class" />
     <div style="position: absolute;left: 8px;bottom:8px;">
       <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
     </div>
@@ -90,9 +91,10 @@ import EditBarView from '@/components/canvas/components/Editor/EditBarView'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/components/canvas/utils/style'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
+import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 export default {
   name: 'UserView',
-  components: { PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
+  components: { LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
   props: {
     element: {
       type: Object,
@@ -184,19 +186,22 @@ export default {
       return this.active && this.inTab && !this.mobileLayoutStatus
     },
     charViewShowFlag() {
-      return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.renderComponent() === 'echarts'
+      return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.chart.type !== 'label' && this.renderComponent() === 'echarts'
     },
     charViewG2ShowFlag() {
-      return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.renderComponent() === 'antv'
+      return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.chart.type !== 'label' && this.renderComponent() === 'antv'
     },
     charViewS2ShowFlag() {
-      return this.httpRequest.status && this.chart.type && this.chart.type.includes('table') && !this.chart.type.includes('text') && this.renderComponent() === 'antv'
+      return this.httpRequest.status && this.chart.type && this.chart.type.includes('table') && !this.chart.type.includes('text') && this.chart.type !== 'label' && this.renderComponent() === 'antv'
     },
     tableShowFlag() {
       return this.httpRequest.status && this.chart.type && this.chart.type.includes('table') && this.renderComponent() === 'echarts'
     },
     labelShowFlag() {
       return this.httpRequest.status && this.chart.type && this.chart.type.includes('text')
+    },
+    labelTextShowFlag() {
+      return this.httpRequest.status && this.chart.type && this.chart.type === 'label'
     },
     loadingFlag() {
       return (this.canvasStyleData.refreshViewLoading || this.searchCount === 0) && this.requestStatus === 'waiting'
@@ -372,6 +377,9 @@ export default {
       bus.$on('plugin-add-view-track-filter', param => {
         param.viewId && param.viewId === this.element.propValue.viewId && this.addViewTrackFilter(param)
       })
+      bus.$on('view-in-cache', param => {
+        param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
+      })
     },
 
     addViewTrackFilter(linkageParam) {
@@ -431,7 +439,8 @@ export default {
         }
         const requestInfo = {
           ...this.filter,
-          cache: cache
+          cache: cache,
+          queryFrom: this.isEdit ? 'panel_edit' : 'panel'
         }
         if (this.panelInfo.proxy) {
           // method = viewInfo
@@ -711,6 +720,19 @@ export default {
 
     renderComponent() {
       return this.chart.render
+    },
+    getDataEdit(param) {
+      this.$store.state.styleChangeTimes++
+      if (param.type === 'propChange') {
+        this.getData(param.viewId, false)
+      } else if (param.type === 'styleChange') {
+        this.chart.customAttr = param.viewInfo.customAttr
+        this.chart.customStyle = param.viewInfo.customStyle
+        this.chart.senior = param.viewInfo.senior
+        this.sourceCustomAttrStr = this.chart.customAttr
+        this.sourceCustomStyleStr = this.chart.customStyle
+        this.mergeScale()
+      }
     }
   }
 }

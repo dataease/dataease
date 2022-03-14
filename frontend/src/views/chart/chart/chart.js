@@ -78,6 +78,38 @@ export const DEFAULT_TOOLTIP = {
   },
   formatter: ''
 }
+export const DEFAULT_TOTAL = {
+  row: {
+    showGrandTotals: true,
+    showSubTotals: true,
+    reverseLayout: false,
+    reverseSubLayout: false,
+    label: '总计',
+    subLabel: '小计',
+    subTotalsDimensions: [],
+    calcTotals: {
+      aggregation: 'SUM'
+    },
+    calcSubTotals: {
+      aggregation: 'SUM'
+    }
+  },
+  col: {
+    showGrandTotals: true,
+    showSubTotals: true,
+    reverseLayout: false,
+    reverseSubLayout: false,
+    label: '总计',
+    subLabel: '小计',
+    subTotalsDimensions: [],
+    calcTotals: {
+      aggregation: 'SUM'
+    },
+    calcSubTotals: {
+      aggregation: 'SUM'
+    }
+  }
+}
 export const DEFAULT_TITLE_STYLE = {
   show: true,
   fontSize: '18',
@@ -243,6 +275,9 @@ export const DEFAULT_SPLIT = {
 export const DEFAULT_FUNCTION_CFG = {
   sliderShow: false,
   sliderRange: [0, 10]
+}
+export const DEFAULT_THRESHOLD = {
+  gaugeThreshold: ''
 }
 // chart config
 export const BASE_BAR = {

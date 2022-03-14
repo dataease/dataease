@@ -309,7 +309,9 @@ import {
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_BACKGROUND_COLOR,
   DEFAULT_SPLIT,
-  DEFAULT_FUNCTION_CFG
+  DEFAULT_FUNCTION_CFG,
+  DEFAULT_THRESHOLD,
+  DEFAULT_TOTAL
 } from '../chart/chart'
 
 export default {
@@ -754,7 +756,8 @@ export default {
         tableColor: DEFAULT_COLOR_CASE,
         size: DEFAULT_SIZE,
         label: DEFAULT_LABEL,
-        tooltip: DEFAULT_TOOLTIP
+        tooltip: DEFAULT_TOOLTIP,
+        totalCfg: DEFAULT_TOTAL
       })
       view.customStyle = JSON.stringify({
         text: DEFAULT_TITLE_STYLE,
@@ -767,7 +770,8 @@ export default {
       })
       view.senior = JSON.stringify({
         functionCfg: DEFAULT_FUNCTION_CFG,
-        assistLine: []
+        assistLine: [],
+        threshold: DEFAULT_THRESHOLD
       })
       view.stylePriority = 'view' // 默认样式优先级视图
       view.xaxis = JSON.stringify([])
@@ -780,7 +784,7 @@ export default {
       view.extBubble = JSON.stringify([])
       this.setChartDefaultOptions(view)
       const _this = this
-      post('/chart/view/save/' + this.panelInfo.id, view).then(response => {
+      post('/chart/view/newOne/' + this.panelInfo.id, view).then(response => {
         this.closeCreateChart()
         this.$store.dispatch('chart/setTableId', null)
         this.$store.dispatch('chart/setTableId', this.table.id)

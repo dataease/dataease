@@ -99,7 +99,9 @@ const data = {
       x: 300,
       y: 600
     },
-    scrollAutoMove: 0
+    scrollAutoMove: 0,
+    // 视图是否编辑记录
+    panelViewEditInfo: {}
   },
   mutations: {
     ...animation.mutations,
@@ -392,6 +394,17 @@ const data = {
     },
     setScrollAutoMove(state, offset) {
       state.scrollAutoMove = offset
+    },
+    initPanelComponents(state, panelComponents) {
+      if (panelComponents) {
+        state.canvasStyleData['panelComponents'] = panelComponents
+      }
+    },
+    recordViewEdit(state, viewInfo) {
+      state.panelViewEditInfo[viewInfo.viewId] = viewInfo.hasEdit
+    },
+    resetViewEditInfo(state) {
+      state.panelViewEditInfo = {}
     }
   },
   modules: {

@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.base.domain.*;
+import io.dataease.base.mapper.ChartViewCacheMapper;
 import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.base.mapper.ext.ExtChartGroupMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
@@ -37,6 +38,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -72,28 +74,69 @@ public class ChartViewService {
     private AuthUserService authUserService;
     @Resource
     private EngineService engineService;
+    @Resource
+    private ChartViewCacheMapper chartViewCacheMapper;
 
     //默认使用非公平
     private ReentrantLock lock = new ReentrantLock();
 
-    public ChartViewWithBLOBs save(ChartViewWithBLOBs chartView) {
-        checkName(chartView);
+    // 直接保存统一到缓存表
+    public ChartViewDTO save(ChartViewCacheRequest chartView) {
         long timestamp = System.currentTimeMillis();
         chartView.setUpdateTime(timestamp);
-        if (ObjectUtils.isEmpty(chartView.getId())) {
-            chartView.setId(UUID.randomUUID().toString());
-            chartView.setCreateBy(AuthUtils.getUser().getUsername());
-            chartView.setCreateTime(timestamp);
-            chartView.setUpdateTime(timestamp);
-            chartViewMapper.insertSelective(chartView);
-        } else {
-            chartViewMapper.updateByPrimaryKeySelective(chartView);
-        }
+        chartViewCacheMapper.updateByPrimaryKeySelective(chartView);
         Optional.ofNullable(chartView.getId()).ifPresent(id -> {
             CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
         });
-        return getOneWithPermission(chartView.getId());
+        return getOne(chartView.getId(),"panel_edit");
     }
+
+
+    public ChartViewWithBLOBs newOne(ChartViewWithBLOBs chartView) {
+        long timestamp = System.currentTimeMillis();
+        chartView.setUpdateTime(timestamp);
+        chartView.setId(UUID.randomUUID().toString());
+        chartView.setCreateBy(AuthUtils.getUser().getUsername());
+        chartView.setCreateTime(timestamp);
+        chartView.setUpdateTime(timestamp);
+        chartViewMapper.insertSelective(chartView);
+        // 新建的视图也存入缓存表中
+        extChartViewMapper.copyToCache(chartView.getId());
+
+        return chartView;
+    }
+
+
+    // 直接保存统一到缓存表
+    public void save2Cache(ChartViewCacheWithBLOBs chartView) {
+        long timestamp = System.currentTimeMillis();
+        chartView.setUpdateTime(timestamp);
+        chartViewCacheMapper.updateByPrimaryKeySelective(chartView);
+        Optional.ofNullable(chartView.getId()).ifPresent(id -> {
+            CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
+        });
+    }
+
+
+//    // 直接保存统一到缓存表
+//    public ChartViewWithBLOBs save(ChartViewRequest chartView) {
+//        checkName(chartView);
+//        long timestamp = System.currentTimeMillis();
+//        chartView.setUpdateTime(timestamp);
+//        if (ObjectUtils.isEmpty(chartView.getId())) {
+//            chartView.setId(UUID.randomUUID().toString());
+//            chartView.setCreateBy(AuthUtils.getUser().getUsername());
+//            chartView.setCreateTime(timestamp);
+//            chartView.setUpdateTime(timestamp);
+//            chartViewMapper.insertSelective(chartView);
+//        } else {
+//            chartViewMapper.updateByPrimaryKeySelective(chartView);
+//        }
+//        Optional.ofNullable(chartView.getId()).ifPresent(id -> {
+//            CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
+//        });
+//        return getOneWithPermission(chartView.getId());
+//    }
 
     public List<ChartViewDTO> list(ChartViewRequest chartViewRequest) {
         chartViewRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
@@ -179,6 +222,22 @@ public class ChartViewService {
         return extChartViewMapper.searchOneWithPrivileges(userId, id);
     }
 
+    @Transactional
+    public ChartViewDTO getOne(String id,String queryFrom){
+        ChartViewDTO result;
+        //仪表板编辑页面 从缓存表中取数据 缓存表中没有数据则进行插入
+        if(CommonConstants.VIEW_QUERY_FROM.PANEL_EDIT.equals(queryFrom)){
+            result=  extChartViewMapper.searchOneFromCache(id);
+            if(result == null){
+                extChartViewMapper.copyToCache(id);
+                result = extChartViewMapper.searchOneFromCache(id);
+            }
+        }else{
+            result = extChartViewMapper.searchOne(id);
+        }
+        return result;
+    }
+
     public void delete(String id) {
         chartViewMapper.deleteByPrimaryKey(id);
     }
@@ -190,7 +249,7 @@ public class ChartViewService {
     }
 
     public ChartViewDTO getData(String id, ChartExtRequest request) throws Exception {
-        ChartViewDTO view = this.getOneWithPermission(id);
+        ChartViewDTO view = this.getOne(id,request.getQueryFrom());
         // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
         if (CommonConstants.VIEW_QUERY_FROM.PANEL.equals(request.getQueryFrom()) && CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
             view.setResultMode(request.getResultMode());
@@ -1685,6 +1744,7 @@ public class ChartViewService {
     public String chartCopy(String id, String panelId) {
         String newChartId = UUID.randomUUID().toString();
         extChartViewMapper.chartCopy(newChartId, id, panelId);
+        extChartViewMapper.copyToCache(newChartId);
         return newChartId;
     }
 
@@ -1712,5 +1772,15 @@ public class ChartViewService {
                 throw new RuntimeException(Translator.get("i18n_dataset_no_permission"));
             }
         }
+    }
+
+    public  void initViewCache(String panelId){
+        extChartViewMapper.deleteCacheWithPanel(panelId);
+    }
+
+    public void resetViewCache (String viewId){
+        extChartViewMapper.deleteViewCache(viewId);
+
+        extChartViewMapper.copyToCache(viewId);
     }
 }

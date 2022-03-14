@@ -27,7 +27,7 @@ export function baseMixOption(chart_option, chart) {
       y.type = y.type ? y.type : 'bar'
       // color
       y.itemStyle = {
-        color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha)
+        color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
       }
       // size
       if (customAttr.size) {

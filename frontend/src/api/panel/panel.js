@@ -164,3 +164,28 @@ export function queryPanelViewTree() {
   })
 }
 
+export function initPanelComponentsData(panelId, callback) {
+  // 加载仪表板组件视图数据
+  queryPanelComponents(panelId).then(rep => {
+    store.commit('initPanelComponents', rep.data)
+    callback(rep)
+  })
+}
+
+export function queryPanelComponents(id) {
+  return request({
+    url: 'panel/group/queryPanelComponents/' + id,
+    method: 'get',
+    loading: false
+  })
+}
+
+export function initViewCache(panelId) {
+  // 初始化仪表板视图缓存
+  return request({
+    url: 'chart/view/initViewCache/' + panelId,
+    method: 'post',
+    loading: false
+  })
+}
+

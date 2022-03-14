@@ -30,7 +30,7 @@ export function baseScatterOption(chart_option, chart, terminal = 'pc') {
       const y = chart.data.series[i]
       // color
       y.itemStyle = {
-        color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha)
+        color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
       }
       // size
       if (customAttr.size) {
