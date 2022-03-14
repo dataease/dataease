@@ -79,7 +79,6 @@
 </template>
 
 <script>
-import { isKettleRunning, post } from '@/api/dataset/dataset'
 import { queryAuthModel } from '@/api/authModel/authModel'
 export default {
   name: 'DatasetGroupSelectorTree',
@@ -144,7 +143,6 @@ export default {
         all: this.$t('commons.all'),
         folder: this.$t('commons.folder')
       },
-      kettleRunning: false,
       sceneMode: false,
       search: '',
       data: [],
@@ -200,14 +198,8 @@ export default {
     this.treeNode()
   },
   created() {
-    this.kettleState()
   },
   methods: {
-    kettleState() {
-      isKettleRunning(false).then(res => {
-        this.kettleRunning = res.data
-      })
-    },
     close() {
       this.editGroup = false
       this.groupForm = {

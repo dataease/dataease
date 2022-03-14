@@ -1,6 +1,6 @@
 package io.dataease.provider.query.api;
 
-import io.dataease.provider.query.QueryProviderImpl;
+import io.dataease.provider.QueryProviderImpl;
 import org.springframework.stereotype.Service;
 
 @Service("apiQuery")

@@ -2,8 +2,6 @@ package io.dataease.provider;
 
 import io.dataease.commons.constants.DatasourceTypes;
 import io.dataease.provider.datasource.DatasourceProvider;
-import io.dataease.provider.query.DDLProvider;
-import io.dataease.provider.query.QueryProvider;
 import io.dataease.provider.query.api.ApiProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -40,8 +38,6 @@ public class ProviderFactory implements ApplicationContextAware {
             case mariadb:
             case ds_doris:
                 return context.getBean("mysqlQuery", QueryProvider.class);
-            case de_doris:
-                return context.getBean("dorisQuery", QueryProvider.class);
             case sqlServer:
                 return context.getBean("sqlserverQuery", QueryProvider.class);
             case pg:
@@ -62,6 +58,10 @@ public class ProviderFactory implements ApplicationContextAware {
                 return context.getBean("db2Query", QueryProvider.class);
             case api:
                 return context.getBean("apiQuery", ApiProvider.class);
+            case engine_doris:
+                return context.getBean("dorisEngineQuery", QueryProvider.class);
+            case engine_mysql:
+                return context.getBean("mysqlEngineQuery", QueryProvider.class);
             default:
                 return context.getBean("mysqlQuery", QueryProvider.class);
         }
@@ -70,10 +70,12 @@ public class ProviderFactory implements ApplicationContextAware {
     public static DDLProvider getDDLProvider(String type) {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
-            case de_doris:
-                return context.getBean("dorisDDL", DDLProvider.class);
+            case engine_doris:
+                return context.getBean("dorisEngineDDL", DDLProvider.class);
+            case engine_mysql:
+                return context.getBean("mysqlEngineDDL", DDLProvider.class);
             default:
-                return context.getBean("dorisDDL", DDLProvider.class);
+                return context.getBean("dorisEngineDDL", DDLProvider.class);
         }
     }
 

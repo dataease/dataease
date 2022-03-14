@@ -71,7 +71,7 @@ public class DatasourceService {
         return datasource;
     }
 
-    private void handleConnectionPool(Datasource datasource, String type) {
+    public void handleConnectionPool(Datasource datasource, String type) {
         commonThreadPool.addTask(() -> {
             try {
                 DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
@@ -94,7 +94,7 @@ public class DatasourceService {
                 switch (datasourceType) {
                     case mysql:
                     case mariadb:
-                    case de_doris:
+                    case engine_doris:
                     case ds_doris:
                         datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), MysqlConfiguration.class)) );
                         break;
@@ -221,7 +221,6 @@ public class DatasourceService {
         }catch (Exception e){
             return ResultHolder.error("Datasource is invalid: " + e.getMessage());
         }
-
     }
 
     public ResultHolder validate(String datasourceId) {
