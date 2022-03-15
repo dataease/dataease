@@ -39,9 +39,9 @@ public class DDLProviderImpl extends DDLProvider {
 
         Integer realSize = page * pageNumber < dataList.size() ? page * pageNumber : dataList.size();
         for (String[] strings : dataList.subList((page - 1) * pageNumber, realSize)) {
-            values.append("(").append(Md5Utils.md5(String.join(",", Arrays.asList(strings))))
-                    .append("," ).append(String.join(",", Arrays.asList(strings)))
-                    .append("),");
+            values.append("('").append(Md5Utils.md5(String.join(",", Arrays.asList(strings))))
+                    .append("','" ).append(String.join("','", Arrays.asList(strings)))
+                    .append("'),");
         }
         return insertSql + values.substring(0, values.length() - 1);
     }

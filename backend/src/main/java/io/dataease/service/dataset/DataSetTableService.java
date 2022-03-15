@@ -551,7 +551,7 @@ public class DataSetTableService {
                 }
             } else {
                 // check doris table
-                if (!checkDorisTableIsExists(dataSetTableRequest.getId())) {
+                if (!checkEngineTableIsExists(dataSetTableRequest.getId())) {
                     throw new RuntimeException(Translator.get("i18n_data_not_sync"));
                 }
                 Datasource ds = engineService.getDeEngine();
@@ -620,7 +620,7 @@ public class DataSetTableService {
                 }
             } else {
                 // check doris table
-                if (!checkDorisTableIsExists(dataSetTableRequest.getId())) {
+                if (!checkEngineTableIsExists(dataSetTableRequest.getId())) {
                     throw new RuntimeException(Translator.get("i18n_data_not_sync"));
                 }
                 Datasource ds = engineService.getDeEngine();
@@ -648,7 +648,7 @@ public class DataSetTableService {
                 }
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
-            if (!checkDorisTableIsExists(dataSetTableRequest.getId())) {
+            if (!checkEngineTableIsExists(dataSetTableRequest.getId())) {
                 throw new RuntimeException(Translator.get("i18n_data_not_sync"));
             }
 
@@ -2167,12 +2167,12 @@ public class DataSetTableService {
         return filePath;
     }
 
-    public Boolean checkDorisTableIsExists(String id) throws Exception {
-        Datasource dorisDatasource = engineService.getDeEngine();
+    public Boolean checkEngineTableIsExists(String id) throws Exception {
+        Datasource engine = engineService.getDeEngine();
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(dorisDatasource);
-        QueryProvider qp = ProviderFactory.getQueryProvider(dorisDatasource.getType());
+        datasourceRequest.setDatasource(engine);
+        QueryProvider qp = ProviderFactory.getQueryProvider(engine.getType());
         datasourceRequest.setQuery(qp.searchTable(TableUtils.tableName(id)));
         List<String[]> data = jdbcProvider.getData(datasourceRequest);
         return CollectionUtils.isNotEmpty(data);

@@ -31,7 +31,7 @@ public class EngineService {
     private DeEngineMapper deEngineMapper;
     @Resource
     private DatasourceService datasource;
-    static private Datasource ds = new Datasource();
+    static private Datasource ds = null;
 
 
     public Boolean isLocalMode(){
@@ -59,6 +59,9 @@ public class EngineService {
     }
 
     public ResultHolder validate(DatasourceDTO datasource) throws Exception {
+        if(StringUtils.isEmpty(datasource.getType()) || StringUtils.isEmpty(datasource.getConfiguration())){
+            throw new Exception("未完整设置数据引擎");
+        }
         try {
             DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -78,13 +81,22 @@ public class EngineService {
             deEngineMapper.updateByPrimaryKeyWithBLOBs(engine);
         }
         datasource.handleConnectionPool(this.ds, "delete");
-        BeanUtils.copyBean(this.ds, engine);
+        setDs(engine);
         datasource.handleConnectionPool(this.ds, "add");
         return ResultHolder.success(engine);
     }
 
+    private void setDs(DeEngine engine){
+        if(this.ds == null){
+            this.ds = new Datasource();
+            BeanUtils.copyBean(this.ds, engine);
+        }else {
+            BeanUtils.copyBean(this.ds, engine);
+        }
+    }
+
     public Datasource getDeEngine() throws Exception{
-        if (this.ds != null || StringUtils.isNotEmpty(ds.getType())) {
+        if (this.ds != null) {
             return this.ds;
         }
         if(isLocalMode()){
@@ -97,21 +109,23 @@ public class EngineService {
             jsonObject.put("port", env.getProperty("doris.port", "9030"));
             jsonObject.put("httpPort", env.getProperty("doris.httpPort", "8030"));
 
-            Datasource datasource = new Datasource();
-            datasource.setId("doris");
-            datasource.setName("doris");
-            datasource.setDesc("doris");
-            datasource.setType("engine_doris");
-            datasource.setConfiguration(jsonObject.toJSONString());
-            this.ds = datasource;
-        }
-        if(isSimpleMode()){
+            DeEngine engine = new DeEngine();
+            engine.setId("doris");
+            engine.setName("doris");
+            engine.setDesc("doris");
+            engine.setType("engine_doris");
+            engine.setConfiguration(jsonObject.toJSONString());
+            setDs(engine);
+        }else {
             List<DeEngine> deEngines = deEngineMapper.selectByExampleWithBLOBs(new DeEngineExample());
             if(CollectionUtils.isEmpty(deEngines)){
                 throw new Exception("未设置数据引擎");
             }
-            BeanUtils.copyBean(this.ds, deEngines.get(0));
+            setDs(deEngines.get(0));
         }
+//        if(isSimpleMode()){
+//
+//        }
 
         //TODO cluster mode
         return this.ds;

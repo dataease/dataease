@@ -445,6 +445,7 @@ public class ExtractDataService {
         List<String[]> dataList = result.get("dataList");
         if (engineService.isSimpleMode()) {
             extractDataForSimpleMode(extractType, datasetTable.getId(), dataList);
+            return;
         }
 
         Datasource engine = engineService.getDeEngine();
@@ -712,7 +713,9 @@ public class ExtractDataService {
             for (ExcelSheetData sheet : excelXlsxReader.totalSheets) {
                 if (sheet.getExcelLable().equalsIgnoreCase(excelSheetData.getExcelLable())) {
                     for (List<String> dataItem : sheet.getData()) {
-                        data.add(dataItem.toArray(new String[dataItem.size()]));
+                        if(dataItem.size()>0){
+                            data.add(dataItem.toArray(new String[dataItem.size()]));
+                        }
                     }
                 }
             }
