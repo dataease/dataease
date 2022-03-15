@@ -233,18 +233,32 @@ public class ChartViewService {
         return extChartViewMapper.searchOneWithPrivileges(userId, id);
     }
 
-    @Transactional
+
     public ChartViewDTO getOne(String id, String queryFrom) {
+        return getOne(id,queryFrom,CommonConstants.VIEW_DATA_FROM.CHART);
+    }
+
+
+    @Transactional
+    public ChartViewDTO getOne(String id, String queryFrom,String dataFrom) {
         ChartViewDTO result;
-        //仪表板编辑页面 从缓存表中取数据 缓存表中没有数据则进行插入
-        if (CommonConstants.VIEW_QUERY_FROM.PANEL_EDIT.equals(queryFrom)) {
+        //从模板中去数据
+        if(CommonConstants.VIEW_DATA_FROM.TEMPLATE.equals(dataFrom)){
+             result =  extendDataService.getChartInfo(id);
+            if(result!=null){
+                result.setData(null);
+            }
+        }else if (CommonConstants.VIEW_QUERY_FROM.PANEL_EDIT.equals(queryFrom)) {
+            //仪表板编辑页面 从缓存表中取数据 缓存表中没有数据则进行插入
             result = extChartViewMapper.searchOneFromCache(id);
             if (result == null) {
                 extChartViewMapper.copyToCache(id);
                 result = extChartViewMapper.searchOneFromCache(id);
             }
+            result.setDataFrom(CommonConstants.VIEW_DATA_FROM.CHART);
         } else {
             result = extChartViewMapper.searchOne(id);
+            result.setDataFrom(CommonConstants.VIEW_DATA_FROM.CHART);
         }
         return result;
     }
@@ -266,7 +280,6 @@ public class ChartViewService {
             if(CommonConstants.VIEW_DATA_FROM.TEMPLATE.equals(dataFrom)){
                 return extendDataService.getChartInfo(id);
             }else{// 从视图读取数据
-
                 ChartViewDTO view = this.getOne(id,request.getQueryFrom());
                 view.setDataFrom(dataFrom);
                 // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性

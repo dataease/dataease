@@ -1788,7 +1788,7 @@ export default {
     getChart(id, queryFrom = 'panel_edit') {
       if (id) {
         getChartDetails(id, this.panelInfo.id, { queryFrom: queryFrom }).then(response => {
-          this.initTableData(response.data.tableId)
+          response.data.dataFrom !== 'template' && this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
@@ -2150,6 +2150,7 @@ export default {
       // this.save(true, 'chart', false)
       this.calcData(true, 'chart', false)
       this.initTableData(this.view.tableId)
+      this.closeChangeChart()
     },
 
     fieldFilter(val) {

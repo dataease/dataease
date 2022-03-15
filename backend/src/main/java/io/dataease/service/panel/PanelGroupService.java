@@ -1,6 +1,7 @@
 package io.dataease.service.panel;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
@@ -323,10 +324,12 @@ public class PanelGroupService {
             Map<String,String> dynamicDataMap = JSON.parseObject(dynamicData,Map.class);
             List<PanelViewInsertDTO> panelViews = new ArrayList<>();
             List<PanelGroupExtendDataDTO> viewsData = new ArrayList<>();
+            List<ChartViewWithBLOBs> chartViews = new ArrayList<>();
             for(Map.Entry<String, String> entry : dynamicDataMap.entrySet()){
                 String originViewId = entry.getKey();
                 String originViewData = entry.getValue();
-                String position = JSON.parseObject(originViewData).getString("position");
+                JSONObject chartViewJson = JSON.parseObject(originViewData);
+                String position = chartViewJson.getString("position");
                 String newViewId = UUIDUtil.getUUIDAsString();
                 //TODO 数据处理 1.替换viewId 2.加入panelView 数据(数据来源为template) 3.加入模板view data数据
                 templateData = templateData.replaceAll(originViewId,newViewId);
