@@ -2,13 +2,13 @@
   <div ref="tableContainer" :style="bg_class" style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
     <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
     <div
-      v-if="chart.data && chart.data.datas && chart.data.datas.length > 0"
+      v-if="chart.data && chart.data.series && chart.data.series.length > 0"
       id="label-content"
       :style="content_class"
     >
       <span :style="label_class">
-        <p :style="label_content_class">
-          {{ chart.data.datas[0].name }}
+        <p v-if="chart.data.series[0].data && chart.data.series[0].data.length > 0" :style="label_content_class">
+          {{ chart.data.series[0].data[0] }}
         </p>
       </span>
       <!--      字段名暂时隐藏-->
