@@ -71,9 +71,9 @@
     </delete>
 
     <insert id="savePanelView">
-        INSERT INTO `panel_view` (id,chart_view_id, panel_id) VALUES
+        INSERT INTO `panel_view` (id,chart_view_id, panel_id,data_from) VALUES
         <foreach collection="panelViews" item="panelView" index="index" separator=",">
-            (uuid(),#{panelView.chartViewId},#{panelView.panelId})
+            (uuid(),#{panelView.chartViewId},#{panelView.panelId},#{panelView.dataFrom})
         </foreach>
     </insert>
 
@@ -109,7 +109,5 @@
             panel_id = #{sourcePanelId}
             and chart_view.id is not null
     </insert>
-
-
 
 </mapper>

@@ -1327,6 +1327,7 @@ export default {
     }
   },
   created() {
+    debugger
     // this.get(this.$store.state.chart.viewId);
     // this.initAreas()
   },

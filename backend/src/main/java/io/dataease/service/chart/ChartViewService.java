@@ -7,6 +7,7 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewCacheMapper;
 import io.dataease.base.mapper.ChartViewMapper;
+import io.dataease.base.mapper.PanelViewMapper;
 import io.dataease.base.mapper.ext.ExtChartGroupMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
 import io.dataease.commons.constants.ColumnPermissionConstants;
@@ -23,6 +24,7 @@ import io.dataease.dto.chart.*;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.provider.ProviderFactory;
@@ -34,6 +36,8 @@ import io.dataease.service.dataset.DataSetTableUnionService;
 import io.dataease.service.dataset.PermissionService;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
+import io.dataease.service.panel.PanelGroupExtendDataService;
+import io.dataease.service.panel.PanelViewService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -76,6 +80,12 @@ public class ChartViewService {
     private EngineService engineService;
     @Resource
     private ChartViewCacheMapper chartViewCacheMapper;
+    @Resource
+    private PanelViewService panelViewService;
+    @Resource
+    private PanelGroupExtendDataService extendDataService;
+
+
 
     //默认使用非公平
     private ReentrantLock lock = new ReentrantLock();
@@ -249,13 +259,28 @@ public class ChartViewService {
     }
 
     public ChartViewDTO getData(String id, ChartExtRequest request) throws Exception {
-        ChartViewDTO view = this.getOne(id,request.getQueryFrom());
-        // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
-        if (CommonConstants.VIEW_QUERY_FROM.PANEL.equals(request.getQueryFrom()) && CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
-            view.setResultMode(request.getResultMode());
-            view.setResultCount(request.getResultCount());
+        try{
+            String dataFrom = panelViewService.findViewDataFrom(id);
+
+            if(CommonConstants.VIEW_DATA_FROM.TEMPLATE.equals(dataFrom)){
+                return extendDataService.getChartInfo(id);
+            }else{// 从视图读取数据
+
+                ChartViewDTO view = this.getOne(id,request.getQueryFrom());
+                view.setDataFrom(dataFrom);
+                // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
+                if (CommonConstants.VIEW_QUERY_FROM.PANEL.equals(request.getQueryFrom()) && CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
+                    view.setResultMode(request.getResultMode());
+                    view.setResultCount(request.getResultCount());
+                }
+                return calcData(view, request, request.isCache());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            DataEaseException.throwException(e);
         }
-        return calcData(view, request, request.isCache());
+        return null;
+
     }
 
 //    private void checkPermissions(List<? extends ChartViewFieldBaseDTO> chartViewFieldDTOS, List<DatasetTableField> fields, List<String> desensitizationList, Boolean alowDesensitization) throws Exception {
