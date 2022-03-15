@@ -41,7 +41,7 @@
                 <span>
                   <svg-icon icon-class="panel" class="ds-icon-scene" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span style="margin-left: 12px;" class="child" @click.stop>
                 <el-dropdown v-if="hasDataPermission('manage',data.privileges)" trigger="click" size="small" @command="clickMore">
@@ -95,7 +95,7 @@
                 <span v-if="data.nodeType === 'folder'">
                   <i class="el-icon-folder" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"  :title="data.name">{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)" class="child">
                 <span v-if="data.nodeType ==='folder'" @click.stop>

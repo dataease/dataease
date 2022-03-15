@@ -48,7 +48,7 @@
               <span v-else>
                 <svg-icon :icon-class="data.modelInnerType" style="width: 14px;height: 14px" />
               </span>
-              <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+              <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
             </span>
             <span v-if="data.mode===1" class="child">
               <span @click.stop>
