@@ -1,7 +1,13 @@
 <template>
   <el-row v-loading="loading" style="height: 100%;overflow-y: hidden;width: 100%;border-left: 1px solid #E6E6E6">
     <el-tooltip :content="$t('chart.draw_back')">
-      <el-button class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 5px;z-index: 1000" size="mini" circle @click="closePanelEdit" />
+      <el-button
+        class="el-icon-d-arrow-right"
+        style="position:absolute;left: 4px;top: 5px;z-index: 1000"
+        size="mini"
+        circle
+        @click="closePanelEdit"
+      />
     </el-tooltip>
     <!--    <i class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 11px"></i>-->
     <el-row style="height: 40px;" class="padding-lr">
@@ -299,18 +305,28 @@
                       class="padding-lr"
                     >
                       <span style="width: 80px;text-align: right;">
-                        <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
+                        <span v-if="view.type && view.type.includes('table')">{{
+                          $t('chart.drag_block_table_data_column')
+                        }}</span>
                         <span
                           v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
                         >{{ $t('chart.drag_block_type_axis') }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('pie')"
                         >{{ $t('chart.drag_block_pie_label') }}</span>
-                        <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_split') }}</span>
-                        <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_label') }}</span>
+                        <span v-else-if="view.type && view.type.includes('funnel')">{{
+                          $t('chart.drag_block_funnel_split')
+                        }}</span>
+                        <span v-else-if="view.type && view.type.includes('radar')">{{
+                          $t('chart.drag_block_radar_label')
+                        }}</span>
                         <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.area') }}</span>
-                        <span v-else-if="view.type && view.type.includes('treemap')">{{ $t('chart.drag_block_treemap_label') }}</span>
-                        <span v-else-if="view.type && view.type === 'word-cloud'">{{ $t('chart.drag_block_word_cloud_label') }}</span>
+                        <span v-else-if="view.type && view.type.includes('treemap')">{{
+                          $t('chart.drag_block_treemap_label')
+                        }}</span>
+                        <span v-else-if="view.type && view.type === 'word-cloud'">{{
+                          $t('chart.drag_block_word_cloud_label')
+                        }}</span>
                         <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
                         /
                         <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
@@ -348,28 +364,46 @@
                       </div>
                     </el-row>
                     <!--yaxis-->
-                    <el-row v-if="view.type !=='table-info' && view.type !=='label'" class="padding-lr" style="margin-top: 6px;">
+                    <el-row
+                      v-if="view.type !=='table-info' && view.type !=='label'"
+                      class="padding-lr"
+                      style="margin-top: 6px;"
+                    >
                       <span style="width: 80px;text-align: right;">
-                        <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
+                        <span v-if="view.type && view.type.includes('table')">{{
+                          $t('chart.drag_block_table_data_column')
+                        }}</span>
                         <span
                           v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'waterfall')"
                         >{{ $t('chart.drag_block_value_axis') }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('pie')"
                         >{{ $t('chart.drag_block_pie_angel') }}</span>
-                        <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_width') }}</span>
-                        <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_length') }}</span>
-                        <span v-else-if="view.type && view.type.includes('gauge')">{{ $t('chart.drag_block_gauge_angel') }}</span>
+                        <span v-else-if="view.type && view.type.includes('funnel')">{{
+                          $t('chart.drag_block_funnel_width')
+                        }}</span>
+                        <span v-else-if="view.type && view.type.includes('radar')">{{
+                          $t('chart.drag_block_radar_length')
+                        }}</span>
+                        <span v-else-if="view.type && view.type.includes('gauge')">{{
+                          $t('chart.drag_block_gauge_angel')
+                        }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('text')"
                         >{{ $t('chart.drag_block_label_value') }}</span>
                         <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.chart_data') }}</span>
-                        <span v-else-if="view.type && view.type.includes('tree')">{{ $t('chart.drag_block_treemap_size') }}</span>
-                        <span v-else-if="view.type && view.type === 'chart-mix'">{{ $t('chart.drag_block_value_axis_main') }}</span>
+                        <span v-else-if="view.type && view.type.includes('tree')">{{
+                          $t('chart.drag_block_treemap_size')
+                        }}</span>
+                        <span v-else-if="view.type && view.type === 'chart-mix'">{{
+                          $t('chart.drag_block_value_axis_main')
+                        }}</span>
                         <span
                           v-else-if="view.type && view.type === 'liquid'"
                         >{{ $t('chart.drag_block_progress') }}</span>
-                        <span v-else-if="view.type && view.type === 'word-cloud'">{{ $t('chart.drag_block_word_cloud_size') }}</span>
+                        <span v-else-if="view.type && view.type === 'word-cloud'">{{
+                          $t('chart.drag_block_word_cloud_size')
+                        }}</span>
                         /
                         <span>{{ $t('chart.quota') }}</span>
                       </span>
@@ -849,22 +883,49 @@
               style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
               class="attr-style theme-border-class"
             >
-              <el-row v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))">
+              <el-row
+                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))"
+              >
                 <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
                 <el-collapse v-model="attrActiveNames" class="style-collapse">
                   <el-collapse-item name="function" :title="$t('chart.function_cfg')">
-                    <function-cfg :param="param" class="attr-selector" :chart="chart" @onFunctionCfgChange="onFunctionCfgChange" />
+                    <function-cfg
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onFunctionCfgChange="onFunctionCfgChange"
+                    />
                   </el-collapse-item>
                 </el-collapse>
               </el-row>
-              <el-row v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge'))">
+              <el-row
+                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge'))"
+              >
                 <span class="padding-lr">{{ $t('chart.analyse_cfg') }}</span>
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
-                  <el-collapse-item v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))" name="analyse" :title="$t('chart.assist_line')">
-                    <assist-line :param="param" class="attr-selector" :chart="chart" @onAssistLineChange="onAssistLineChange" />
+                  <el-collapse-item
+                    v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))"
+                    name="analyse"
+                    :title="$t('chart.assist_line')"
+                  >
+                    <assist-line
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onAssistLineChange="onAssistLineChange"
+                    />
                   </el-collapse-item>
-                  <el-collapse-item v-if="view.type && (view.type.includes('gauge'))" name="threshold" :title="$t('chart.threshold')">
-                    <threshold :param="param" class="attr-selector" :chart="chart" @onThresholdChange="onThresholdChange" />
+                  <el-collapse-item
+                    v-if="view.type && (view.type.includes('gauge'))"
+                    name="threshold"
+                    :title="$t('chart.threshold')"
+                  >
+                    <threshold
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onThresholdChange="onThresholdChange"
+                    />
                   </el-collapse-item>
                 </el-collapse>
               </el-row>
@@ -1065,7 +1126,6 @@ import {
   post,
   getChartDetails,
   save2Cache,
-  resetViewCache,
   resetViewCacheCallBack
 } from '@/api/chart/chart'
 import DimensionItem from '../components/drag-item/DimensionItem'
@@ -1138,6 +1198,7 @@ import AssistLine from '@/views/chart/components/senior/AssistLine'
 import Threshold from '@/views/chart/components/senior/Threshold'
 import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
+
 export default {
   name: 'ChartEdit',
   components: {
@@ -1393,10 +1454,10 @@ export default {
     },
     buildParam(getData, trigger, needRefreshGroup = false, switchType = false) {
       if (!this.view.resultCount ||
-          this.view.resultCount === '' ||
-          isNaN(Number(this.view.resultCount)) ||
-          String(this.view.resultCount).includes('.') ||
-          parseInt(this.view.resultCount) < 1) {
+        this.view.resultCount === '' ||
+        isNaN(Number(this.view.resultCount)) ||
+        String(this.view.resultCount).includes('.') ||
+        parseInt(this.view.resultCount) < 1) {
         this.view.resultCount = '1000'
       }
       if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
@@ -1520,13 +1581,13 @@ export default {
         }
       })
       if (view.type.startsWith('pie') ||
-          view.type.startsWith('funnel') ||
-          view.type.startsWith('text') ||
-          view.type.startsWith('gauge') ||
-          view.type === 'treemap' ||
-          view.type === 'liquid' ||
-          view.type === 'word-cloud' ||
-          view.type === 'waterfall') {
+        view.type.startsWith('funnel') ||
+        view.type.startsWith('text') ||
+        view.type.startsWith('gauge') ||
+        view.type === 'treemap' ||
+        view.type === 'liquid' ||
+        view.type === 'word-cloud' ||
+        view.type === 'waterfall') {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
@@ -1541,10 +1602,10 @@ export default {
         view.customAttr.label.show = true
       }
       if (view.type === 'liquid' ||
-          (view.type.includes('table') && view.render === 'echarts') ||
-          view.type.includes('text') ||
-          view.type.includes('gauge') ||
-          view.type === 'table-pivot') {
+        (view.type.includes('table') && view.render === 'echarts') ||
+        view.type.includes('text') ||
+        view.type.includes('gauge') ||
+        view.type === 'table-pivot') {
         view.drillFields = []
       }
       view.customFilter.forEach(function(ele) {
@@ -1950,9 +2011,9 @@ export default {
     },
     saveResultFilter() {
       if (((this.filterItem.deType === 0 || this.filterItem.deType === 5) && this.filterItem.filterType !== 'enum') ||
-          this.filterItem.deType === 1 ||
-          this.filterItem.deType === 2 ||
-          this.filterItem.deType === 3) {
+        this.filterItem.deType === 1 ||
+        this.filterItem.deType === 2 ||
+        this.filterItem.deType === 3) {
         for (let i = 0; i < this.filterItem.filter.length; i++) {
           const f = this.filterItem.filter[i]
           if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
@@ -2141,7 +2202,7 @@ export default {
         this.dragCheckType(this.view.xaxis, 'd')
       }
       this.dragMoveDuplicate(this.view.xaxis, e)
-      if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxis.length > 1) {
+      if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'label') && this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
       }
       this.calcData(true)
@@ -2425,370 +2486,371 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-  .padding-lr {
-    padding: 0 6px;
-  }
-
-  .itxst {
-    margin: 10px;
-    text-align: left;
-  }
-
-  .col {
-    width: 40%;
-    flex: 1;
-    padding: 10px;
-    border: solid 1px #eee;
-    border-radius: 5px;
-    float: left;
-  }
-
-  .col + .col {
-    margin-left: 10px;
-  }
-
-  .view-panel-row {
-    display: flex;
-    background-color: #f7f8fa;
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: calc(100vh - 75px);
-  }
-
-  .view-panel {
-    display: flex;
-    height: calc(100% - 80px);
-    background-color: #f7f8fa;
-  }
-
-  .blackTheme .view-panel {
-    background-color: var(--MainBG);
-  }
-
-  .drag-list {
-    height: calc(100% - 26px);
-    overflow: auto;
-  }
-
-  .item-dimension {
-    padding: 2px 10px;
-    margin: 2px 2px 0 2px;
-    border: solid 1px #eee;
-    text-align: left;
-    color: #606266;
-    /*background-color: rgba(35,46,64,.05);*/
-    background-color: white;
-    display: block;
-    word-break: break-all;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  .blackTheme .item-dimension {
-    border: solid 1px;
-    border-color: var(--TableBorderColor);
-    color: var(--TextPrimary);
-    background-color: var(--MainBG);
-  }
-
-  .item-dimension + .item-dimension {
-    margin-top: 2px;
-  }
-
-  .item-dimension:hover {
-    color: #1890ff;
-    background: #e8f4ff;
-    border-color: #a3d3ff;
-    cursor: pointer;
-  }
-
-  .blackTheme .item-dimension:hover {
-    color: var(--Main);
-    background: var(--ContentBG);
-    cursor: pointer;
-  }
-
-  .item-quota {
-    padding: 2px 10px;
-    margin: 2px 2px 0 2px;
-    border: solid 1px #eee;
-    text-align: left;
-    color: #606266;
-    background-color: white;
-    display: block;
-    word-break: break-all;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  .blackTheme .item-quota {
-    border: solid 1px;
-    border-color: var(--TableBorderColor);
-    color: var(--TextPrimary);
-    background-color: var(--MainBG);
-  }
-
-  .item-quota + .item-quota {
-    margin-top: 2px;
-  }
-
-  .item-quota:hover {
-    color: #67c23a;
-    background: #f0f9eb;
-    border-color: #b2d3a3;
-    cursor: pointer;
-  }
-
-  .blackTheme .item-quota:hover {
-    background: var(--ContentBG);
-  }
-
-  .el-form-item {
-    margin-bottom: 0;
-  }
-
-  span {
-    font-size: 12px;
-  }
-
-  .tab-header > > > .el-tabs__header {
-    border-top: solid 1px #eee;
-    border-right: solid 1px #eee;
-  }
-
-  .tab-header > > > .el-tabs__item {
-    font-size: 12px;
-    padding: 0 20px !important;
-  }
-
-  .blackTheme .tab-header > > > .el-tabs__item {
-    background-color: var(--MainBG);
-  }
-
-  .tab-header > > > .el-tabs__nav-scroll {
-    padding-left: 0 !important;
-  }
-
-  .tab-header > > > .el-tabs__header {
-    margin: 0 !important;
-  }
-
-  .tab-header > > > .el-tabs__content {
-  }
-
-  .draggable-group {
-    display: block;
-    width: 100%;
-    height: calc(100% - 6px);
-  }
-
-  .chart-icon {
-    width: 20px;
-    height: 20px;
-  }
-
-  .el-radio {
-    margin: 5px;
-  }
-
-  .el-radio > > > .el-radio__label {
-    padding-left: 0;
-  }
-
-  .attr-style {
-    height: calc(100vh - 56px - 60px - 40px - 40px);
-  }
-
-  .blackTheme .attr-style {
-    color: var(--TextPrimary);
-  }
-
-  .attr-selector {
-    width: 100%;
-    height: 100%;
-    margin: 6px 0;
-    padding: 0 4px;
-    display: flex;
-    align-items: center;
-    background-color: white
-  }
-
-  .blackTheme .attr-selector {
-
-    background-color: var(--MainBG)
-  }
-
-  .disabled-none-cursor {
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
-  .chart-class {
-    height: 100%;
-    padding: 10px;
-  }
-
-  .table-class {
-    height: calc(100% - 20px);
-  }
-
-  .dialog-css > > > .el-dialog__title {
-    font-size: 14px;
-  }
-
-  .dialog-css > > > .el-dialog__header {
-    padding: 20px 20px 0;
-  }
-
-  .dialog-css > > > .el-dialog__body {
-    padding: 10px 20px 20px;
-  }
-
-  .filter-btn-class {
-    padding: 6px;
-    border: none;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .chart-error-class {
-    text-align: center;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #ece7e7;
-  }
-
-  .blackTheme .chart-error-class {
-
-    background-color: var(--MainBG)
-  }
-
-  .field-height {
-    height: calc(50% - 20px);
-    border-top: 1px solid #E6E6E6;
-  }
-
-  .blackTheme .field-height {
-
-    border-top: 1px solid;
-    border-color: var(--TableBorderColor) !important;
-  }
-
-  .padding-tab {
-    padding: 0;
-    height: 100%;
-  }
-
-  .tree-select-span {
-    > > > div.vue-treeselect__control {
-      height: 32px !important;
-      font-weight: normal !important;
-    }
-  }
-
-  .drag-block-style {
-    padding: 2px 0 0 0;
-    width: 100%;
-    min-height: 32px;
-    border-radius: 4px;
-    border: 1px solid #DCDFE6;
-    overflow-x: hidden;
-    display: flex;
-    align-items: center;
-    background-color: white;
-  }
-
-  .blackTheme .drag-block-style {
-    border: 1px solid;
-    border-color: var(--TableBorderColor);
-    background-color: var(--ContentBG);
-  }
-
-  .drag-placeholder-style {
-    position: absolute;
-    top: calc(50% - 2px);
-    left: 0;
-    width: 100%;
-    color: #CCCCCC;
-  }
-
-  .blackTheme .drag-placeholder-style {
-    color: var(--TextPrimary);
-  }
-
-  .drag-placeholder-style-span {
-    padding-left: 16px;
-  }
-
-  .blackTheme .theme-border-class {
-    color: var(--TextPrimary) !important;
-    background-color: var(--ContentBG);
-  }
-
-  .blackTheme .padding-lr {
-    border-color: var(--TableBorderColor) !important;
-  }
-
-  .blackTheme .theme-item-class {
-    background-color: var(--MainBG) !important;
-    border-color: var(--TableBorderColor) !important;
-  }
-
-  .icon-class {
-    color: #6c6c6c;
-  }
-
-  .blackTheme .icon-class {
-    color: #cccccc;
-  }
-
-  .result-count {
-    width: 50px;
-  }
-  .result-count >>> input {
-    padding:0 4px;
-  }
-
-  .radio-span > > > .el-radio__label {
-    margin-left: 4px;
-  }
-
-  .view-title-name {
-    display: -moz-inline-box;
-    display: inline-block;
-    width: 130px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    margin-left: 45px;
-  }
-
-  ::v-deep .item-axis {
-    width: 128px !important;
-  }
-
-  ::v-deep .el-slider__input {
-    width: 80px !important;
-  }
-
-  ::v-deep .el-input-number--mini {
-    width: 80px !important;
-  }
-
-  .no-senior {
-    width: 100%;
-    text-align: center;
-    font-size: 12px;
-    padding-top: 40px;
-    overflow:auto;
-    border-right: 1px solid #e6e6e6;
-    height: 100%;
-  }
+.padding-lr {
+  padding: 0 6px;
+}
+
+.itxst {
+  margin: 10px;
+  text-align: left;
+}
+
+.col {
+  width: 40%;
+  flex: 1;
+  padding: 10px;
+  border: solid 1px #eee;
+  border-radius: 5px;
+  float: left;
+}
+
+.col + .col {
+  margin-left: 10px;
+}
+
+.view-panel-row {
+  display: flex;
+  background-color: #f7f8fa;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: calc(100vh - 75px);
+}
+
+.view-panel {
+  display: flex;
+  height: calc(100% - 80px);
+  background-color: #f7f8fa;
+}
+
+.blackTheme .view-panel {
+  background-color: var(--MainBG);
+}
+
+.drag-list {
+  height: calc(100% - 26px);
+  overflow: auto;
+}
+
+.item-dimension {
+  padding: 2px 10px;
+  margin: 2px 2px 0 2px;
+  border: solid 1px #eee;
+  text-align: left;
+  color: #606266;
+  /*background-color: rgba(35,46,64,.05);*/
+  background-color: white;
+  display: block;
+  word-break: break-all;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.blackTheme .item-dimension {
+  border: solid 1px;
+  border-color: var(--TableBorderColor);
+  color: var(--TextPrimary);
+  background-color: var(--MainBG);
+}
+
+.item-dimension + .item-dimension {
+  margin-top: 2px;
+}
+
+.item-dimension:hover {
+  color: #1890ff;
+  background: #e8f4ff;
+  border-color: #a3d3ff;
+  cursor: pointer;
+}
+
+.blackTheme .item-dimension:hover {
+  color: var(--Main);
+  background: var(--ContentBG);
+  cursor: pointer;
+}
+
+.item-quota {
+  padding: 2px 10px;
+  margin: 2px 2px 0 2px;
+  border: solid 1px #eee;
+  text-align: left;
+  color: #606266;
+  background-color: white;
+  display: block;
+  word-break: break-all;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.blackTheme .item-quota {
+  border: solid 1px;
+  border-color: var(--TableBorderColor);
+  color: var(--TextPrimary);
+  background-color: var(--MainBG);
+}
+
+.item-quota + .item-quota {
+  margin-top: 2px;
+}
+
+.item-quota:hover {
+  color: #67c23a;
+  background: #f0f9eb;
+  border-color: #b2d3a3;
+  cursor: pointer;
+}
+
+.blackTheme .item-quota:hover {
+  background: var(--ContentBG);
+}
+
+.el-form-item {
+  margin-bottom: 0;
+}
+
+span {
+  font-size: 12px;
+}
+
+.tab-header > > > .el-tabs__header {
+  border-top: solid 1px #eee;
+  border-right: solid 1px #eee;
+}
+
+.tab-header > > > .el-tabs__item {
+  font-size: 12px;
+  padding: 0 20px !important;
+}
+
+.blackTheme .tab-header > > > .el-tabs__item {
+  background-color: var(--MainBG);
+}
+
+.tab-header > > > .el-tabs__nav-scroll {
+  padding-left: 0 !important;
+}
+
+.tab-header > > > .el-tabs__header {
+  margin: 0 !important;
+}
+
+.tab-header > > > .el-tabs__content {
+}
+
+.draggable-group {
+  display: block;
+  width: 100%;
+  height: calc(100% - 6px);
+}
+
+.chart-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.el-radio {
+  margin: 5px;
+}
+
+.el-radio > > > .el-radio__label {
+  padding-left: 0;
+}
+
+.attr-style {
+  height: calc(100vh - 56px - 60px - 40px - 40px);
+}
+
+.blackTheme .attr-style {
+  color: var(--TextPrimary);
+}
+
+.attr-selector {
+  width: 100%;
+  height: 100%;
+  margin: 6px 0;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  background-color: white
+}
+
+.blackTheme .attr-selector {
+
+  background-color: var(--MainBG)
+}
+
+.disabled-none-cursor {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.chart-class {
+  height: 100%;
+  padding: 10px;
+}
+
+.table-class {
+  height: calc(100% - 20px);
+}
+
+.dialog-css > > > .el-dialog__title {
+  font-size: 14px;
+}
+
+.dialog-css > > > .el-dialog__header {
+  padding: 20px 20px 0;
+}
+
+.dialog-css > > > .el-dialog__body {
+  padding: 10px 20px 20px;
+}
+
+.filter-btn-class {
+  padding: 6px;
+  border: none;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-error-class {
+  text-align: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ece7e7;
+}
+
+.blackTheme .chart-error-class {
+
+  background-color: var(--MainBG)
+}
+
+.field-height {
+  height: calc(50% - 20px);
+  border-top: 1px solid #E6E6E6;
+}
+
+.blackTheme .field-height {
+
+  border-top: 1px solid;
+  border-color: var(--TableBorderColor) !important;
+}
+
+.padding-tab {
+  padding: 0;
+  height: 100%;
+}
+
+.tree-select-span {
+  > > > div.vue-treeselect__control {
+    height: 32px !important;
+    font-weight: normal !important;
+  }
+}
+
+.drag-block-style {
+  padding: 2px 0 0 0;
+  width: 100%;
+  min-height: 32px;
+  border-radius: 4px;
+  border: 1px solid #DCDFE6;
+  overflow-x: hidden;
+  display: flex;
+  align-items: center;
+  background-color: white;
+}
+
+.blackTheme .drag-block-style {
+  border: 1px solid;
+  border-color: var(--TableBorderColor);
+  background-color: var(--ContentBG);
+}
+
+.drag-placeholder-style {
+  position: absolute;
+  top: calc(50% - 2px);
+  left: 0;
+  width: 100%;
+  color: #CCCCCC;
+}
+
+.blackTheme .drag-placeholder-style {
+  color: var(--TextPrimary);
+}
+
+.drag-placeholder-style-span {
+  padding-left: 16px;
+}
+
+.blackTheme .theme-border-class {
+  color: var(--TextPrimary) !important;
+  background-color: var(--ContentBG);
+}
+
+.blackTheme .padding-lr {
+  border-color: var(--TableBorderColor) !important;
+}
+
+.blackTheme .theme-item-class {
+  background-color: var(--MainBG) !important;
+  border-color: var(--TableBorderColor) !important;
+}
+
+.icon-class {
+  color: #6c6c6c;
+}
+
+.blackTheme .icon-class {
+  color: #cccccc;
+}
+
+.result-count {
+  width: 50px;
+}
+
+.result-count > > > input {
+  padding: 0 4px;
+}
+
+.radio-span > > > .el-radio__label {
+  margin-left: 4px;
+}
+
+.view-title-name {
+  display: -moz-inline-box;
+  display: inline-block;
+  width: 130px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin-left: 45px;
+}
+
+::v-deep .item-axis {
+  width: 128px !important;
+}
+
+::v-deep .el-slider__input {
+  width: 80px !important;
+}
+
+::v-deep .el-input-number--mini {
+  width: 80px !important;
+}
+
+.no-senior {
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  padding-top: 40px;
+  overflow: auto;
+  border-right: 1px solid #e6e6e6;
+  height: 100%;
+}
 
 </style>
