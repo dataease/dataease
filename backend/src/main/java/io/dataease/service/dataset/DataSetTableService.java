@@ -2188,9 +2188,9 @@ public class DataSetTableService {
                         + qrtzSchedulerState.getCheckinInterval() + 1000 > utilMapper.currentTimestamp())
                 .map(QrtzSchedulerStateKey::getInstanceName).collect(Collectors.toList());
         List<DatasetTable> jobStoppeddDatasetTables = new ArrayList<>();
+
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andSyncStatusEqualTo(JobStatus.Underway.name());
-
         datasetTableMapper.selectByExample(example).forEach(datasetTable -> {
             if (StringUtils.isEmpty(datasetTable.getQrtzInstance()) || !activeQrtzInstances.contains(
                     datasetTable.getQrtzInstance().substring(0, datasetTable.getQrtzInstance().length() - 13))) {
@@ -2202,6 +2202,7 @@ public class DataSetTableService {
             return;
         }
 
+        //DatasetTable
         DatasetTable record = new DatasetTable();
         record.setSyncStatus(JobStatus.Error.name());
         example.clear();
@@ -2209,6 +2210,14 @@ public class DataSetTableService {
                 .andIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList()));
         datasetTableMapper.updateByExampleSelective(record, example);
 
+        //Task
+        DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
+        DatasetTableTaskExample.Criteria criteria = datasetTableTaskExample.createCriteria();
+        criteria.andTableIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList())).andStatusEqualTo(JobStatus.Underway.name());
+        List<DatasetTableTask> datasetTableTasks = dataSetTableTaskService.list(datasetTableTaskExample);
+        dataSetTableTaskService.updateTaskStatus(datasetTableTasks, JobStatus.Error);
+
+        //TaskLog
         DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
         datasetTableTaskLog.setStatus(JobStatus.Error.name());
         datasetTableTaskLog.setInfo("Job stopped due to system error.");
@@ -2216,11 +2225,7 @@ public class DataSetTableService {
         DatasetTableTaskLogExample datasetTableTaskLogExample = new DatasetTableTaskLogExample();
         datasetTableTaskLogExample.createCriteria().andStatusEqualTo(JobStatus.Underway.name())
                 .andTableIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList()));
-        List<String> taskIds = datasetTableTaskLogMapper.selectByExample(datasetTableTaskLogExample).stream()
-                .map(DatasetTableTaskLog::getTaskId).collect(Collectors.toList());
         datasetTableTaskLogMapper.updateByExampleSelective(datasetTableTaskLog, datasetTableTaskLogExample);
-
-        dataSetTableTaskService.updateTaskStatus(taskIds, JobStatus.Error);
 
         for (DatasetTable jobStoppeddDatasetTable : jobStoppeddDatasetTables) {
             extractDataService.deleteFile("all_scope", jobStoppeddDatasetTable.getId());

@@ -140,7 +140,7 @@ public class ExtractDataService {
             datasetTableTaskLog.setTableId(datasetTable.getId());
             datasetTableTaskLog.setStatus(JobStatus.Underway.name());
             List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
-            return !CollectionUtils.isNotEmpty(datasetTableTaskLogs) || !datasetTableTaskLogs.get(0).getTriggerType().equalsIgnoreCase(TriggerType.Custom.name());
+            return CollectionUtils.isEmpty(datasetTableTaskLogs) || !datasetTableTaskLogs.get(0).getTriggerType().equalsIgnoreCase(TriggerType.Custom.name());
         } else {
             datasetTableTask.setLastExecTime(startTime);
             datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
@@ -159,7 +159,7 @@ public class ExtractDataService {
             return;
         }
         UpdateType updateType = UpdateType.valueOf(type);
-        DatasetTableTaskLog datasetTableTaskLog;
+
         if (datasetTableFields == null) {
             datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTable.getId()).build());
         }
@@ -174,10 +174,10 @@ public class ExtractDataService {
             return o1.getColumnIndex().compareTo(o2.getColumnIndex());
         });
 
+        DatasetTableTaskLog  datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, ops);
         switch (updateType) {
             case all_scope:  // 全量更新
                 try {
-                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, ops);
                     createEngineTable(TableUtils.tableName(datasetTableId), datasetTableFields);
                     createEngineTable(TableUtils.tmpName(TableUtils.tableName(datasetTableId)), datasetTableFields);
                     Long execTime = System.currentTimeMillis();
@@ -222,7 +222,7 @@ public class ExtractDataService {
                         toDelete.forEach(datasetTableField -> dataSetTableFieldsService.delete(datasetTableField.getId()));
                     }
                 } catch (Exception e) {
-                    saveErrorLog(datasetTableId, null, e);
+                    saveErrorLog(datasetTableTaskLog, e);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                     dropDorisTable(TableUtils.tmpName(TableUtils.tableName(datasetTableId)));
                 } finally {
@@ -233,7 +233,6 @@ public class ExtractDataService {
 
             case add_scope: // 增量更新
                 try {
-                    datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, ops);
                     Long execTime = System.currentTimeMillis();
                     if (!engineService.isSimpleMode()) {
                         generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, null);
@@ -245,7 +244,7 @@ public class ExtractDataService {
                     saveSuccessLog(datasetTableTaskLog);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
                 } catch (Exception e) {
-                    saveErrorLog(datasetTableId, null, e);
+                    saveErrorLog(datasetTableTaskLog, e);
                     updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
                 } finally {
                     deleteFile("incremental_add", datasetTableId);
@@ -312,7 +311,7 @@ public class ExtractDataService {
                     msg = true;
                     lastExecStatus = JobStatus.Completed;
                 } catch (Exception e) {
-                    saveErrorLog(datasetTableId, taskId, e);
+                    saveErrorLog(datasetTableTaskLog, e);
                     msg = false;
                     lastExecStatus = JobStatus.Error;
                     execTime = null;
@@ -372,7 +371,7 @@ public class ExtractDataService {
                     msg = true;
                     lastExecStatus = JobStatus.Completed;
                 } catch (Exception e) {
-                    saveErrorLog(datasetTableId, taskId, e);
+                    saveErrorLog(datasetTableTaskLog, e);
                     msg = false;
                     lastExecStatus = JobStatus.Error;
                     execTime = null;
@@ -592,25 +591,13 @@ public class ExtractDataService {
         dataSetTableTaskLogService.save(datasetTableTaskLog);
     }
 
-    private void saveErrorLog(String datasetTableId, String taskId, Exception e) {
-        LogUtil.error("Extract data error: " + datasetTableId, e);
-        DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
-        datasetTableTaskLog.setTableId(datasetTableId);
-        datasetTableTaskLog.setStatus(JobStatus.Underway.name());
-        if (StringUtils.isNotEmpty(taskId)) {
-            datasetTableTaskLog.setTaskId(taskId);
-        }
-        List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
-        if (CollectionUtils.isNotEmpty(datasetTableTaskLogs)) {
-            datasetTableTaskLog = datasetTableTaskLogs.get(0);
-            datasetTableTaskLog.setStatus(JobStatus.Error.name());
-            datasetTableTaskLog.setInfo(e.getMessage());
-            datasetTableTaskLog.setEndTime(System.currentTimeMillis());
-            dataSetTableTaskLogService.save(datasetTableTaskLog);
-        }
-
+    private void saveErrorLog(DatasetTableTaskLog datasetTableTaskLog, Exception e) {
+        LogUtil.error("Extract data error: " + datasetTableTaskLog.getTaskId(), e);
+        datasetTableTaskLog.setStatus(JobStatus.Error.name());
+        datasetTableTaskLog.setInfo(e.getMessage());
+        datasetTableTaskLog.setEndTime(System.currentTimeMillis());
+        dataSetTableTaskLogService.save(datasetTableTaskLog);
     }
-
 
     private void createEngineTable(String tableName, List<DatasetTableField> datasetTableFields) throws Exception {
         Datasource engine = engineService.getDeEngine();
@@ -671,14 +658,9 @@ public class ExtractDataService {
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
         datasetTableTaskLog.setTriggerType(TriggerType.Cron.name());
-        List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
-        if (CollectionUtils.isEmpty(datasetTableTaskLogs)) {
-            datasetTableTaskLog.setStartTime(System.currentTimeMillis());
-            dataSetTableTaskLogService.save(datasetTableTaskLog);
-            return datasetTableTaskLog;
-        } else {
-            return datasetTableTaskLogs.get(0);
-        }
+        datasetTableTaskLog.setStartTime(System.currentTimeMillis());
+        dataSetTableTaskLogService.save(datasetTableTaskLog);
+        return datasetTableTaskLog;
     }
 
     private DatasetTableTaskLog getDatasetTableTaskLog(String datasetTableId, String taskId, Long startTime) {
@@ -687,7 +669,7 @@ public class ExtractDataService {
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
         datasetTableTaskLog.setTriggerType(TriggerType.Custom.name());
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
             if (CollectionUtils.isNotEmpty(datasetTableTaskLogs)) {
                 return datasetTableTaskLogs.get(0);

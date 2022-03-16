@@ -161,13 +161,13 @@ public class DataSetTableTaskService {
         return datasetTableTaskMapper.selectByPrimaryKey(id);
     }
 
-    public void updateTaskStatus(List<String> taskIds, JobStatus lastExecStatus) {
-        if (CollectionUtils.isEmpty(taskIds)) {
-            return;
-        }
-        DatasetTableTaskExample example = new DatasetTableTaskExample();
-        example.createCriteria().andIdIn(taskIds);
-        List<DatasetTableTask> datasetTableTasks = datasetTableTaskMapper.selectByExample(example);
+
+    public List<DatasetTableTask> list(DatasetTableTaskExample example) {
+        return datasetTableTaskMapper.selectByExample(example);
+    }
+
+
+    public void updateTaskStatus(List<DatasetTableTask> datasetTableTasks, JobStatus lastExecStatus) {
         for (DatasetTableTask tableTask : datasetTableTasks) {
             updateTaskStatus(tableTask, lastExecStatus);
         }
@@ -202,7 +202,7 @@ public class DataSetTableTaskService {
         if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.name())) {
             datasetTableTask.setStatus(TaskStatus.Stopped.name());
         } else {
-            datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(datasetTableTask.getId());
+//            datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(datasetTableTask.getId());
             datasetTableTask.setLastExecStatus(lastExecStatus.name());
             if (StringUtils.isNotEmpty(datasetTableTask.getEnd()) && datasetTableTask.getEnd().equalsIgnoreCase("1")) {
                 BaseGridRequest request = new BaseGridRequest();
