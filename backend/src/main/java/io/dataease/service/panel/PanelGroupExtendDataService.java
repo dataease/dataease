@@ -24,18 +24,17 @@ public class PanelGroupExtendDataService {
     @Resource
     private PanelGroupExtendDataMapper panelGroupExtendDataMapper;
 
-    public ChartViewDTO getChartInfo(String viewId){
+    public ChartViewDTO getChartDataInfo(String viewId,ChartViewDTO view){
         PanelGroupExtendDataExample extendDataExample = new PanelGroupExtendDataExample();
         extendDataExample.createCriteria().andViewIdEqualTo(viewId);
         List<PanelGroupExtendData>  extendDataList = panelGroupExtendDataMapper.selectByExampleWithBLOBs(extendDataExample);
         if(CollectionUtils.isNotEmpty(extendDataList)){
-            ChartViewDTO chartView = JSONObject.parseObject(extendDataList.get(0).getViewDetails(),ChartViewDTO.class);
-            chartView.setDataFrom(CommonConstants.VIEW_DATA_FROM.TEMPLATE);
-            return chartView;
+            ChartViewDTO chartViewTemplate = JSONObject.parseObject(extendDataList.get(0).getViewDetails(),ChartViewDTO.class);
+            view.setData(chartViewTemplate.getData());
         }else{
             DataEaseException.throwException("模板缓存数据中未获取指定视图数据："+viewId);
         }
-        return null;
+        return view;
     }
 
 

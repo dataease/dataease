@@ -17,6 +17,7 @@
     <result column="style_priority" jdbcType="VARCHAR" property="stylePriority" />
     <result column="chart_type" jdbcType="VARCHAR" property="chartType" />
     <result column="is_plugin" jdbcType="BIT" property="isPlugin" />
+    <result column="data_from" jdbcType="VARCHAR" property="dataFrom" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.ChartViewCacheWithBLOBs">
     <result column="x_axis" jdbcType="LONGVARCHAR" property="xAxis" />
@@ -92,7 +93,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, `name`, title, scene_id, table_id, `type`, render, result_count, result_mode, 
-    create_by, create_time, update_time, style_priority, chart_type, is_plugin
+    create_by, create_time, update_time, style_priority, chart_type, is_plugin, data_from
   </sql>
   <sql id="Blob_Column_List">
     x_axis, x_axis_ext, y_axis, y_axis_ext, ext_stack, ext_bubble, custom_attr, custom_style, 
@@ -152,21 +153,21 @@
       render, result_count, result_mode, 
       create_by, create_time, update_time, 
       style_priority, chart_type, is_plugin, 
-      x_axis, x_axis_ext, y_axis, 
-      y_axis_ext, ext_stack, ext_bubble, 
-      custom_attr, custom_style, custom_filter, 
-      drill_fields, senior, snapshot
-      )
+      data_from, x_axis, x_axis_ext, 
+      y_axis, y_axis_ext, ext_stack, 
+      ext_bubble, custom_attr, custom_style, 
+      custom_filter, drill_fields, senior, 
+      snapshot)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
       #{sceneId,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
       #{render,jdbcType=VARCHAR}, #{resultCount,jdbcType=INTEGER}, #{resultMode,jdbcType=VARCHAR}, 
       #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
       #{stylePriority,jdbcType=VARCHAR}, #{chartType,jdbcType=VARCHAR}, #{isPlugin,jdbcType=BIT}, 
-      #{xAxis,jdbcType=LONGVARCHAR}, #{xAxisExt,jdbcType=LONGVARCHAR}, #{yAxis,jdbcType=LONGVARCHAR}, 
-      #{yAxisExt,jdbcType=LONGVARCHAR}, #{extStack,jdbcType=LONGVARCHAR}, #{extBubble,jdbcType=LONGVARCHAR}, 
-      #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR}, #{customFilter,jdbcType=LONGVARCHAR}, 
-      #{drillFields,jdbcType=LONGVARCHAR}, #{senior,jdbcType=LONGVARCHAR}, #{snapshot,jdbcType=LONGVARCHAR}
-      )
+      #{dataFrom,jdbcType=VARCHAR}, #{xAxis,jdbcType=LONGVARCHAR}, #{xAxisExt,jdbcType=LONGVARCHAR}, 
+      #{yAxis,jdbcType=LONGVARCHAR}, #{yAxisExt,jdbcType=LONGVARCHAR}, #{extStack,jdbcType=LONGVARCHAR}, 
+      #{extBubble,jdbcType=LONGVARCHAR}, #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR}, 
+      #{customFilter,jdbcType=LONGVARCHAR}, #{drillFields,jdbcType=LONGVARCHAR}, #{senior,jdbcType=LONGVARCHAR}, 
+      #{snapshot,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.ChartViewCacheWithBLOBs">
     insert into chart_view_cache
@@ -215,6 +216,9 @@
       </if>
       <if test="isPlugin != null">
         is_plugin,
+      </if>
+      <if test="dataFrom != null">
+        data_from,
       </if>
       <if test="xAxis != null">
         x_axis,
@@ -298,6 +302,9 @@
       </if>
       <if test="isPlugin != null">
         #{isPlugin,jdbcType=BIT},
+      </if>
+      <if test="dataFrom != null">
+        #{dataFrom,jdbcType=VARCHAR},
       </if>
       <if test="xAxis != null">
         #{xAxis,jdbcType=LONGVARCHAR},
@@ -391,6 +398,9 @@
       <if test="record.isPlugin != null">
         is_plugin = #{record.isPlugin,jdbcType=BIT},
       </if>
+      <if test="record.dataFrom != null">
+        data_from = #{record.dataFrom,jdbcType=VARCHAR},
+      </if>
       <if test="record.xAxis != null">
         x_axis = #{record.xAxis,jdbcType=LONGVARCHAR},
       </if>
@@ -449,6 +459,7 @@
       style_priority = #{record.stylePriority,jdbcType=VARCHAR},
       chart_type = #{record.chartType,jdbcType=VARCHAR},
       is_plugin = #{record.isPlugin,jdbcType=BIT},
+      data_from = #{record.dataFrom,jdbcType=VARCHAR},
       x_axis = #{record.xAxis,jdbcType=LONGVARCHAR},
       x_axis_ext = #{record.xAxisExt,jdbcType=LONGVARCHAR},
       y_axis = #{record.yAxis,jdbcType=LONGVARCHAR},
@@ -481,7 +492,8 @@
       update_time = #{record.updateTime,jdbcType=BIGINT},
       style_priority = #{record.stylePriority,jdbcType=VARCHAR},
       chart_type = #{record.chartType,jdbcType=VARCHAR},
-      is_plugin = #{record.isPlugin,jdbcType=BIT}
+      is_plugin = #{record.isPlugin,jdbcType=BIT},
+      data_from = #{record.dataFrom,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -530,6 +542,9 @@
       </if>
       <if test="isPlugin != null">
         is_plugin = #{isPlugin,jdbcType=BIT},
+      </if>
+      <if test="dataFrom != null">
+        data_from = #{dataFrom,jdbcType=VARCHAR},
       </if>
       <if test="xAxis != null">
         x_axis = #{xAxis,jdbcType=LONGVARCHAR},
@@ -586,6 +601,7 @@
       style_priority = #{stylePriority,jdbcType=VARCHAR},
       chart_type = #{chartType,jdbcType=VARCHAR},
       is_plugin = #{isPlugin,jdbcType=BIT},
+      data_from = #{dataFrom,jdbcType=VARCHAR},
       x_axis = #{xAxis,jdbcType=LONGVARCHAR},
       x_axis_ext = #{xAxisExt,jdbcType=LONGVARCHAR},
       y_axis = #{yAxis,jdbcType=LONGVARCHAR},
@@ -615,7 +631,8 @@
       update_time = #{updateTime,jdbcType=BIGINT},
       style_priority = #{stylePriority,jdbcType=VARCHAR},
       chart_type = #{chartType,jdbcType=VARCHAR},
-      is_plugin = #{isPlugin,jdbcType=BIT}
+      is_plugin = #{isPlugin,jdbcType=BIT},
+      data_from = #{dataFrom,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

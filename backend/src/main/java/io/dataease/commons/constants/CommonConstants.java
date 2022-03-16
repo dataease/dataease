@@ -76,8 +76,8 @@ public class CommonConstants {
         // 模板数据
         public static final String TEMPLATE = "template";
 
-        // 视图数据
-        public static final String CHART = "chart";
+        //数据集数据
+        public static final String CHART = "dataset";
 
     }
 }

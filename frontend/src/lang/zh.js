@@ -1390,6 +1390,7 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    template_view_tips: '当前是模板视图,请点击更换数据集',
     no_auth_role: '未分享角色',
     auth_role: '已分享角色',
     picture_limit: '只能插入图片',

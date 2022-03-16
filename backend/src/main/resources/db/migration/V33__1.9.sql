@@ -34,8 +34,11 @@ CREATE TABLE `chart_view_cache` (
 
 SET FOREIGN_KEY_CHECKS = 1;
 
-ALTER TABLE `panel_view`
-ADD COLUMN `data_from` varchar(255) NULL  DEFAULT 'chart'  COMMENT '当前数据来源 chart 视图 template 模板' AFTER `copy_id`;
+ALTER TABLE `chart_view`
+ADD COLUMN `data_from` varchar(255) NULL DEFAULT 'dataset' COMMENT '数据来源 template 模板数据 dataset 数据集数据' AFTER `is_plugin`;
+
+ALTER TABLE `chart_view_cache`
+ADD COLUMN `data_from` varchar(255) NULL DEFAULT 'dataset' COMMENT '数据来源 template 模板数据 dataset 数据集数据' AFTER `is_plugin`;
 
 
 SET NAMES utf8mb4;

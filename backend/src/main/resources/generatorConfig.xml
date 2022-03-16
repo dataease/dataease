@@ -60,9 +60,11 @@
         </javaClientGenerator>
 
         <!--要生成的数据库表 -->
-        <table tableName="de_engine">
-            <columnOverride column="configuration" property="configuration" javaType="java.lang.String"/>
-        </table>
+<!--        <table tableName="de_engine">-->
+<!--            <columnOverride column="configuration" property="configuration" javaType="java.lang.String"/>-->
+<!--        </table>-->
+        <table tableName="panel_view"/>
+        <table tableName="chart_view"/>
         <table tableName="chart_view_cache"/>
     </context>
 </generatorConfiguration>

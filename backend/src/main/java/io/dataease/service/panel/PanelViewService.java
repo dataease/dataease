@@ -154,15 +154,4 @@ public class PanelViewService {
             return null;
         }
     }
-
-    public String findViewDataFrom(String viewId){
-        PanelViewExample panelViewExample = new PanelViewExample();
-        panelViewExample.createCriteria().andChartViewIdEqualTo(viewId);
-        List<PanelView>  result =  panelViewMapper.selectByExample(panelViewExample);
-        if(CollectionUtils.isNotEmpty(result)&& CommonConstants.VIEW_DATA_FROM.TEMPLATE.equals(result.get(0).getDataFrom())){
-            return "template";
-        }else{
-            return "chart";
-        }
-    }
 }
