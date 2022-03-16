@@ -101,6 +101,7 @@ public class DataSetTableService {
     @Resource
     private EngineService engineService;
 
+    private static boolean isUpdatingDatasetTableStatus = false;
     private static final String lastUpdateTime = "${__last_update_time__}";
     private static final String currentUpdateTime = "${__current_update_time__}";
 
@@ -2182,6 +2183,21 @@ public class DataSetTableService {
     private UtilMapper utilMapper;
 
     public void updateDatasetTableStatus() {
+        if(this.isUpdatingDatasetTableStatus){
+            return;
+        }else {
+            this.isUpdatingDatasetTableStatus = true;
+        }
+
+        try {
+            doUpdate();
+        }catch (Exception e){}
+        finally {
+            this.isUpdatingDatasetTableStatus = false;
+        }
+    }
+
+    private void doUpdate(){
         List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(null);
         List<String> activeQrtzInstances = qrtzSchedulerStates.stream()
                 .filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime()
@@ -2233,7 +2249,6 @@ public class DataSetTableService {
             extractDataService.deleteFile("incremental_delete", jobStoppeddDatasetTable.getId());
         }
     }
-
     /*
      * 判断数组中是否有重复的值
      */

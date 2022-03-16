@@ -259,25 +259,6 @@ public class ChartViewService {
         return calcData(view, request, request.isCache());
     }
 
-//    private void checkPermissions(List<? extends ChartViewFieldBaseDTO> chartViewFieldDTOS, List<DatasetTableField> fields, List<String> desensitizationList, Boolean alowDesensitization) throws Exception {
-//        String filedName = "";
-//        for (ChartViewFieldBaseDTO chartViewFieldDTO : chartViewFieldDTOS) {
-//            if (alowDesensitization) {
-//                if (!fields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()).contains(chartViewFieldDTO.getDataeaseName())) {
-//                    filedName = filedName + chartViewFieldDTO.getName() + " ,";
-//                }
-//            } else {
-//                if (desensitizationList.contains(chartViewFieldDTO.getDataeaseName()) || !fields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()).contains(chartViewFieldDTO.getDataeaseName())) {
-//                    filedName = filedName + chartViewFieldDTO.getName() + " ,";
-//                }
-//            }
-//        }
-//        filedName = filedName.endsWith(",") ? filedName.substring(0, filedName.length() - 1) : filedName;
-//        if (StringUtils.isNotEmpty(filedName)) {
-//            throw new Exception("以下字段没有权限: " + filedName);
-//        }
-//    }
-
     public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest requestList, boolean cache) throws Exception {
         if (ObjectUtils.isEmpty(view)) {
             throw new RuntimeException(Translator.get("i18n_chart_delete"));
