@@ -154,7 +154,7 @@ public class JdbcProvider extends DatasourceProvider {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 String database;
-                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())) {
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())) {
                     database = resultSet.getString("TABLE_SCHEM");
                 } else {
                     database = resultSet.getString("TABLE_CAT");
@@ -485,6 +485,14 @@ public class JdbcProvider extends DatasourceProvider {
                 driver = hiveConfiguration.getDriver();
                 jdbcurl = hiveConfiguration.getJdbc();
                 break;
+            case impala:
+                ImpalaConfiguration impalaConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), ImpalaConfiguration.class);
+                System.out.println(new Gson().toJson(impalaConfiguration));
+                username = impalaConfiguration.getUsername();
+                password = impalaConfiguration.getPassword();
+                driver = impalaConfiguration.getDriver();
+                jdbcurl = impalaConfiguration.getJdbc();
+                break;
             case db2:
                 Db2Configuration db2Configuration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), Db2Configuration.class);
                 username = db2Configuration.getUsername();
@@ -586,6 +594,13 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setUrl(hiveConfiguration.getJdbc());
                 jdbcConfiguration = hiveConfiguration;
                 break;
+            case impala:
+                ImpalaConfiguration impalaConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), ImpalaConfiguration.class);
+                dataSource.setPassword(impalaConfiguration.getPassword());
+                dataSource.setDriverClassName(impalaConfiguration.getDriver());
+                dataSource.setUrl(impalaConfiguration.getJdbc());
+                jdbcConfiguration = impalaConfiguration;
+                break;
             case db2:
                 Db2Configuration db2Configuration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), Db2Configuration.class);
                 dataSource.setPassword(db2Configuration.getPassword());
@@ -614,6 +629,7 @@ public class JdbcProvider extends DatasourceProvider {
             case engine_doris:
             case ds_doris:
             case hive:
+            case impala:
                 return "show tables";
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);

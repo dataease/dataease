@@ -2,16 +2,16 @@ package io.dataease.provider.query.hive;
 
 import io.dataease.provider.SQLConstants;
 
-import static io.dataease.commons.constants.DatasourceTypes.mysql;
+import static io.dataease.commons.constants.DatasourceTypes.hive;
 
 /**
  * @Author gin
  * @Date 2021/7/8 7:22 下午
  */
 public class HiveConstants extends SQLConstants {
-    public static final String KEYWORD_TABLE = mysql.getKeywordPrefix() + "%s" + mysql.getKeywordSuffix();
+    public static final String KEYWORD_TABLE = hive.getKeywordPrefix() + "%s" + hive.getKeywordSuffix();
 
-    public static final String KEYWORD_FIX = "%s." + mysql.getKeywordPrefix() + "%s" + mysql.getKeywordSuffix();
+    public static final String KEYWORD_FIX = "%s." + hive.getKeywordPrefix() + "%s" + hive.getKeywordSuffix();
 
     public static final String UNIX_TIMESTAMP = "unix_timestamp(%s)";
 

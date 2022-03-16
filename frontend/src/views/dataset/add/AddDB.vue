@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import {listDatasource, post, isKettleRunning} from '@/api/dataset/dataset'
+import {listDatasource, post, isKettleRunning, disabledSyncDs} from '@/api/dataset/dataset'
 import {engineMode} from "@/api/system/engine";
 
 export default {
@@ -94,7 +94,7 @@ export default {
       selectedDatasource: {},
       engineMode: 'local',
       disabledSync: true,
-      disabledSyncDs: ['es', 'ck', 'mongo', 'redshift', 'hive']
+      disabledSyncDs: disabledSyncDs
     }
   },
   watch: {
