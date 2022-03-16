@@ -1614,6 +1614,8 @@ export default {
           ele.filter = []
         }
       })
+      this.view = JSON.parse(JSON.stringify(view))
+      // stringify json param
       view.xaxis = JSON.stringify(view.xaxis)
       view.xaxisExt = JSON.stringify(view.xaxisExt)
       view.yaxis = JSON.stringify(view.yaxis)
