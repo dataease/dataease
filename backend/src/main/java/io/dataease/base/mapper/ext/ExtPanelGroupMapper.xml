@@ -33,6 +33,7 @@
         panel_group.`name` AS label,
         panel_group.`source`,
         panel_group.`panel_type`,
+        sourcePanelGroup.`mobile_layout`,
         sourcePanelGroup.`name` as source_panel_name,
         authInfo.privileges as `privileges`
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'panel') cids) t,panel_group
@@ -105,6 +106,7 @@
         panel_group.panel_type,
         panel_group.`name` AS label,
         panel_group.`node_type`,
+        panel_group.`mobile_layout`,
         (case when ISNULL(defaultPanelGroup.id) then false else true end) is_default,
         defaultPanelGroup.id as default_panel_id,
         defaultPanelGroup.`name` as default_panel_name,
