@@ -146,13 +146,17 @@ export default {
         return false
       }
       this.editPanel.panelInfo['newFrom'] = this.inputType
+      this.loading = true
       panelSave(this.editPanel.panelInfo).then(response => {
         this.$message({
           message: this.$t('commons.save_success'),
           type: 'success',
           showClose: true
         })
+        this.loading = false
         this.$emit('closeEditPanelDialog', response.data)
+      }).catch(() => {
+        this.loading = false
       })
     },
     handleFileChange(e) {
