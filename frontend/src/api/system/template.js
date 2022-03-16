@@ -4,7 +4,8 @@ export function save(data) {
   return request({
     url: '/template/save',
     data: data,
-    method: 'post'
+    method: 'post',
+    loading: true
   })
 }
 export function templateDelete(id) {

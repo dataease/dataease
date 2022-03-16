@@ -14,6 +14,7 @@ import io.dataease.controller.request.chart.ChartViewRequest;
 import io.dataease.controller.response.ChartDetail;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.service.chart.ChartViewService;
+import io.dataease.service.panel.PanelViewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,8 @@ import java.util.List;
 public class ChartViewController {
     @Resource
     private ChartViewService chartViewService;
+    @Resource
+    private PanelViewService panelViewService;
 
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
     @ApiOperation("保存")
@@ -73,7 +76,8 @@ public class ChartViewController {
     @ApiOperation("详细信息")
     @PostMapping("/get/{id}/{panelId}")
     public ChartViewDTO get(@PathVariable String id, @PathVariable String panelId,@RequestBody ChartViewRequest viewRequest) {
-        return chartViewService.getOne(id,viewRequest.getQueryFrom());
+        ChartViewDTO result = chartViewService.getOne(id,viewRequest.getQueryFrom());
+        return result;
     }
 
     @ApiIgnore

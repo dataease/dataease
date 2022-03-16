@@ -10,6 +10,7 @@ import io.dataease.base.mapper.PanelViewMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
 import io.dataease.base.mapper.ext.ExtPanelGroupMapper;
 import io.dataease.base.mapper.ext.ExtPanelViewMapper;
+import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.dto.panel.PanelViewDto;
@@ -130,8 +131,6 @@ public class PanelViewService {
             }
         }
         panelGroup.setMobileLayout(mobileLayout);
-        //移除没有用到的仪表板私有视图
-        extPanelGroupMapper.removeUselessViews(panelId,viewIds);
         return viewIds;
     }
 
@@ -143,5 +142,16 @@ public class PanelViewService {
         PanelViewExample panelViewExample = new PanelViewExample();
         panelViewExample.createCriteria().andCopyIdEqualTo(copyId);
         return panelViewMapper.selectByExample(panelViewExample);
+    }
+
+    public PanelView findByViewId(String viewId){
+        PanelViewExample panelViewExample = new PanelViewExample();
+        panelViewExample.createCriteria().andChartViewIdEqualTo(viewId);
+        List<PanelView>  result =  panelViewMapper.selectByExample(panelViewExample);
+        if(CollectionUtils.isNotEmpty(result)){
+            return result.get(0);
+        }else{
+            return null;
+        }
     }
 }

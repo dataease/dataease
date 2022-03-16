@@ -7,6 +7,7 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.ChartViewCacheMapper;
 import io.dataease.base.mapper.ChartViewMapper;
+import io.dataease.base.mapper.PanelViewMapper;
 import io.dataease.base.mapper.ext.ExtChartGroupMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
 import io.dataease.commons.constants.ColumnPermissionConstants;
@@ -23,6 +24,7 @@ import io.dataease.dto.chart.*;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.provider.ProviderFactory;
@@ -35,6 +37,8 @@ import io.dataease.service.dataset.DataSetTableUnionService;
 import io.dataease.service.dataset.PermissionService;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
+import io.dataease.service.panel.PanelGroupExtendDataService;
+import io.dataease.service.panel.PanelViewService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -77,6 +81,11 @@ public class ChartViewService {
     private EngineService engineService;
     @Resource
     private ChartViewCacheMapper chartViewCacheMapper;
+    @Resource
+    private PanelViewService panelViewService;
+    @Resource
+    private PanelGroupExtendDataService extendDataService;
+
 
     //默认使用非公平
     private ReentrantLock lock = new ReentrantLock();
@@ -223,20 +232,31 @@ public class ChartViewService {
         return extChartViewMapper.searchOneWithPrivileges(userId, id);
     }
 
+
     @Transactional
     public ChartViewDTO getOne(String id, String queryFrom) {
-        ChartViewDTO result;
-        //仪表板编辑页面 从缓存表中取数据 缓存表中没有数据则进行插入
-        if (CommonConstants.VIEW_QUERY_FROM.PANEL_EDIT.equals(queryFrom)) {
-            result = extChartViewMapper.searchOneFromCache(id);
-            if (result == null) {
-                extChartViewMapper.copyToCache(id);
+        try{
+            ChartViewDTO result;
+            if(CommonConstants.VIEW_QUERY_FROM.PANEL_EDIT.equals(queryFrom)) {
+                //仪表板编辑页面 从缓存表中取数据 缓存表中没有数据则进行插入
                 result = extChartViewMapper.searchOneFromCache(id);
+                if (result == null) {
+                    extChartViewMapper.copyToCache(id);
+                    result = extChartViewMapper.searchOneFromCache(id);
+                }
+            } else {
+                result = extChartViewMapper.searchOne(id);
             }
-        } else {
-            result = extChartViewMapper.searchOne(id);
+            if(result==null){
+                DataEaseException.throwException(Translator.get("i18n_chart_delete"));
+            }
+            return result;
+        }catch (Exception e){
+            e.printStackTrace();
+            DataEaseException.throwException(e);
         }
-        return result;
+        return null;
+
     }
 
     public void delete(String id) {
@@ -250,13 +270,26 @@ public class ChartViewService {
     }
 
     public ChartViewDTO getData(String id, ChartExtRequest request) throws Exception {
-        ChartViewDTO view = this.getOne(id, request.getQueryFrom());
-        // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
-        if (CommonConstants.VIEW_QUERY_FROM.PANEL.equals(request.getQueryFrom()) && CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
-            view.setResultMode(request.getResultMode());
-            view.setResultCount(request.getResultCount());
+        try {
+            ChartViewDTO view = this.getOne(id, request.getQueryFrom());
+            // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
+            if (CommonConstants.VIEW_QUERY_FROM.PANEL.equals(request.getQueryFrom()) && CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
+                view.setResultMode(request.getResultMode());
+                view.setResultCount(request.getResultCount());
+            }
+            // 数据来源在模板中直接从模板取数据
+            if (CommonConstants.VIEW_DATA_FROM.TEMPLATE.equals(view.getDataFrom())) {
+                return extendDataService.getChartDataInfo(id, view);
+            } else {
+                return calcData(view, request, request.isCache());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            DataEaseException.throwException(e);
         }
-        return calcData(view, request, request.isCache());
+        return null;
+
     }
 
     public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest requestList, boolean cache) throws Exception {

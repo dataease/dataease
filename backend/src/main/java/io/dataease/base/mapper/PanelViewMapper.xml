@@ -14,7 +14,6 @@
     <result column="copy_from_view" jdbcType="VARCHAR" property="copyFromView" />
     <result column="copy_from" jdbcType="VARCHAR" property="copyFrom" />
     <result column="copy_id" jdbcType="VARCHAR" property="copyId" />
-    <result column="data_from" jdbcType="VARCHAR" property="dataFrom" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.base.domain.PanelView">
     <result column="content" jdbcType="LONGVARBINARY" property="content" />
@@ -79,7 +78,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, panel_id, chart_view_id, create_by, create_time, update_by, update_time, `position`, 
-    copy_from_panel, copy_from_view, copy_from, copy_id, data_from
+    copy_from_panel, copy_from_view, copy_from, copy_id
   </sql>
   <sql id="Blob_Column_List">
     content
@@ -137,12 +136,12 @@
       create_by, create_time, update_by, 
       update_time, `position`, copy_from_panel, 
       copy_from_view, copy_from, copy_id, 
-      data_from, content)
+      content)
     values (#{id,jdbcType=VARCHAR}, #{panelId,jdbcType=VARCHAR}, #{chartViewId,jdbcType=VARCHAR}, 
       #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateBy,jdbcType=VARCHAR}, 
       #{updateTime,jdbcType=BIGINT}, #{position,jdbcType=VARCHAR}, #{copyFromPanel,jdbcType=VARCHAR}, 
       #{copyFromView,jdbcType=VARCHAR}, #{copyFrom,jdbcType=VARCHAR}, #{copyId,jdbcType=VARCHAR}, 
-      #{dataFrom,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARBINARY})
+      #{content,jdbcType=LONGVARBINARY})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelView">
     insert into panel_view
@@ -182,9 +181,6 @@
       </if>
       <if test="copyId != null">
         copy_id,
-      </if>
-      <if test="dataFrom != null">
-        data_from,
       </if>
       <if test="content != null">
         content,
@@ -226,9 +222,6 @@
       </if>
       <if test="copyId != null">
         #{copyId,jdbcType=VARCHAR},
-      </if>
-      <if test="dataFrom != null">
-        #{dataFrom,jdbcType=VARCHAR},
       </if>
       <if test="content != null">
         #{content,jdbcType=LONGVARBINARY},
@@ -280,9 +273,6 @@
       <if test="record.copyId != null">
         copy_id = #{record.copyId,jdbcType=VARCHAR},
       </if>
-      <if test="record.dataFrom != null">
-        data_from = #{record.dataFrom,jdbcType=VARCHAR},
-      </if>
       <if test="record.content != null">
         content = #{record.content,jdbcType=LONGVARBINARY},
       </if>
@@ -305,7 +295,6 @@
       copy_from_view = #{record.copyFromView,jdbcType=VARCHAR},
       copy_from = #{record.copyFrom,jdbcType=VARCHAR},
       copy_id = #{record.copyId,jdbcType=VARCHAR},
-      data_from = #{record.dataFrom,jdbcType=VARCHAR},
       content = #{record.content,jdbcType=LONGVARBINARY}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -324,8 +313,7 @@
       copy_from_panel = #{record.copyFromPanel,jdbcType=VARCHAR},
       copy_from_view = #{record.copyFromView,jdbcType=VARCHAR},
       copy_from = #{record.copyFrom,jdbcType=VARCHAR},
-      copy_id = #{record.copyId,jdbcType=VARCHAR},
-      data_from = #{record.dataFrom,jdbcType=VARCHAR}
+      copy_id = #{record.copyId,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -366,9 +354,6 @@
       <if test="copyId != null">
         copy_id = #{copyId,jdbcType=VARCHAR},
       </if>
-      <if test="dataFrom != null">
-        data_from = #{dataFrom,jdbcType=VARCHAR},
-      </if>
       <if test="content != null">
         content = #{content,jdbcType=LONGVARBINARY},
       </if>
@@ -388,7 +373,6 @@
       copy_from_view = #{copyFromView,jdbcType=VARCHAR},
       copy_from = #{copyFrom,jdbcType=VARCHAR},
       copy_id = #{copyId,jdbcType=VARCHAR},
-      data_from = #{dataFrom,jdbcType=VARCHAR},
       content = #{content,jdbcType=LONGVARBINARY}
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -404,8 +388,7 @@
       copy_from_panel = #{copyFromPanel,jdbcType=VARCHAR},
       copy_from_view = #{copyFromView,jdbcType=VARCHAR},
       copy_from = #{copyFrom,jdbcType=VARCHAR},
-      copy_id = #{copyId,jdbcType=VARCHAR},
-      data_from = #{dataFrom,jdbcType=VARCHAR}
+      copy_id = #{copyId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

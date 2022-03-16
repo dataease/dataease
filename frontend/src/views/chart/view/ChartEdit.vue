@@ -41,6 +41,20 @@
     <el-row class="view-panel-row">
       <el-tabs :stretch="true" class="tab-header">
         <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 300px">
+          <div v-if="view.dataFrom==='template'" class="view-panel-Mask">
+            <span style="opacity: 1;">
+              <el-button
+                style="opacity: 1!important;"
+                type="warning"
+                :title="$t('chart.change_ds')"
+                size="mini"
+                round
+                @click="changeDs"
+              >
+                <span style="font-weight: bold">{{ $t('panel.template_view_tips') }}<i class="el-icon-refresh el-icon--right" /></span>
+              </el-button>
+            </span>
+          </div>
           <el-row class="view-panel">
             <el-col class="theme-border-class" :span="12" style="border-right: 1px solid #E6E6E6;">
               <div style="display: flex;align-items: center;justify-content: center;padding: 6px;">
@@ -1388,6 +1402,7 @@ export default {
     }
   },
   created() {
+    debugger
     // this.get(this.$store.state.chart.viewId);
     // this.initAreas()
   },
@@ -1402,6 +1417,13 @@ export default {
   },
 
   methods: {
+    emptyTableData() {
+      this.table = {}
+      this.dimension = []
+      this.quota = []
+      this.dimensionData = []
+      this.quotaData = []
+    },
     initFromPanel() {
       this.hasEdit = (this.panelViewEditInfo[this.param.id] || false)
     },
@@ -1613,6 +1635,8 @@ export default {
           ele.filter = []
         }
       })
+      this.view = JSON.parse(JSON.stringify(view))
+      // stringify json param
       view.xaxis = JSON.stringify(view.xaxis)
       view.xaxisExt = JSON.stringify(view.xaxisExt)
       view.yaxis = JSON.stringify(view.yaxis)
@@ -1787,7 +1811,11 @@ export default {
     getChart(id, queryFrom = 'panel_edit') {
       if (id) {
         getChartDetails(id, this.panelInfo.id, { queryFrom: queryFrom }).then(response => {
-          this.initTableData(response.data.tableId)
+          if (response.data.dataFrom === 'template') {
+            this.emptyTableData()
+          } else {
+            this.initTableData(response.data.tableId)
+          }
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
@@ -2145,10 +2173,12 @@ export default {
         this.view.extStack = []
         this.view.extBubble = []
         this.view.drillFields = []
+        this.view.dataFrom = 'dataset'
       }
       // this.save(true, 'chart', false)
       this.calcData(true, 'chart', false)
       this.initTableData(this.view.tableId)
+      this.closeChangeChart()
     },
 
     fieldFilter(val) {
@@ -2514,6 +2544,22 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
   height: calc(100vh - 75px);
+}
+
+.view-panel-Mask {
+  display: flex;
+  height: calc(100vh - 60px);
+  background-color: #5c5e61;
+  opacity: 0.7;
+  position:absolute;
+  top:0px;
+  left: 0px;
+  width: 300px;
+  z-index: 2;
+  cursor:not-allowed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .view-panel {

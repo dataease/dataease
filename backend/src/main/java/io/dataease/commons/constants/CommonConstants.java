@@ -69,4 +69,15 @@ public class CommonConstants {
         public static final String CACHE = "cache";
 
     }
+
+    //视图数据读取来源
+    public static final class VIEW_DATA_FROM {
+
+        // 模板数据
+        public static final String TEMPLATE = "template";
+
+        //数据集数据
+        public static final String CHART = "dataset";
+
+    }
 }
