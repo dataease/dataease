@@ -2882,11 +2882,11 @@ span {
 }
 
 ::v-deep .el-slider__input {
-  width: 80px !important;
+  width: 100px !important;
 }
 
 ::v-deep .el-input-number--mini {
-  width: 80px !important;
+  width: 100px !important;
 }
 
 .no-senior {
