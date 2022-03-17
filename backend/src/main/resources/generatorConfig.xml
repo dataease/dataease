@@ -63,8 +63,8 @@
 <!--        <table tableName="de_engine">-->
 <!--            <columnOverride column="configuration" property="configuration" javaType="java.lang.String"/>-->
 <!--        </table>-->
-        <table tableName="panel_view"/>
-        <table tableName="chart_view"/>
-        <table tableName="chart_view_cache"/>
+        <table tableName="panel_outer_params"/>
+        <table tableName="panel_outer_params_info"/>
+        <table tableName="panel_outer_params_target_view_info"/>
     </context>
 </generatorConfiguration>

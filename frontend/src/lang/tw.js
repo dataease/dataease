@@ -1382,6 +1382,7 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    params_setting: '外部参数设置',
     template_view_tips: '当前是模板视图,请点击更换数据集',
     no_auth_role: '未分享角色',
     auth_role: '已分享角色',

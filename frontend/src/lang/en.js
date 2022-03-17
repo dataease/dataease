@@ -1381,6 +1381,7 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    params_setting: 'Outer Params Setting',
     template_view_tips: "Template's Views. Please Change",
     no_auth_role: 'Unshared roles',
     auth_role: 'Shared roles',

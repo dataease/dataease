@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.base.mapper.PanelOuterParamsMapper">
+  <resultMap id="BaseResultMap" type="io.dataease.base.domain.PanelOuterParams">
+    <id column="params_id" jdbcType="VARCHAR" property="paramsId" />
+    <result column="panel_id" jdbcType="VARCHAR" property="panelId" />
+    <result column="checked" jdbcType="BIT" property="checked" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="copy_from" jdbcType="VARCHAR" property="copyFrom" />
+    <result column="copy_id" jdbcType="VARCHAR" property="copyId" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    params_id, panel_id, `checked`, remark, copy_from, copy_id
+  </sql>
+  <select id="selectByExample" parameterType="io.dataease.base.domain.PanelOuterParamsExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from panel_outer_params
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from panel_outer_params
+    where params_id = #{paramsId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from panel_outer_params
+    where params_id = #{paramsId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="io.dataease.base.domain.PanelOuterParamsExample">
+    delete from panel_outer_params
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="io.dataease.base.domain.PanelOuterParams">
+    insert into panel_outer_params (params_id, panel_id, `checked`, 
+      remark, copy_from, copy_id
+      )
+    values (#{paramsId,jdbcType=VARCHAR}, #{panelId,jdbcType=VARCHAR}, #{checked,jdbcType=BIT}, 
+      #{remark,jdbcType=VARCHAR}, #{copyFrom,jdbcType=VARCHAR}, #{copyId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="io.dataease.base.domain.PanelOuterParams">
+    insert into panel_outer_params
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="paramsId != null">
+        params_id,
+      </if>
+      <if test="panelId != null">
+        panel_id,
+      </if>
+      <if test="checked != null">
+        `checked`,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="copyFrom != null">
+        copy_from,
+      </if>
+      <if test="copyId != null">
+        copy_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="paramsId != null">
+        #{paramsId,jdbcType=VARCHAR},
+      </if>
+      <if test="panelId != null">
+        #{panelId,jdbcType=VARCHAR},
+      </if>
+      <if test="checked != null">
+        #{checked,jdbcType=BIT},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="copyFrom != null">
+        #{copyFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="copyId != null">
+        #{copyId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="io.dataease.base.domain.PanelOuterParamsExample" resultType="java.lang.Long">
+    select count(*) from panel_outer_params
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update panel_outer_params
+    <set>
+      <if test="record.paramsId != null">
+        params_id = #{record.paramsId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.panelId != null">
+        panel_id = #{record.panelId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.checked != null">
+        `checked` = #{record.checked,jdbcType=BIT},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.copyFrom != null">
+        copy_from = #{record.copyFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="record.copyId != null">
+        copy_id = #{record.copyId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update panel_outer_params
+    set params_id = #{record.paramsId,jdbcType=VARCHAR},
+      panel_id = #{record.panelId,jdbcType=VARCHAR},
+      `checked` = #{record.checked,jdbcType=BIT},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      copy_from = #{record.copyFrom,jdbcType=VARCHAR},
+      copy_id = #{record.copyId,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.base.domain.PanelOuterParams">
+    update panel_outer_params
+    <set>
+      <if test="panelId != null">
+        panel_id = #{panelId,jdbcType=VARCHAR},
+      </if>
+      <if test="checked != null">
+        `checked` = #{checked,jdbcType=BIT},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="copyFrom != null">
+        copy_from = #{copyFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="copyId != null">
+        copy_id = #{copyId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where params_id = #{paramsId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.dataease.base.domain.PanelOuterParams">
+    update panel_outer_params
+    set panel_id = #{panelId,jdbcType=VARCHAR},
+      `checked` = #{checked,jdbcType=BIT},
+      remark = #{remark,jdbcType=VARCHAR},
+      copy_from = #{copyFrom,jdbcType=VARCHAR},
+      copy_id = #{copyId,jdbcType=VARCHAR}
+    where params_id = #{paramsId,jdbcType=VARCHAR}
+  </update>
+</mapper>
