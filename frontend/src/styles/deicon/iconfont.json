@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "19610186",
+      "name": "参数",
+      "font_class": "canshu",
+      "unicode": "e6d7",
+      "unicode_decimal": 59095
+    },
+    {
       "icon_id": "12851123",
       "name": "更换",
       "font_class": "genghuan",
@@ -158,6 +165,13 @@
       "font_class": "xuanfuanniu",
       "unicode": "e8e6",
       "unicode_decimal": 59622
+    },
+    {
+      "icon_id": "27514350",
+      "name": "右悬浮-选中",
+      "font_class": "youxuanfu-copy-copy",
+      "unicode": "eb86",
+      "unicode_decimal": 60294
     },
     {
       "icon_id": "15196968",

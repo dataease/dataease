@@ -18,6 +18,7 @@
           @showPanel="showPanel"
           @previewFullScreen="previewFullScreen"
           @changeAidedDesign="changeAidedDesign"
+          @outerParamsSetVisibleChange="outerParamsSetVisibleChange"
         />
       </el-col>
     </el-header>
@@ -312,6 +313,18 @@
       @newViewInfo="newViewInfo"
     />
 
+    <!--仪表板外部参数设置组件-->
+    <el-dialog
+      :visible.sync="outerParamsSetVisible"
+      width="900px"
+      class="dialog-css"
+      :show-close="true"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <OuterParamsSet v-if="outerParamsSetVisible" @closeOuterParamsSetDialog="closeOuterParamsSetDialog" />
+    </el-dialog>
+
   </el-row>
 </template>
 
@@ -334,14 +347,14 @@ import componentList, {
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
-import { initPanelComponentsData, initPanelData, initViewCache } from '@/api/panel/panel'
+import { initPanelData, initViewCache } from '@/api/panel/panel'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
 import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
 import ChartGroup from '@/views/chart/group/Group'
-import { chartCopy, searchAdviceSceneId } from '@/api/chart/chart'
+import { chartCopy } from '@/api/chart/chart'
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
 import '@/components/canvas/styles/animate.css'
@@ -354,10 +367,12 @@ import TextAttr from '@/components/canvas/components/TextAttr'
 import ComponentWait from '@/views/panel/edit/ComponentWait'
 import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
 import ChartEdit from '@/views/chart/view/ChartEdit'
+import OuterParamsSet from '@/views/panel/OuterParamsSet/index'
 
 export default {
   name: 'PanelEdit',
   components: {
+    OuterParamsSet,
     ComponentWait,
     DeMainContainer,
     DeContainer,
@@ -378,6 +393,7 @@ export default {
   },
   data() {
     return {
+      outerParamsSetVisible: false,
       autoMoveOffSet: 15,
       mobileEditorShow: true,
       hasStar: false,
@@ -596,6 +612,9 @@ export default {
     elx && elx.remove()
   },
   methods: {
+    closeOuterParamsSetDialog(){
+      this.outerParamsSetVisible = false
+    },
     changeRightDrawOpen(param) {
       this.rightDrawOpen = param
       if (this.rightDrawOpen) {
@@ -859,6 +878,9 @@ export default {
     },
     changeAidedDesign() {
       this.aidedButtonActive = !this.aidedButtonActive
+    },
+    outerParamsSetVisibleChange(param) {
+      this.outerParamsSetVisible = param
     },
     getOriginStyle(value) {
       const scale = this.canvasStyleData.scale
