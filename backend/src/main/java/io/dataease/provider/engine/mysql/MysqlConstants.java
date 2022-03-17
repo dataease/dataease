@@ -3,7 +3,8 @@ package io.dataease.provider.engine.mysql;
 
 import io.dataease.plugins.common.constants.SQLConstants;
 
-import static io.dataease.commons.constants.DatasourceTypes.engine_mysql;
+import static io.dataease.plugins.common.constants.DatasourceTypes.engine_mysql;
+import static io.dataease.plugins.common.constants.DatasourceTypes.engine_mysql;
 
 /**
  * @Author gin
