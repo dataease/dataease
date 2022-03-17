@@ -95,7 +95,6 @@ public class ChartViewService {
     private PanelGroupExtendDataService extendDataService;
 
 
-
     //默认使用非公平
     private ReentrantLock lock = new ReentrantLock();
 
@@ -242,33 +241,30 @@ public class ChartViewService {
     }
 
 
-    public ChartViewDTO getOne(String id, String queryFrom) {
-        return getOne(id,queryFrom,CommonConstants.VIEW_DATA_FROM.CHART);
-    }
-
-
     @Transactional
-    public ChartViewDTO getOne(String id, String queryFrom,String dataFrom) {
-        ChartViewDTO result;
-        //从模板中去数据
-        if(CommonConstants.VIEW_DATA_FROM.TEMPLATE.equals(dataFrom)){
-             result =  extendDataService.getChartInfo(id);
-            if(result!=null){
-                result.setData(null);
-            }
-        }else if (CommonConstants.VIEW_QUERY_FROM.PANEL_EDIT.equals(queryFrom)) {
-            //仪表板编辑页面 从缓存表中取数据 缓存表中没有数据则进行插入
-            result = extChartViewMapper.searchOneFromCache(id);
-            if (result == null) {
-                extChartViewMapper.copyToCache(id);
+    public ChartViewDTO getOne(String id, String queryFrom) {
+        try{
+            ChartViewDTO result;
+            if(CommonConstants.VIEW_QUERY_FROM.PANEL_EDIT.equals(queryFrom)) {
+                //仪表板编辑页面 从缓存表中取数据 缓存表中没有数据则进行插入
                 result = extChartViewMapper.searchOneFromCache(id);
+                if (result == null) {
+                    extChartViewMapper.copyToCache(id);
+                    result = extChartViewMapper.searchOneFromCache(id);
+                }
+            } else {
+                result = extChartViewMapper.searchOne(id);
             }
-            result.setDataFrom(CommonConstants.VIEW_DATA_FROM.CHART);
-        } else {
-            result = extChartViewMapper.searchOne(id);
-            result.setDataFrom(CommonConstants.VIEW_DATA_FROM.CHART);
+            if(result==null){
+                DataEaseException.throwException(Translator.get("i18n_chart_delete"));
+            }
+            return result;
+        }catch (Exception e){
+            e.printStackTrace();
+            DataEaseException.throwException(e);
         }
-        return result;
+        return null;
+
     }
 
     public void delete(String id) {
@@ -282,47 +278,27 @@ public class ChartViewService {
     }
 
     public ChartViewDTO getData(String id, ChartExtRequest request) throws Exception {
-        try{
-            String dataFrom = panelViewService.findViewDataFrom(id);
-
-            if(CommonConstants.VIEW_DATA_FROM.TEMPLATE.equals(dataFrom)){
-                return extendDataService.getChartInfo(id);
-            }else{// 从视图读取数据
-                ChartViewDTO view = this.getOne(id,request.getQueryFrom());
-                view.setDataFrom(dataFrom);
-                // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
-                if (CommonConstants.VIEW_QUERY_FROM.PANEL.equals(request.getQueryFrom()) && CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
-                    view.setResultMode(request.getResultMode());
-                    view.setResultCount(request.getResultCount());
-                }
+        try {
+            ChartViewDTO view = this.getOne(id, request.getQueryFrom());
+            // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
+            if (CommonConstants.VIEW_QUERY_FROM.PANEL.equals(request.getQueryFrom()) && CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
+                view.setResultMode(request.getResultMode());
+                view.setResultCount(request.getResultCount());
+            }
+            // 数据来源在模板中直接从模板取数据
+            if (CommonConstants.VIEW_DATA_FROM.TEMPLATE.equals(view.getDataFrom())) {
+                return extendDataService.getChartDataInfo(id, view);
+            } else {
                 return calcData(view, request, request.isCache());
             }
-        }catch (Exception e){
+
+        } catch (Exception e) {
             e.printStackTrace();
             DataEaseException.throwException(e);
         }
         return null;
 
     }
-
-//    private void checkPermissions(List<? extends ChartViewFieldBaseDTO> chartViewFieldDTOS, List<DatasetTableField> fields, List<String> desensitizationList, Boolean alowDesensitization) throws Exception {
-//        String filedName = "";
-//        for (ChartViewFieldBaseDTO chartViewFieldDTO : chartViewFieldDTOS) {
-//            if (alowDesensitization) {
-//                if (!fields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()).contains(chartViewFieldDTO.getDataeaseName())) {
-//                    filedName = filedName + chartViewFieldDTO.getName() + " ,";
-//                }
-//            } else {
-//                if (desensitizationList.contains(chartViewFieldDTO.getDataeaseName()) || !fields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()).contains(chartViewFieldDTO.getDataeaseName())) {
-//                    filedName = filedName + chartViewFieldDTO.getName() + " ,";
-//                }
-//            }
-//        }
-//        filedName = filedName.endsWith(",") ? filedName.substring(0, filedName.length() - 1) : filedName;
-//        if (StringUtils.isNotEmpty(filedName)) {
-//            throw new Exception("以下字段没有权限: " + filedName);
-//        }
-//    }
 
     public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest requestList, boolean cache) throws Exception {
         if (ObjectUtils.isEmpty(view)) {

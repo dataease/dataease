@@ -76,8 +76,8 @@ public class ChartViewController {
     @ApiOperation("详细信息")
     @PostMapping("/get/{id}/{panelId}")
     public ChartViewDTO get(@PathVariable String id, @PathVariable String panelId,@RequestBody ChartViewRequest viewRequest) {
-        String dataFrom = panelViewService.findViewDataFrom(id);
-        return chartViewService.getOne(id,viewRequest.getQueryFrom(),dataFrom);
+        ChartViewDTO result = chartViewService.getOne(id,viewRequest.getQueryFrom());
+        return result;
     }
 
     @ApiIgnore

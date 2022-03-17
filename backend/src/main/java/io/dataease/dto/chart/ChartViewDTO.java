@@ -30,6 +30,6 @@ public class ChartViewDTO extends ChartViewWithBLOBs {
     private boolean drill;
     @ApiModelProperty("下钻条件集合")
     private List<ChartExtFilterRequest> drillFilters;
-    @ApiModelProperty("当前数据来源")
-    private String dataFrom;
+    @ApiModelProperty("视图存放位置")
+    private String position;
 }

@@ -54,7 +54,8 @@
             custom_filter,
             drill_fields,
             senior,
-            SNAPSHOT
+            SNAPSHOT,
+            data_from
             ) SELECT
             id,
             `name`,
@@ -82,7 +83,8 @@
             custom_filter,
             drill_fields,
             senior,
-        SNAPSHOT  from chart_view
+            SNAPSHOT,
+            data_from  from chart_view
         WHERE
             chart_view.id   = #{id}
     </insert>
@@ -181,7 +183,8 @@
                                 `result_count`,
                                 `result_mode`,
                                 `chart_type`,
-                                `senior`)
+                                `senior`,
+                                `data_from`)
         SELECT #{newChartId},
                `name`,
                #{panelId},
@@ -207,7 +210,8 @@
                `result_count`,
                `result_mode`,
                'private',
-               `senior`
+               `senior`,
+            `data_from`
         FROM chart_view_cache
         WHERE id = #{oldChartId}
     </insert>
@@ -256,7 +260,8 @@
                                 custom_style,
                                 custom_filter,
                                 drill_fields,
-                                SNAPSHOT)
+                                SNAPSHOT,
+            data_from)
         SELECT pv_copy.chart_view_id AS id,
                `name`,
                title,
@@ -282,7 +287,8 @@
                custom_style,
                custom_filter,
                drill_fields,
-               SNAPSHOT
+               SNAPSHOT,
+            data_from
         FROM (
                  SELECT panel_id,
                         copy_from_view,
@@ -389,7 +395,9 @@
             cv.custom_filter = cve.custom_filter,
             cv.drill_fields = cve.drill_fields,
            cv.senior = cve.senior,
-        cv.SNAPSHOT = cve.SNAPSHOT where cve.id = cv.id  and cv.id in
+        cv.SNAPSHOT = cve.SNAPSHOT,
+        cv.data_from = cve.data_from
+        where cve.id = cv.id  and cv.id in
         <foreach collection="viewIds" item="viewId" open='(' separator=',' close=')'>
             #{viewId}
         </foreach>

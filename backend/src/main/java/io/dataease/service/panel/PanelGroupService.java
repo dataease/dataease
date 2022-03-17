@@ -6,6 +6,7 @@ import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.*;
+import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.utils.AuthUtils;
@@ -324,22 +325,24 @@ public class PanelGroupService {
             Map<String,String> dynamicDataMap = JSON.parseObject(dynamicData,Map.class);
             List<PanelViewInsertDTO> panelViews = new ArrayList<>();
             List<PanelGroupExtendDataDTO> viewsData = new ArrayList<>();
-            List<ChartViewWithBLOBs> chartViews = new ArrayList<>();
             for(Map.Entry<String, String> entry : dynamicDataMap.entrySet()){
                 String originViewId = entry.getKey();
                 String originViewData = entry.getValue();
-                JSONObject chartViewJson = JSON.parseObject(originViewData);
-                String position = chartViewJson.getString("position");
+                ChartViewDTO chartView = JSON.parseObject(originViewData,ChartViewDTO.class);
+                String position = chartView.getPosition();
                 String newViewId = UUIDUtil.getUUIDAsString();
+                chartView.setId(newViewId);
+                chartView.setSceneId(newPanelId);
+                chartView.setDataFrom(CommonConstants.VIEW_DATA_FROM.TEMPLATE);
                 //TODO 数据处理 1.替换viewId 2.加入panelView 数据(数据来源为template) 3.加入模板view data数据
                 templateData = templateData.replaceAll(originViewId,newViewId);
-                panelViews.add(new PanelViewInsertDTO(newViewId,newPanelId,position,"template"));
+                panelViews.add(new PanelViewInsertDTO(newViewId,newPanelId,position));
                 viewsData.add(new PanelGroupExtendDataDTO(newPanelId,newViewId,originViewData));
+                chartViewMapper.insertSelective(chartView);
+                extChartViewMapper.copyToCache(newViewId);
             }
             if(CollectionUtils.isNotEmpty(panelViews)){
                 extPanelViewMapper.savePanelView(panelViews);
-            }
-            if(CollectionUtils.isNotEmpty(viewsData)){
                 extPanelGroupExtendDataMapper.savePanelExtendData(viewsData);
             }
             request.setPanelData(templateData);

@@ -400,6 +400,7 @@ export default {
       allTypes: [
         {name: 'mysql', label: 'MySQL', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
         {name: 'hive', label: 'Apache Hive', type: 'jdbc', extraParams: ''},
+        {name: 'impala', label: 'Apache Impala', type: 'jdbc', extraParams: 'auth=noSasl'},
         {name: 'oracle', label: 'Oracle', type: 'jdbc'},
         {name: 'sqlServer', label: 'SQL Server', type: 'jdbc', extraParams: ''},
         {name: 'pg', label: 'PostgreSQL', type: 'jdbc', extraParams: ''},
