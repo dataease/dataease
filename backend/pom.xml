@@ -222,11 +222,7 @@
             <artifactId>dataease-plugin-view</artifactId>
             <version>1.9.0</version>
         </dependency>
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <version>5.7.4</version>
-        </dependency>
+
         <!-- kettle及数据源依赖 -->
         <dependency>
             <groupId>pentaho-kettle</groupId>

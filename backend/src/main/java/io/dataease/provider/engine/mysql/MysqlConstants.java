@@ -1,6 +1,7 @@
 package io.dataease.provider.engine.mysql;
 
-import io.dataease.provider.SQLConstants;
+
+import io.dataease.plugins.common.constants.SQLConstants;
 
 import static io.dataease.commons.constants.DatasourceTypes.engine_mysql;
 
