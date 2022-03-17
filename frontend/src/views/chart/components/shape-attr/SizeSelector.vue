@@ -133,15 +133,15 @@
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="chart.type && (chart.type.includes('text'))" :label="$t('chart.dimension_show')" class="form-item">
+        <el-form-item v-show="chart.type" :label="$t('chart.dimension_show')" class="form-item">
           <el-checkbox v-model="sizeForm.dimensionShow" @change="changeBarSizeCase">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
-        <el-form-item v-show="chart.type && (chart.type.includes('text'))" :label="$t('chart.dimension_font_size')" class="form-item">
+        <el-form-item v-show="chart.type" :label="$t('chart.dimension_font_size')" class="form-item">
           <el-select v-model="sizeForm.dimensionFontSize" :placeholder="$t('chart.dimension_font_size')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="chart.type && (chart.type.includes('text'))" :label="$t('chart.space_split')" class="form-item">
+        <el-form-item v-show="chart.type" :label="$t('chart.space_split')" class="form-item">
           <el-input-number v-model="sizeForm.spaceSplit" size="mini" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>

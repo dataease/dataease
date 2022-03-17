@@ -11,12 +11,11 @@
           {{ chart.data.series[0].data[0] }}
         </p>
       </span>
-      <!--      字段名暂时隐藏-->
-      <!--      <span v-if="dimensionShow" :style="label_space">-->
-      <!--        <p :style="label_class">-->
-      <!--          {{ chart.data.datas[0].category }}-->
-      <!--        </p>-->
-      <!--      </span>-->
+      <span v-if="dimensionShow" :style="label_space">
+        <p :style="label_class">
+          {{ chart.data.series[0].name }}
+        </p>
+      </span>
     </div>
   </div>
 </template>
