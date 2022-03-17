@@ -13,9 +13,10 @@ import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.datasource.JdbcConfiguration;
 import io.dataease.dto.sqlObj.SQLObj;
+import io.dataease.plugins.common.constants.PgConstants;
+import io.dataease.plugins.common.constants.SqlServerSQLConstants;
 import io.dataease.provider.QueryProvider;
-import io.dataease.provider.SQLConstants;
-import io.dataease.provider.query.sqlserver.SqlServerSQLConstants;
+import io.dataease.plugins.common.constants.SQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static io.dataease.provider.SQLConstants.TABLE_ALIAS_PREFIX;
+import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREFIX;
 
 
 @Service("pgQuery")

@@ -9,7 +9,7 @@ import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.datasource.JdbcConfiguration;
 import io.dataease.dto.sqlObj.SQLObj;
-import io.dataease.provider.query.pg.PgConstants;
+import io.dataease.plugins.common.constants.PgConstants;
 
 import java.util.List;
 

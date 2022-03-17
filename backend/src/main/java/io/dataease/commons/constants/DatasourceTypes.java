@@ -4,6 +4,7 @@ public enum DatasourceTypes {
     excel("excel", "excel", "", "", "", "", ""),
     mysql("mysql", "mysql", "com.mysql.jdbc.Driver", "`", "`", "'", "'"),
     hive("hive", "hive", "org.apache.hive.jdbc.HiveDriver", "`", "`", "'", "'"),
+    impala("impala", "impala", "org.apache.hive.jdbc.HiveDriver", "`", "`", "'", "'"),
     mariadb("mariadb", "mariadb", "com.mysql.jdbc.Driver", "`", "`", "'", "'"),
     ds_doris("ds_doris", "ds_doris", "com.mysql.jdbc.Driver", "`", "`", "'", "'"),
     pg("pg", "pg", "org.postgresql.Driver", "\"", "\"", "\"", "\""),

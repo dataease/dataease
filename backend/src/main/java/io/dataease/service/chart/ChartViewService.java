@@ -13,8 +13,10 @@ import io.dataease.base.mapper.ext.ExtChartViewMapper;
 import io.dataease.commons.constants.ColumnPermissionConstants;
 import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.JdbcConstants;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.request.chart.*;
 import io.dataease.controller.request.datasource.DatasourceRequest;
@@ -27,6 +29,9 @@ import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.view.entity.*;
+import io.dataease.plugins.view.service.ViewPluginService;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.provider.QueryProvider;
@@ -59,6 +64,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ChartViewService {
+
+    private static Gson gson = new Gson();
+
     @Resource
     private ChartViewMapper chartViewMapper;
     @Resource
@@ -292,25 +300,6 @@ public class ChartViewService {
 
     }
 
-//    private void checkPermissions(List<? extends ChartViewFieldBaseDTO> chartViewFieldDTOS, List<DatasetTableField> fields, List<String> desensitizationList, Boolean alowDesensitization) throws Exception {
-//        String filedName = "";
-//        for (ChartViewFieldBaseDTO chartViewFieldDTO : chartViewFieldDTOS) {
-//            if (alowDesensitization) {
-//                if (!fields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()).contains(chartViewFieldDTO.getDataeaseName())) {
-//                    filedName = filedName + chartViewFieldDTO.getName() + " ,";
-//                }
-//            } else {
-//                if (desensitizationList.contains(chartViewFieldDTO.getDataeaseName()) || !fields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()).contains(chartViewFieldDTO.getDataeaseName())) {
-//                    filedName = filedName + chartViewFieldDTO.getName() + " ,";
-//                }
-//            }
-//        }
-//        filedName = filedName.endsWith(",") ? filedName.substring(0, filedName.length() - 1) : filedName;
-//        if (StringUtils.isNotEmpty(filedName)) {
-//            throw new Exception("以下字段没有权限: " + filedName);
-//        }
-//    }
-
     public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest requestList, boolean cache) throws Exception {
         if (ObjectUtils.isEmpty(view)) {
             throw new RuntimeException(Translator.get("i18n_chart_delete"));
@@ -499,16 +488,41 @@ public class ChartViewService {
 
         // 判断连接方式，直连或者定时抽取 table.mode
         DatasourceRequest datasourceRequest = new DatasourceRequest();
+        Datasource ds = table.getMode() == 0 ? datasourceService.get(table.getDataSourceId()) : engineService.getDeEngine();
+        datasourceRequest.setDatasource(ds);
+        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         List<String[]> data = new ArrayList<>();
+
+
+        // 如果是插件视图 走插件内部的逻辑
+        if (view.getIsPlugin()) {
+            Map<String, List<ChartViewFieldDTO>> fieldMap = new HashMap<>();
+            fieldMap.put("xAxis",xAxis);
+            fieldMap.put("yAxis",yAxis);
+            fieldMap.put("extStack",extStack);
+            fieldMap.put("extBubble",extBubble);
+            PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view);
+            String sql = pluginViewSql(pluginViewParam, view);
+            datasourceRequest.setQuery(sql);
+            data = datasourceProvider.getData(datasourceRequest);
+
+            Map<String, Object> mapChart = pluginViewResult(pluginViewParam, view, data, isDrill);
+            Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
+
+            return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal,view, isDrill, drillFilters);
+            // 如果是插件到此结束
+        }
+
+        //如果不是插件视图 走原生逻辑
         if (table.getMode() == 0) {// 直连
-            Datasource ds = datasourceService.get(table.getDataSourceId());
+            // Datasource ds = datasourceService.get(table.getDataSourceId());
             if (ObjectUtils.isEmpty(ds)) {
                 throw new RuntimeException(Translator.get("i18n_datasource_delete"));
             }
             if (StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")) {
                 throw new Exception(Translator.get("i18n_invalid_ds"));
             }
-            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            // DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest.setDatasource(ds);
             DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
@@ -572,8 +586,8 @@ public class ChartViewService {
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
-            Datasource ds = engineService.getDeEngine();
-            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            // Datasource ds = engineService.getDeEngine();
+            // DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest.setDatasource(ds);
             String tableName = "ds_" + table.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
@@ -732,12 +746,16 @@ public class ChartViewService {
                 mapChart = ChartDataBuild.transChartDataAntV(xAxis, yAxis, view, data, isDrill);
             }
         }
-
         // table组件，明细表，也用于导出数据
         Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
+        return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal,view, isDrill, drillFilters);
+    }
 
-        map.putAll(mapChart);
-        map.putAll(mapTableNormal);
+    public ChartViewDTO uniteViewResult(String sql, Map<String, Object> chartData, Map<String, Object> tabelData, ChartViewDTO view, Boolean isDrill, List<ChartExtFilterRequest> drillFilters) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.putAll(chartData);
+        map.putAll(tabelData);
 
         List<DatasetTableField> sourceFields = dataSetTableFieldsService.getFieldsByTableId(view.getTableId());
         map.put("sourceFields", sourceFields);
@@ -745,11 +763,63 @@ public class ChartViewService {
         ChartViewDTO dto = new ChartViewDTO();
         BeanUtils.copyBean(dto, view);
         dto.setData(map);
-        dto.setSql(datasourceRequest.getQuery());
-
+        dto.setSql(sql);
         dto.setDrill(isDrill);
         dto.setDrillFilters(drillFilters);
         return dto;
+    }
+
+    private PluginViewParam buildPluginParam(Map<String, List<ChartViewFieldDTO>> fieldMap, List<ChartFieldCustomFilterDTO> customFilters, List<ChartExtFilterRequest> extFilters, Datasource ds, DatasetTable table, ChartViewDTO view) {
+        PluginViewParam pluginViewParam = new PluginViewParam();
+        PluginViewSet pluginViewSet = BeanUtils.copyBean(new PluginViewSet(), table);
+        pluginViewSet.setDsType(ds.getType());
+        PluginViewLimit pluginViewLimit = BeanUtils.copyBean(new PluginViewLimit(), view);
+
+        List<PluginChartFieldCustomFilter> fieldFilters = customFilters.stream().map(filter -> BeanUtils.copyBean(new PluginChartFieldCustomFilter(), filter)).collect(Collectors.toList());
+        List<PluginChartExtFilter> panelFilters = extFilters.stream().map(filter -> BeanUtils.copyBean(new PluginChartExtFilter(), filter)).collect(Collectors.toList());
+
+        List<PluginViewField> pluginViewFields = fieldMap.entrySet().stream().flatMap(entry -> entry.getValue().stream().map(field -> {
+            PluginViewField pluginViewField = BeanUtils.copyBean(new PluginViewField(), field);
+            pluginViewField.setTypeField(entry.getKey());
+            return pluginViewField;
+        })).collect(Collectors.toList());
+        pluginViewParam.setPluginViewSet(pluginViewSet);
+        pluginViewParam.setPluginViewFields(pluginViewFields);
+        pluginViewParam.setPluginChartFieldCustomFilters(fieldFilters);
+        pluginViewParam.setPluginChartExtFilters(panelFilters);
+        pluginViewParam.setPluginViewLimit(pluginViewLimit);
+        pluginViewParam.setUserId(AuthUtils.getUser().getUserId());
+        return pluginViewParam;
+    }
+
+    private ViewPluginService getPluginService(String viewType) {
+        Map<String, ViewPluginService> beanMap = SpringContextUtil.getApplicationContext().getBeansOfType(ViewPluginService.class);
+
+        if (beanMap.keySet().size() == 0) {
+            DEException.throwException("没有此插件");
+
+        }
+        ViewPluginService viewPluginService = null;
+        for (Map.Entry<String, ViewPluginService> entry : beanMap.entrySet()) {
+            if (StringUtils.equals(entry.getValue().viewType().getValue(), viewType)) {
+                viewPluginService = entry.getValue();
+                return viewPluginService;
+            }
+        }
+        if (null == viewPluginService) DEException.throwException("没有此插件");
+        return viewPluginService;
+    }
+
+    private String pluginViewSql(PluginViewParam param, ChartViewDTO view) {
+        ViewPluginService viewPluginService = getPluginService(view.getType());
+        String sql = viewPluginService.generateSQL(param);
+        return sql;
+    }
+
+    private Map<String, Object> pluginViewResult(PluginViewParam param, ChartViewDTO view, List<String[]> args, Boolean isDrill) {
+        ViewPluginService viewPluginService = getPluginService(view.getType());
+        Map<String, Object> result = viewPluginService.formatResult(param, args, isDrill);
+        return result;
     }
 
     private ChartViewDTO emptyChartViewDTO(ChartViewDTO view) {

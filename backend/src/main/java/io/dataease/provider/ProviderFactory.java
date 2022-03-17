@@ -54,6 +54,8 @@ public class ProviderFactory implements ApplicationContextAware {
                 return context.getBean("redshiftQuery", QueryProvider.class);
             case hive:
                 return context.getBean("hiveQuery", QueryProvider.class);
+            case impala:
+                return context.getBean("impalaQuery", QueryProvider.class);
             case db2:
                 return context.getBean("db2Query", QueryProvider.class);
             case api:

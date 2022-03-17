@@ -101,6 +101,7 @@ public class DataSetTableService {
     @Resource
     private EngineService engineService;
 
+    private static boolean isUpdatingDatasetTableStatus = false;
     private static final String lastUpdateTime = "${__last_update_time__}";
     private static final String currentUpdateTime = "${__current_update_time__}";
 
@@ -2182,15 +2183,30 @@ public class DataSetTableService {
     private UtilMapper utilMapper;
 
     public void updateDatasetTableStatus() {
+        if(this.isUpdatingDatasetTableStatus){
+            return;
+        }else {
+            this.isUpdatingDatasetTableStatus = true;
+        }
+
+        try {
+            doUpdate();
+        }catch (Exception e){}
+        finally {
+            this.isUpdatingDatasetTableStatus = false;
+        }
+    }
+
+    private void doUpdate(){
         List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(null);
         List<String> activeQrtzInstances = qrtzSchedulerStates.stream()
                 .filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime()
                         + qrtzSchedulerState.getCheckinInterval() + 1000 > utilMapper.currentTimestamp())
                 .map(QrtzSchedulerStateKey::getInstanceName).collect(Collectors.toList());
         List<DatasetTable> jobStoppeddDatasetTables = new ArrayList<>();
+
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andSyncStatusEqualTo(JobStatus.Underway.name());
-
         datasetTableMapper.selectByExample(example).forEach(datasetTable -> {
             if (StringUtils.isEmpty(datasetTable.getQrtzInstance()) || !activeQrtzInstances.contains(
                     datasetTable.getQrtzInstance().substring(0, datasetTable.getQrtzInstance().length() - 13))) {
@@ -2202,6 +2218,7 @@ public class DataSetTableService {
             return;
         }
 
+        //DatasetTable
         DatasetTable record = new DatasetTable();
         record.setSyncStatus(JobStatus.Error.name());
         example.clear();
@@ -2209,6 +2226,14 @@ public class DataSetTableService {
                 .andIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList()));
         datasetTableMapper.updateByExampleSelective(record, example);
 
+        //Task
+        DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
+        DatasetTableTaskExample.Criteria criteria = datasetTableTaskExample.createCriteria();
+        criteria.andTableIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList())).andStatusEqualTo(JobStatus.Underway.name());
+        List<DatasetTableTask> datasetTableTasks = dataSetTableTaskService.list(datasetTableTaskExample);
+        dataSetTableTaskService.updateTaskStatus(datasetTableTasks, JobStatus.Error);
+
+        //TaskLog
         DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
         datasetTableTaskLog.setStatus(JobStatus.Error.name());
         datasetTableTaskLog.setInfo("Job stopped due to system error.");
@@ -2216,11 +2241,7 @@ public class DataSetTableService {
         DatasetTableTaskLogExample datasetTableTaskLogExample = new DatasetTableTaskLogExample();
         datasetTableTaskLogExample.createCriteria().andStatusEqualTo(JobStatus.Underway.name())
                 .andTableIdIn(jobStoppeddDatasetTables.stream().map(DatasetTable::getId).collect(Collectors.toList()));
-        List<String> taskIds = datasetTableTaskLogMapper.selectByExample(datasetTableTaskLogExample).stream()
-                .map(DatasetTableTaskLog::getTaskId).collect(Collectors.toList());
         datasetTableTaskLogMapper.updateByExampleSelective(datasetTableTaskLog, datasetTableTaskLogExample);
-
-        dataSetTableTaskService.updateTaskStatus(taskIds, JobStatus.Error);
 
         for (DatasetTable jobStoppeddDatasetTable : jobStoppeddDatasetTables) {
             extractDataService.deleteFile("all_scope", jobStoppeddDatasetTable.getId());
@@ -2228,7 +2249,6 @@ public class DataSetTableService {
             extractDataService.deleteFile("incremental_delete", jobStoppeddDatasetTable.getId());
         }
     }
-
     /*
      * 判断数组中是否有重复的值
      */
