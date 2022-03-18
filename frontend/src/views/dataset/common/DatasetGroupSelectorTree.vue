@@ -80,6 +80,7 @@
 
 <script>
 import { queryAuthModel } from '@/api/authModel/authModel'
+import { post } from '@/api/dataset/dataset'
 export default {
   name: 'DatasetGroupSelectorTree',
   props: {
