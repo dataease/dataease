@@ -495,7 +495,7 @@ public class ChartViewService {
 
 
         // 如果是插件视图 走插件内部的逻辑
-        if (view.getIsPlugin()) {
+        if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
             Map<String, List<ChartViewFieldDTO>> fieldMap = new HashMap<>();
             fieldMap.put("xAxis",xAxis);
             fieldMap.put("yAxis",yAxis);
