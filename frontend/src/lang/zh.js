@@ -1390,6 +1390,14 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    enable_outer_param_set: '启用外部参数设置',
+    select_param: '请选择参数...',
+    add_param_link_field: '添加参数联动字段',
+    add_param: '添加参数',
+    enable_param: '启用参数',
+    param_name: '参数名称',
+    outer_param_set: '外部参数设置',
+    input_param_name: '请输入参数名称',
     params_setting: '外部参数设置',
     template_view_tips: '当前是模板视图,请点击更换数据集',
     no_auth_role: '未分享角色',

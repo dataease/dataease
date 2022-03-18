@@ -46,6 +46,8 @@ public class PanelOuterParamsService {
         String panelId = outerParamsDTO.getPanelId();
         Assert.notNull(panelId, "panelId cannot be null");
         //清理原有数据
+        extPanelOuterParamsMapper.deleteOuterParamsTargetWithPanelId(panelId);
+        extPanelOuterParamsMapper.deleteOuterParamsInfoWithPanelId(panelId);
         extPanelOuterParamsMapper.deleteOuterParamsWithPanelId(panelId);
         // 插入新的数据
         String paramsId = UUID.randomUUID().toString();

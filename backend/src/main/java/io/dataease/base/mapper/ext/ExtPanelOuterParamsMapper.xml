@@ -46,8 +46,8 @@
         panel_group.id = #{panelId}
   </select>
 
-    <delete id="deleteOuterParamsWithPanelId" >
-        DELETE poptvi,popi,pop
+    <delete id="deleteOuterParamsTargetWithPanelId" >
+        DELETE poptvi
         FROM
             panel_outer_params_target_view_info poptvi,
             panel_outer_params_info popi,
@@ -57,5 +57,25 @@
             AND popi.params_id = pop.params_id
             AND pop.panel_id = #{panelId}
 	</delete>
+
+    <delete id="deleteOuterParamsInfoWithPanelId" >
+        DELETE popi
+        FROM
+            panel_outer_params_info popi,
+            panel_outer_params pop
+        WHERE
+             popi.params_id = pop.params_id
+            AND pop.panel_id = #{panelId}
+	</delete>
+
+    <delete id="deleteOuterParamsWithPanelId" >
+        DELETE pop
+        FROM
+            panel_outer_params pop
+        WHERE
+            pop.panel_id = #{panelId}
+	</delete>
+
+
 
 </mapper>

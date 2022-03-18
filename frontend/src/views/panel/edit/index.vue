@@ -322,7 +322,7 @@
       :destroy-on-close="true"
       :append-to-body="true"
     >
-      <OuterParamsSet v-if="outerParamsSetVisible" @closeOuterParamsSetDialog="closeOuterParamsSetDialog" />
+      <OuterParamsSet v-if="outerParamsSetVisible" @outerParamsSetVisibleChange="outerParamsSetVisibleChange" />
     </el-dialog>
 
   </el-row>
@@ -612,7 +612,7 @@ export default {
     elx && elx.remove()
   },
   methods: {
-    closeOuterParamsSetDialog(){
+    closeOuterParamsSetDialog() {
       this.outerParamsSetVisible = false
     },
     changeRightDrawOpen(param) {

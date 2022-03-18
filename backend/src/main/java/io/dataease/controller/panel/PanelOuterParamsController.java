@@ -1,8 +1,6 @@
 package io.dataease.controller.panel;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.base.domain.PanelOuterParams;
-import io.dataease.dto.panel.linkJump.PanelLinkJumpDTO;
 import io.dataease.dto.panel.outerParams.PanelOuterParamsDTO;
 import io.dataease.service.panel.PanelOuterParamsService;
 import io.swagger.annotations.Api;
