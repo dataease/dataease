@@ -1,83 +1,61 @@
 <template>
   <el-row v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="height: 430px">
     <el-row>
-      <span style="font-weight:600;margin-right: 20px">{{ $t('panel.jump_set') }}</span>
-      <el-checkbox v-model="outerParams.checked">{{ $t('panel.enable_jump') }}</el-checkbox>
+      <span style="font-weight:600;margin-right: 20px">{{ $t('panel.outer_param_set') }}</span>
+      <el-checkbox v-model="outerParams.checked">{{ $t('panel.enable_outer_param_set') }}</el-checkbox>
     </el-row>
     <el-row v-loading="loading">
       <el-row class="preview">
-        <el-col :span="8" style="height:100%;overflow-y: auto">
+        <el-col :span="8" style="height:100%;overflow-y: hidden">
           <el-row class="tree-head">
-            <span style="float: left;margin-left: 30px">{{ $t('panel.column_name') }}</span>
-            <span style="float: right;margin-right: 10px">{{ $t('panel.enable_column') }}</span>
+            <span style="float: left;margin-left: 30px">{{ $t('panel.param_name') }}</span>
+            <span style="float: right;margin-right: 10px">{{ $t('panel.enable_param') }}</span>
           </el-row>
-          <el-tree
-            ref="outerParamsInfoTree"
-            :data="outerParamsInfoArray"
-            node-key="paramsInfoId"
-            highlight-current
-            :props="treeProp"
-            @node-click="nodeClick"
-          >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
-              <span>
-                <span style="margin-left: 6px"><el-input v-model="data.paramName" size="mini" :placeholder="$t('fu.search_bar.please_select')" /></span>
-              </span>
-              <span @click.stop>
-                <div>
-                  <span class="auth-span">
-                    <el-checkbox v-model="data.checked" style="margin-right: 10px" @change="sourceFieldCheckedChange(data)" />
-                    <el-button icon="el-icon-delete" type="text" size="small" @click="removeOuterParamsInfo(node,data)" />
-                  </span>
-                </div>
+          <el-row class="tree-content">
+            <el-tree
+              ref="outerParamsInfoTree"
+              :data="outerParamsInfoArray"
+              node-key="id"
+              highlight-current
+              :props="treeProp"
+              @node-click="nodeClick"
+            >
+              <span slot-scope="{ node, data }" class="custom-tree-node">
+                <span>
+                  <span style="margin-left: 6px"><el-input
+                    v-model="data.paramName"
+                    size="mini"
+                    :placeholder="$t('panel.input_param_name')"
+                  /></span>
+                </span>
+                <span @click.stop>
+                  <div>
+                    <span class="auth-span">
+                      <el-checkbox
+                        v-model="data.checked"
+                        style="margin-right: 10px"
+                        @change="sourceFieldCheckedChange(data)"
+                      />
+                      <el-button
+                        icon="el-icon-delete"
+                        type="text"
+                        size="small"
+                        @click="removeOuterParamsInfo(node,data)"
+                      />
+                    </span>
+                  </div>
 
+                </span>
               </span>
-            </span>
-          </el-tree>
-          <el-row class="bottom">
-            <el-button size="mini" type="success" icon="el-icon-plus" round @click="addOuterParamsInfo">添加参数</el-button>
+            </el-tree>
+          </el-row>
+          <el-row class="tree-bottom">
+            <el-button size="mini" type="success" icon="el-icon-plus" round @click="addOuterParamsInfo">{{ $t('panel.add_param') }}</el-button>
           </el-row>
         </el-col>
         <el-col :span="16" class="preview-show">
           <el-row v-if="outerParamsInfo">
-            <el-row style="margin-top: 10px;height: 30px;">
-              <el-col :span="4" style="margin-left: 20px">
-                {{ $t('panel.link_type') }}：
-              </el-col>
-              <el-col :span="10">
-                <el-radio-group v-model="outerParamsInfo.linkType" size="mini">
-                  <el-radio label="outer">{{ $t('panel.link_outer') }}</el-radio>
-                  <el-radio label="inner">{{ $t('panel.link_panel') }}</el-radio>
-                </el-radio-group>
-              </el-col>
-              <el-col v-if="outerParamsInfo.linkType==='inner'" :span="9">
-                <treeselect
-                  v-model="outerParamsInfo.targetPanelId"
-                  :options="panelList"
-                  :disable-branch-nodes="true"
-                  :normalizer="normalizer"
-                  :placeholder="$t('panel.select_jump_panel')"
-                  :no-children-text="$t('commons.treeselect.no_children_text')"
-                  :no-options-text="$t('commons.treeselect.no_options_text')"
-                  :no-results-text="$t('commons.treeselect.no_results_text')"
-                  style="margin-right: 10px"
-                  @select="panelNodeClick"
-                  @input="inputVal"
-                />
-              </el-col>
-            </el-row>
-            <el-row style="margin-top: 10px;height: 30px">
-              <el-col :span="4" style="margin-left: 20px">
-                {{ $t('panel.open_model') }}：
-              </el-col>
-              <el-col :span="10">
-                <el-radio-group v-model="outerParamsInfo.jumpType" size="mini">
-                  <el-radio label="_self">{{ $t('panel.now_window') }}</el-radio>
-                  <el-radio label="_blank">{{ $t('panel.new_window') }}</el-radio>
-                </el-radio-group>
-              </el-col>
-            </el-row>
-            <el-row v-if="outerParamsInfo.linkType==='inner'" style="margin-top: 5px;" class="top_border">
+            <el-row class="top_border">
               <el-row style="margin-top: 10px">
                 <el-col :span="11">
                   <div class="ellip">{{ $t('panel.link_view') }}</div>
@@ -86,11 +64,17 @@
                   <div class="ellip">{{ $t('panel.link_view_field') }}</div>
                 </el-col>
               </el-row>
-              <el-row style="height: 180px;overflow-y: auto">
+              <el-row style="height: 266px;overflow-y: auto">
                 <el-row v-for="(targetViewInfo,index) in outerParamsInfo.targetViewInfoList" :key="index">
                   <el-col :span="11">
                     <div class="select-filed">
-                      <el-select v-model="targetViewInfo.targetViewId" style="width: 100%" size="mini" :placeholder="$t('fu.search_bar.please_select')" @change="viewInfoOnChange(targetViewInfo)">
+                      <el-select
+                        v-model="targetViewInfo.targetViewId"
+                        style="width: 100%"
+                        size="mini"
+                        :placeholder="$t('fu.search_bar.please_select')"
+                        @change="viewInfoOnChange(targetViewInfo)"
+                      >
                         <el-option
                           v-for="item in currentLinkPanelViewArray"
                           :key="item.id"
@@ -107,7 +91,12 @@
                   </el-col>
                   <el-col :span="11">
                     <div class="select-filed">
-                      <el-select v-model="targetViewInfo.targetFieldId" style="width: 100%" size="mini" :placeholder="$t('fu.search_bar.please_select')">
+                      <el-select
+                        v-model="targetViewInfo.targetFieldId"
+                        style="width: 100%"
+                        size="mini"
+                        :placeholder="$t('fu.search_bar.please_select')"
+                      >
                         <el-option
                           v-for="viewField in viewIdFieldArrayMap[targetViewInfo.targetViewId]"
                           :key="viewField.id"
@@ -117,8 +106,16 @@
                           <span style="float: left">
                             <svg-icon v-if="viewField.deType === 0" icon-class="field_text" class="field-icon-text" />
                             <svg-icon v-if="viewField.deType === 1" icon-class="field_time" class="field-icon-time" />
-                            <svg-icon v-if="viewField.deType === 2 || viewField.value === 3" icon-class="field_value" class="field-icon-value" />
-                            <svg-icon v-if="viewField.deType === 5" icon-class="field_location" class="field-icon-location" />
+                            <svg-icon
+                              v-if="viewField.deType === 2 || viewField.value === 3"
+                              icon-class="field_value"
+                              class="field-icon-value"
+                            />
+                            <svg-icon
+                              v-if="viewField.deType === 5"
+                              icon-class="field_location"
+                              class="field-icon-location"
+                            />
                           </span>
                           <span style="float: left;font-size: 12px">{{ viewField.name }}</span>
                         </el-option>
@@ -127,14 +124,22 @@
                   </el-col>
                   <el-col :span="2">
                     <div>
-                      <el-button icon="el-icon-delete" type="text" size="small" style="float: left" @click="deleteOuterParamsField(index)" />
+                      <el-button
+                        icon="el-icon-delete"
+                        type="text"
+                        size="small"
+                        style="float: left"
+                        @click="deleteOuterParamsField(index)"
+                      />
                     </div>
                   </el-col>
                 </el-row>
               </el-row>
 
               <el-row class="bottom">
-                <el-button size="mini" type="success" icon="el-icon-plus" round @click="addOuterParamsField">{{ $t('panel.add_jump_field') }}</el-button>
+                <el-button size="mini" type="success" icon="el-icon-plus" round @click="addOuterParamsField">{{
+                  $t('panel.add_param_link_field') }}
+                </el-button>
               </el-row>
 
               <!--    <el-button slot="reference">T</el-button>-->
@@ -150,7 +155,7 @@
             </el-row>
           </el-row>
           <el-row v-else style="height: 100%; background-color: var(--MainContentBG);" class="custom-position">
-            {{ $t('panel.select_dimension') }}
+            {{ $t('panel.select_param') }}
           </el-row>
         </el-col>
       </el-row>
@@ -167,10 +172,11 @@ import { detailList } from '@/api/panel/panelView'
 import { mapState } from 'vuex'
 import { queryWithPanelId, updateOuterParamsSet } from '@/api/panel/outerParams'
 import { uuid } from 'vue-uuid'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'OuterParamsSet',
-  components: { },
+  components: {},
   data() {
     return {
       loading: false,
@@ -196,7 +202,7 @@ export default {
       outerParamsInfo: null,
       currentFiledTreeNode: null,
       defaultOuterParamsInfo: {
-        paramName: '测试',
+        paramName: '',
         checked: false,
         targetViewInfoList: []
       },
@@ -218,9 +224,7 @@ export default {
       'canvasStyleData'
     ])
   },
-  watch: {
-
-  },
+  watch: {},
   created() {
   },
   mounted() {
@@ -247,6 +251,8 @@ export default {
           })
         }
       })
+
+      this.getPanelViewList(this.panelInfo.id)
     },
     handleExceed(file) {
     },
@@ -260,22 +266,11 @@ export default {
           type: 'success',
           showClose: true
         })
+        this.cancel()
       })
     },
     nodeClick(data, node) {
       this.outerParamsInfo = this.mapOuterParamsInfoArray[data.paramsInfoId]
-      if (!this.outerParamsInfo.linkType) {
-        this.outerParamsInfo.linkType = 'inner'
-      }
-      if (!this.outerParamsInfo.jumpType) {
-        this.outerParamsInfo.jumpType = '_blank'
-      }
-      if (!this.outerParamsInfo.content) {
-        this.outerParamsInfo.content = 'http://'
-      }
-      if (this.outerParamsInfo.targetPanelId) {
-        this.getPanelViewList(this.outerParamsInfo.targetPanelId)
-      }
     },
     // 获取当前视图字段 关联仪表板的视图信息列表
     getPanelViewList(panelId) {
@@ -326,14 +321,10 @@ export default {
       })
     },
     addOuterParamsInfo() {
-      this.outerParamsInfoArray.push(
-        {
-          paramsInfoId: uuid.v1,
-          paramName: '',
-          checked: false,
-          targetViewInfoList: []
-        }
-      )
+      const outerParamsInfo = deepCopy(this.defaultOuterParamsInfo)
+      outerParamsInfo['paramsInfoId'] = uuid.v1()
+      this.outerParamsInfoArray.push(outerParamsInfo)
+      this.mapOuterParamsInfoArray[outerParamsInfo.paramsInfoId] = outerParamsInfo
     },
     removeOuterParamsInfo(node, data) {
       const parent = node.parent
@@ -347,133 +338,153 @@ export default {
 
 <style scoped>
 
-.my_table >>> .el-table__row>td{
-  /* 去除表格线 */
-  border: none;
-  padding: 0 0;
-}
-.my_table >>> .el-table th.is-leaf {
-  /* 去除上边框 */
+  .my_table >>> .el-table__row > td {
+    /* 去除表格线 */
     border: none;
-}
-.my_table >>> .el-table::before{
-  /* 去除下边框 */
-  height: 0;
-}
+    padding: 0 0;
+  }
+
+  .my_table >>> .el-table th.is-leaf {
+    /* 去除上边框 */
+    border: none;
+  }
+
+  .my_table >>> .el-table::before {
+    /* 去除下边框 */
+    height: 0;
+  }
 
   .root-class {
     margin: 15px 0px 5px;
     text-align: center;
   }
+
   .preview {
     margin-top: 5px;
-    border:1px solid #E6E6E6;
-    height:350px !important;
-    overflow:hidden;
+    border: 1px solid #E6E6E6;
+    height: 350px !important;
+    overflow: hidden;
     background-size: 100% 100% !important;
   }
+
   .preview-show {
-    border-left:1px solid #E6E6E6;
-    height:350px;
+    border-left: 1px solid #E6E6E6;
+    height: 350px;
     background-size: 100% 100% !important;
   }
-.top_border {
-  border-top:1px solid #E6E6E6;
-}
 
-.slot-class{
-  color: white;
-}
-
-.bottom {
-  margin-top: 20px;
-  text-align: center;
-
-}
-.ellip{
-  /*width: 100%;*/
-  margin-left: 10px;
-  margin-right: 10px;
-  overflow: hidden;/*超出部分隐藏*/
-  white-space: nowrap;/*不换行*/
-  text-overflow:ellipsis;/*超出部分文字以...显示*/
-  text-align: center;
-  background-color: #f7f8fa;
-  color: #3d4d66;
-  font-size: 12px;
-  line-height: 24px;
-  height: 24px;
-  border-radius: 3px;
-}
-
-.select-filed{
-  /*width: 100%;*/
-  margin-left: 10px;
-  margin-right: 10px;
-  overflow: hidden;/*超出部分隐藏*/
-  white-space: nowrap;/*不换行*/
-  text-overflow:ellipsis;/*超出部分文字以...显示*/
-  color: #3d4d66;
-  font-size: 12px;
-  line-height: 35px;
-  height: 35px;
-  border-radius: 3px;
-}
->>>.el-popover{
-  height: 200px;
-  overflow: auto;
-}
-.custom-position {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-  flex-flow: row nowrap;
-  color: #9ea6b2;
-}
-.tree-style {
-  padding: 10px 15px;
-  height: 100%;
-  overflow-y: auto;
-}
-/deep/ .vue-treeselect__control{
-  height: 28px;
-}
-/deep/ .vue-treeselect__single-value{
-  color:#606266;
-  line-height: 28px!important;
-}
-
-.custom-tree-node {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-}
-.auth-span{
-  float: right;
-  width:40px;
-  margin-right: 5px
-}
-.tree-head{
-  height: 30px;
-  line-height: 30px;
-  border-bottom: 1px solid var(--TableBorderColor, #e6e6e6);
-  background-color: var(--SiderBG, #f7f8fa);
-  font-size: 12px;
-  color: var(--TableColor, #3d4d66) ;
-}
-/deep/ .vue-treeselect__placeholder{
-    line-height:28px
+  .slot-class {
+    color: white;
   }
 
-/deep/ .el-tree--highlight-current .el-tree-node.is-current >.el-tree-node__content {
-  background-color: #8dbbef !important;
-}
-/deep/ .el-input__inner{
-  background: transparent;
-  border:0px!important;
-}
+  .bottom {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .ellip {
+    /*width: 100%;*/
+    margin-left: 10px;
+    margin-right: 10px;
+    overflow: hidden; /*超出部分隐藏*/
+    white-space: nowrap; /*不换行*/
+    text-overflow: ellipsis; /*超出部分文字以...显示*/
+    text-align: center;
+    background-color: #f7f8fa;
+    color: #3d4d66;
+    font-size: 12px;
+    line-height: 24px;
+    height: 24px;
+    border-radius: 3px;
+  }
+
+  .select-filed {
+    /*width: 100%;*/
+    margin-left: 10px;
+    margin-right: 10px;
+    overflow: hidden; /*超出部分隐藏*/
+    white-space: nowrap; /*不换行*/
+    text-overflow: ellipsis; /*超出部分文字以...显示*/
+    color: #3d4d66;
+    font-size: 12px;
+    line-height: 35px;
+    height: 35px;
+    border-radius: 3px;
+  }
+
+  >>> .el-popover {
+    height: 200px;
+    overflow: auto;
+  }
+
+  .custom-position {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    flex-flow: row nowrap;
+    color: #9ea6b2;
+  }
+
+  .tree-style {
+    padding: 10px 15px;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  /deep/ .vue-treeselect__control {
+    height: 28px;
+  }
+
+  /deep/ .vue-treeselect__single-value {
+    color: #606266;
+    line-height: 28px !important;
+  }
+
+  .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+  }
+
+  .auth-span {
+    float: right;
+    width: 40px;
+    margin-right: 5px
+  }
+
+  .tree-head {
+    height: 30px;
+    line-height: 30px;
+    border-bottom: 1px solid var(--TableBorderColor, #e6e6e6);
+    background-color: var(--SiderBG, #f7f8fa);
+    font-size: 12px;
+    color: var(--TableColor, #3d4d66);
+  }
+
+  .tree-content {
+    height: calc(100% - 70px);
+    overflow-y: auto;
+  }
+
+  .tree-bottom {
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  /deep/ .vue-treeselect__placeholder {
+    line-height: 28px
+  }
+
+  /deep/ .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+    background-color: #8dbbef !important;
+  }
+
+  .tree-content ::v-deep .el-input__inner {
+    background: transparent;
+    border: 0px !important;
+  }
 </style>

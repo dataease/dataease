@@ -1381,6 +1381,14 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    enable_outer_param_set: 'Enable Outer Param Set',
+    select_param: 'Please Select Param...',
+    add_param_link_field: "Add Params' Linked Field",
+    add_param: 'Add Param',
+    enable_param: 'Enable Param',
+    param_name: 'Param Name',
+    outer_param_set: 'Outer Param Set',
+    input_param_name: "Please Input Param's Name",
     params_setting: 'Outer Params Setting',
     template_view_tips: "Template's Views. Please Change",
     no_auth_role: 'Unshared roles',
