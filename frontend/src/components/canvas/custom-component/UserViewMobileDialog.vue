@@ -1,9 +1,11 @@
 <template>
   <de-container>
-    <de-main-container v-if="!chart.type.includes('table')" :style="customStyle" class="full-div">
-      <chart-component v-if="!chart.type.includes('text') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
-      <chart-component-g2 v-if="!chart.type.includes('text') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
-      <label-normal v-if="chart.type.includes('text')" :chart="chart" class="table-class" />
+    <de-main-container v-if="chart.type !== 'table-normal' && chart.type !== 'table-info'" :style="customStyle" class="full-div">
+      <chart-component v-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
+      <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
+      <chart-component-s2 v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
+      <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
+      <label-normal-text v-else-if="chart.type === 'label'" :chart="chart" class="table-class" />
     </de-main-container>
     <de-main-container v-else>
       <table-normal :chart="chartTable" :show-summary="false" class="table-class" />
@@ -20,10 +22,12 @@ import { mapState } from 'vuex'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
+import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
+import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 
 export default {
   name: 'UserViewMobileDialog',
-  components: { DeContainer, DeMainContainer, ChartComponentG2, ChartComponent, TableNormal, LabelNormal },
+  components: { ChartComponentS2, LabelNormalText, DeContainer, DeMainContainer, ChartComponentG2, ChartComponent, TableNormal, LabelNormal },
   props: {
     chart: {
       type: Object,
