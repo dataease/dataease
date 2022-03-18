@@ -2882,11 +2882,15 @@ span {
 }
 
 ::v-deep .el-slider__input {
-  width: 100px !important;
+  width: 80px !important;
 }
 
 ::v-deep .el-input-number--mini {
   width: 100px !important;
+}
+
+::v-deep .el-slider__runway.show-input{
+  width: 80px!important;
 }
 
 .no-senior {
