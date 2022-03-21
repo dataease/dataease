@@ -1635,6 +1635,7 @@ export default {
           ele.filter = []
         }
       })
+      this.chart = JSON.parse(JSON.stringify(view))
       this.view = JSON.parse(JSON.stringify(view))
       // stringify json param
       view.xaxis = JSON.stringify(view.xaxis)
