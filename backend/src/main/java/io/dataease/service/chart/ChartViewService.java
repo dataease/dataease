@@ -775,8 +775,11 @@ public class ChartViewService {
         pluginViewSet.setDsType(ds.getType());
         PluginViewLimit pluginViewLimit = BeanUtils.copyBean(new PluginViewLimit(), view);
 
-        List<PluginChartFieldCustomFilter> fieldFilters = customFilters.stream().map(filter -> BeanUtils.copyBean(new PluginChartFieldCustomFilter(), filter)).collect(Collectors.toList());
-        List<PluginChartExtFilter> panelFilters = extFilters.stream().map(filter -> BeanUtils.copyBean(new PluginChartExtFilter(), filter)).collect(Collectors.toList());
+
+
+
+        List<PluginChartFieldCustomFilter> fieldFilters = customFilters.stream().map(filter -> gson.fromJson(gson.toJson(filter), PluginChartFieldCustomFilter.class)).collect(Collectors.toList());
+        List<PluginChartExtFilter> panelFilters = extFilters.stream().map(filter -> gson.fromJson(gson.toJson(filter), PluginChartExtFilter.class)).collect(Collectors.toList());
 
         List<PluginViewField> pluginViewFields = fieldMap.entrySet().stream().flatMap(entry -> entry.getValue().stream().map(field -> {
             PluginViewField pluginViewField = BeanUtils.copyBean(new PluginViewField(), field);
