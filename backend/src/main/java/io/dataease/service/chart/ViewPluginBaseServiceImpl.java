@@ -16,7 +16,6 @@ import io.dataease.plugins.view.entity.*;
 import io.dataease.plugins.view.service.ViewPluginBaseService;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.QueryProvider;
-import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.dataset.DataSetTableUnionService;
 import org.apache.commons.lang3.ObjectUtils;
