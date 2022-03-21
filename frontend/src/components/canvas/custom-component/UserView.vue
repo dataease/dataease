@@ -585,7 +585,7 @@ export default {
         const current = this.$refs[this.element.propValue.id]
 
         if (this.chart.isPlugin) {
-          current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
+          current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
         } else {
           current && current.registerDynamicMap && current.registerDynamicMap(null)
         }
@@ -615,7 +615,7 @@ export default {
       this.currentAcreaNode = tempNode
       const current = this.$refs[this.element.propValue.id]
       if (this.chart.isPlugin) {
-        current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: this.currentAcreaNode.code })
+        current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: this.currentAcreaNode.code })
       } else {
         current && current.registerDynamicMap && current.registerDynamicMap(this.currentAcreaNode.code)
       }
@@ -636,7 +636,7 @@ export default {
         this.currentAcreaNode = nextNode
         const current = this.$refs[this.element.propValue.id]
         if (this.chart.isPlugin) {
-          nextNode && current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: nextNode.code })
+          nextNode && current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: nextNode.code })
         } else {
           nextNode && current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
         }
@@ -670,7 +670,7 @@ export default {
       const current = this.$refs[this.element.propValue.id]
 
       if (this.chart.isPlugin) {
-        current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: areaNode.code })
+        current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: areaNode.code })
       } else {
         current && current.registerDynamicMap && current.registerDynamicMap(areaNode.code)
       }

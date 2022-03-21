@@ -1394,11 +1394,13 @@ export default {
       this.fieldFilter(val)
     },
     'chartType': function(newVal, oldVal) {
-      this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal)
       if ((newVal === 'map' || newVal === 'buddle-map') && newVal !== oldVal) {
         this.initAreas()
       }
       this.$emit('typeChange', newVal)
+    },
+    'view.type': function(newVal, oldVal) {
+      this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal)
     }
   },
   created() {
@@ -2383,7 +2385,7 @@ export default {
         this.currentAcreaNode = null
         const current = this.$refs.dynamicChart
         if (this.view.isPlugin) {
-          current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
+          current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
         } else {
           current && current.registerDynamicMap && current.registerDynamicMap(null)
         }
@@ -2416,7 +2418,7 @@ export default {
       // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(this.currentAcreaNode.code)
       const current = this.$refs.dynamicChart
       if (this.view.isPlugin) {
-        current && current.callPluginInner({
+        current && current.callPluginInner && current.callPluginInner({
           methodName: 'registerDynamicMap',
           methodParam: this.currentAcreaNode.code
         })
@@ -2443,7 +2445,7 @@ export default {
         // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(nextNode.code)
         const current = this.$refs.dynamicChart
         if (this.view.isPlugin) {
-          nextNode && current && current.callPluginInner({
+          nextNode && current && current.callPluginInner && current.callPluginInner({
             methodName: 'registerDynamicMap',
             methodParam: nextNode.code
           })
