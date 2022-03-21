@@ -1888,7 +1888,8 @@ export default {
     cmonth: 'This Month',
     cquarter: 'This Quarter',
     cyear: 'This Year',
-    openHomePage: 'Show Home Page'
+    openHomePage: 'Show Home Page',
+    mobileBG: 'Mobile BG'
   },
   dynamic_year: {
     fix: 'Fixed Year',

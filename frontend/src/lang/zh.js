@@ -1650,7 +1650,8 @@ export default {
     themeLight: '浅色',
     themeDark: '深色',
     themeCustom: '自定义',
-    openHomePage: '显示首页'
+    openHomePage: '显示首页',
+    mobileBG: '移动端背景'
 
   },
   auth: {

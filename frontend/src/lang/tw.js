@@ -1641,7 +1641,9 @@ export default {
     themeLight: '淺色',
     themeDark: '深色',
     themeCustom: '自定義',
-    openHomePage: '顯示首頁'
+    openHomePage: '顯示首頁',
+
+    mobileBG: '移動端背景'
 
   },
   auth: {
