@@ -89,7 +89,7 @@ export default {
       const chart = JSON.parse(JSON.stringify(this.chart))
       if (chart.xaxisExt) {
         let arr = null
-        if (Object.prototype.toString.call(chart.xaxisExt) === '[object Object]') {
+        if (Object.prototype.toString.call(chart.xaxisExt) === '[object Array]') {
           arr = JSON.parse(JSON.stringify(chart.xaxisExt))
         } else {
           arr = JSON.parse(chart.xaxisExt)
@@ -102,7 +102,7 @@ export default {
       const chart = JSON.parse(JSON.stringify(this.chart))
       if (chart.xaxis) {
         let arr = null
-        if (Object.prototype.toString.call(chart.xaxis) === '[object Object]') {
+        if (Object.prototype.toString.call(chart.xaxis) === '[object Array]') {
           arr = JSON.parse(JSON.stringify(chart.xaxis))
         } else {
           arr = JSON.parse(chart.xaxis)
