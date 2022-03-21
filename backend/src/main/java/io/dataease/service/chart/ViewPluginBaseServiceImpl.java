@@ -32,6 +32,7 @@ import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREF
 @Service
 public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
 
+    private static Gson gson = new Gson();
 
     @Resource
     private DataSetTableUnionService dataSetTableUnionService;
@@ -67,7 +68,7 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         QueryProvider queryProvider = ProviderFactory.getQueryProvider(dsType);
         String methodName = "transCustomFilterList";
         SQLObj sqlObj = BeanUtils.copyBean(SQLObj.builder().build(), pluginViewSQL);
-        List<ChartFieldCustomFilterDTO> filters = list.stream().map(item -> BeanUtils.copyBean(new ChartFieldCustomFilterDTO(), item)).collect(Collectors.toList());
+        List<ChartFieldCustomFilterDTO> filters = list.stream().map(item -> gson.fromJson(gson.toJson(item), ChartFieldCustomFilterDTO.class)).collect(Collectors.toList());
         Object o ;
         if ((o = execProviderMethod(queryProvider, methodName, sqlObj, filters)) != null) {
             return (String)o;
@@ -80,7 +81,7 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         QueryProvider queryProvider = ProviderFactory.getQueryProvider(dsType);
         String methodName = "transExtFilterList";
         SQLObj sqlObj = BeanUtils.copyBean(SQLObj.builder().build(), pluginViewSQL);
-        List<ChartExtFilterRequest> filters = list.stream().map(item -> BeanUtils.copyBean(new ChartExtFilterRequest(), item)).collect(Collectors.toList());
+        List<ChartExtFilterRequest> filters = list.stream().map(item -> gson.fromJson(gson.toJson(item), ChartExtFilterRequest.class)).collect(Collectors.toList());
         Object o;
         if ((o = execProviderMethod(queryProvider, methodName, sqlObj, filters)) != null) {
             return (String)o;
