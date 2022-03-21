@@ -1,5 +1,9 @@
 <template>
-	<view class="content">
+	<view 
+		v-if="axiosFinished" 
+		:class="mobileBG ? 'content-de' : 'content'"
+		:style="mobileBG ? {background:'url(' + mobileBG + ') no-repeat', 'backgroundSize':'cover'} : ''"
+		>
 		
 		<view class="input-group" >
             <view class="input-row">
@@ -28,7 +32,7 @@
 		mapMutations
 	} from 'vuex'
 	import mInput from '../../components/m-input.vue'
-    import {login, getInfo, getPublicKey } from '@/api/auth'
+    import {login, getInfo, getPublicKey, getUIinfo } from '@/api/auth'
     import {encrypt, setLocalPK, getLocalPK, setToken, getToken, setUserInfo, getUserInfo } from '@/common/utils'
 
 	export default {
@@ -39,19 +43,25 @@
 			return {
 				username: '',
                 loginBtnLoading: false,
-				password: ''
+				password: '',
+				mobileBG: null,
+				axiosFinished: false
 				
 			}
 		},
 		computed: mapState(['forcedLogin', 'hasLogin', 'univerifyErrorMsg', 'hideUniverify']),
 		onLoad() {
-            
+			uni.showLoading({
+				title: this.$t('commons.loading')
+			});
+            this.loadUiInfo()
             this.loadPublicKey()
             if(getToken() && getUserInfo()) {
                 this.toMain()
             }
             
 		},
+		
 		methods: {
 			...mapMutations(['login']),
 			
@@ -104,6 +114,25 @@
                     });
                 })
 				
+			},
+			
+			loadUiInfo() {
+				getUIinfo().then(res => {
+					
+				    
+				    const list = res.data
+				    list.forEach(item => {
+				    	if(item.paramKey === 'ui.mobileBG' && item.paramValue) {
+				    		this.mobileBG = '/system/ui/image/' + item.paramValue
+				    		return false
+				    	}
+				    })
+					setTimeout(() => {
+						uni.hideLoading()
+						this.axiosFinished = true
+					}, 1500)
+					
+				})     
 			},
 
             loadPublicKey() {
@@ -186,6 +215,18 @@
         background-repeat: no-repeat;
         background-size: 100% 100%;
         opacity: 0.75;
+	}
+	
+	.content-de {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		background-color: #000000;
+		padding: 10px;
+	    justify-content: center;
+	    background-repeat: no-repeat;
+	    background-size: 100% 100%;
+	    opacity: 0.75;
 	}
 
 	.input-group {
