@@ -41,7 +41,10 @@ public class SystemParameterService {
 
     public BasicInfo basicInfo() {
         List<SystemParameter> paramList = this.getParamList("basic");
+        List<SystemParameter> homePageList = this.getParamList("ui.openHomePage");
+        paramList.addAll(homePageList);
         BasicInfo result = new BasicInfo();
+        result.setOpenHomePage("true");
         if (!CollectionUtils.isEmpty(paramList)) {
             for (SystemParameter param : paramList) {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.FRONT_TIME_OUT.getValue())) {
@@ -49,6 +52,10 @@ public class SystemParameterService {
                 }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.MSG_TIME_OUT.getValue())) {
                     result.setMsgTimeOut(param.getParamValue());
+                }
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.OPEN_HOME_PAGE.getValue())) {
+                    boolean open = StringUtils.equals("true", param.getParamValue());
+                    result.setOpenHomePage(open ? "true" : "false");
                 }
             }
         }
@@ -137,12 +144,13 @@ public class SystemParameterService {
         return dtoList;
     }
 
-    public void saveUIInfo(Map<String, List<SystemParameterDTO>> request, List<MultipartFile> bodyFiles) throws IOException {
+    public void saveUIInfo(Map<String, List<SystemParameterDTO>> request, List<MultipartFile> bodyFiles)
+            throws IOException {
         List<SystemParameterDTO> parameters = request.get("systemParams");
         if (null != bodyFiles)
             for (MultipartFile multipartFile : bodyFiles) {
                 if (!multipartFile.isEmpty()) {
-                    //防止添加非图片文件
+                    // 防止添加非图片文件
                     try (InputStream input = multipartFile.getInputStream()) {
                         try {
                             // It's an image (only BMP, GIF, JPG and PNG are recognized).
@@ -154,10 +162,12 @@ public class SystemParameterService {
                     }
                     String multipartFileName = multipartFile.getOriginalFilename();
                     String[] split = Objects.requireNonNull(multipartFileName).split(",");
-                    parameters.stream().filter(systemParameterDTO -> systemParameterDTO.getParamKey().equalsIgnoreCase(split[1])).forEach(systemParameterDTO -> {
-                        systemParameterDTO.setFileName(split[0]);
-                        systemParameterDTO.setFile(multipartFile);
-                    });
+                    parameters.stream()
+                            .filter(systemParameterDTO -> systemParameterDTO.getParamKey().equalsIgnoreCase(split[1]))
+                            .forEach(systemParameterDTO -> {
+                                systemParameterDTO.setFileName(split[0]);
+                                systemParameterDTO.setFile(multipartFile);
+                            });
                 }
             }
         for (SystemParameterDTO systemParameter : parameters) {
@@ -168,7 +178,8 @@ public class SystemParameterService {
                 }
                 if (file != null) {
                     fileService.deleteFileById(systemParameter.getParamValue());
-                    FileMetadata fileMetadata = fileService.saveFile(systemParameter.getFile(), systemParameter.getFileName());
+                    FileMetadata fileMetadata = fileService.saveFile(systemParameter.getFile(),
+                            systemParameter.getFileName());
                     systemParameter.setParamValue(fileMetadata.getId());
                 }
                 if (file == null && systemParameter.getFileName() == null) {
@@ -180,6 +191,5 @@ public class SystemParameterService {
         }
 
     }
-
 
 }

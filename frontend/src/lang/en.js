@@ -1632,7 +1632,8 @@ export default {
     themeLight: 'Light',
     themeDark: 'Dark',
     themeCustom: 'Custom',
-    openHomePage: 'Show Home Page'
+    openHomePage: 'Show Home Page',
+    mobileBG: 'Mobile Login page BG'
 
   },
   auth: {
@@ -1888,8 +1889,7 @@ export default {
     cmonth: 'This Month',
     cquarter: 'This Quarter',
     cyear: 'This Year',
-    openHomePage: 'Show Home Page',
-    mobileBG: 'Mobile BG'
+    openHomePage: 'Show Home Page'
   },
   dynamic_year: {
     fix: 'Fixed Year',

@@ -1,6 +1,5 @@
 package io.dataease.commons.constants;
 
-
 public interface ParamConstants {
 
     String getValue();
@@ -50,7 +49,6 @@ public interface ParamConstants {
         }
     }
 
-
     enum Registry implements ParamConstants {
         URL("registry.url"),
         REPO("registry.repo"),
@@ -89,7 +87,7 @@ public interface ParamConstants {
         }
     }
 
-    enum MAIL implements ParamConstants{
+    enum MAIL implements ParamConstants {
         SERVER("smtp.host"),
         PORT("smtp.port"),
         ACCOUNT("smtp.account"),
@@ -111,11 +109,15 @@ public interface ParamConstants {
 
     enum BASIC implements ParamConstants {
         FRONT_TIME_OUT("basic.frontTimeOut"),
-        MSG_TIME_OUT("basic.msgTimeOut");
+        MSG_TIME_OUT("basic.msgTimeOut"),
+        OPEN_HOME_PAGE("ui.openHomePage");
+
         private String value;
+
         public String getValue() {
             return this.value;
         }
+
         private BASIC(String value) {
             this.value = value;
         }
