@@ -1643,7 +1643,7 @@ export default {
     themeCustom: '自定義',
     openHomePage: '顯示首頁',
 
-    mobileBG: '移動端背景'
+    mobileBG: '移動端登錄頁背景'
 
   },
   auth: {
