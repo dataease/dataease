@@ -31,7 +31,16 @@
         </el-col>
       </el-row>
 
+      <el-row>
+        <el-col>
+          <el-form-item :label="$t('display.openHomePage')">
+            <el-checkbox v-model="formInline.openHomePage" true-label="true" false-label="false" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
     </el-form>
+
     <div>
 
       <el-button v-if="showEdit" size="small" @click="edit">{{ $t('commons.edit') }}</el-button>
@@ -103,7 +112,8 @@ export default {
     save(formInline) {
       const param = [
         { paramKey: 'basic.frontTimeOut', paramValue: this.formInline.frontTimeOut, type: 'text', sort: 1 },
-        { paramKey: 'basic.msgTimeOut', paramValue: this.formInline.msgTimeOut, type: 'text', sort: 2 }
+        { paramKey: 'basic.msgTimeOut', paramValue: this.formInline.msgTimeOut, type: 'text', sort: 2 },
+        { paramKey: 'ui.openHomePage', paramValue: this.formInline.openHomePage, type: 'text', sort: 13 }
 
       ]
 
