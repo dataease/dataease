@@ -133,7 +133,7 @@
 		methods: {
 			
             addRecent() {
-                const item = {id: this.banner.id, title: this.banner.title, index: this.banner.index}
+                const item = {id: this.banner.id, title: this.banner.title, index: this.banner.index, userId: this.banner.userId}
                 addRecent(item)
             },
             enshrine() {
@@ -167,9 +167,11 @@
                 })
             },
             loadLinkUrl() {
-				
-				
-                this.url = process.env.VUE_APP_BASE_API + 'tempMobileLink/' + this.banner.id + "/" + getToken()
+				this.url = process.env.VUE_APP_BASE_API + 'tempMobileLink/' + this.banner.id + "/" + getToken()
+				if (this.banner.index && this.banner.index === 2 && this.banner.userId) {
+                    this.url = process.env.VUE_APP_BASE_API + 'tempMobileLink/' + this.banner.id + '|' + this.banner.userId + "/" + getToken()
+                }
+                
                 const url = this.url
 				/* uni.hideLoading() */
                 setTimeout(() => {

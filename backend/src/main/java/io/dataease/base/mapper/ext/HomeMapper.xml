@@ -18,14 +18,17 @@
         order by s.create_time desc
     </select>
 
-    <select id="queryShare" resultType="io.dataease.mobile.dto.HomeItemDTO">
+    <select id="queryShare" resultType="io.dataease.mobile.dto.HomeItemShareDTO">
         select
             distinct(s.panel_group_id) as id,
             g.name as title,
-            s.create_time as `time`
+            s.create_time as `time`,
+            u.nick_name,
+            u.user_id
         from panel_share s
         inner join panel_group g
             on s.panel_group_id = g.id
+        left join sys_user u on u.username = IFNULL(s.granter,g.create_by)
         where
             g.mobile_layout = 1 and (
                 ( s.target_id = #{userId} and s.type = 0 ) or

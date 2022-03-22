@@ -75,7 +75,8 @@ export default {
             const param = {
                     id: node.id,
                     title: node.text,
-                    index: 4
+                    index: 4,
+                    userId: node.userId
                 }
             if(node.type === 'panel') {
                 

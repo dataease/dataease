@@ -22,7 +22,7 @@ export function proxyInitPanelData(panelId, proxy, callback) {
     queryPanelJumpInfo(panelId, proxy).then(rsp => {
       store.commit('setNowPanelJumpInfo', rsp.data)
     })
-    callback(response)
+    callback && callback(response)
   })
 }
 

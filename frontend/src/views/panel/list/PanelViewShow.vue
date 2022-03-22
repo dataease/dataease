@@ -137,7 +137,7 @@ import bus from '@/utils/bus'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
 import { initPanelData } from '@/api/panel/panel'
-
+import { proxyInitPanelData } from '@/api/panel/shareProxy'
 export default {
   name: 'PanelViewShow',
   components: { Preview, SaveToTemplate, PDFPreExport, ShareHead },
@@ -162,7 +162,8 @@ export default {
       snapshotInfo: '',
       showType: 0,
       dataLoading: false,
-      exporting: false
+      exporting: false,
+      shareUserId: null
     }
   },
   computed: {
@@ -214,6 +215,9 @@ export default {
     bus.$on('set-panel-show-type', type => {
       this.showType = type || 0
     })
+    bus.$on('set-panel-share-user', userId => {
+      this.shareUserId = userId
+    })
     this.initPdfTemplate()
   },
   methods: {
@@ -227,7 +231,10 @@ export default {
       this.fullscreen = true
     },
     newTab() {
-      const url = '#/preview/' + this.$store.state.panel.panelInfo.id
+      let url = '#/preview/' + this.$store.state.panel.panelInfo.id
+      if (this.showType === 1 && this.shareUserId !== null) {
+        url += ('|' + this.shareUserId)
+      }
       window.open(url, '_blank')
     },
     saveToTemplate() {
@@ -344,7 +351,10 @@ export default {
       this.$emit('editPanel')
     },
     refreshPanel() {
-      initPanelData(this.panelInfo.id)
+      if (this.showType === 1 && this.shareUserId !== null) {
+        const param = { userId: this.shareUserId }
+        proxyInitPanelData(this.panelInfo.id, param, null)
+      } else { initPanelData(this.panelInfo.id) }
     }
   }
 }

@@ -1,8 +1,12 @@
 import request from '@/common/js/request'
 
 export function requestHome(data) {
+    let url = '/mobile/home/query'
+    if (data && data.type === 2) {
+        url = 'mobile/home/queryShares'
+    }
     return request({
-      url: '/mobile/home/query',
+      url: url,
       method: 'post',
       loading: true,
 	  data
