@@ -87,3 +87,5 @@ CREATE TABLE `de_engine` (
 
 
 INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.mobileBG', NULL, 'file', 0);
+
+UPDATE `demo_gdp_district_top100` set `province` = '新疆维吾尔自治区' WHERE `province` = '新疆维吾尔族自治区';
