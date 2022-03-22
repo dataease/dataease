@@ -110,6 +110,7 @@ export default {
       const param = { userId: data.userId }
       proxyInitPanelData(data.id, param, function() {
         bus.$emit('set-panel-show-type', 1)
+        bus.$emit('set-panel-share-user', data.userId)
       })
       this.$refs['botTree'].setCurrentKey(null)
     },

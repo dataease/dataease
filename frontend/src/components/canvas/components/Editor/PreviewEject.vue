@@ -8,6 +8,7 @@ import Preview from './Preview'
 import { uuid } from 'vue-uuid'
 import { initPanelData } from '@/api/panel/panel'
 import { queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
+import { proxyInitPanelData } from '@/api/panel/shareProxy'
 
 export default {
   components: { Preview },
@@ -15,12 +16,8 @@ export default {
     return {
       dataLoading: false,
       backScreenShot: false,
-      mainHeight: '100vh!important'
-    }
-  },
-  watch: {
-    '$route.params.reportId': function() {
-      this.restore()
+      mainHeight: '100vh!important',
+      shareUserId: null
     }
   },
   computed: {
@@ -37,6 +34,7 @@ export default {
       this.restore()
     }
   },
+
   mounted() {
     this.restore()
   },
@@ -45,35 +43,59 @@ export default {
       this.mainHeight = mainHeight
     },
     restore() {
+      debugger
       const _this = this
       _this.dataLoading = true
-      _this.panelId = this.$route.params.reportId
+      if (!this.$route.params.reportId) {
+        return
+      }
+      const arr = this.$route.params.reportId.split('|')
+      if (!arr || arr.length === 0) {
+        return
+      }
+      _this.panelId = arr[0]
+
+      if (arr.length > 1) {
+        this.shareUserId = arr[1]
+      }
+
       if (_this.$route.params.backScreenShot !== undefined) {
         _this.backScreenShot = _this.$route.params.backScreenShot
       }
       // 加载视图数据
-      initPanelData(this.panelId, function() {
-        _this.dataLoading = false
-        // 如果含有跳转参数 进行触发
-        const tempParam = localStorage.getItem('jumpInfoParam')
-        if (tempParam) {
-          localStorage.removeItem('jumpInfoParam')
-          const jumpParam = JSON.parse(tempParam)
-          const jumpRequestParam = {
-            sourcePanelId: jumpParam.sourcePanelId,
-            sourceViewId: jumpParam.sourceViewId,
-            sourceFieldId: jumpParam.sourceFieldId,
-            targetPanelId: _this.panelId
-          }
-          _this.dataLoading = true
-          // 刷新跳转目标仪表板联动信息
-          queryTargetPanelJumpInfo(jumpRequestParam).then(rsp => {
-            _this.dataLoading = false
-            _this.$store.commit('setNowTargetPanelJumpInfo', rsp.data)
-            _this.$store.commit('addViewTrackFilter', jumpParam)
-          })
+      if (this.shareUserId !== null) {
+        const param = { userId: this.shareUserId }
+        proxyInitPanelData(this.panelId, param, () => {
+          this.initCallBack()
+        })
+      } else {
+        initPanelData(this.panelId, () => {
+          this.initCallBack()
+        })
+      }
+    },
+
+    initCallBack() {
+      this.dataLoading = false
+      // 如果含有跳转参数 进行触发
+      const tempParam = localStorage.getItem('jumpInfoParam')
+      if (tempParam) {
+        localStorage.removeItem('jumpInfoParam')
+        const jumpParam = JSON.parse(tempParam)
+        const jumpRequestParam = {
+          sourcePanelId: jumpParam.sourcePanelId,
+          sourceViewId: jumpParam.sourceViewId,
+          sourceFieldId: jumpParam.sourceFieldId,
+          targetPanelId: this.panelId
         }
-      })
+        this.dataLoading = true
+        // 刷新跳转目标仪表板联动信息
+        queryTargetPanelJumpInfo(jumpRequestParam).then(rsp => {
+          this.dataLoading = false
+          this.$store.commit('setNowTargetPanelJumpInfo', rsp.data)
+          this.$store.commit('addViewTrackFilter', jumpParam)
+        })
+      }
     },
     resetID(data) {
       if (data) {
