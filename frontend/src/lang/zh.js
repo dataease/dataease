@@ -1303,6 +1303,8 @@ export default {
     host: '主机名/IP地址',
     doris_host: 'Doris 地址',
     port: '端口',
+    query_port: 'Query Port',
+    http_port: 'Http Port',
     datasource_url: '地址',
     please_input_datasource_url: '请输入 Elasticsearch 地址，如: http://es_host:es_port',
     please_input_data_base: '请输入数据库名称',
