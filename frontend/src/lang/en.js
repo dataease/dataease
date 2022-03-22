@@ -573,6 +573,7 @@ export default {
     secret: 'Please key Secret',
     scope: 'Please key scope',
     redirectUrl: 'Please key redirectUrl',
+    input_mapping: 'Please key OIDC mapping',
     open: 'Enable OIDC Authentication'
   },
   role: {
