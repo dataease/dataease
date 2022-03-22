@@ -8,4 +8,7 @@ import lombok.Setter;
 public class DorisConfiguration extends MysqlConfiguration {
 
     private Integer httpPort;
+
+    private Integer replicationNum = 1;
+    private Integer bucketNum = 10;
 }

@@ -1,6 +1,7 @@
 package io.dataease.provider;
 
 import io.dataease.base.domain.DatasetTableField;
+import io.dataease.base.domain.Datasource;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public abstract class DDLProvider {
 
     public abstract String replaceTable(String name);
 
-    public abstract String createTableSql(String name, List<DatasetTableField> datasetTableFields);
+    public abstract String createTableSql(String name, List<DatasetTableField> datasetTableFields, Datasource engine);
 
     public abstract String insertSql(String name, List<String[]> dataList, int page, int pageNumber);
 }

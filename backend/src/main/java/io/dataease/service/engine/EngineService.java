@@ -9,6 +9,7 @@ import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.dto.DatasourceDTO;
+import io.dataease.listener.util.CacheUtils;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.service.datasource.DatasourceService;
@@ -31,8 +32,6 @@ public class EngineService {
     private DeEngineMapper deEngineMapper;
     @Resource
     private DatasourceService datasource;
-    static private Datasource ds = null;
-
 
     public Boolean isLocalMode(){
         return env.getProperty("engine_mode", "local").equalsIgnoreCase("local");
@@ -51,7 +50,13 @@ public class EngineService {
     }
 
     public DeEngine info(){
-        List<DeEngine> deEngines = deEngineMapper.selectByExampleWithBLOBs(new DeEngineExample());
+        DeEngineExample deEngineExample = new DeEngineExample();
+        if(isClusterMode()){
+            deEngineExample.createCriteria().andTypeEqualTo("engine_doris");
+        }else {
+            deEngineExample.createCriteria().andTypeEqualTo("engine_mysql");
+        }
+        List<DeEngine> deEngines = deEngineMapper.selectByExampleWithBLOBs(deEngineExample);
         if(CollectionUtils.isEmpty(deEngines)){
             return new DeEngine();
         }
@@ -69,7 +74,7 @@ public class EngineService {
             datasourceProvider.checkStatus(datasourceRequest);
             return ResultHolder.success(datasource);
         }catch (Exception e){
-            return ResultHolder.error("Datasource is invalid: " + e.getMessage());
+            return ResultHolder.error("Engine is invalid: " + e.getMessage());
         }
     }
 
@@ -79,26 +84,23 @@ public class EngineService {
             deEngineMapper.insert(engine);
         }else {
             deEngineMapper.updateByPrimaryKeyWithBLOBs(engine);
+            datasource.handleConnectionPool(getDeEngine(), "delete");
         }
-        datasource.handleConnectionPool(this.ds, "delete");
         setDs(engine);
-        datasource.handleConnectionPool(this.ds, "add");
+        datasource.handleConnectionPool(getDeEngine(), "add");
         return ResultHolder.success(engine);
     }
 
     private void setDs(DeEngine engine){
-        if(this.ds == null){
-            this.ds = new Datasource();
-            BeanUtils.copyBean(this.ds, engine);
-        }else {
-            BeanUtils.copyBean(this.ds, engine);
-        }
+        CacheUtils.put("ENGINE", "engine", engine, null, null);
     }
 
     public Datasource getDeEngine() throws Exception{
-        if (this.ds != null) {
-            return this.ds;
+        Object catcheEngine = CacheUtils.get("ENGINE", "engine");
+        if(catcheEngine != null){
+            return (Datasource) catcheEngine;
         }
+
         if(isLocalMode()){
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("dataSourceType", "jdbc");
@@ -123,12 +125,7 @@ public class EngineService {
             }
             setDs(deEngines.get(0));
         }
-//        if(isSimpleMode()){
-//
-//        }
-
-        //TODO cluster mode
-        return this.ds;
+        return getDeEngine();
     }
 
 

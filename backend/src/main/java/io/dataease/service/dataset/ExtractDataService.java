@@ -605,7 +605,7 @@ public class ExtractDataService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(engine);
         DDLProvider ddlProvider = ProviderFactory.getDDLProvider(engine.getType());
-        datasourceRequest.setQuery(ddlProvider.createTableSql(tableName, datasetTableFields));
+        datasourceRequest.setQuery(ddlProvider.createTableSql(tableName, datasetTableFields, engine));
         jdbcProvider.exec(datasourceRequest);
     }
 

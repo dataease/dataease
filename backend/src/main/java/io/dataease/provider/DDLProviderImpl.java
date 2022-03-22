@@ -1,6 +1,7 @@
 package io.dataease.provider;
 
 import io.dataease.base.domain.DatasetTableField;
+import io.dataease.base.domain.Datasource;
 import io.dataease.commons.utils.Md5Utils;
 
 import java.util.Arrays;
@@ -28,7 +29,7 @@ public class DDLProviderImpl extends DDLProvider {
     }
 
     @Override
-    public String createTableSql(String name, List<DatasetTableField> datasetTableFields) {
+    public String createTableSql(String name, List<DatasetTableField> datasetTableFields, Datasource engine) {
         return null;
     }
 

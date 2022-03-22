@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!--邮件表单-->
     <el-form ref="form" v-loading="loading"
              :model="form"
              :rules="rules"

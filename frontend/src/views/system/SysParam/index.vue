@@ -30,6 +30,10 @@
         <simple-mode />
       </el-tab-pane>
 
+      <el-tab-pane v-if="engineMode==='cluster'" :lazy="true" :label="$t('system_parameter_setting.engine_mode_setting')" name="six">
+        <cluster-mode />
+      </el-tab-pane>
+
     </el-tabs>
   </layout-content>
 </template>
@@ -37,13 +41,14 @@
 import BasicSetting from './BasicSetting'
 import EmailSetting from './EmailSetting'
 import SimpleMode from './SimpleModeSetting'
+import ClusterMode from './ClusterModeSetting'
 import LayoutContent from '@/components/business/LayoutContent'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import { pluginLoaded } from '@/api/user'
 import { engineMode } from '@/api/system/engine'
 export default {
 
-  components: { BasicSetting, EmailSetting, LayoutContent, PluginCom, SimpleMode},
+  components: { BasicSetting, EmailSetting, LayoutContent, PluginCom, SimpleMode, ClusterMode},
   data() {
     return {
       activeName: 'zero',
