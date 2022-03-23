@@ -2,6 +2,7 @@ package io.dataease.plugins.server;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -113,7 +114,8 @@ public class SSOServer {
     }
     private Map<String, String> config(OidcXpackService oidcXpackService) {
         List<SysSettingDto> sysSettingDtos = oidcXpackService.oidcSettings();
-        Map<String, String> config = sysSettingDtos.stream().collect(Collectors.toMap(SysSettingDto::getParamKey, SysSettingDto::getParamValue));
+        Map<String, String> config = sysSettingDtos.stream().collect(HashMap::new,(m, v)->m.put(v.getParamKey(), v.getParamValue()), HashMap::putAll);
+
         return config;
     }
     
