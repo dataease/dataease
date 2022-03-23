@@ -183,6 +183,7 @@
                                 `result_count`,
                                 `result_mode`,
                                 `chart_type`,
+                                `is_plugin`,
                                 `senior`,
                                 `data_from`)
         SELECT #{newChartId},
@@ -210,6 +211,7 @@
                `result_count`,
                `result_mode`,
                'private',
+               `is_plugin`,
                `senior`,
             `data_from`
         FROM chart_view_cache
