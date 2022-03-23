@@ -228,7 +228,6 @@ export default {
   created() {
   },
   mounted() {
-    debugger
     this.init()
   },
   destroyed() {
@@ -237,7 +236,6 @@ export default {
     init() {
       // 获取当前仪表板外部跳转蚕食信息
       queryWithPanelId(this.panelInfo.id).then(rsp => {
-        debugger
         this.outerParams = rsp.data
         this.outerParamsInfoArray = this.outerParams.outerParamsInfoArray
         if (this.outerParamsInfoArray.length > 0) {

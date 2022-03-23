@@ -43,7 +43,6 @@ export default {
       this.mainHeight = mainHeight
     },
     restore() {
-      debugger
       const _this = this
       _this.dataLoading = true
       if (!this.$route.params.reportId) {
