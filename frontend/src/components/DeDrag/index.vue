@@ -531,7 +531,7 @@ export default {
         width: this.computedMainSlotWidth,
         height: this.computedMainSlotHeight
       }
-      if (this.element.commonBackground&&this.element.commonBackground.enable) {
+      if (this.element.commonBackground && this.element.commonBackground.enable) {
         if (this.element.commonBackground.backgroundType === 'innerImage') {
           style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat`
         } else if (this.element.commonBackground.backgroundType === 'outerImage') {
@@ -1604,7 +1604,6 @@ export default {
     },
     // 记录当前样式
     recordCurStyle() {
-      // debugger
       const style = {
         ...this.defaultStyle
       }
@@ -1619,7 +1618,6 @@ export default {
 
     // 记录当前样式 矩阵处理
     recordMatrixCurStyle() {
-      // debugger
       const left = Math.round(this.left / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
       const top = Math.round(this.top / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
       const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
@@ -1644,7 +1642,6 @@ export default {
     },
     // 记录当前样式 跟随阴影位置 矩阵处理
     recordMatrixCurShadowStyle() {
-      // debugger
       const left = (this.element.x - 1) * this.curCanvasScale.matrixStyleWidth
       const top = (this.element.y - 1) * this.curCanvasScale.matrixStyleHeight
       const width = this.element.sizex * this.curCanvasScale.matrixStyleWidth

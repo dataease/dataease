@@ -128,7 +128,6 @@ export default {
       this.$store.commit('recordSnapshot', 'bottomComponent')
     },
     linkageSetting() {
-      debugger
       // sourceViewId 也加入查询
       const targetViewIds = this.componentData.filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
         .map(item => item.propValue.viewId)
