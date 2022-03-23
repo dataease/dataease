@@ -77,6 +77,7 @@ import {
   shortUrl,
   setOverTime
 } from '@/api/link'
+import { randomRange } from '@/utils/StringUtils'
 export default {
 
   name: 'LinkGenerate',
@@ -171,14 +172,7 @@ export default {
     },
 
     createPwd() {
-      const randomNum = () => {
-        return Math.floor(Math.random() * 10) + ''
-      }
-      let result = ''
-      for (let index = 0; index < this.pwdNums; index++) {
-        result += randomNum()
-      }
-      return result
+      return randomRange(this.pwdNums)
     },
 
     resetPwd() {
