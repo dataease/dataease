@@ -15,12 +15,12 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 
 ![de-architecture](https://dataease.io/images/screenshot/de-chart-new.jpg)
 
-## DataEase 的功能
+**DataEase 的功能包括：**
 
--   图表展示：支持 PC 端、移动端及大屏;
+-   图表展示：支持 PC 端、移动端、大屏;
 -   图表制作：支持丰富的图表类型(Apache ECharts / AntV)、支持拖拉拽方式快速制作仪表板;
 -   数据引擎：支持直连模式、本地模式(基于 Apache Doris / Kettle 实现);
--   数据连接：支持关系型数据库、Excel 等文件、Hadoop 等大数据平台、NoSQL 等各种数据源。
+-   数据连接：支持数据仓库/数据湖、OLAP 数据库、OLTP 数据库、Excel 数据文件、API 等各种数据源。
 
 ## DataEase 的优势
 
