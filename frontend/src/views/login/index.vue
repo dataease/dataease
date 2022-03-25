@@ -23,7 +23,7 @@
                 </el-radio-group>
               </el-form-item>
               <el-form-item prop="username">
-                <el-input v-model="loginForm.username" placeholder="ID" autofocus />
+                <el-input v-model="loginForm.username" placeholder="ID" autofocus :disabled="loginTypes.includes(2) && loginForm.loginType === 2" />
               </el-form-item>
               <el-form-item prop="password">
                 <el-input
@@ -33,12 +33,13 @@
                   maxlength="30"
                   show-word-limit
                   autocomplete="new-password"
+                  :disabled="loginTypes.includes(2) && loginForm.loginType === 2"
                   @keypress.enter.native="handleLogin"
                 />
               </el-form-item>
             </div>
             <div class="login-btn">
-              <el-button type="primary" class="submit" size="default" @click.native.prevent="handleLogin">
+              <el-button type="primary" class="submit" size="default" :disabled="loginTypes.includes(2) && loginForm.loginType === 2" @click.native.prevent="handleLogin">
                 {{ $t('commons.login') }}
               </el-button>
               <div v-if="uiInfo && uiInfo['ui.demo.tips'] && uiInfo['ui.demo.tips'].paramValue" class="demo-tips">

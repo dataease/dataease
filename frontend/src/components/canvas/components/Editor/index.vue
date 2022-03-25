@@ -1270,7 +1270,6 @@ export default {
       this.timeMachine = null
     },
     openChartDetailsDialog(chartInfo) {
-      debugger
       this.showChartInfo = chartInfo.chart
       this.showChartTableInfo = chartInfo.tableChart
       this.chartDetailsVisible = true

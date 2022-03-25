@@ -578,7 +578,6 @@ export default {
     this.$store.commit('resetViewEditInfo')
   },
   mounted() {
-    debugger
     // this.insertToBody()
     bus.$on('component-on-drag', () => {
       this.show = false

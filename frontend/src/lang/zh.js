@@ -576,6 +576,7 @@ export default {
     secret: '请输入Secret',
     scope: '请输入scope',
     redirectUrl: '请输入redirectUrl',
+    input_mapping: '請輸入OIDC屬性映射',
     open: '启用OIDC认证'
   },
   role: {

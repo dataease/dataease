@@ -1404,12 +1404,10 @@ export default {
     }
   },
   created() {
-    debugger
     // this.get(this.$store.state.chart.viewId);
     // this.initAreas()
   },
   mounted() {
-    debugger
     this.bindPluginEvent()
     this.initFromPanel()
     this.chartInit()
