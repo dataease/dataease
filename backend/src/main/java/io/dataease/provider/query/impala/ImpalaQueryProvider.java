@@ -92,24 +92,24 @@ public class ImpalaQueryProvider extends QueryProvider {
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 String fieldName = "";
                 // 处理横轴字段
-                if (f.getDeExtractType() == DeTypeConstants.DE_TIME) {
+                if (f.getDeExtractType() == DeTypeConstants.DE_TIME) { //时间转数值
                     if (f.getDeType() == 2 || f.getDeType() == 3) {
                         fieldName = String.format(ImpalaConstants.UNIX_TIMESTAMP, originField) + "*1000";
                     } else {
                         fieldName = originField;
                     }
-                } else if (f.getDeExtractType() == DeTypeConstants.DE_STRING) {
+                } else if (f.getDeExtractType() == DeTypeConstants.DE_STRING) { //字符串转时间
                     if (f.getDeType() == DeTypeConstants.DE_INT) {
                         fieldName = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_INT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
                         fieldName = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_FLOAT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                        fieldName = String.format(ImpalaConstants.STR_TO_DATE, originField, ImpalaConstants.DEFAULT_DATE_FORMAT);
+                        fieldName = String.format(ImpalaConstants.DATE_FORMAT, originField, ImpalaConstants.DEFAULT_DATE_FORMAT);
                     } else {
                         fieldName = originField;
                     }
                 } else {
-                    if (f.getDeType() == DeTypeConstants.DE_TIME) {
+                    if (f.getDeType() == DeTypeConstants.DE_TIME) {//数值转时间
                         String cast = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_INT_FORMAT) + "/1000";
                         fieldName = String.format(ImpalaConstants.FROM_UNIXTIME, cast, ImpalaConstants.DEFAULT_DATE_FORMAT);
                     } else if (f.getDeType() == 2) {
@@ -745,7 +745,7 @@ public class ImpalaQueryProvider extends QueryProvider {
             }
             if (field.getDeType() == DeTypeConstants.DE_TIME) {
                 if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-                    whereName = String.format(ImpalaConstants.STR_TO_DATE, originName, ImpalaConstants.DEFAULT_DATE_FORMAT);
+                    whereName = String.format(ImpalaConstants.DATE_FORMAT, originName, ImpalaConstants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(ImpalaConstants.CAST, originName, ImpalaConstants.DEFAULT_INT_FORMAT) + "/1000";
@@ -792,7 +792,11 @@ public class ImpalaQueryProvider extends QueryProvider {
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                         whereValue = "'%" + value + "%'";
                     } else {
-                        whereValue = String.format(ImpalaConstants.WHERE_VALUE_VALUE, value);
+                        if(field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT|| field.getDeExtractType() == DeTypeConstants.DE_BOOL){
+                            whereValue = String.format(ImpalaConstants.WHERE_NUMBER_VALUE_VALUE, value);
+                        }else {
+                            whereValue = String.format(ImpalaConstants.WHERE_VALUE_VALUE, value);
+                        }
                     }
                     list.add(SQLObj.builder()
                             .whereField(whereName)
@@ -837,7 +841,7 @@ public class ImpalaQueryProvider extends QueryProvider {
 
             if (field.getDeType() == DeTypeConstants.DE_TIME) {
                 if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-                    whereName = String.format(ImpalaConstants.STR_TO_DATE, originName, ImpalaConstants.DEFAULT_DATE_FORMAT);
+                    whereName = String.format(ImpalaConstants.DATE_FORMAT, originName, ImpalaConstants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(ImpalaConstants.CAST, originName, ImpalaConstants.DEFAULT_INT_FORMAT) + "/1000";
@@ -875,7 +879,11 @@ public class ImpalaQueryProvider extends QueryProvider {
                     whereValue = String.format(ImpalaConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                whereValue = String.format(ImpalaConstants.WHERE_VALUE_VALUE, value.get(0));
+                if(field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT|| field.getDeExtractType() == DeTypeConstants.DE_BOOL){
+                    whereValue = String.format(ImpalaConstants.WHERE_NUMBER_VALUE_VALUE, value.get(0));
+                }else {
+                    whereValue = String.format(ImpalaConstants.WHERE_VALUE_VALUE, value.get(0));
+                }
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -957,44 +965,6 @@ public class ImpalaQueryProvider extends QueryProvider {
                 .build();
     }
 
-    private List<SQLObj> getXWheres(ChartViewFieldDTO x, String originField, String fieldAlias) {
-        List<SQLObj> list = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(x.getFilter()) && x.getFilter().size() > 0) {
-            x.getFilter().forEach(f -> {
-                String whereName = "";
-                String whereTerm = transMysqlFilterTerm(f.getTerm());
-                String whereValue = "";
-                if (x.getDeType() == DeTypeConstants.DE_TIME && x.getDeExtractType() != 1) {
-                    String cast = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_INT_FORMAT) + "/1000";
-                    whereName = String.format(ImpalaConstants.FROM_UNIXTIME, cast, ImpalaConstants.DEFAULT_DATE_FORMAT);
-                } else {
-                    whereName = originField;
-                }
-                if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                    whereValue = "";
-                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-                    whereValue = "";
-                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "empty")) {
-                    whereValue = "''";
-                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_empty")) {
-                    whereValue = "''";
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
-                    whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                    whereValue = "'%" + f.getValue() + "%'";
-                } else {
-                    whereValue = String.format(ImpalaConstants.WHERE_VALUE_VALUE, f.getValue());
-                }
-                list.add(SQLObj.builder()
-                        .whereField(whereName)
-                        .whereAlias(fieldAlias)
-                        .whereTermAndValue(whereTerm + whereValue)
-                        .build());
-            });
-        }
-        return list;
-    }
-
     private SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {
         String fieldName = "";
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
@@ -1037,7 +1007,11 @@ public class ImpalaQueryProvider extends QueryProvider {
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
                 } else {
-                    whereValue = String.format(ImpalaConstants.WHERE_VALUE_VALUE, f.getValue());
+                    if(y.getDeExtractType() == DeTypeConstants.DE_INT || y.getDeExtractType() == DeTypeConstants.DE_FLOAT|| y.getDeExtractType() == DeTypeConstants.DE_BOOL){
+                        whereValue = String.format(ImpalaConstants.WHERE_NUMBER_VALUE_VALUE, f.getValue());
+                    }else {
+                        whereValue = String.format(ImpalaConstants.WHERE_VALUE_VALUE, f.getValue());
+                    }
                 }
                 list.add(SQLObj.builder()
                         .whereField(fieldAlias)

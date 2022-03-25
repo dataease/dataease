@@ -160,8 +160,20 @@ public class EngineService {
             engine.setType("engine_doris");
             engine.setConfiguration(jsonObject.toJSONString());
             setDs(engine);
-        } else {
-            List<DeEngine> deEngines = deEngineMapper.selectByExampleWithBLOBs(new DeEngineExample());
+        }
+        if (isClusterMode()) {
+            DeEngineExample engineExample = new DeEngineExample();
+            engineExample.createCriteria().andTypeEqualTo("engine_doris");
+            List<DeEngine> deEngines = deEngineMapper.selectByExampleWithBLOBs(engineExample);
+            if (CollectionUtils.isEmpty(deEngines)) {
+                throw new Exception("未设置数据引擎");
+            }
+            setDs(deEngines.get(0));
+        }
+        if (isSimpleMode()) {
+            DeEngineExample engineExample = new DeEngineExample();
+            engineExample.createCriteria().andTypeEqualTo("engine_mysql");
+            List<DeEngine> deEngines = deEngineMapper.selectByExampleWithBLOBs(engineExample);
             if (CollectionUtils.isEmpty(deEngines)) {
                 throw new Exception("未设置数据引擎");
             }
