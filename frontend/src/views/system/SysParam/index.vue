@@ -34,6 +34,10 @@
         <cluster-mode />
       </el-tab-pane>
 
+      <el-tab-pane  :lazy="true" :label="$t('system_parameter_setting.engine_mode_setting')" name="seven">
+        <kettle-setting />
+      </el-tab-pane>
+
     </el-tabs>
   </layout-content>
 </template>
@@ -42,13 +46,14 @@ import BasicSetting from './BasicSetting'
 import EmailSetting from './EmailSetting'
 import SimpleMode from './SimpleModeSetting'
 import ClusterMode from './ClusterModeSetting'
+import KettleSetting from './KettleSetting'
 import LayoutContent from '@/components/business/LayoutContent'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import { pluginLoaded } from '@/api/user'
 import { engineMode } from '@/api/system/engine'
 export default {
 
-  components: { BasicSetting, EmailSetting, LayoutContent, PluginCom, SimpleMode, ClusterMode},
+  components: { BasicSetting, EmailSetting, LayoutContent, PluginCom, SimpleMode, ClusterMode, KettleSetting},
   data() {
     return {
       activeName: 'zero',

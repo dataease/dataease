@@ -279,7 +279,7 @@ export default {
     id: 'ID',
     millisecond: '毫秒',
     cannot_be_null: '不能为空',
-    required: '{0}是必填的',
+    required: '必填',
     already_exists: '名称不能重复',
     modifier: '修改人',
     validate: '校验',
@@ -1302,9 +1302,9 @@ export default {
     password: '密码',
     host: '主机名/IP地址',
     doris_host: 'Doris 地址',
-    port: '端口',
     query_port: 'Query Port',
     http_port: 'Http Port',
+    port: '端口',
     datasource_url: '地址',
     please_input_datasource_url: '请输入 Elasticsearch 地址，如: http://es_host:es_port',
     please_input_data_base: '请输入数据库名称',
@@ -1952,5 +1952,13 @@ export default {
     email: '邮箱：',
     tel: '电话：',
     web: '网址：'
+  },
+  kettle: {
+    add: '添加 Kettle 服务',
+    status: '状态',
+    carte: 'Kettle 地址',
+    port: '端口',
+    user: '用户名',
+    passwd: '密码'
   }
 }

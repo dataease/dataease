@@ -1328,6 +1328,13 @@ export default {
     min_pool_size: 'Minimum of connections',
     max_pool_size: 'Maximum connection',
     max_idle_time: 'Maximum idle (seconds)',
+    doris_host: 'Doris Address',
+    query_port: 'Query Port',
+    http_port: 'Http Port',
+    bucket_num: 'Bucket number',
+    replication_num: 'Replication number',
+    please_input_bucket_num: 'Please enter  Bucket number',
+    please_input_replication_num: 'Please enter Replication number',
     acquire_increment: 'Growth number',
     connect_timeout: 'Connection timeout (seconds)',
     please_input_initial_pool_size: 'Please enter the number of initial connections',
@@ -1927,5 +1934,13 @@ export default {
     email: 'Email:',
     tel: 'Tel:',
     web: 'Web:'
+  },
+  kettle: {
+    add: 'Add Kettle',
+    status: 'Status',
+    carte: 'Kettle Address',
+    port: 'Port',
+    user: 'User',
+    passwd: 'Password'
   }
 }
