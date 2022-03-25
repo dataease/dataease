@@ -651,7 +651,8 @@ export default {
     account: '賬戶不能爲空',
     test_recipients: '測試收件人',
     tip: '提示：僅用來作爲測試郵件收件人',
-    engine_mode_setting: '引擎設置'
+    engine_mode_setting: '引擎設置',
+    kettle_setting: 'Kettle 設置'
   },
   chart: {
     save_snapshot: '保存縮略圖',

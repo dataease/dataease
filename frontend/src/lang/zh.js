@@ -652,7 +652,8 @@ export default {
     account: '账户不能为空',
     test_recipients: '测试收件人',
     tip: '提示：仅用来作为测试邮件收件人',
-    engine_mode_setting: '引擎设置'
+    engine_mode_setting: '引擎设置',
+    kettle_setting: 'Kettle 设置'
   },
   chart: {
     save_snapshot: '保存缩略图',

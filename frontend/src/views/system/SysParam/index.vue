@@ -30,11 +30,11 @@
         <simple-mode />
       </el-tab-pane>
 
-      <el-tab-pane v-if="engineMode==='cluster'" :lazy="true" :label="$t('system_parameter_setting.engine_mode_setting')" name="six">
+      <el-tab-pane v-if="engineMode==='cluster'" :lazy="true" :label="$t('system_parameter_setting.engine_mode_setting')" name="seven">
         <cluster-mode />
       </el-tab-pane>
 
-      <el-tab-pane  :lazy="true" :label="$t('system_parameter_setting.engine_mode_setting')" name="seven">
+      <el-tab-pane  v-if="engineMode==='cluster'" :lazy="true" :label="$t('system_parameter_setting.kettle_setting')" name="eight">
         <kettle-setting />
       </el-tab-pane>
 

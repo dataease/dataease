@@ -649,7 +649,8 @@ export default {
     account: 'Account cannot be empty',
     test_recipients: 'Test recipients',
     tip: 'Tip: use as test mail recipient only',
-    engine_mode_setting: 'Engine Setting'
+    engine_mode_setting: 'Engine Setting',
+    kettle_setting: 'Kettle Setting'
   },
   chart: {
     save_snapshot: 'Save Snapshot',
