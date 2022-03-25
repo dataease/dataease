@@ -140,6 +140,12 @@
         </el-tooltip>
       </div>
 
+      <div v-if="attrShow('deTabStyle')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+        <el-tooltip content="tab内部样式">
+          <tab-style :style-info="styleInfo" />
+        </el-tooltip>
+      </div>
+
     </div>
   </el-card>
 </template>
@@ -150,7 +156,6 @@ import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
 import VideoLinks from '@/components/canvas/components/Editor/VideoLinks'
 import DateFormat from '@/components/canvas/components/Editor/DateFormat'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
-import { chartTransStr2Object } from '@/views/panel/panel'
 
 export default {
   components: { Hyperlinks, DateFormat, VideoLinks },
@@ -245,7 +250,8 @@ export default {
         'borderWidth',
         'borderRadius',
         'opacity',
-        'borderColor'
+        'borderColor',
+        'deTabStyle'
       ],
       // 矩形组件显示的属性
       'rect-shape': [
@@ -416,6 +422,18 @@ export default {
     },
     styleChange() {
       this.$store.commit('recordStyleChange')
+    },
+    goHeadFontColor() {
+      this.$refs.headFontColorPicker.handleTrigger()
+    },
+    goHeadFontActiveColor() {
+      this.$refs.headFontActiveColorPicker.handleTrigger()
+    },
+    goHeadBorderColor() {
+      this.$refs.headBorderColorPicker.handleTrigger()
+    },
+    goHeadBorderActiveColor() {
+      this.$refs.headBorderActiveColorPicker.handleTrigger()
     }
   }
 }
@@ -447,7 +465,6 @@ export default {
   ::v-deep .el-color-dropdown__link-btn {
     display: inline!important;
   }
-
 
   ::v-deep input::-webkit-outer-spin-button,
   ::v-deep input::-webkit-inner-spin-button {

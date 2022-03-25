@@ -89,3 +89,4 @@ INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUE
 
 UPDATE `demo_gdp_district_top100` set `province` = '新疆维吾尔自治区' WHERE `province` = '新疆维吾尔族自治区';
 
+INSERT INTO `my_plugin`(`plugin_id`, `name`, `store`, `free`, `cost`, `category`, `descript`, `version`, `install_type`, `creator`, `load_mybatis`, `release_time`, `install_time`, `module_name`, `icon`) VALUES (3, 'tabs插件', 'default', 0, 20000, 'panel', 'tabs插件', '1.0-SNAPSHOT', NULL, 'fit2cloud-chenyw', 0, NULL, NULL, 'dataease-extensions-tabs-backend', NULL);
