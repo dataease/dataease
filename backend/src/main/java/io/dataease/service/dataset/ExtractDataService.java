@@ -25,6 +25,7 @@ import io.dataease.exception.DataEaseException;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.provider.QueryProvider;
 import io.dataease.service.engine.EngineService;
+import io.dataease.service.kettle.KettleService;
 import io.dataease.service.message.DeMsgutil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -98,6 +99,8 @@ public class ExtractDataService {
     private ExtChartViewMapper extChartViewMapper;
     @Resource
     private EngineService engineService;
+    @Resource
+    private KettleService kettleService;
 
     private static final String lastUpdateTime = "${__last_update_time__}";
     private static final String currentUpdateTime = "${__current_update_time__}";
@@ -107,14 +110,6 @@ public class ExtractDataService {
 
     @Value("${kettle.files.keep:false}")
     private boolean kettleFilesKeep;
-    @Value("${carte.host:127.0.0.1}")
-    private String carte;
-    @Value("${carte.port:8080}")
-    private String port;
-    @Value("${carte.user:cluster}")
-    private String user;
-    @Value("${carte.passwd:cluster}")
-    private String passwd;
 
     private static final String shellScript = "result=`curl --location-trusted -u %s:%s -H \"label:%s\" -H \"column_separator:%s\" -H \"columns:%s\" -H \"merge_type: %s\" -T %s -XPUT http://%s:%s/api/%s/%s/_stream_load`\n" +
             "if [ $? -eq 0 ] ; then\n" +
@@ -605,7 +600,7 @@ public class ExtractDataService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(engine);
         DDLProvider ddlProvider = ProviderFactory.getDDLProvider(engine.getType());
-        datasourceRequest.setQuery(ddlProvider.createTableSql(tableName, datasetTableFields));
+        datasourceRequest.setQuery(ddlProvider.createTableSql(tableName, datasetTableFields, engine));
         jdbcProvider.exec(datasourceRequest);
     }
 
@@ -730,7 +725,7 @@ public class ExtractDataService {
                 break;
         }
 
-        SlaveServer remoteSlaveServer = getSlaveServer();
+        SlaveServer remoteSlaveServer = kettleService.getSlaveServer();
         JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
         jobExecutionConfiguration.setRemoteServer(remoteSlaveServer);
         jobExecutionConfiguration.setRepository(repository);
@@ -738,7 +733,6 @@ public class ExtractDataService {
         TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
         transExecutionConfiguration.setRepository(repository);
         transExecutionConfiguration.setRemoteServer(remoteSlaveServer);
-
         String lastTranceId = Trans.sendToSlaveServer(transMeta, transExecutionConfiguration, repository, null);
         SlaveServerTransStatus transStatus = null;
         boolean executing = true;
@@ -770,15 +764,6 @@ public class ExtractDataService {
         } else {
             DataEaseException.throwException((jobStatus.getLoggingString()));
         }
-    }
-
-    private SlaveServer getSlaveServer() {
-        SlaveServer remoteSlaveServer = new SlaveServer();
-        remoteSlaveServer.setHostname(carte);// 设置远程IP
-        remoteSlaveServer.setPort(port);// 端口
-        remoteSlaveServer.setUsername(user);
-        remoteSlaveServer.setPassword(passwd);
-        return remoteSlaveServer;
     }
 
     private void generateJobFile(String extractType, DatasetTable datasetTable, String columnFields) throws Exception {
@@ -1248,33 +1233,6 @@ public class ExtractDataService {
             File file = new File(filePath);
             FileUtils.forceDelete(file);
         } catch (Exception e) {
-        }
-    }
-
-    public boolean isKettleRunning() {
-        try {
-            if (!InetAddress.getByName(carte).isReachable(1000)) {
-                return false;
-            }
-        } catch (Exception e) {
-            return false;
-        }
-        HttpGet getMethod = new HttpGet("http://" + carte + ":" + port);
-        HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
-        clientBuilder.setConnectionTimeout(1);
-        clientBuilder.setCredentials(user, passwd);
-        try {
-            CloseableHttpClient httpClient = clientBuilder.build();
-            HttpResponse httpResponse = httpClient.execute(getMethod);
-            int statusCode = httpResponse.getStatusLine().getStatusCode();
-            if (statusCode != -1 && statusCode < 400) {
-                httpResponse.getEntity().getContent().close();
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            return false;
         }
     }
 

@@ -1,6 +1,7 @@
 package io.dataease.provider.engine.mysql;
 
 import io.dataease.base.domain.DatasetTableField;
+import io.dataease.base.domain.Datasource;
 import io.dataease.commons.utils.TableUtils;
 import io.dataease.provider.DDLProviderImpl;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class MysqlDDLProvider extends DDLProviderImpl {
     }
 
     @Override
-    public String createTableSql(String tableName, List<DatasetTableField> datasetTableFields) {
+    public String createTableSql(String tableName, List<DatasetTableField> datasetTableFields, Datasource engine) {
         String dorisTableColumnSql = createDorisTableColumnSql(datasetTableFields);
         return creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql);
     }
