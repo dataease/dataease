@@ -426,9 +426,20 @@ public class ChartViewService {
             }
         }
 
-        //联动过滤条件联动条件全部加上
-        if (ObjectUtils.isNotEmpty(requestList.getLinkageFilters())) {
-            for (ChartExtFilterRequest request : requestList.getLinkageFilters()) {
+        List<ChartExtFilterRequest> filters = new ArrayList<>();
+        // 联动条件
+        if(ObjectUtils.isNotEmpty(requestList.getLinkageFilters())){
+            filters.addAll(requestList.getLinkageFilters());
+        }
+
+        // 外部参数条件
+        if(ObjectUtils.isNotEmpty(requestList.getOuterParamsFilters())){
+            filters.addAll(requestList.getOuterParamsFilters());
+        }
+
+        //联动过滤条件和外部参数过滤条件全部加上
+        if (ObjectUtils.isNotEmpty(filters)) {
+            for (ChartExtFilterRequest request : filters) {
                 DatasetTableField datasetTableField = dataSetTableFieldsService.get(request.getFieldId());
                 if (!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
                     request.setDatasetTableField(datasetTableField);

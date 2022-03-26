@@ -173,6 +173,7 @@ import { mapState } from 'vuex'
 import { queryWithPanelId, updateOuterParamsSet } from '@/api/panel/outerParams'
 import { uuid } from 'vue-uuid'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import { checkRepeat } from '@/utils/check'
 
 export default {
   name: 'OuterParamsSet',
@@ -258,9 +259,17 @@ export default {
       this.$emit('outerParamsSetVisibleChange', false)
     },
     save() {
+      if (checkRepeat(this.outerParams.outerParamsInfoArray, 'name')) {
+        this.$message({
+          message: this.$t('panel.repeat_params'),
+          type: 'warn',
+          showClose: true
+        })
+        return
+      }
       updateOuterParamsSet(this.outerParams).then(rsp => {
         this.$message({
-          message: '保存成功',
+          message: this.$t('commons.save_success'),
           type: 'success',
           showClose: true
         })
@@ -329,6 +338,10 @@ export default {
       const children = parent.data.children || parent.data
       const index = children.findIndex(d => d.paramsInfoId === data.paramsInfoId)
       children.splice(index, 1)
+      if (data.paramsInfoId === this.outerParamsInfo.paramsInfoId) {
+        delete this.mapOuterParamsInfoArray[data.paramsInfoId]
+        this.outerParamsInfo = null
+      }
     }
   }
 }

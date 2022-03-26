@@ -1391,6 +1391,7 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    repeat_params: '存在名称重复的参数',
     enable_outer_param_set: '启用外部参数设置',
     select_param: '请选择参数...',
     add_param_link_field: '添加参数联动字段',

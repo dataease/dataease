@@ -213,6 +213,7 @@ export default {
       const filter = {}
       filter.filter = this.isFirstLoad ? this.filters : this.cfilters
       filter.linkageFilters = this.element.linkageFilters
+      filter.outerParamsFilters = this.element.outerParamsFilters
       filter.drill = this.drillClickDimensionList
       filter.resultCount = this.resultCount
       filter.resultMode = this.resultMode
