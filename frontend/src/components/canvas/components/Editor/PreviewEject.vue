@@ -9,6 +9,7 @@ import { uuid } from 'vue-uuid'
 import { initPanelData } from '@/api/panel/panel'
 import { queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
+import { getOuterParamsInfo } from '@/api/panel/outerParams'
 
 export default {
   components: { Preview },
@@ -75,9 +76,33 @@ export default {
     },
 
     initCallBack() {
-      this.dataLoading = false
+      this.dataLoading = true
+      let loadingCount = 0
       // 如果含有跳转参数 进行触发
       const tempParam = localStorage.getItem('jumpInfoParam')
+      // 添加外部参数
+      const attachParamsEncode = this.$route.query.attachParams
+      tempParam && loadingCount++
+      attachParamsEncode && loadingCount++
+
+      if (attachParamsEncode) {
+        try {
+          const Base64 = require('js-base64').Base64
+          const attachParam = JSON.parse(Base64.decode(attachParamsEncode))
+          getOuterParamsInfo(this.panelId).then(rsp => {
+            if (--loadingCount === 0) {
+              this.dataLoading = false
+            }
+            this.$store.commit('setNowPanelOuterParamsInfo', rsp.data)
+            this.$store.commit('addOuterParamsFilter', attachParam)
+          })
+        } catch (e) {
+          if (--loadingCount === 0) {
+            this.dataLoading = false
+          }
+          console.log('outerParams Deocode error：', e)
+        }
+      }
       if (tempParam) {
         localStorage.removeItem('jumpInfoParam')
         const jumpParam = JSON.parse(tempParam)
@@ -87,13 +112,24 @@ export default {
           sourceFieldId: jumpParam.sourceFieldId,
           targetPanelId: this.panelId
         }
-        this.dataLoading = true
-        // 刷新跳转目标仪表板联动信息
-        queryTargetPanelJumpInfo(jumpRequestParam).then(rsp => {
-          this.dataLoading = false
-          this.$store.commit('setNowTargetPanelJumpInfo', rsp.data)
-          this.$store.commit('addViewTrackFilter', jumpParam)
-        })
+        try {
+          // 刷新跳转目标仪表板联动信息
+          queryTargetPanelJumpInfo(jumpRequestParam).then(rsp => {
+            if (--loadingCount === 0) {
+              this.dataLoading = false
+            }
+            this.$store.commit('setNowTargetPanelJumpInfo', rsp.data)
+            this.$store.commit('addViewTrackFilter', jumpParam)
+          })
+        } catch (e) {
+          if (--loadingCount === 0) {
+            this.dataLoading = false
+          }
+          console.log('queryTargetPanelJumpInfo error：', e)
+        }
+      }
+      if (loadingCount === 0) {
+        this.dataLoading = false
       }
     },
     resetID(data) {

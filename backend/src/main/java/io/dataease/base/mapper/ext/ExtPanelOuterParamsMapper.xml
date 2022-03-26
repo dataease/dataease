@@ -17,6 +17,13 @@
     </collection>
   </resultMap>
 
+    <resultMap id="AllOuterParamsMap" type="io.dataease.dto.panel.outerParams.PanelOuterParamsInfoDTO">
+        <result column="sourceInfo" jdbcType="VARCHAR" property="sourceInfo"/>
+        <collection property="targetInfoList" ofType="String">
+            <result column="targetInfo" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
   <select id="getOuterParamsInfo" resultMap="OuterParamsInfoMap">
         SELECT
             pop.panel_id,
@@ -76,6 +83,17 @@
             pop.panel_id = #{panelId}
 	</delete>
 
+    <select id="getPanelOuterParamsInfo" resultMap="AllOuterParamsMap">
+        SELECT DISTINCT
+            param_name AS sourceInfo,
+            CONCAT( poptvi.target_view_id, '#', poptvi.target_field_id ) AS targetInfo
+        FROM
+            panel_outer_params pop
+            LEFT JOIN panel_outer_params_info popi ON pop.params_id = popi.params_id
+            LEFT JOIN panel_outer_params_target_view_info poptvi ON popi.params_info_id = poptvi.params_info_id
+        WHERE
+            pop.panel_id = #{panelId}
+    </select>
 
 
 </mapper>

@@ -1382,6 +1382,7 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    repeat_params: 'Repeat Params Exist',
     enable_outer_param_set: 'Enable Outer Param Set',
     select_param: 'Please Select Param...',
     add_param_link_field: "Add Params' Linked Field",

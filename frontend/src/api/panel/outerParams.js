@@ -7,13 +7,19 @@ export function queryWithPanelId(panelId) {
   })
 }
 
-
-
 export function updateOuterParamsSet(requestInfo) {
   return request({
     url: '/outerParams/updateOuterParamsSet',
     method: 'post',
     data: requestInfo,
+    loading: true
+  })
+}
+
+export function getOuterParamsInfo(panelId) {
+  return request({
+    url: '/outerParams/getOuterParamsInfo/' + panelId,
+    method: 'get',
     loading: true
   })
 }
