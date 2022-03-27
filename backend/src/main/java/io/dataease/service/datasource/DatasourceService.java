@@ -59,6 +59,11 @@ public class DatasourceService {
 
     @DeCleaner(DePermissionType.DATASOURCE)
     public Datasource addDatasource(Datasource datasource) throws Exception{
+        try{
+            DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasource.getType());
+        }catch (Exception e){
+            throw e;
+        }
         checkName(datasource);
         long currentTimeMillis = System.currentTimeMillis();
         datasource.setId(UUID.randomUUID().toString());

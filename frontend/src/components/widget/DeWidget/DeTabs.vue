@@ -1,6 +1,19 @@
 <template>
   <div class="de-tabs-div">
-    <el-tabs v-model="activeTabName" type="card" class="de-tabs" @tab-click="handleClick">
+    <async-solt-component
+      v-model="activeTabName"
+      :url="url"
+      type="card"
+      style-type="radioGroup"
+      class="de-tabs-height"
+      :font-color="fontColor"
+      :active-color="activeColor"
+      :border-color="borderColor"
+      :border-active-color="borderActiveColor"
+      @tab-click="handleClick"
+    >
+      <!--  <plugin-com ref="dataease-tabs" v-model="activeTabName" type="card" class="de-tabs" component-name="dataease-tabs" @tab-click="handleClick"> -->
+      <!-- <el-tabs v-model="activeTabName" type="card" class="de-tabs" @tab-click="handleClick"> -->
       <el-tab-pane
         v-for="(item, index) in element.options.tabList"
         :key="item.name+index"
@@ -58,7 +71,8 @@
         </div>
 
       </el-tab-pane>
-    </el-tabs>
+    </async-solt-component>
+    <!-- </el-tabs> -->
 
     <el-dialog
       :title="$t('detabs.eidttitle')"
@@ -108,7 +122,7 @@
 </template>
 
 <script>
-
+import AsyncSoltComponent from '@/components/AsyncSoltComponent'
 import ViewSelect from '@/views/panel/ViewSelect'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
@@ -118,7 +132,7 @@ import { chartCopy } from '@/api/chart/chart'
 import { buildFilterMap } from '@/utils/conditionUtil'
 export default {
   name: 'DeTabls',
-  components: { ViewSelect },
+  components: { ViewSelect, AsyncSoltComponent },
   props: {
     element: {
       type: Object,
@@ -150,7 +164,13 @@ export default {
       dialogVisible: false,
       textarea: '',
       curItem: null,
-      viewDialogVisible: false
+      viewDialogVisible: false,
+      url: '/api/pluginCommon/component/dataease-tabs'
+      /* fontColor: '#999999',
+      activeColor: '#f18406',
+
+      borderColor: '#999999',
+      borderActiveColor: '#f18406' */
 
     }
   },
@@ -165,11 +185,24 @@ export default {
       const map = buildFilterMap(this.componentData)
       return map
     },
+
     ...mapState([
       'componentData',
       'curComponent',
       'mobileLayoutStatus'
-    ])
+    ]),
+    fontColor() {
+      return this.element && this.element.style && this.element.style.headFontColor || 'none'
+    },
+    activeColor() {
+      return this.element && this.element.style && this.element.style.headFontActiveColor || 'none'
+    },
+    borderColor() {
+      return this.element && this.element.style && this.element.style.headBorderColor || 'none'
+    },
+    borderActiveColor() {
+      return this.element && this.element.style && this.element.style.headBorderActiveColor || 'none'
+    }
   },
   watch: {
     curComponent: {
@@ -315,7 +348,7 @@ export default {
     height: 100%;
     overflow: hidden;
   }
-  .de-tabs {
+  .de-tabs-height {
     height: 100%;
   }
 

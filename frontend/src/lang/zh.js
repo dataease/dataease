@@ -279,7 +279,7 @@ export default {
     id: 'ID',
     millisecond: '毫秒',
     cannot_be_null: '不能为空',
-    required: '{0}是必填的',
+    required: '必填',
     already_exists: '名称不能重复',
     modifier: '修改人',
     validate: '校验',
@@ -652,7 +652,8 @@ export default {
     account: '账户不能为空',
     test_recipients: '测试收件人',
     tip: '提示：仅用来作为测试邮件收件人',
-    engine_mode_setting: '引擎设置'
+    engine_mode_setting: '引擎设置',
+    kettle_setting: 'Kettle 设置'
   },
   chart: {
     save_snapshot: '保存缩略图',
@@ -1302,6 +1303,9 @@ export default {
     user_name: '用户名',
     password: '密码',
     host: '主机名/IP地址',
+    doris_host: 'Doris 地址',
+    query_port: 'Query Port',
+    http_port: 'Http Port',
     port: '端口',
     datasource_url: '地址',
     please_input_datasource_url: '请输入 Elasticsearch 地址，如: http://es_host:es_port',
@@ -1333,6 +1337,10 @@ export default {
     initial_pool_size: '初始连接数',
     min_pool_size: '最小连接数',
     max_pool_size: '最大连接数',
+    bucket_num: 'Bucket 数量',
+    replication_num: '副本数量',
+    please_input_bucket_num: '请输入 Bucket 数量',
+    please_input_replication_num: '请输入副本数量',
     max_idle_time: '最大空闲(秒)',
     acquire_increment: '增长数',
     connect_timeout: '连接超时(秒)',
@@ -1947,5 +1955,13 @@ export default {
     email: '邮箱：',
     tel: '电话：',
     web: '网址：'
+  },
+  kettle: {
+    add: '添加 Kettle 服务',
+    status: '状态',
+    carte: 'Kettle 地址',
+    port: '端口',
+    user: '用户名',
+    passwd: '密码'
   }
 }

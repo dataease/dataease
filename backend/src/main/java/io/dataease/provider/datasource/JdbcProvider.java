@@ -487,7 +487,6 @@ public class JdbcProvider extends DatasourceProvider {
                 break;
             case impala:
                 ImpalaConfiguration impalaConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), ImpalaConfiguration.class);
-                System.out.println(new Gson().toJson(impalaConfiguration));
                 username = impalaConfiguration.getUsername();
                 password = impalaConfiguration.getPassword();
                 driver = impalaConfiguration.getDriver();

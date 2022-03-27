@@ -778,8 +778,8 @@ public class MysqlQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     whereName = originName;
                 }
-            } else if (field.getDeType() == 0) {
-                whereName = String.format(MysqlConstants.CAST, originName, MysqlConstants.VARCHAR);
+            } else if (field.getDeType() == 0 && field.getDeExtractType() == 0) {
+                whereName = String.format(MysqlConstants.CAST, originName, MysqlConstants.CHAR);
             } else {
                 whereName = originName;
             }
@@ -865,8 +865,8 @@ public class MysqlQueryProvider extends QueryProvider {
                     String cast = String.format(MysqlConstants.CAST, originName, MysqlConstants.DEFAULT_INT_FORMAT) + "/1000";
                     whereName = String.format(MysqlConstants.FROM_UNIXTIME, cast, MysqlConstants.DEFAULT_DATE_FORMAT);
                 }
-            } else if (field.getDeType() == 0) {
-                whereName = String.format(MysqlConstants.CAST, originName, MysqlConstants.VARCHAR);
+            } else if (field.getDeType() == 0 && field.getDeExtractType() == 0) {
+                whereName = String.format(MysqlConstants.CAST, originName, MysqlConstants.CHAR);
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                     whereName = String.format(MysqlConstants.CAST, originName, MysqlConstants.DEFAULT_FLOAT_FORMAT);
@@ -967,8 +967,8 @@ public class MysqlQueryProvider extends QueryProvider {
                     String from_unixtime = String.format(MysqlConstants.FROM_UNIXTIME, cast, MysqlConstants.DEFAULT_DATE_FORMAT);
                     fieldName = String.format(MysqlConstants.DATE_FORMAT, from_unixtime, format);
                 }
-            } else if (x.getDeType() == 0) {
-                fieldName = String.format(MysqlConstants.CAST, originField, MysqlConstants.VARCHAR);
+            } else if (x.getDeType() == 0 && x.getDeExtractType() == 0) {
+                fieldName = String.format(MysqlConstants.CAST, originField, MysqlConstants.CHAR);
             } else {
                 fieldName = originField;
             }

@@ -43,7 +43,6 @@ public class MongoQueryProvider extends QueryProvider {
 
     @Override
     public Integer transFieldType(String field) {
-        System.out.println(field);
         field = field.toUpperCase();
         switch (field) {
             case "CHAR":

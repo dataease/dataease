@@ -33,7 +33,7 @@ import java.util.*;
 public class ExcelXlsxReader extends DefaultHandler {
 
     /**
-     * 自定义获取表格某些信息
+     * 自定义获取表格某些信
      */
     public Map map = new TreeMap<String,String>();
     /**

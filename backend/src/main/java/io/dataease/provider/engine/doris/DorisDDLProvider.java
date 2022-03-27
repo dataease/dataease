@@ -1,7 +1,12 @@
 package io.dataease.provider.engine.doris;
 
+import com.google.gson.Gson;
 import io.dataease.base.domain.DatasetTableField;
+import io.dataease.base.domain.Datasource;
 import io.dataease.commons.utils.TableUtils;
+import io.dataease.dto.datasource.DorisConfiguration;
+import io.dataease.dto.datasource.JdbcConfiguration;
+import io.dataease.dto.datasource.MysqlConfiguration;
 import io.dataease.provider.DDLProviderImpl;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +21,8 @@ public class DorisDDLProvider extends DDLProviderImpl {
     private static final String creatTableSql = "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
             "Column_Fields" +
             "UNIQUE KEY(dataease_uuid)\n" +
-            "DISTRIBUTED BY HASH(dataease_uuid) BUCKETS 10\n" +
-            "PROPERTIES(\"replication_num\" = \"1\");";
+            "DISTRIBUTED BY HASH(dataease_uuid) BUCKETS BUCKETS_NUM\n" +
+            "PROPERTIES(\"replication_num\" = \"ReplicationNum\");";
 
     @Override
     public String createView(String name, String viewSQL) {
@@ -41,9 +46,12 @@ public class DorisDDLProvider extends DDLProviderImpl {
     }
 
     @Override
-    public String createTableSql(String tableName, List<DatasetTableField> datasetTableFields) {
+    public String createTableSql(String tableName, List<DatasetTableField> datasetTableFields, Datasource engine) {
+        DorisConfiguration dorisConfiguration = new Gson().fromJson(engine.getConfiguration(), DorisConfiguration.class);
         String dorisTableColumnSql = createDorisTableColumnSql(datasetTableFields);
-        return creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql);
+        return creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql)
+                .replace("BUCKETS_NUM", dorisConfiguration.getBucketNum().toString())
+                .replace("ReplicationNum", dorisConfiguration.getReplicationNum().toString());
     }
 
     private String createDorisTableColumnSql(final List<DatasetTableField> datasetTableFields) {

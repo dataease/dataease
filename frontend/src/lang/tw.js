@@ -651,7 +651,8 @@ export default {
     account: '賬戶不能爲空',
     test_recipients: '測試收件人',
     tip: '提示：僅用來作爲測試郵件收件人',
-    engine_mode_setting: '引擎設置'
+    engine_mode_setting: '引擎設置',
+    kettle_setting: 'Kettle 設置'
   },
   chart: {
     save_snapshot: '保存縮略圖',
@@ -1330,6 +1331,13 @@ export default {
     min_pool_size: '最小連接數',
     max_pool_size: '最大連接數',
     max_idle_time: '最大空閑(秒)',
+    doris_host: 'Doris 地址',
+    query_port: 'Query Port',
+    http_port: 'Http Port',
+    bucket_num: 'Bucket 數量',
+    replication_num: '副本數量',
+    please_input_bucket_num: '請輸入 Bucket 數量',
+    please_input_replication_num: '請輸入副本數量',
     acquire_increment: '增長數',
     connect_timeout: '連接超時(秒)',
     please_input_initial_pool_size: '請輸入初始連接數',
@@ -1939,5 +1947,13 @@ export default {
     email: '郵箱：',
     tel: '電話：',
     web: '網址：'
+  },
+  kettle: {
+    add: '添加 Kettle 服務',
+    status: '狀態',
+    carte: 'Kettle 地址',
+    port: '端口',
+    user: '用戶名',
+    passwd: '密碼'
   }
 }

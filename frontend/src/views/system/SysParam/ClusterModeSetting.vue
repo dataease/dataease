@@ -11,27 +11,7 @@
     >
       <el-row>
         <el-col>
-          <el-form-item :label="$t('datasource.type')" prop="type">
-            <el-select
-              v-model="form.type"
-              :placeholder="$t('datasource.please_choose_type')"
-
-              @change="changeType()"
-              filterable
-            >
-              <el-option
-                v-for="item in allTypes"
-                :key="item.name"
-                :label="item.label"
-                :value="item.name"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col>
-          <el-form-item :label="$t('datasource.host')" prop="configuration.host">
+          <el-form-item :label="$t('datasource.doris_host')" prop="configuration.host">
             <el-input v-model="form.configuration.host"/>
           </el-form-item>
         </el-col>
@@ -59,18 +39,40 @@
       </el-row>
       <el-row>
         <el-col>
-          <el-form-item :label="$t('datasource.port')" prop="configuration.port">
+          <el-form-item :label="$t('datasource.query_port')" prop="configuration.port">
             <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0"/>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col>
-          <el-form-item :label="$t('datasource.extra_params')">
-            <el-input v-model="form.configuration.extraParams"/>
+          <el-form-item :label="$t('datasource.http_port')" prop="configuration.port">
+            <el-input v-model="form.configuration.httpPort" autocomplete="off" type="number" min="0"/>
           </el-form-item>
         </el-col>
       </el-row>
+
+      <el-collapse>
+        <el-collapse-item :title="$t('datasource.priority')" name="1">
+          <el-form-item :label="$t('datasource.replication_num')" prop="configuration.replicationNum">
+            <el-input v-model="form.configuration.replicationNum" autocomplete="off" type="number" min="1"/>
+          </el-form-item>
+          <el-form-item :label="$t('datasource.bucket_num')" prop="configuration.bucketNum">
+            <el-input v-model="form.configuration.bucketNum" autocomplete="off" type="number" min="1"/>
+          </el-form-item>
+
+          <el-form-item :label="$t('datasource.initial_pool_size')" prop="configuration.initialPoolSize">
+            <el-input v-model="form.configuration.initialPoolSize" autocomplete="off" type="number" min="0" size="small"/>
+          </el-form-item>
+          <el-form-item :label="$t('datasource.min_pool_size')" prop="configuration.minPoolSize">
+            <el-input v-model="form.configuration.minPoolSize" autocomplete="off" type="number" min="0"/>
+          </el-form-item>
+          <el-form-item :label="$t('datasource.max_pool_size')" prop="configuration.maxPoolSize">
+            <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0"/>
+          </el-form-item>
+        </el-collapse-item>
+      </el-collapse>
+
     </el-form>
     <div>
       <el-button type="primary" size="small" @click="validaDatasource">
@@ -95,19 +97,25 @@ import {engineInfo, validate, save} from '@/api/system/engine'
 import i18n from "@/lang";
 
 export default {
-  name: 'SimpleMode',
+  name: 'ClusterMode',
   data() {
     return {
       form:
         {
-          type: 'engine_mysql',
+          type: 'engine_doris',
           configuration: {
             host: '',
             dataBase: '',
             username: '',
             password: '',
             port: '',
-            extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
+            httpPort: 8030,
+            extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true',
+            replicationNum: 1,
+            bucketNum: 10,
+            minPoolSize: 5,
+            maxPoolSize: 50,
+            initialPoolSize: 5
           }
         },
       originConfiguration: {
@@ -116,7 +124,13 @@ export default {
         username: '',
         password: '',
         port: '',
-        extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
+        httpPort: 8030,
+        extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true',
+        replicationNum: 1,
+        bucketNum: 10,
+        minPoolSize: 5,
+        maxPoolSize: 50,
+        initialPoolSize: 5
       },
       input: '',
       visible: true,
@@ -146,6 +160,20 @@ export default {
           {
             required: true,
             message: this.$t('datasource.please_input_data_base'),
+            trigger: ['change', 'blur']
+          }
+        ],
+        'configuration.replicationNum': [
+          {
+            required: true,
+            message: this.$t('datasource.please_input_replication_num'),
+            trigger: ['change', 'blur']
+          }
+        ],
+        'configuration.bucketNum': [
+          {
+            required: true,
+            message: this.$t('datasource.please_input_bucket_num'),
             trigger: ['change', 'blur']
           }
         ]
