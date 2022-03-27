@@ -1390,6 +1390,7 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    web_set_tips: 'Some Websites Cannot Be Displayed Because Of Cross Domain Problems  ',
     repeat_params: 'Repeat Params Exist',
     enable_outer_param_set: 'Enable Outer Param Set',
     select_param: 'Please Select Param...',
@@ -1401,6 +1402,7 @@ export default {
     input_param_name: "Please Input Param's Name",
     params_setting: 'Outer Params Setting',
     template_view_tips: "Template's Views. Please Change",
+    edit_web_tips: 'The Inner Event Can Be Used When Then Panel Not In Edit Status',
     no_auth_role: 'Unshared roles',
     auth_role: 'Shared roles',
     picture_limit: 'Only pictures can be inserted',
@@ -1600,7 +1602,9 @@ export default {
     play_once: 'Once',
     play_circle: 'Circle',
     video_links: 'Video Links',
+    web_url: 'Web URL',
     video_add_tips: 'Please Add Video Info...',
+    web_add_tips: 'Please Add Web Url Info...',
     panel_view_result_show: 'View Result Show',
     panel_view_result_tips: 'Chose "Panel" Will Overwrite View`s Result,Range 1~10000',
     timeout_refresh: 'Timeout，Will Refresh...',

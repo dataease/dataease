@@ -86,6 +86,11 @@ export const VIDEOLINKS = {
 
 }
 
+// 嵌套页面信息
+export const FRAMELINKS = {
+  src: ''
+}
+
 export const assistList = [
   {
     id: '10001',
@@ -133,13 +138,21 @@ export const pictureList = [
   }
 ]
 
-export const dateList = [
+export const otherList = [
   {
     id: '30001',
     component: 'de-show-date',
     type: 'de-show-date',
     label: '时间',
     icon: 'iconfont icon-shijian',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '30002',
+    component: 'de-frame',
+    type: 'de-frame',
+    label: '网页',
+    icon: 'iconfont icon-iframe',
     defaultClass: 'text-filter'
   }
 ]
@@ -350,6 +363,27 @@ const list = [
     y: 1,
     sizex: 10,
     sizey: 2,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '30002',
+    component: 'de-frame',
+    type: 'de-frame',
+    label: '',
+    icon: 'iconfont icon-iframe',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 400,
+      height: 200,
+      borderRadius: ''
+    },
+    frameLinks: FRAMELINKS,
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
     miniSizex: 1,
     miniSizey: 1
   },

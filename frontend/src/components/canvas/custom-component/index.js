@@ -7,6 +7,7 @@ import Group from '@/components/canvas/custom-component/Group'
 import RectShape from '@/components/canvas/custom-component/RectShape'
 import UserView from '@/components/canvas/custom-component/UserView'
 import DeVideo from '@/components/canvas/custom-component/DeVideo'
+import DeFrame from '@/components/canvas/custom-component/DeFrame'
 
 Vue.component('Picture', Picture)
 Vue.component('VText', VText)
@@ -15,4 +16,5 @@ Vue.component('Group', Group)
 Vue.component('RectShape', RectShape)
 Vue.component('UserView', UserView)
 Vue.component('DeVideo', DeVideo)
+Vue.component('DeFrame', DeFrame)
 

@@ -134,6 +134,11 @@
         </el-tooltip>
       </div>
 
+      <div v-if="attrShow('frameLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-tooltip content="网页地址">
+          <FrameLinks :link-info="curComponent.frameLinks" />
+        </el-tooltip>
+      </div>
       <div v-if="attrShow('date-format')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <el-tooltip content="日期格式">
           <date-format :format-info="curComponent.formatInfo" />
@@ -156,9 +161,10 @@ import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
 import VideoLinks from '@/components/canvas/components/Editor/VideoLinks'
 import DateFormat from '@/components/canvas/components/Editor/DateFormat'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
+import FrameLinks from '@/components/canvas/components/Editor/FrameLinks'
 
 export default {
-  components: { Hyperlinks, DateFormat, VideoLinks },
+  components: { FrameLinks, Hyperlinks, DateFormat, VideoLinks },
   props: {
     scrollLeft: {
       type: Number,
@@ -292,6 +298,10 @@ export default {
       'de-video': [
         'opacity',
         'videoLinks'
+      ],
+      'de-frame': [
+        'opacity',
+        'frameLinks'
       ]
     }
   },
