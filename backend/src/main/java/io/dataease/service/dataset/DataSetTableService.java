@@ -24,6 +24,7 @@ import io.dataease.dto.dataset.union.UnionParamDTO;
 import io.dataease.dto.datasource.TableField;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.loader.ClassloaderResponsity;
 import io.dataease.provider.ProviderFactory;
@@ -115,6 +116,10 @@ public class DataSetTableService {
     public void batchInsert(List<DataSetTableRequest> datasetTable) throws Exception {
         for (DataSetTableRequest table : datasetTable) {
             save(table);
+            // 清理权限缓存
+            CacheUtils.removeAll(AuthConstants.USER_DATASET_NAME);
+            CacheUtils.removeAll(AuthConstants.ROLE_DATASET_NAME);
+            CacheUtils.removeAll(AuthConstants.DEPT_DATASET_NAME);
         }
     }
 
