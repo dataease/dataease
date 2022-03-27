@@ -54,6 +54,7 @@
     "vue-axios": "3.2.4",
     "vue-clipboard2": "0.3.1",
     "vue-codemirror": "^4.0.6",
+    "vue-friendly-iframe": "^0.20.0",
     "vue-fullscreen": "^2.5.2",
     "vue-i18n": "7.3.2",
     "vue-proportion-directive": "^1.1.0",

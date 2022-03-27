@@ -1399,6 +1399,7 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    web_set_tips: '部分网站可能存在跨域问题无法显示',
     repeat_params: '存在名称重复的参数',
     enable_outer_param_set: '启用外部参数设置',
     select_param: '请选择参数...',
@@ -1410,6 +1411,7 @@ export default {
     input_param_name: '请输入参数名称',
     params_setting: '外部参数设置',
     template_view_tips: '当前是模板视图,请点击更换数据集',
+    edit_web_tips: '编辑状态不可操作网页内部',
     no_auth_role: '未分享角色',
     auth_role: '已分享角色',
     picture_limit: '只能插入图片',
@@ -1610,7 +1612,9 @@ export default {
     play_once: '播放一次',
     play_circle: '循环播放',
     video_links: '视频链接',
+    web_url: '网页地址',
     video_add_tips: '请点击添加配置视频信息...',
+    web_add_tips: '请点击添加网页信息...',
     panel_view_result_show: '视图结果展示',
     panel_view_result_tips: '选择仪表板会覆盖视图的结果展示数量，取值范围1~10000',
     timeout_refresh: '请求超时，稍后刷新...',

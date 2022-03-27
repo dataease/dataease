@@ -45,6 +45,10 @@ Vue.use(vcolorpicker)
 import fullscreen from 'vue-fullscreen'
 Vue.use(fullscreen)
 
+import VueFriendlyIframe from 'vue-friendly-iframe'
+
+Vue.use(VueFriendlyIframe)
+
 // import TEditor from '@/components/Tinymce/index.vue'
 // Vue.component('TEditor', TEditor)
 
