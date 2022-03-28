@@ -1717,6 +1717,7 @@ export default {
       view.customStyle = JSON.stringify(this.view.customStyle)
       view.customFilter = JSON.stringify(this.view.customFilter)
       view.senior = JSON.stringify(this.view.senior)
+      view.title = JSON.stringify(this.view.title)
       // view.data = this.data
       this.chart = view
 
