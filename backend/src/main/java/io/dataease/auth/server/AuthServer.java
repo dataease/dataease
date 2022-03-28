@@ -91,6 +91,11 @@ public class AuthServer implements AuthApi {
 
         SysUserEntity user = authUserService.getUserByName(username);
 
+        // 验证登录类型是否与用户类型相同
+        if (!sysUserService.validateLoginType(user.getFrom(), loginType)) {
+            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+        }
+
         if (ObjectUtils.isEmpty(user)) {
             DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
