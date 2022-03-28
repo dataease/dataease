@@ -21,6 +21,8 @@ public class PanelLinkJumpInfo implements Serializable {
 
     private Boolean checked;
 
+    private Boolean attachParams;
+
     private String copyFrom;
 
     private String copyId;

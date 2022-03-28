@@ -38,6 +38,7 @@
             panel_link_jump_info.content,
             ifnull( panel_link_mapping.uuid, panel_link_mapping.id ) AS publicJumpId,
             ifnull( panel_link_jump_info.checked, 0 ) AS checked,
+            ifnull( panel_link_jump_info.attach_params, 0 ) AS attach_params,
             panel_link_jump_target_view_info.target_view_id,
             panel_link_jump_target_view_info.target_field_id
         FROM
@@ -198,6 +199,7 @@
             source_field_id,
             content,
             `checked`,
+            `attach_params`,
             copy_from,
             copy_id
         ) SELECT
@@ -209,6 +211,7 @@
         source_field_id,
         content,
         `checked`,
+        `attach_params`,
         id AS copy_from,
         #{copyId}
         FROM

@@ -71,6 +71,9 @@
                   <el-radio label="_blank">{{ $t('panel.new_window') }}</el-radio>
                 </el-radio-group>
               </el-col>
+              <el-col v-if="linkJumpInfo.linkType==='outer'" :span="9">
+                <el-checkbox v-model="linkJumpInfo.attachParams">附加点击参数</el-checkbox>
+              </el-col>
             </el-row>
             <el-row v-if="linkJumpInfo.linkType==='inner'" style="margin-top: 5px;" class="top_border">
               <el-row style="margin-top: 10px">
@@ -291,6 +294,9 @@ export default {
       }
       if (!this.linkJumpInfo.content) {
         this.linkJumpInfo.content = 'http://'
+      }
+      if (!this.linkJumpInfo.attachParams) {
+        this.linkJumpInfo.attachParams = false
       }
       if (this.linkJumpInfo.targetPanelId) {
         this.getPanelViewList(this.linkJumpInfo.targetPanelId)
