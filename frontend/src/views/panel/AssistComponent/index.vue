@@ -57,7 +57,7 @@
 
       <div class="filter-widget-content">
         <div
-          v-for="(item, index) in dateList"
+          v-for="(item, index) in otherList"
           :key="index"
           :data-id="item.id"
           :data-index="index"
@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import componentList, { assistList, pictureList, dateList } from '@/components/canvas/custom-component/component-list'
+import componentList, { assistList, pictureList, otherList } from '@/components/canvas/custom-component/component-list'
 import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
@@ -93,7 +93,7 @@ export default {
     return {
       assistList,
       pictureList,
-      dateList
+      otherList
     }
   },
   computed: {

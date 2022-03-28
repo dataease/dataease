@@ -420,7 +420,7 @@
                 </dependencies>
             </plugin>
 
-            
+
         </plugins>
     </build>
 
@@ -486,7 +486,7 @@
             </properties>
         </profile>
     </profiles>
-    
+
 
     <repositories>
         <repository>

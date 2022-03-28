@@ -7,12 +7,15 @@ import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.service.panel.PanelLinkService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -59,6 +62,12 @@ public class IndexController {
         }
         HttpServletResponse response = ServletUtils.response();
         try {
+            // TODO 增加仪表板外部参数
+            HttpServletRequest request = ServletUtils.request();
+            String attachParams = request.getParameter("attachParams");
+            if(StringUtils.isNotEmpty(attachParams)){
+                url = url+"&attachParams="+attachParams;
+            }
             response.sendRedirect(url);
         } catch (IOException e) {
             LogUtil.error(e.getMessage());

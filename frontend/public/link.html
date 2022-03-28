@@ -32,12 +32,16 @@
   const link = getQueryVariable('link')
   const user = getQueryVariable('user')
   const terminal = getQueryVariable('terminal')
+  const attachParams = getQueryVariable('attachParams')
   let url = "/#/delink?link=" + encodeURIComponent(link)
   if (terminal) {
     url += '&terminal=' + terminal
   }
   if (user) {
     url += '&user=' + user
+  }
+  if (attachParams) {
+    url += '&attachParams=' + attachParams
   }
   window.location.href = url
 </script>

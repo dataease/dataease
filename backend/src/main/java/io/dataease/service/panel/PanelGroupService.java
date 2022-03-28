@@ -6,6 +6,7 @@ import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.*;
+import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.PanelConstants;
@@ -24,6 +25,7 @@ import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseRequest;
 import io.dataease.dto.panel.po.PanelViewInsertDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.listener.util.CacheUtils;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.sys.SysAuthService;
@@ -119,6 +121,8 @@ public class PanelGroupService {
             checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, null, request.getNodeType());
             panelId = newPanel(request);
             panelGroupMapper.insert(request);
+            // 清理权限缓存
+            clearPermissionCache();
         } else if ("toDefaultPanel".equals(request.getOptType())) {
             panelId = UUID.randomUUID().toString();
             // 转存为默认仪表板
@@ -133,8 +137,12 @@ public class PanelGroupService {
             newDefaultPanel.setCreateBy(AuthUtils.getUser().getUsername());
             checkPanelName(newDefaultPanel.getName(), newDefaultPanel.getPid(), PanelConstants.OPT_TYPE_INSERT, newDefaultPanel.getId(), newDefaultPanel.getNodeType());
             panelGroupMapper.insertSelective(newDefaultPanel);
+            // 清理权限缓存
+            clearPermissionCache();
         } else if ("copy".equals(request.getOptType())) {
             panelId = this.panelGroupCopy(request, null, true);
+            // 清理权限缓存
+            clearPermissionCache();
         } else if ("move".equals(request.getOptType())) {
             PanelGroupWithBLOBs panelInfo = panelGroupMapper.selectByPrimaryKey(request.getId());
             if (panelInfo.getPid().equalsIgnoreCase(request.getPid())) {
@@ -431,9 +439,10 @@ public class PanelGroupService {
         }
         return null;
     }
-
-    public void findPanelAttachInfo(String panelId) {
-
+    private void clearPermissionCache(){
+        CacheUtils.removeAll(AuthConstants.USER_PANEL_NAME);
+        CacheUtils.removeAll(AuthConstants.ROLE_PANEL_NAME);
+        CacheUtils.removeAll(AuthConstants.DEPT_PANEL_NAME);
     }
 
 

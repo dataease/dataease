@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "4920096",
+      "name": "iframe",
+      "font_class": "iframe",
+      "unicode": "e6de",
+      "unicode_decimal": 59102
+    },
+    {
       "icon_id": "19610186",
       "name": "参数",
       "font_class": "canshu",

@@ -1,6 +1,7 @@
 package io.dataease.controller.panel;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.dto.panel.outerParams.PanelOuterParamsBaseResponse;
 import io.dataease.dto.panel.outerParams.PanelOuterParamsDTO;
 import io.dataease.service.panel.PanelOuterParamsService;
 import io.swagger.annotations.Api;
@@ -33,5 +34,11 @@ public class PanelOuterParamsController {
     @PostMapping("/updateOuterParamsSet")
     public void updateOuterParamsSet(@RequestBody PanelOuterParamsDTO OuterParamsDTO) {
         panelOuterParamsService.updateOuterParamsSet(OuterParamsDTO);
+    }
+
+    @ApiOperation("仪表板外部参数映射关系")
+    @GetMapping("/getOuterParamsInfo/{panelId}")
+    public PanelOuterParamsBaseResponse getOuterParamsInfo(@PathVariable("panelId") String panelId){
+       return panelOuterParamsService.getOuterParamsInfo(panelId);
     }
 }

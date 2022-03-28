@@ -5,15 +5,19 @@ import io.dataease.base.mapper.PanelOuterParamsMapper;
 import io.dataease.base.mapper.PanelOuterParamsTargetViewInfoMapper;
 import io.dataease.base.mapper.ext.ExtPanelOuterParamsMapper;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpDTO;
+import io.dataease.dto.panel.outerParams.PanelOuterParamsBaseResponse;
 import io.dataease.dto.panel.outerParams.PanelOuterParamsDTO;
+import io.dataease.dto.panel.outerParams.PanelOuterParamsInfoDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Author: wangjiahao
@@ -65,6 +69,11 @@ public class PanelOuterParamsService {
                 panelOuterParamsTargetViewInfoMapper.insertSelective(targetViewInfo);
             });
         });
+    }
+
+    public PanelOuterParamsBaseResponse getOuterParamsInfo(String panelId){
+        List<PanelOuterParamsInfoDTO>  result = extPanelOuterParamsMapper.getPanelOuterParamsInfo(panelId);
+        return new PanelOuterParamsBaseResponse(Optional.ofNullable(result).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(PanelOuterParamsInfoDTO::getSourceInfo, PanelOuterParamsInfoDTO::getTargetInfoList)));
     }
 
 }

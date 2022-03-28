@@ -441,7 +441,8 @@ export default {
         'de-tabs',
         'rect-shape',
         'de-show-date',
-        'de-video'
+        'de-video',
+        'de-frame'
       ],
       enableSureButton: false,
       filterFromDrag: false,
