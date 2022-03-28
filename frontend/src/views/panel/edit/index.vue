@@ -393,6 +393,7 @@ export default {
   },
   data() {
     return {
+      asideToolType: 'none',
       outerParamsSetVisible: false,
       autoMoveOffSet: 15,
       mobileEditorShow: true,
@@ -460,13 +461,20 @@ export default {
     showAside() {
       return !this.linkageSettingStatus && !this.mobileLayoutStatus
     },
-    // 显示仪表板工具栏
-    showPanelToolsAside() {
-      return !this.curComponent
-    },
     // 显示视图工具栏
     showViewToolsAside() {
       return this.curComponent && this.curComponent.type === 'view'
+    },
+    showViewToolAsideType() {
+      if (this.curComponent) {
+        if (this.curComponent.type === 'view') {
+          return 'view'
+        } else {
+          return 'publicSet'
+        }
+      } else {
+        return 'none'
+      }
     },
     showAttr() {
       if (this.mobileLayoutStatus) {
