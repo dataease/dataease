@@ -93,29 +93,35 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
     public PluginViewSQL getTableObj(PluginViewSet pluginViewSet) {
         String tableName = null;
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(pluginViewSet.getInfo(), DataTableInfoDTO.class);
-        switch (pluginViewSet.getType()) {
-            case "db":
-                tableName = dataTableInfoDTO.getTable();
-                break;
-            case "sql":
-                tableName = dataTableInfoDTO.getSql();
-                break;
-            case "custom":
-                List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId());
-                Datasource ds = new Datasource();
-                ds.setType(pluginViewSet.getDsType());
-                tableName = dataSetTableService.getCustomSQLDatasource(dataTableInfoDTO, list, ds);
-                break;
-            case "union":
-                Datasource datasource = new Datasource();
-                datasource.setType(pluginViewSet.getDsType());
-                Map<String, Object> sqlMap = dataSetTableService.getUnionSQLDatasource(dataTableInfoDTO, datasource);
-                tableName = (String) sqlMap.get("sql");
-                break;
-            default:
-                break;
-        }
+        if (ObjectUtils.isNotEmpty(pluginViewSet.getMode()) && 1 == pluginViewSet.getMode()) {
 
+            tableName = "ds_" + pluginViewSet.getTabelId().replaceAll("-", "_");
+
+        }else {
+            switch (pluginViewSet.getType()) {
+                case "db":
+                    tableName = dataTableInfoDTO.getTable();
+                    break;
+                case "sql":
+                    tableName = dataTableInfoDTO.getSql();
+                    break;
+                case "custom":
+                    List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId());
+                    Datasource ds = new Datasource();
+                    ds.setType(pluginViewSet.getDsType());
+                    tableName = dataSetTableService.getCustomSQLDatasource(dataTableInfoDTO, list, ds);
+                    break;
+                case "union":
+                    Datasource datasource = new Datasource();
+                    datasource.setType(pluginViewSet.getDsType());
+                    Map<String, Object> sqlMap = dataSetTableService.getUnionSQLDatasource(dataTableInfoDTO, datasource);
+                    tableName = (String) sqlMap.get("sql");
+                    break;
+                default:
+                    tableName = dataTableInfoDTO.getTable();
+                    break;
+            }
+        }
         String keyword = ConstantsUtil.constantsValue(pluginViewSet.getDsType(), "KEYWORD_TABLE");
         String tabelName = (tableName.startsWith("(") && tableName.endsWith(")")) ? tableName : String.format(keyword, tableName);
         String tabelAlias = String.format(TABLE_ALIAS_PREFIX, 0);
