@@ -962,7 +962,7 @@ public class DataSetTableService {
         } else {
             ds = engineService.getDeEngine();
             datasourceRequest.setDatasource(ds);
-            sql = getCustomSQLDoris(dataTableInfoDTO, list);
+            sql = getCustomViewSQL(dataTableInfoDTO, list);
         }
         Map<String, Object> res = new HashMap<>();
         try {
@@ -1010,8 +1010,8 @@ public class DataSetTableService {
         }
     }
 
-    // 自助数据集从doris里预览数据
-    private String getCustomSQLDoris(DataTableInfoDTO dataTableInfoDTO, List<DataSetTableUnionDTO> list) {
+    // 自助数据集从数据引擎（dorsi/mysql/...）里预览数据
+    private String getCustomViewSQL(DataTableInfoDTO dataTableInfoDTO, List<DataSetTableUnionDTO> list) {
         Map<String, String[]> customInfo = new TreeMap<>();
         dataTableInfoDTO.getList().forEach(ele -> {
             String table = TableUtils.tableName(ele.getTableId());
@@ -1519,7 +1519,7 @@ public class DataSetTableService {
                 dataSetTableFieldsService.batchEdit(fieldList);
                 // custom 创建doris视图
                 if (datasetTable.getMode() == 1) {
-                    createDorisView(TableUtils.tableName(datasetTable.getId()), getCustomSQLDoris(dataTableInfoDTO,
+                    createDorisView(TableUtils.tableName(datasetTable.getId()), getCustomViewSQL(dataTableInfoDTO,
                             dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId())));
                 }
                 return;
@@ -1670,11 +1670,11 @@ public class DataSetTableService {
     }
 
     private void createDorisView(String dorisTableName, String customSql) throws Exception {
-        Datasource dorisDatasource = engineService.getDeEngine();
+        Datasource engine = engineService.getDeEngine();
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(dorisDatasource);
-        DDLProvider ddlProvider = ProviderFactory.getDDLProvider(dorisDatasource.getType());
+        datasourceRequest.setDatasource(engine);
+        DDLProvider ddlProvider = ProviderFactory.getDDLProvider(engine.getType());
         // 先删除表
         datasourceRequest.setQuery(ddlProvider.dropView(dorisTableName));
         jdbcProvider.exec(datasourceRequest);
@@ -2184,21 +2184,21 @@ public class DataSetTableService {
     private UtilMapper utilMapper;
 
     public void updateDatasetTableStatus() {
-        if(this.isUpdatingDatasetTableStatus){
+        if (this.isUpdatingDatasetTableStatus) {
             return;
-        }else {
+        } else {
             this.isUpdatingDatasetTableStatus = true;
         }
 
         try {
             doUpdate();
-        }catch (Exception e){}
-        finally {
+        } catch (Exception e) {
+        } finally {
             this.isUpdatingDatasetTableStatus = false;
         }
     }
 
-    private void doUpdate(){
+    private void doUpdate() {
         List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(null);
         List<String> activeQrtzInstances = qrtzSchedulerStates.stream()
                 .filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime()
@@ -2250,6 +2250,7 @@ public class DataSetTableService {
             extractDataService.deleteFile("incremental_delete", jobStoppeddDatasetTable.getId());
         }
     }
+
     /*
      * 判断数组中是否有重复的值
      */

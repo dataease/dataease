@@ -182,7 +182,7 @@ export default {
       sourceFieldOption: [],
       targetFieldOption: [],
       targetTable: {},
-      customType: ['db', 'sql', 'excel']
+      customType: ['db', 'sql', 'excel', 'api']
     }
   },
   watch: {
@@ -207,7 +207,7 @@ export default {
         if (this.table.mode === 0) {
           this.customType = ['db']
         } else {
-          this.customType = ['db', 'sql', 'excel']
+          this.customType = ['db', 'sql', 'excel', 'api']
         }
         post('dataset/union/listByTableId/' + this.table.id, {}).then(response => {
           // console.log(response)

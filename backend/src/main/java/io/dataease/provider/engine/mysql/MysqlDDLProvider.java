@@ -22,7 +22,7 @@ public class MysqlDDLProvider extends DDLProviderImpl {
 
     @Override
     public String createView(String name, String viewSQL) {
-        return "CREATE VIEW IF NOT EXISTS " + name + " AS (" + viewSQL + ")";
+        return "CREATE or replace view " + name + " AS (" + viewSQL + ")";
     }
 
     @Override
