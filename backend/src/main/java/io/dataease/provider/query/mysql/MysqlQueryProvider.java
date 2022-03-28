@@ -11,6 +11,7 @@ import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.constants.MySQLConstants;
+import io.dataease.plugins.common.constants.engine.MysqlConstants;
 import io.dataease.provider.QueryProvider;
 import io.dataease.plugins.common.constants.SQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
@@ -294,7 +295,11 @@ public class MysqlQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
                     originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    if (x.getDeType() == 2 || x.getDeType() == 3) {
+                        originField = String.format(MySQLConstants.CAST, String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), MysqlConstants.DEFAULT_FLOAT_FORMAT);
+                    } else {
+                        originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
