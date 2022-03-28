@@ -524,7 +524,7 @@ export default {
     },
 
     jumpClick(param) {
-      let dimension, jumpInfo, sourceInfo
+      let dimension, jumpInfo, sourceInfo, jumpFieldName
       // 倒序取最后一个能匹配的
       for (let i = param.dimensionList.length - 1; i >= 0; i--) {
         dimension = param.dimensionList[i]
@@ -566,7 +566,21 @@ export default {
             })
           }
         } else {
-          const url = jumpInfo.content
+          let url = jumpInfo.content
+          // 是否追加点击参数
+          if (jumpInfo.attachParams && this.chart.data && this.chart.data.sourceFields) {
+            this.chart.data.sourceFields.forEach(item => {
+              if (item.id === dimension.id) {
+                jumpFieldName = item.name
+              }
+            })
+            const urlAttachParams = jumpFieldName + '=' + dimension.value
+            if (url.indexOf('?') > -1) {
+              url = url + '&' + urlAttachParams
+            } else {
+              url = url + '?' + urlAttachParams
+            }
+          }
           window.open(url, jumpInfo.jumpType)
         }
       } else {

@@ -248,3 +248,6 @@ END
 delimiter ;
 
 INSERT INTO `my_plugin`(`plugin_id`, `name`, `store`, `free`, `cost`, `category`, `descript`, `version`, `install_type`, `creator`, `load_mybatis`, `release_time`, `install_time`, `module_name`, `icon`) VALUES (3, 'tabs插件', 'default', 0, 20000, 'panel', 'tabs插件', '1.0-SNAPSHOT', NULL, 'fit2cloud-chenyw', 0, NULL, NULL, 'dataease-extensions-tabs-backend', NULL);
+
+ALTER TABLE `panel_link_jump_info`
+ADD COLUMN `attach_params` tinyint(1) NULL COMMENT '是否附加点击参数' AFTER `checked`;
