@@ -853,7 +853,7 @@ public class DataSetTableService {
 
     public Map<String, Object> getSQLPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
-        if(ds == null){
+        if (ds == null) {
             throw new Exception(Translator.get("i18n_invalid_ds"));
         }
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
@@ -1845,9 +1845,8 @@ public class DataSetTableService {
         List<ExcelSheetData> retrunSheetDataList = new ArrayList<>();
 
         if (StringUtils.isNotEmpty(tableId) && editType == 1) {
-            List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(tableId);
-            datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getExtField() == 0)
-                    .collect(Collectors.toList());
+            List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(tableId)
+                    .stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
             datasetTableFields.sort((o1, o2) -> {
                 if (o1.getColumnIndex() == null) {
                     return -1;
@@ -1857,8 +1856,8 @@ public class DataSetTableService {
                 }
                 return o1.getColumnIndex().compareTo(o2.getColumnIndex());
             });
-            List<String> oldFields = datasetTableFields.stream().map(DatasetTableField::getOriginName)
-                    .collect(Collectors.toList());
+
+            List<String> oldFields = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
             for (ExcelSheetData excelSheetData : excelSheetDataList) {
                 List<TableField> fields = excelSheetData.getFields();
                 List<String> newFields = fields.stream().map(TableField::getRemarks).collect(Collectors.toList());
