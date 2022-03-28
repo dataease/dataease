@@ -57,16 +57,8 @@ export default {
   created() {
   },
   mounted() {
-    this.init()
   },
   methods: {
-    init() {
-      const iframe = document.getElementById('iframe')
-      NProgress.start()
-      iframe.onload = function() {
-        NProgress.done()
-      }
-    }
 
   }
 }

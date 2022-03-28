@@ -263,6 +263,9 @@ export default {
     resultCount() {
       return this.canvasStyleData.panel.resultCount
     },
+    innerPadding() {
+      return this.element.commonBackground.innerPadding || 0
+    },
     ...mapState([
       'canvasStyleData',
       'nowPanelTrackInfo',
@@ -276,7 +279,12 @@ export default {
   },
 
   watch: {
-
+    'innerPadding': {
+      handler: function(val1, val2) {
+        this.resizeChart()
+      },
+      deep: true
+    },
     'cfilters': {
       handler: function(val1, val2) {
         if (isChange(val1, val2) && !this.isFirstLoad) {
@@ -303,9 +311,7 @@ export default {
         }
         // 如果gap有变化刷新
         if (this.preCanvasPanel && this.preCanvasPanel.gap !== newVal.panel.gap) {
-          this.chart.isPlugin
-            ? this.$refs[this.element.propValue.id].callPluginInner({ methodName: 'chartResize' })
-            : this.$refs[this.element.propValue.id].chartResize()
+          this.resizeChart()
         }
         this.preCanvasPanel = deepCopy(newVal.panel)
       },
@@ -315,15 +321,7 @@ export default {
     'hw': {
       handler(newVal, oldVla) {
         if (newVal !== oldVla && this.$refs[this.element.propValue.id]) {
-          if (this.chart.type === 'map') {
-            this.destroyTimeMachine()
-            this.changeIndex++
-            this.chartResize(this.changeIndex)
-          } else {
-            this.chart.isPlugin
-              ? this.$refs[this.element.propValue.id].callPluginInner({ methodName: 'chartResize' })
-              : this.$refs[this.element.propValue.id].chartResize()
-          }
+          this.resizeChart()
         }
       },
       deep: true
@@ -369,6 +367,17 @@ export default {
     }
   },
   methods: {
+    resizeChart() {
+      if (this.chart.type === 'map') {
+        this.destroyTimeMachine()
+        this.changeIndex++
+        this.chartResize(this.changeIndex)
+      } else {
+        this.chart.isPlugin
+          ? this.$refs[this.element.propValue.id].callPluginInner({ methodName: 'chartResize' })
+          : this.$refs[this.element.propValue.id].chartResize()
+      }
+    },
     bindPluginEvent() {
       bus.$on('plugin-chart-click', param => {
         param.viewId && param.viewId === this.element.propValue.viewId && this.chartClick(param)

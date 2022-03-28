@@ -49,6 +49,7 @@ import DeOutWidget from '@/components/dataease/DeOutWidget'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 import CloseBar from '@/components/canvas/components/Editor/CloseBar'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export default {
   components: { CloseBar, MobileCheckBar, DeOutWidget, EditBar },
@@ -94,13 +95,20 @@ export default {
         width: '100%',
         height: '100%'
       }
-      if (this.config.commonBackground && this.config.commonBackground.enable) {
-        if (this.config.commonBackground.backgroundType === 'innerImage') {
-          style['background'] = `url(${this.config.commonBackground.innerImage}) no-repeat`
-        } else if (this.config.commonBackground.backgroundType === 'outerImage') {
-          style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat`
+      if (this.config.commonBackground) {
+        style['padding'] = (this.config.commonBackground.innerPadding || 0) + 'px'
+        style['border-radius'] = (this.config.commonBackground.borderRadius || 0) + 'px'
+        if (this.config.commonBackground.enable) {
+          if (this.config.commonBackground.backgroundType === 'innerImage') {
+            style['background'] = `url(${this.config.commonBackground.innerImage}) no-repeat`
+          } else if (this.config.commonBackground.backgroundType === 'outerImage') {
+            style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat`
+          } else if (this.config.commonBackground.backgroundType === 'color') {
+            style['background-color'] = hexColorToRGBA(this.config.commonBackground.color, this.config.commonBackground.alpha)
+          }
         }
         style['background-size'] = `100% 100%`
+        style['overflow'] = 'hidden'
       }
       return style
     },

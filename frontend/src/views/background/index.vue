@@ -2,71 +2,98 @@
   <el-row>
     <el-row>
       <el-col :span="24">
-        <span style="font-weight:600;margin-right: 20px;font-size: 14px">{{ $t('panel.choose_background') }}</span>
-        <el-checkbox v-model="curComponent.commonBackground.enable">{{ $t('commons.enable') }}</el-checkbox>
-        <span style="color: #909399; font-size: 8px;margin-left: 3px">
-          Tips:{{ $t('panel.choose_background_tips') }}
-        </span>
+        <span style="font-weight:600;margin-right: 20px;font-size: 14px">{{ $t('panel.component_style') }}</span>
       </el-col>
     </el-row>
     <el-row class="main-content" disabled="!curComponent.commonBackground.enable">
-      <!--      <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">-->
-      <!--        <el-col :span="3" style="padding-left: 10px">-->
-      <!--          <el-radio v-model="curComponent.commonBackground.backgroundType" label="color" @change="onChangeType">颜色</el-radio>-->
-      <!--        </el-col>-->
-      <!--        <el-col :span="3">-->
-      <!--          <el-color-picker v-model="curComponent.commonBackground.color" class="color-picker-style" :predefine="predefineColors" />-->
-      <!--        </el-col>-->
-      <!--        <el-col :span="3" style="text-align: right;margin-top: 8px">-->
-      <!--          <span>不透明度：</span>-->
-      <!--        </el-col>-->
-      <!--        <el-col :span="9">-->
-      <!--          <el-slider v-model="curComponent.commonBackground.alpha" show-input :show-input-controls="false" input-size="mini" />-->
-      <!--        </el-col>-->
-      <!--      </el-row>-->
-      <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
-        <el-col :span="3" style="padding-left: 10px">
-          <el-radio v-model="curComponent.commonBackground.backgroundType" label="outerImage" @change="onChangeType">{{ $t('panel.photo') }}</el-radio>
+
+      <el-row style="height: 50px;overflow: hidden">
+        <el-col :span="3">
+          <span class="params-title">{{ $t('panel.inner_padding') }}</span>
         </el-col>
-        <el-col style="width: 130px!important;">
-          <el-upload
-            action=""
-            accept=".jpeg,.jpg,.png,.gif,.svg"
-            class="avatar-uploader"
-            list-type="picture-card"
-            :class="{disabled:uploadDisabled}"
-            :on-preview="handlePictureCardPreview"
-            :on-remove="handleRemove"
-            :http-request="upload"
-            :file-list="fileList"
-            :on-change="onChange"
-          >
-            <i class="el-icon-plus" />
-          </el-upload>
-          <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogVisible">
-            <img width="100%" :src="dialogImageUrl" alt="">
-          </el-dialog>
+        <el-col :span="15">
+          <el-slider v-model="curComponent.commonBackground.innerPadding" show-input :show-input-controls="false" input-size="mini" />
         </el-col>
       </el-row>
-      <el-row>
-        <el-col :span="3" style="padding-left: 10px">
-          <el-radio v-model="curComponent.commonBackground.backgroundType" label="innerImage" @change="onChangeType">边框</el-radio>
+      <el-row style="height: 50px;overflow: hidden">
+        <el-col :span="3">
+          <span class="params-title">{{ $t('panel.board_radio') }}</span>
         </el-col>
-        <el-col :span="21" class="main-row">
-          <el-row v-for="(value, key) in BackgroundShowMap" :key="key">
-            <el-col :span="24"><span>{{ key }}</span> </el-col>
-            <el-col
-              v-for="item in value"
-              :key="item.id"
-              :span="6"
+        <el-col :span="15">
+          <el-slider v-model="curComponent.commonBackground.borderRadius" show-input :show-input-controls="false" input-size="mini" />
+        </el-col>
+      </el-row>
+
+      <el-row style="height: 50px">
+        <el-col :span="3" style="padding-left: 10px;padding-top: 5px">
+          <el-checkbox v-model="curComponent.commonBackground.enable">{{ $t('panel.background') }}</el-checkbox>
+        </el-col>
+        <el-col :span="21">
+          <span style="color: #909399; font-size: 8px;margin-left: 3px;line-height: 30px">
+            Tips:{{ $t('panel.choose_background_tips') }}
+          </span>
+        </el-col>
+      </el-row>
+      <el-row v-if="curComponent.commonBackground.enable">
+        <el-row style="height: 40px;overflow: hidden">
+          <el-col :span="3" style="padding-left: 10px;padding-top: 5px">
+            <el-radio v-model="curComponent.commonBackground.backgroundType" label="color" @change="onChangeType">颜色</el-radio>
+          </el-col>
+          <el-col :span="1" style="padding-top: 5px">
+            <el-color-picker v-model="curComponent.commonBackground.color" size="mini" class="color-picker-style" :predefine="predefineColors" />
+          </el-col>
+          <el-col :span="3">
+            <span class="params-title-small">不透明度：</span>
+          </el-col>
+          <el-col :span="11">
+            <el-slider v-model="curComponent.commonBackground.alpha" show-input :show-input-controls="false" input-size="mini" />
+          </el-col>
+        </el-row>
+        <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
+          <el-col :span="3" style="padding-left: 10px">
+            <el-radio v-model="curComponent.commonBackground.backgroundType" label="outerImage" @change="onChangeType">{{ $t('panel.photo') }}</el-radio>
+          </el-col>
+          <el-col style="width: 130px!important;">
+            <el-upload
+              action=""
+              accept=".jpeg,.jpg,.png,.gif,.svg"
+              class="avatar-uploader"
+              list-type="picture-card"
+              :class="{disabled:uploadDisabled}"
+              :on-preview="handlePictureCardPreview"
+              :on-remove="handleRemove"
+              :http-request="upload"
+              :file-list="fileList"
+              :on-change="onChange"
             >
-              <background-item
-                :template="item"
-              />
-            </el-col>
-          </el-row>
-        </el-col>
+              <i class="el-icon-plus" />
+            </el-upload>
+            <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogVisible">
+              <img width="100%" :src="dialogImageUrl" alt="">
+            </el-dialog>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="3" style="padding-left: 10px">
+            <el-radio v-model="curComponent.commonBackground.backgroundType" label="innerImage" @change="onChangeType">边框</el-radio>
+          </el-col>
+          <el-col :span="21" class="main-row">
+            <el-row v-for="(value, key) in BackgroundShowMap" :key="key">
+              <el-col :span="24"><span>{{ key }}</span> </el-col>
+              <el-col
+                v-for="item in value"
+                :key="item.id"
+                :span="6"
+              >
+                <background-item
+                  :template="item"
+                />
+              </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
       </el-row>
+
     </el-row>
     <el-row class="root-class">
       <el-col :span="24">
@@ -178,7 +205,7 @@ export default {
   }
 
   .main-row{
-    height: 40vh;
+    height: 140px;
     overflow-y: auto;
   }
 
@@ -226,4 +253,17 @@ export default {
     border:1px solid #E6E6E6;
   }
 
+  .params-title{
+    font-weight: bold;
+    line-height: 40px;
+    margin-left: 10px;
+    font-size: 14px;
+  }
+
+  .params-title-small{
+    font-weight: bold;
+    line-height: 40px;
+    margin-left: 10px;
+    font-size: 12px;
+  }
 </style>

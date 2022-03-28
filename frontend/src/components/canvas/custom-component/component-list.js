@@ -16,7 +16,7 @@ export const BASE_MOBILE_STYLE = {
   auxiliaryMatrix: true
 }
 
-// 公共背景
+// 组件仪表板样式
 export const COMMON_BACKGROUND = {
   enable: false,
   backgroundType: 'innerImage',
@@ -24,7 +24,8 @@ export const COMMON_BACKGROUND = {
   innerImage: null,
   outerImage: null,
   alpha: 100,
-  borderRadius: 5
+  borderRadius: 5,
+  innerPadding: 0
 }
 
 // 公共样式
