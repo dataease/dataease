@@ -107,7 +107,7 @@ export default {
             username: '',
             password: '',
             port: '',
-            extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
+            extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull'
           }
         },
       originConfiguration: {
@@ -116,7 +116,7 @@ export default {
         username: '',
         password: '',
         port: '',
-        extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
+        extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull'
       },
       input: '',
       visible: true,

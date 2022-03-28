@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 public class MysqlConfiguration extends JdbcConfiguration {
 
     private String driver = "com.mysql.jdbc.Driver";
-    private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true";
+    private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull";
 
     public String getJdbc() {
         if(StringUtils.isEmpty(extraParams.trim())){
