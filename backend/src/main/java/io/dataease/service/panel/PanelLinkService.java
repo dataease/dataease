@@ -155,7 +155,7 @@ public class PanelLinkService {
     private String buildLinkParam(PanelLink link) {
         String linkParam = encrypt(link.getResourceId());
         if (link.getUserId() != null) {
-            linkParam = linkParam + USERPARAM + link.getUserId().toString();
+            linkParam = linkParam + USERPARAM + encrypt(link.getUserId().toString());
         }
         return linkParam;
     }

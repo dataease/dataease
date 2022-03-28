@@ -38,7 +38,7 @@
     url += '&terminal=' + terminal
   }
   if (user) {
-    url += '&user=' + user
+    url += '&user=' + encodeURIComponent(user)
   }
   if (attachParams) {
     url += '&attachParams=' + attachParams

@@ -17,4 +17,6 @@ public class ValidateDto {
     private boolean passPwd;
     @ApiModelProperty("资源ID")
     private String resourceId;
+    @ApiModelProperty("用户ID")
+    private String userId;
 }
