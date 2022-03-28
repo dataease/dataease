@@ -277,7 +277,11 @@ public class MongoQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == DeTypeConstants.DE_TIME) {
                     originField = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    if (x.getDeType() == 2 || x.getDeType() == 3) {
+                        originField = String.format(MongoConstants.toDecimal, String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()));
+                    } else {
+                        originField = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -777,7 +781,7 @@ public class MongoQueryProvider extends QueryProvider {
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                         whereValue = "'%" + value + "%'";
                     } else {
-                        if(field.getDeType() == DeTypeConstants.DE_STRING){
+                        if (field.getDeType() == DeTypeConstants.DE_STRING) {
                             whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, value);
                         }
                     }
@@ -838,9 +842,9 @@ public class MongoQueryProvider extends QueryProvider {
                     whereValue = String.format(MongoConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                if(field.getDeType() == DeTypeConstants.DE_STRING){
+                if (field.getDeType() == DeTypeConstants.DE_STRING) {
                     whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, value.get(0));
-                }else {
+                } else {
                     whereValue = value.get(0);
                 }
             }
@@ -941,9 +945,9 @@ public class MongoQueryProvider extends QueryProvider {
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
                 } else {
-                    if(y.getDeType() == DeTypeConstants.DE_STRING){
+                    if (y.getDeType() == DeTypeConstants.DE_STRING) {
                         whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, f.getValue());
-                    }else {
+                    } else {
                         whereValue = f.getValue();
                     }
                 }

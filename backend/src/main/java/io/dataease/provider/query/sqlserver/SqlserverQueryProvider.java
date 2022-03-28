@@ -313,7 +313,11 @@ public class SqlserverQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
                     originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    if (x.getDeType() == 2 || x.getDeType() == 3) {
+                        originField = String.format(SqlServerSQLConstants.CONVERT, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()));
+                    } else {
+                        originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
