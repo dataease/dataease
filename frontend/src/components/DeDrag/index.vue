@@ -20,19 +20,20 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
+    <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" @boardSet="boardSet" />
+    <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
+    <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
     <div
       :class="[
         {
           ['de-drag-active-inner']:enabled,
           [classNameMouseOn]: mouseOn || active
         },
-        className
+        className,
+        'main-background'
       ]"
       :style="mainSlotStyle"
     >
-      <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" @boardSet="boardSet" />
-      <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
-      <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
       <div
         v-for="(handlei, indexi) in actualHandles"
         :key="indexi"
@@ -59,6 +60,7 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export default {
   replace: true,
@@ -531,13 +533,18 @@ export default {
         width: this.computedMainSlotWidth,
         height: this.computedMainSlotHeight
       }
-      if (this.element.commonBackground && this.element.commonBackground.enable) {
-        if (this.element.commonBackground.backgroundType === 'innerImage') {
-          style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat`
-        } else if (this.element.commonBackground.backgroundType === 'outerImage') {
-          style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat`
+      if (this.element.commonBackground) {
+        style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
+        style['border-radius'] = (this.element.commonBackground.borderRadius || 0) + 'px'
+        if (this.element.commonBackground.enable) {
+          if (this.element.commonBackground.backgroundType === 'innerImage') {
+            style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat`
+          } else if (this.element.commonBackground.backgroundType === 'outerImage') {
+            style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat`
+          } else if (this.element.commonBackground.backgroundType === 'color') {
+            style['background-color'] = hexColorToRGBA(this.element.commonBackground.color, this.element.commonBackground.alpha)
+          }
         }
-        style['background-size'] = `100% 100%`
       }
       return style
     },
@@ -1857,4 +1864,7 @@ export default {
 .de-drag-active-inner{
   outline: 1px solid #70c0ff;
 }
+  .main-background{
+    background-size: 100% 100% !important;
+  }
 </style>

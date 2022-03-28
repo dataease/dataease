@@ -1390,6 +1390,10 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    inner_padding: 'Inner Padding',
+    board_radio: 'Board Radio',
+    background: 'Background',
+    component_style: 'component Style',
     web_set_tips: 'Some Websites Cannot Be Displayed Because Of Cross Domain Problems  ',
     repeat_params: 'Repeat Params Exist',
     enable_outer_param_set: 'Enable Outer Param Set',

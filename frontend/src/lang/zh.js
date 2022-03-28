@@ -1399,6 +1399,10 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    inner_padding: '内边距',
+    board_radio: '边框半径',
+    background: '背景',
+    component_style: '组件样式',
     web_set_tips: '部分网站可能存在跨域问题无法显示',
     repeat_params: '存在名称重复的参数',
     enable_outer_param_set: '启用外部参数设置',

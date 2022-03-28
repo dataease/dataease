@@ -1033,6 +1033,7 @@ export default {
   },
   methods: {
     boardSet(item) {
+      this.$emit('boardSet', item)
       this.boardSetVisible = true
     },
     changeStyleWithScale,
