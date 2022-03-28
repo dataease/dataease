@@ -17,6 +17,7 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.ResultHolder;
+import io.dataease.controller.datasource.request.UpdataDsRequest;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.controller.request.datasource.DatasourceRequest;
@@ -56,15 +57,14 @@ public class DatasourceService {
     private DataSetGroupService dataSetGroupService;
     @Resource
     private CommonThreadPool commonThreadPool;
+    private static List<String> dsTypes = Arrays.asList("excel", "mysql", "hive", "impala", "mariadb", "ds_doris", "pg", "sqlServer", "oracle", "mongo", "ck", "db2", "es", "redshift", "api");
 
     @DeCleaner(DePermissionType.DATASOURCE)
     public Datasource addDatasource(Datasource datasource) throws Exception{
-        try{
-            DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasource.getType());
-        }catch (Exception e){
-            throw e;
+        if(!dsTypes.contains(datasource.getType())){
+            throw new Exception("Datasource type not supported.");
         }
-        checkName(datasource);
+        checkName(datasource.getName(),datasource.getType(), datasource.getId());
         long currentTimeMillis = System.currentTimeMillis();
         datasource.setId(UUID.randomUUID().toString());
         datasource.setUpdateTime(currentTimeMillis);
@@ -181,12 +181,21 @@ public class DatasourceService {
         return ResultHolder.success("success");
     }
 
-    public void updateDatasource(Datasource datasource) {
-        checkName(datasource);
+    public void updateDatasource(UpdataDsRequest updataDsRequest)throws Exception{
+        if(!dsTypes.contains(updataDsRequest.getType())){
+            throw new Exception("Datasource type not supported.");
+        }
+        checkName(updataDsRequest.getName(),updataDsRequest.getType(),updataDsRequest.getId());
+        Datasource datasource = new Datasource();
+        datasource.setName(updataDsRequest.getName());
+        datasource.setDesc(updataDsRequest.getDesc());
+        datasource.setConfiguration(updataDsRequest.getConfiguration());
         datasource.setCreateTime(null);
         datasource.setUpdateTime(System.currentTimeMillis());
         checkAndUpdateDatasourceStatus(datasource);
-        datasourceMapper.updateByPrimaryKeySelective(datasource);
+        DatasourceExample example = new DatasourceExample();
+        example.createCriteria().andIdEqualTo(updataDsRequest.getId());
+        datasourceMapper.updateByExampleSelective(datasource, example);
         handleConnectionPool(datasource, "edit");
     }
 
@@ -276,8 +285,8 @@ public class DatasourceService {
         return datasourceProvider.getSchema(datasourceRequest);
     }
 
-    public List<DBTableDTO> getTables(Datasource datasource) throws Exception {
-        Datasource ds = datasourceMapper.selectByPrimaryKey(datasource.getId());
+    public List<DBTableDTO> getTables(String id) throws Exception {
+        Datasource ds = datasourceMapper.selectByPrimaryKey(id);
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
@@ -337,13 +346,13 @@ public class DatasourceService {
         });
     }
 
-    private void checkName(Datasource datasource) {
+    private void checkName(String datasourceName, String type, String id) {
         DatasourceExample example = new DatasourceExample();
         DatasourceExample.Criteria criteria = example.createCriteria();
-        criteria.andNameEqualTo(datasource.getName());
-        criteria.andTypeEqualTo(datasource.getType());
-        if (StringUtils.isNotEmpty(datasource.getId())) {
-            criteria.andIdNotEqualTo(datasource.getId());
+        criteria.andNameEqualTo(datasourceName);
+        criteria.andTypeEqualTo(type);
+        if (StringUtils.isNotEmpty(id)) {
+            criteria.andIdNotEqualTo(id);
         }
         if (CollectionUtils.isNotEmpty(datasourceMapper.selectByExample(example))) {
             DEException.throwException(Translator.get("i18n_ds_name_exists"));

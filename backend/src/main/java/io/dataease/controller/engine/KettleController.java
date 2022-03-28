@@ -18,6 +18,7 @@ import io.dataease.plugins.xpack.auth.dto.request.DataSetColumnPermissionsDTO;
 import io.dataease.plugins.xpack.auth.service.ColumnPermissionService;
 import io.dataease.service.kettle.KettleService;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -33,12 +34,12 @@ public class KettleController {
     @Resource
     private KettleService kettleService;
 
-    @ApiIgnore
+    @RequiresPermissions("sysparam:read")
+    @ApiOperation("新增/编辑")
     @PostMapping("save")
     public ResultHolder save(@RequestBody DeEngine engine) throws Exception{
         return kettleService.save(engine);
     }
-
 
     @ApiIgnore
     @PostMapping("validate")
@@ -46,19 +47,23 @@ public class KettleController {
          kettleService.validate(kettleDTO);
     }
 
-    @ApiIgnore
+    @RequiresPermissions("sysparam:read")
+    @ApiOperation("校验")
     @PostMapping("validate/{id}")
     public ResultHolder validate(@PathVariable String id) throws Exception{
         return kettleService.validate(id);
     }
 
+    @RequiresPermissions("sysparam:read")
+    @ApiOperation("查询")
     @PostMapping("/pageList/{goPage}/{pageSize}")
     public Pager<List<DeEngine>> pageList( @PathVariable int goPage, @PathVariable int pageSize) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, kettleService.pageList());
     }
 
-    @ApiIgnore
+    @RequiresPermissions("sysparam:read")
+    @ApiOperation("删除")
     @DeleteMapping("delete/{id}")
     public void delete(@PathVariable String id) throws Exception{
         kettleService.delete(id);

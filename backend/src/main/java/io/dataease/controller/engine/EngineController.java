@@ -4,6 +4,8 @@ import io.dataease.base.domain.DeEngine;
 import io.dataease.controller.ResultHolder;
 import io.dataease.dto.DatasourceDTO;
 import io.dataease.service.engine.EngineService;
+import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -23,7 +25,8 @@ public class EngineController {
         return engineService.mode();
     }
 
-    @ApiIgnore
+    @RequiresPermissions("sysparam:read")
+    @ApiOperation("引擎信息")
     @GetMapping("/info")
     public DeEngine info() throws Exception{
         return engineService.info();
@@ -36,7 +39,8 @@ public class EngineController {
     }
 
 
-    @ApiIgnore
+    @RequiresPermissions("sysparam:read")
+    @ApiOperation("新增/编辑")
     @PostMapping("/save")
     public ResultHolder save(@RequestBody DeEngine engine) throws Exception {
         return engineService.save(engine);

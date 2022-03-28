@@ -15,6 +15,7 @@ import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.datasource.DorisConfiguration;
+import io.dataease.dto.datasource.MysqlConfiguration;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.datasource.DatasourceProvider;
@@ -26,10 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.sql.Array;
+import java.util.*;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -40,6 +39,10 @@ public class EngineService {
     private DeEngineMapper deEngineMapper;
     @Resource
     private DatasourceService datasource;
+
+    static private List<String>simple_engine = Arrays.asList("engine_mysql");
+
+    static private List<String>cluster_engine = Arrays.asList("engine_doris");
 
     public Boolean isLocalMode() {
         return env.getProperty("engine_mode", "local").equalsIgnoreCase("local");
@@ -71,7 +74,7 @@ public class EngineService {
         return deEngines.get(0);
     }
 
-    public ResultHolder validate(DatasourceDTO datasource) throws Exception {
+    public ResultHolder validate(Datasource datasource) throws Exception {
         if (StringUtils.isEmpty(datasource.getType()) || StringUtils.isEmpty(datasource.getConfiguration())) {
             throw new Exception("未完整设置数据引擎");
         }
@@ -119,6 +122,7 @@ public class EngineService {
     }
 
     public ResultHolder save(DeEngine engine) throws Exception {
+        checkValid(engine);
         if (StringUtils.isEmpty(engine.getId())) {
             engine.setId(UUID.randomUUID().toString());
             deEngineMapper.insert(engine);
@@ -129,6 +133,22 @@ public class EngineService {
         setDs(engine);
         datasource.handleConnectionPool(getDeEngine(), "add");
         return ResultHolder.success(engine);
+    }
+
+    private void checkValid(DeEngine engine)throws Exception{
+        if(isLocalMode()){
+            throw new Exception("Setting engine is not supported.");
+        }
+        if(isSimpleMode()){
+            if(!simple_engine.contains(engine.getType())){
+                throw new Exception("Engine type not supported.");
+            }
+        }
+        if(isClusterMode()){
+            if(!cluster_engine.contains(engine.getType())){
+                throw new Exception("Engine type not supported.");
+            }
+        }
     }
 
     private void setDs(DeEngine engine) {

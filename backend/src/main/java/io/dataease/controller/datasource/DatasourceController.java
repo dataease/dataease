@@ -7,6 +7,7 @@ import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.ResultHolder;
+import io.dataease.controller.datasource.request.UpdataDsRequest;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.dto.datasource.DBTableDTO;
@@ -39,8 +40,7 @@ public class DatasourceController {
         return datasourceService.addDatasource(datasource);
     }
 
-    @RequiresPermissions("datasource:read")
-    @ApiOperation("验证数据源")
+    @ApiIgnore
     @PostMapping("/validate")
     public ResultHolder validate(@RequestBody DatasourceDTO datasource) throws Exception {
         return datasourceService.validate(datasource);
@@ -80,15 +80,15 @@ public class DatasourceController {
     @DePermission(type = DePermissionType.DATASOURCE, value = "id", level = ResourceAuthLevel.DATASOURCE_LEVEL_MANAGE)
     @ApiOperation("更新数据源")
     @PostMapping("/update")
-    public void updateDatasource(@RequestBody Datasource Datasource) {
-        datasourceService.updateDatasource(Datasource);
+    public void updateDatasource(@RequestBody UpdataDsRequest dsRequest) throws Exception{
+        datasourceService.updateDatasource(dsRequest);
     }
 
-    @DePermission(type = DePermissionType.DATASOURCE, value = "id")
+    @DePermission(type = DePermissionType.DATASOURCE)
     @ApiOperation("查询数据源下属所有表")
-    @PostMapping("/getTables")
-    public List<DBTableDTO> getTables(@RequestBody Datasource datasource) throws Exception {
-        return datasourceService.getTables(datasource);
+    @PostMapping("/getTables/{id}")
+    public List<DBTableDTO> getTables(@PathVariable String id) throws Exception {
+        return datasourceService.getTables(id);
     }
 
     @ApiIgnore
