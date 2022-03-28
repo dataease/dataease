@@ -42,7 +42,7 @@ public class DataSetGroupController {
     }, logical = Logical.AND)
     @ApiOperation("保存")
     @PostMapping("/save")
-    public DataSetGroupDTO save(@RequestBody DatasetGroup datasetGroup) {
+    public DataSetGroupDTO save(@RequestBody DatasetGroup datasetGroup) throws Exception {
         return dataSetGroupService.save(datasetGroup);
     }
 

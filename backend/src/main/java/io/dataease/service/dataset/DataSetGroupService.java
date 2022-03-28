@@ -44,7 +44,10 @@ public class DataSetGroupService {
     private SysAuthService sysAuthService;
 
     @DeCleaner(DePermissionType.DATASET)
-    public DataSetGroupDTO save(DatasetGroup datasetGroup) {
+    public DataSetGroupDTO save(DatasetGroup datasetGroup) throws Exception {
+        if (StringUtils.isEmpty(datasetGroup.getType())) {
+            throw new Exception("type can not be empty");
+        }
         checkName(datasetGroup);
         if (StringUtils.isEmpty(datasetGroup.getId())) {
             datasetGroup.setId(UUID.randomUUID().toString());
@@ -65,7 +68,7 @@ public class DataSetGroupService {
     public void delete(String id) throws Exception {
 
         Assert.notNull(id, "id cannot be null");
-        sysAuthService.checkTreeNoManageCount("dataset",id);
+        sysAuthService.checkTreeNoManageCount("dataset", id);
 
         DatasetGroup dg = datasetGroupMapper.selectByPrimaryKey(id);
         DataSetGroupRequest datasetGroup = new DataSetGroupRequest();
