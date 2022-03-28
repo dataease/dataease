@@ -757,6 +757,7 @@ export default {
         this.chart.customAttr = param.viewInfo.customAttr
         this.chart.customStyle = param.viewInfo.customStyle
         this.chart.senior = param.viewInfo.senior
+        this.chart.title = param.viewInfo.title
         this.sourceCustomAttrStr = this.chart.customAttr
         this.sourceCustomStyleStr = this.chart.customStyle
         this.mergeScale()
