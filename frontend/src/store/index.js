@@ -260,6 +260,43 @@ const data = {
       }
       for (let index = 0; index < state.componentData.length; index++) {
         const element = state.componentData[index]
+        if (element.type && element.type === 'de-tabs') {
+          for (let idx = 0; idx < element.options.tabList.length; idx++) {
+            const ele = element.options.tabList[idx].content
+            if (!ele.type || ele.type !== 'view') continue
+
+            const currentFilters = []
+
+            data.dimensionList.forEach(dimension => {
+              const sourceInfo = viewId + '#' + dimension.id
+              // 获取所有目标联动信息
+              const targetInfoList = trackInfo[sourceInfo] || []
+              targetInfoList.forEach(targetInfo => {
+                const targetInfoArray = targetInfo.split('#')
+                const targetViewId = targetInfoArray[0] // 目标视图
+                if (ele.propValue.viewId === targetViewId) { // 如果目标视图 和 当前循环组件id相等 则进行条件增减
+                  const targetFieldId = targetInfoArray[1] // 目标视图列ID
+                  const condition = new Condition('', targetFieldId, 'eq', [dimension.value], [targetViewId])
+                  condition.sourceViewId = viewId
+                  let j = currentFilters.length
+                  while (j--) {
+                    const filter = currentFilters[j]
+                    // 兼容性准备 viewIds 只会存放一个值
+                    if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
+                      currentFilters.splice(j, 1)
+                    }
+                  }
+                  // 不存在该条件 且 条件有效 直接保存该条件
+                  // !filterExist && vValid && currentFilters.push(condition)
+                  currentFilters.push(condition)
+                }
+              })
+            })
+
+            ele.linkageFilters = currentFilters
+          }
+          state.componentData[index] = element
+        }
         if (!element.type || element.type !== 'view') continue
         // const currentFilters = element.linkageFilters || [] // 当前联动filter
         // 联动的视图情况历史条件
