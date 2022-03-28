@@ -836,6 +836,10 @@ public class MysqlQueryProvider extends QueryProvider {
         return CollectionUtils.isNotEmpty(res) ? "(" + String.join(" AND ", res) + ")" : null;
     }
 
+    private String reflectFieldName(DatasetTableField field) {
+        return field.getDataeaseName();
+    }
+
     public String transExtFilterList(SQLObj tableObj, List<ChartExtFilterRequest> requestList) {
         if (CollectionUtils.isEmpty(requestList)) {
             return null;

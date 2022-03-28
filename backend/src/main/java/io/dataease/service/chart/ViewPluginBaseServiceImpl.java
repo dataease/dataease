@@ -2,6 +2,7 @@ package io.dataease.service.chart;
 
 import cn.hutool.core.util.ReflectUtil;
 import com.google.gson.Gson;
+import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.Datasource;
 import io.dataease.controller.request.chart.ChartExtFilterRequest;
 import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
@@ -132,12 +133,13 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
     private String getOriginName(String dsType, PluginViewField pluginViewField, PluginViewSQL tableObj) {
         String keyword_fix = ConstantsUtil.constantsValue(dsType, "KEYWORD_FIX");
         String originField;
+        String reflectField =  reflectFieldName(dsType, pluginViewField);
         if (ObjectUtils.isNotEmpty(pluginViewField.getExtField()) && pluginViewField.getExtField() == 2) {
             originField = calcFieldRegex(dsType,pluginViewField.getOriginName(), tableObj);
         } else if (ObjectUtils.isNotEmpty(pluginViewField.getExtField()) && pluginViewField.getExtField() == 1) {
-            originField = String.format(keyword_fix, tableObj.getTableAlias(), pluginViewField.getOriginName());
+            originField = String.format(keyword_fix, tableObj.getTableAlias(), StringUtils.isNotBlank(reflectField) ? reflectField : pluginViewField.getOriginName());
         } else {
-            originField = String.format(keyword_fix, tableObj.getTableAlias(), pluginViewField.getOriginName());
+            originField = String.format(keyword_fix, tableObj.getTableAlias(), StringUtils.isNotBlank(reflectField) ? reflectField : pluginViewField.getOriginName());
         }
         return originField;
     }
@@ -148,6 +150,17 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         SQLObj sqlObj = BeanUtils.copyBean(SQLObj.builder().build(), pluginViewSQL);
         Object o ;
         if ((o = execProviderMethod(queryProvider, methodName, originField, sqlObj)) != null) {
+            return (String)o;
+        }
+        return null;
+    }
+
+    private String reflectFieldName(String dsType, PluginViewField pluginViewField ) {
+        QueryProvider queryProvider = ProviderFactory.getQueryProvider(dsType);
+        String methodName = "reflectFieldName";
+        DatasetTableField field = BeanUtils.copyBean(new DatasetTableField(), pluginViewField);;
+        Object o ;
+        if ((o = execProviderMethod(queryProvider, methodName, field)) != null) {
             return (String)o;
         }
         return null;
