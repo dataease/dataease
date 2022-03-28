@@ -1078,6 +1078,9 @@ public class DorisQueryProvider extends QueryProvider {
         return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" " + getLogic(y.getLogic()) + " ", strList) + ")" : null;
     }
 
+    private String reflectFieldName(DatasetTableField field) {
+        return field.getDataeaseName();
+    }
     private String calcFieldRegex(String originField, SQLObj tableObj) {
         originField = originField.replaceAll("[\\t\\n\\r]]", "");
         // 正则提取[xxx]
