@@ -297,7 +297,11 @@ public class DorisQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
                     originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
                 } else {
-                    originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
+                    if (x.getDeType() == 2 || x.getDeType() == 3) {
+                        originField = String.format(DorisConstants.CAST, String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName()), DorisConstants.DEFAULT_FLOAT_FORMAT);
+                    } else {
+                        originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段

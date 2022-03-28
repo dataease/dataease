@@ -326,7 +326,11 @@ public class CKQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
                     originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    if (x.getDeType() == 2 || x.getDeType() == 3) {
+                        originField = String.format(CKConstants.toDecimal, String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()));
+                    } else {
+                        originField = String.format(CKConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
