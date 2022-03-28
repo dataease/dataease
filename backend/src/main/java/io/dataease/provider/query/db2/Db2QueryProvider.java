@@ -300,7 +300,12 @@ public class Db2QueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
                     originField = String.format(Db2Constants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(Db2Constants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    if (x.getDeType() == 2 || x.getDeType() == 3) {
+                        originField = String.format(Db2Constants.CAST, String.format(Db2Constants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), Db2Constants.DEFAULT_FLOAT_FORMAT);
+                    } else {
+                        originField = String.format(Db2Constants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    }
+
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -685,10 +690,10 @@ public class Db2QueryProvider extends QueryProvider {
             stringBuilder.append(" \"").append(f.getOriginName()).append("\"");
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        if(ds!= null){
+        if (ds != null) {
             Db2Configuration db2Configuration = new Gson().fromJson(ds.getConfiguration(), Db2Configuration.class);
             return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), db2Configuration.getSchema() + ".\"" + table + "\"");
-        }else {
+        } else {
             return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), table);
         }
     }

@@ -341,7 +341,11 @@ public class OracleQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
                     originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    if (x.getDeType() == 2 || x.getDeType() == 3) {
+                        originField = String.format(OracleConstants.CAST, String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), OracleConstants.DEFAULT_FLOAT_FORMAT);
+                    } else {
+                        originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    }
                 }
                 String fieldAlias = String.format(OracleConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i));
                 // 处理横轴字段
