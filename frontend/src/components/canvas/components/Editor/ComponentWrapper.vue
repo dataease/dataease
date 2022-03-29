@@ -5,7 +5,7 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <div :style="commonStyle">
+    <div :style="commonStyle" class="main_view">
       <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
       <close-bar v-if="previewVisible" @closePreview="closePreview" />
       <de-out-widget
@@ -107,7 +107,6 @@ export default {
             style['background-color'] = hexColorToRGBA(this.config.commonBackground.color, this.config.commonBackground.alpha)
           }
         }
-        style['background-size'] = `100% 100%`
         style['overflow'] = 'hidden'
       }
       return style
@@ -227,5 +226,8 @@ export default {
     outline: none;
     width: 100% !important;
     height: 100%;
+  }
+  .main_view{
+    background-size: 100% 100%!important;
   }
 </style>
