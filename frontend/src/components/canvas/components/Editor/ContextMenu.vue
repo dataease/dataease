@@ -50,7 +50,7 @@ export default {
       if (this.curComponent.type === 'view') {
         this.$store.dispatch('chart/setViewId', null)
         this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
-        bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }})
+        bus.$emit('change_panel_right_draw', true)
       }
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit')
