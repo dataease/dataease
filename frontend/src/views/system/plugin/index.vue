@@ -30,7 +30,11 @@
       </template>
 
       <el-table-column prop="name" :label="$t('plugin.name')" />
-      <el-table-column prop="free" :label="$t('plugin.free')" />
+      <!--  <el-table-column prop="free" :label="$t('plugin.free')">
+        <template v-slot:default="scope">
+          <span>{{ scope.row.free ? '是' : '否' }}</span>
+        </template>
+      </el-table-column> -->
       <el-table-column prop="cost" :label="$t('plugin.cost')" />
 
       <el-table-column :show-overflow-tooltip="true" prop="descript" :label="$t('plugin.descript')" />
@@ -42,7 +46,7 @@
           <span>{{ scope.row.installTime | timestampFormatDate }}</span>
         </template>
       </el-table-column>
-      <fu-table-operations :buttons="buttons" label="操作" fix />
+      <!-- <fu-table-operations :buttons="buttons" label="操作" fix /> -->
     </complex-table>
 
   </layout-content>
@@ -53,7 +57,7 @@ import LayoutContent from '@/components/business/LayoutContent'
 import ComplexTable from '@/components/business/complex-table'
 
 // import { checkPermission } from '@/utils/permission'
-import { formatCondition } from '@/utils/index'
+import { formatCondition, formatQuickCondition } from '@/utils/index'
 import { pluginLists, uninstall } from '@/api/system/plugin'
 import { getToken } from '@/utils/auth'
 export default {
@@ -70,21 +74,10 @@ export default {
         // }
       ],
       searchConfig: {
-        useQuickSearch: false,
+        useQuickSearch: true,
         quickPlaceholder: this.$t('role.search_by_name'),
         components: [
-          { field: 'name', label: this.$t('plugin.name'), component: 'FuComplexInput' }
-
-        //   {
-        //     field: 'u.enabled',
-        //     label: '状态',
-        //     component: 'FuComplexSelect',
-        //     options: [
-        //       { label: '启用', value: '1' },
-        //       { label: '禁用', value: '0' }
-        //     ],
-        //     multiple: false
-        //   }
+          { field: 'name', label: this.$t('plugin.name'), component: 'DeComplexInput' }
         ]
       },
       paginationConfig: {
@@ -107,6 +100,7 @@ export default {
   methods: {
 
     search(condition) {
+      condition = formatQuickCondition(condition, 'name')
       const temp = formatCondition(condition)
       const param = temp || {}
       const { currentPage, pageSize } = this.paginationConfig

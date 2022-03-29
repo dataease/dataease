@@ -175,6 +175,7 @@ public class PluginService {
         MyPlugin result = new MyPlugin();
         try {
             org.apache.commons.beanutils.BeanUtils.populate(result, myPlugin);
+            result.setInstallTime(System.currentTimeMillis());
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
