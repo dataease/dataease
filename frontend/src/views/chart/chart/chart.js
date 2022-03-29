@@ -225,8 +225,8 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
 }
 export const DEFAULT_BACKGROUND_COLOR = {
   color: '#ffffff',
-  alpha: 100,
-  borderRadius: 5
+  alpha: 0,
+  borderRadius: 0
 }
 export const DEFAULT_SPLIT = {
   name: {
