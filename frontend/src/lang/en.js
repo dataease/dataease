@@ -1390,6 +1390,7 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    json_params_error: 'Third Party Parameters Parsing Failed. Please Check Whether The Parameters Format Is Correct',
     inner_padding: 'Inner Padding',
     board_radio: 'Board Radio',
     background: 'Background',

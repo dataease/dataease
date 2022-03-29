@@ -634,15 +634,7 @@ export default {
     init(panelId) {
       const _this = this
       _this.initHasStar()
-      // 如果临时画布有数据 则使用临时画布数据（视图编辑的时候 会保存临时画布数据）
-      const componentDataTemp = this.$store.state.panel.componentDataTemp
-      const canvasStyleDataTemp = this.$store.state.panel.canvasStyleDataTemp
-      if (componentDataTemp && canvasStyleDataTemp) {
-        panelInit(JSON.parse(componentDataTemp), JSON.parse(canvasStyleDataTemp))
-        // 清空临时画布数据
-        _this.$store.dispatch('panel/setComponentDataTemp', null)
-        _this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
-      } else if (panelId) {
+      if (panelId) {
         initPanelData(panelId, function() {
           // 初始化视图缓存
           initViewCache(panelId)
@@ -650,10 +642,6 @@ export default {
           setTimeout(() => {
             _this.$store.commit('refreshSaveStatus')
           }, 500)
-          // initPanelComponentsData(panelId, function(rsp) {
-          //   _this.$store.commit('initPanelComponents', rsp)// 初始化仪表板组件视图数据
-          //   _this.$store.commit('recordSnapshot', 'init')// 记录快照
-          // })
         })
       }
     },

@@ -1,10 +1,16 @@
 <template>
-  <div v-left-to-right-drag class="drag-bar" />
+  <div v-left-to-right-drag="type" class="drag-bar" />
 </template>
 
 <script>
 export default {
-  name: 'DeLeft2RightDragBar'
+  name: 'DeLeft2RightDragBar',
+  props: {
+    type: {
+      type: String,
+      default: null
+    }
+  }
 }
 </script>
 

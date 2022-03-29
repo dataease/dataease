@@ -1,7 +1,7 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <de-main-container>
-      <ds-main ref="dsMain"/>
+      <ds-main ref="dsMain" />
     </de-main-container>
   </de-container>
 </template>
@@ -14,7 +14,7 @@ import bus from '@/utils/bus'
 
 export default {
   name: 'Panel',
-  components: {DeMainContainer, DeContainer, DsMain},
+  components: { DeMainContainer, DeContainer, DsMain },
   data() {
     return {
       component: DsMain,

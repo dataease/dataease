@@ -259,7 +259,7 @@ export default {
       this.$emit('outerParamsSetVisibleChange', false)
     },
     save() {
-      if (checkRepeat(this.outerParams.outerParamsInfoArray, 'name')) {
+      if (checkRepeat(this.outerParams.outerParamsInfoArray, 'paramName')) {
         this.$message({
           message: this.$t('panel.repeat_params'),
           type: 'warn',
@@ -389,7 +389,7 @@ export default {
   }
 
   .bottom {
-    margin-top: 20px;
+    margin-top: 15px;
     text-align: center;
   }
 
@@ -482,7 +482,7 @@ export default {
   }
 
   .tree-bottom {
-    margin-top: 12px;
+    margin-top: 7px;
     text-align: center;
   }
 

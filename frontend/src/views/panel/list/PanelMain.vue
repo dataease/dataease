@@ -1,6 +1,6 @@
 <template>
   <de-container>
-    <de-aside-container>
+    <de-aside-container type="panel">
       <el-tabs v-model="activeName" class="tab-panel" :stretch="true" @tab-click="handleClick">
         <el-tab-pane name="PanelList">
           <span slot="label"><i class="el-icon-document tablepanel-i" />{{ $t('panel.panel_list') }}</span>

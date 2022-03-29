@@ -41,6 +41,7 @@ public class DePermissionAnnotationHandler {
             DePermission[] dePermissions = annotation.value();
             Object[] args = point.getArgs();
             if (logical == Logical.AND) {
+                access = true;
                 for (int i = 0; i < dePermissions.length; i++) {
                     DePermission permission = dePermissions[i];
                     boolean currentAccess = access(args[permission.paramIndex()], permission, 0);

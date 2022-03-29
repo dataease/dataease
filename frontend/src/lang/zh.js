@@ -1399,6 +1399,7 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    json_params_error: '第三方参数解析失败，请检查参数格式是否正确',
     inner_padding: '内边距',
     board_radio: '边框半径',
     background: '背景',

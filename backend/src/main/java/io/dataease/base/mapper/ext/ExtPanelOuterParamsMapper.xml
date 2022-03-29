@@ -92,7 +92,8 @@
             LEFT JOIN panel_outer_params_info popi ON pop.params_id = popi.params_id
             LEFT JOIN panel_outer_params_target_view_info poptvi ON popi.params_info_id = poptvi.params_info_id
         WHERE
-            pop.panel_id = #{panelId}
+            pop.panel_id = #{panelId} and pop.checked=1
+            and popi.checked=1
     </select>
 
 

@@ -69,7 +69,7 @@ export default {
         if (attachParamsEncode) {
           try {
             const Base64 = require('js-base64').Base64
-            const attachParam = JSON.parse(Base64.decode(attachParamsEncode))
+            const attachParam = JSON.parse(decodeURIComponent(Base64.decode(attachParamsEncode)))
             getOuterParamsInfo(this.resourceId).then(rsp => {
               if (--loadingCount === 0) {
                 this.show = true
@@ -81,6 +81,12 @@ export default {
             if (--loadingCount === 0) {
               this.show = true
             }
+
+            this.$message({
+              message: this.$t('panel.json_params_error'),
+              type: 'error',
+              showClose: true
+            })
             console.log('outerParams Decode error：', e)
           }
         }
