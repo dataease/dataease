@@ -55,6 +55,10 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/linkJump/queryPanelJumpInfo/**", ANON);
         filterChainDefinitionMap.put("/linkJump/queryTargetPanelJumpInfo", ANON);
 
+        //外部跳转参数
+        filterChainDefinitionMap.put("/outerParams/**", ANON);
+
+
         filterChainDefinitionMap.put("/tempMobileLink/**", ANON);
         filterChainDefinitionMap.put("/de-app/**", ANON);
         filterChainDefinitionMap.put("/app.html", ANON);
