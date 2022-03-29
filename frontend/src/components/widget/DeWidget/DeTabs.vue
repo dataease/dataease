@@ -277,6 +277,7 @@ export default {
         this.curItem.name = newComponentId
         this.viewDialogVisible = false
         this.activeTabName = newComponentId
+        this.$store.dispatch('chart/setViewId', component.propValue.viewId)
         this.styleChange()
       })
       // this.setComponentInfo()
@@ -308,6 +309,7 @@ export default {
           this.activeTabName = this.element.options.tabList[activIndex].name
         }
       }
+      this.$store.dispatch('chart/setViewId', null)
       this.styleChange()
     },
 
@@ -334,6 +336,7 @@ export default {
       this.element.options.tabList.forEach(item => {
         if (item && item.name === name && item.content && item.content.propValue && item.content.propValue.viewId) {
           this.filterMap[item.content.propValue.viewId] = item.content.filters
+          this.$store.dispatch('chart/setViewId', item.content.propValue.viewId)
         }
       })
       // console.log(tab)

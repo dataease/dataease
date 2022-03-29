@@ -455,6 +455,15 @@ export default {
   computed: {
     // 侧边显示控制
     chartEditParam() {
+      if (this.curComponent) {
+        if (this.curComponent.type === 'view') {
+          return { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }
+        } else if (this.curComponent.type === 'de-tabs' && this.$store.state.chart.viewId) {
+          return { 'id': this.$store.state.chart.viewId, 'optType': 'edit' }
+        } else {
+          return {}
+        }
+      }
       return this.curComponent ? { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' } : {}
     },
     // 侧边显示控制
@@ -463,7 +472,7 @@ export default {
     },
     // 显示视图工具栏
     showViewToolsAside() {
-      return this.curComponent && this.curComponent.type === 'view'
+      return this.curComponent && (this.curComponent.type === 'view' || this.curComponent.type === 'de-tabs')
     },
     showViewToolAsideType() {
       if (this.curComponent) {
@@ -624,6 +633,9 @@ export default {
       this.outerParamsSetVisible = false
     },
     changeRightDrawOpen(param) {
+      if (!param) {
+        this.$store.dispatch('chart/setViewId', null)
+      }
       this.rightDrawOpen = param
       if (this.rightDrawOpen) {
         setTimeout(() => {
