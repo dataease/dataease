@@ -372,7 +372,7 @@ export default {
         this.destroyTimeMachine()
         this.changeIndex++
         this.chartResize(this.changeIndex)
-      } else {
+      } else if (this.$refs[this.element.propValue.id]) {
         this.chart.isPlugin
           ? this.$refs[this.element.propValue.id].callPluginInner({ methodName: 'chartResize' })
           : this.$refs[this.element.propValue.id].chartResize()
