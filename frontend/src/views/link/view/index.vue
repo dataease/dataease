@@ -81,6 +81,12 @@ export default {
             if (--loadingCount === 0) {
               this.show = true
             }
+
+            this.$message({
+              message: this.$t('panel.json_params_error'),
+              type: 'error',
+              showClose: true
+            })
             console.log('outerParams Decode error：', e)
           }
         }
