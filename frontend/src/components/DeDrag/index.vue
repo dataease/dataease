@@ -29,8 +29,7 @@
           ['de-drag-active-inner']:enabled,
           [classNameMouseOn]: mouseOn || active
         },
-        className,
-        'main-background'
+        className
       ]"
       :style="mainSlotStyle"
     >
@@ -44,7 +43,9 @@
       >
         <slot :name="handlei" />
       </div>
-      <slot />
+      <div :style="mainSlotStyleInner" class="main-background">
+        <slot />
+      </div>
     </div>
   </div>
 </template>
@@ -533,6 +534,10 @@ export default {
         width: this.computedMainSlotWidth,
         height: this.computedMainSlotHeight
       }
+      return style
+    },
+    mainSlotStyleInner() {
+      const style = {}
       if (this.element.commonBackground) {
         style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
         style['border-radius'] = (this.element.commonBackground.borderRadius || 0) + 'px'
@@ -1865,6 +1870,8 @@ export default {
   outline: 1px solid #70c0ff;
 }
   .main-background{
+    width: 100%;
+    height: 100%;
     background-size: 100% 100% !important;
   }
 </style>
