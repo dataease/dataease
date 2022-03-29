@@ -1,16 +1,17 @@
 <template>
   <el-aside
-    :width="width"
+    :width="currentWidth"
     class="ms-aside-container"
-    :style="{'margin-left': !asideHidden ? 0 : '-' + width}"
+    :style="{'margin-left': !asideHidden ? 0 : '-' + currentWidth}"
   >
     <slot />
-    <de-horizontal-drag-bar v-if="showDragBar" />
+    <de-horizontal-drag-bar v-if="showDragBar" :type="type" />
   </el-aside>
 </template>
 
 <script>
 import DeHorizontalDragBar from './dragbar/DeLeft2RightDragBar'
+import { getLayout } from '@/utils/LayoutUtil'
 export default {
   name: 'DeAsideContainer',
   components: { DeHorizontalDragBar },
@@ -26,11 +27,20 @@ export default {
     showDragBar: {
       type: Boolean,
       default: true
+    },
+    type: {
+      type: String,
+      default: null
     }
   },
   data() {
     return {
       asideHidden: false
+    }
+  },
+  computed: {
+    currentWidth() {
+      return this.type && getLayout(this.type) || this.width
     }
   }
 }

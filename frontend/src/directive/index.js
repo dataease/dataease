@@ -1,8 +1,9 @@
 import permission from '@/directive/Permission'
-// import dataPermission from '@/directive/DataPermission'
+import { setLayout } from '@/utils/LayoutUtil'
 
 export const left2RightDrag = {
   inserted(el, binding) {
+    const value = binding.value
     el.onmousedown = function(e) {
       const init = e.clientX
       const parent = el.parentNode
@@ -15,6 +16,8 @@ export const left2RightDrag = {
         }
       }
       document.onmouseup = function() {
+        value && setLayout(value, parent.style.width)
+
         document.onmousemove = document.onmouseup = null
       }
     }
