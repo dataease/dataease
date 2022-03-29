@@ -179,7 +179,7 @@
       :destroy-on-close="true"
       :append-to-body="true"
     >
-      <background @backgroundSetClose="backgroundSetClose" />
+      <background v-if="boardSetVisible" @backgroundSetClose="backgroundSetClose" />
     </el-dialog>
   </div>
 </template>
