@@ -803,7 +803,7 @@ public class ChartViewService {
         pluginViewParam.setPluginChartFieldCustomFilters(fieldFilters);
         pluginViewParam.setPluginChartExtFilters(panelFilters);
         pluginViewParam.setPluginViewLimit(pluginViewLimit);
-        pluginViewParam.setUserId(AuthUtils.getUser().getUserId());
+        // pluginViewParam.setUserId(AuthUtils.getUser().getUserId());
         return pluginViewParam;
     }
 
