@@ -37,6 +37,8 @@ public class ProviderFactory implements ApplicationContextAware {
             case mysql:
             case mariadb:
             case ds_doris:
+            case TiDB:
+            case StarRocks:
                 return context.getBean("mysqlQuery", QueryProvider.class);
             case sqlServer:
                 return context.getBean("sqlserverQuery", QueryProvider.class);

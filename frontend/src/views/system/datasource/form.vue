@@ -399,6 +399,7 @@ export default {
       },
       allTypes: [
         {name: 'mysql', label: 'MySQL', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
+        {name: 'TiDB', label: 'TiDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
         {name: 'hive', label: 'Apache Hive', type: 'jdbc', extraParams: ''},
         {name: 'impala', label: 'Apache Impala', type: 'jdbc', extraParams: 'AuthMech=0'},
         {name: 'oracle', label: 'Oracle', type: 'jdbc'},
@@ -406,6 +407,7 @@ export default {
         {name: 'pg', label: 'PostgreSQL', type: 'jdbc', extraParams: ''},
         {name: 'es', label: 'Elasticsearch', type: 'es'},
         {name: 'mariadb', label: 'MariaDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
+        {name: 'StarRocks', label: 'StarRocks', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
         {name: 'ds_doris', label: 'Doris', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
         {name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: ''},
         {name: 'redshift', label: 'AWS Redshift', type: 'jdbc'},

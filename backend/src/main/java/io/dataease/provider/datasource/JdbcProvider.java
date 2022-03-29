@@ -229,6 +229,8 @@ public class JdbcProvider extends DatasourceProvider {
             case engine_doris:
             case ds_doris:
             case mariadb:
+            case TiDB:
+            case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 return mysqlConfiguration.getDataBase();
             case sqlServer:
@@ -429,6 +431,8 @@ public class JdbcProvider extends DatasourceProvider {
             case engine_doris:
             case engine_mysql:
             case ds_doris:
+            case TiDB:
+            case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 username = mysqlConfiguration.getUsername();
                 password = mysqlConfiguration.getPassword();
@@ -541,6 +545,8 @@ public class JdbcProvider extends DatasourceProvider {
             case engine_mysql:
             case engine_doris:
             case ds_doris:
+            case TiDB:
+            case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 dataSource.setUrl(mysqlConfiguration.getJdbc());
                 dataSource.setDriverClassName(mysqlConfiguration.getDriver());
@@ -623,10 +629,12 @@ public class JdbcProvider extends DatasourceProvider {
             case mysql:
             case engine_mysql:
             case mariadb:
+            case TiDB:
                 JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
                 return String.format("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' ;", jdbcConfiguration.getDataBase());
             case engine_doris:
             case ds_doris:
+            case StarRocks:
             case hive:
             case impala:
                 return "show tables";
@@ -679,6 +687,8 @@ public class JdbcProvider extends DatasourceProvider {
             case engine_mysql:
             case ds_doris:
             case ck:
+            case TiDB:
+            case StarRocks:
                 return null;
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
