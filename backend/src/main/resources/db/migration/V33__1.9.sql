@@ -251,3 +251,8 @@ INSERT INTO `my_plugin`(`plugin_id`, `name`, `store`, `free`, `cost`, `category`
 
 ALTER TABLE `panel_link_jump_info`
 ADD COLUMN `attach_params` tinyint(1) NULL COMMENT '是否附加点击参数' AFTER `checked`;
+
+
+update `sys_menu` set menu_id = 100 where title = '首页';
+
+INSERT INTO `sys_menu` VALUES (101, 1, 4, 1, '插件管理', 'system-plugin', 'system/plugin/index', 1002, 'peoples', 'plugin', b'0', b'0', b'0', 'plugin:read', NULL, NULL, NULL, 1620281952752);
