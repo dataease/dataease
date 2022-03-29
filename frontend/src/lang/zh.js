@@ -1679,6 +1679,15 @@ export default {
     dept: '组织',
     role: '角色',
     user: '用户',
+    sysParams: '系统变量',
+    sysParams_type: {
+      user_id: '用户ID',
+      user_name: '用户名',
+      user_source: '用户来源',
+      user_email: '邮箱',
+      dept: '组织',
+      role: '角色'
+    },
     linkAuth: '数据源',
     datasetAuth: '数据集',
     chartAuth: '视图',

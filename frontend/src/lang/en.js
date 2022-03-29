@@ -1661,6 +1661,14 @@ export default {
     dept: 'Dept',
     role: 'Role',
     user: 'User',
+    sysParams_type: {
+      user_id: 'User ID',
+      user_name: 'User Name',
+      user_source: 'User From',
+      user_email: 'Email',
+      dept: 'Dept',
+      role: 'Role'
+    },
     linkAuth: 'Datasource',
     datasetAuth: 'Dataset',
     chartAuth: 'Chart',

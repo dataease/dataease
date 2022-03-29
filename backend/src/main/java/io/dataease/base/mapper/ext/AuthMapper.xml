@@ -13,6 +13,7 @@
         <result column="enabled" property="enabled"/>
         <result column="is_admin" jdbcType="BIT" property="isAdmin"/>
         <result column="from" property="from"/>
+        <result column="dept_name" property="deptName"/>
     </resultMap>
 
     <resultMap id="roleMap" type="io.dataease.auth.api.dto.CurrentRoleDto">
@@ -22,7 +23,22 @@
 
 
     <select id="findUser" resultMap="baseMap">
-        select user_id, username,nick_name, dept_id, password, enabled,email, phone, language,is_admin, `from` from sys_user where user_id = #{userId}
+        select
+               sys_user.user_id,
+               sys_user.username,
+               sys_user.nick_name,
+               sys_user.dept_id,
+               sys_user.password,
+               sys_user.enabled,
+               sys_user.email,
+               sys_user.phone,
+               sys_user.language,
+               sys_user.is_admin,
+               sys_user.`from`,
+               sys_dept.name as dept_name
+        from sys_user
+        left join sys_dept on sys_user.dept_id=sys_dept.dept_id
+        where user_id = #{userId}
     </select>
 
     <select id="findUserByName" resultMap="baseMap">
