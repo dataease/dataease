@@ -46,24 +46,11 @@ export default {
   ]),
   methods: {
     edit() {
-      bus.$emit('change_panel_right_draw', true)
-      // // 编辑时临时保存 当前修改的画布
-      // this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
-      // this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
-      // if (this.curComponent.type === 'view') {
-      //   this.$store.dispatch('chart/setViewId', null)
-      //   this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
-      //   bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }})
-      // }
-      // if (this.curComponent.type === 'custom') {
-      //   bus.$emit('component-dialog-edit')
-      // }
-      //
-      // // 编辑样式组件
-      //
-      // if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
-      //   bus.$emit('component-dialog-style')
-      // }
+      if (this.curComponent.type === 'custom') {
+        bus.$emit('component-dialog-edit')
+      } else if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
+        bus.$emit('component-dialog-style')
+      } else { bus.$emit('change_panel_right_draw', true) }
     },
     lock() {
       this.$store.commit('lock')
