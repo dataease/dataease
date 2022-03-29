@@ -179,7 +179,7 @@
       :destroy-on-close="true"
       :append-to-body="true"
     >
-      <background />
+      <background @backgroundSetClose="backgroundSetClose" />
     </el-dialog>
   </div>
 </template>
@@ -1025,13 +1025,13 @@ export default {
         _this.positionBoxInfoArray = positionBox
       }, 500)
     }
-    eventBus.$on('backgroundSetClose', () => {
-      this.boardSetVisible = false
-    })
   },
   created() {
   },
   methods: {
+    backgroundSetClose() {
+      this.boardSetVisible = false
+    },
     boardSet(item) {
       this.$emit('boardSet', item)
       this.boardSetVisible = true

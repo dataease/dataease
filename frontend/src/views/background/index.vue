@@ -128,19 +128,26 @@ export default {
       predefineColors: COLOR_PANEL
     }
   },
+  created() {
+    this.init()
+  },
   mounted() {
-    if (this.curComponent && this.curComponent.commonBackground && this.curComponent.commonBackground.outerImage && typeof (this.curComponent.commonBackground.outerImage) === 'string') {
-      this.fileList.push({ url: this.curComponent.commonBackground.outerImage })
-    }
-    this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
-    this.queryBackground()
+
   },
   computed: {
     ...mapState([
-      'curComponent'
+      'curComponent',
+      'componentData'
     ])
   },
   methods: {
+    init() {
+      if (this.curComponent && this.curComponent.commonBackground && this.curComponent.commonBackground.outerImage && typeof (this.curComponent.commonBackground.outerImage) === 'string') {
+        this.fileList.push({ url: this.curComponent.commonBackground.outerImage })
+      }
+      this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
+      this.queryBackground()
+    },
     queryBackground() {
       queryBackground().then(response => {
         this.BackgroundShowMap = response.data
@@ -154,11 +161,12 @@ export default {
       this.curComponent.commonBackground.outerImage = this.backgroundOrigin.outerImage
       this.curComponent.commonBackground.alpha = this.backgroundOrigin.alpha
       this.curComponent.commonBackground.borderRadius = this.backgroundOrigin.borderRadius
-      eventBus.$emit('backgroundSetClose')
+      this.curComponent.commonBackground.innerPadding = this.backgroundOrigin.innerPadding
+      this.$emit('backgroundSetClose')
     },
     save() {
       this.$store.commit('recordSnapshot')
-      eventBus.$emit('backgroundSetClose')
+      this.$emit('backgroundSetClose')
     },
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)

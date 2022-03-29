@@ -82,6 +82,10 @@ export default {
     filters: {
       type: Array,
       default: () => []
+    },
+    screenShot: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -100,7 +104,11 @@ export default {
         style['border-radius'] = (this.config.commonBackground.borderRadius || 0) + 'px'
         if (this.config.commonBackground.enable) {
           if (this.config.commonBackground.backgroundType === 'innerImage') {
-            style['background'] = `url(${this.config.commonBackground.innerImage}) no-repeat`
+            let innerImage = this.config.commonBackground.innerImage
+            if (this.screenShot) {
+              innerImage = innerImage.replace('svg', 'png')
+            }
+            style['background'] = `url(${innerImage}) no-repeat`
           } else if (this.config.commonBackground.backgroundType === 'outerImage') {
             style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat`
           } else if (this.config.commonBackground.backgroundType === 'color') {
