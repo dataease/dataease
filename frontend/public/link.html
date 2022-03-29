@@ -41,7 +41,9 @@
     url += '&user=' + encodeURIComponent(user)
   }
   if (attachParams) {
-    url += '&attachParams=' + attachParams
+    console.log('attachParams-bf:'+attachParams+';-af:'+encodeURIComponent(attachParams))
+    url += '&attachParams=' + encodeURIComponent(attachParams)
+
   }
   window.location.href = url
 </script>
