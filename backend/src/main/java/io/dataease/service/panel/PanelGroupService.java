@@ -291,6 +291,8 @@ public class PanelGroupService {
         extChartViewMapper.chartCopyWithPanel(copyId);
         //TODO 替换panel_data viewId 数据
         List<PanelView> panelViewList = panelViewService.findPanelViews(copyId);
+        //TODO 复制模板缓存数据
+        extPanelGroupExtendDataMapper.copyWithCopyId(copyId);
         if (CollectionUtils.isNotEmpty(panelViewList)) {
             String panelData = newPanel.getPanelData();
             //TODO 替换panel_data viewId 数据  并保存

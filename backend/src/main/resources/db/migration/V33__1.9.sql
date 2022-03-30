@@ -66,8 +66,11 @@ CREATE TABLE `panel_group_extend_data` (
   `panel_id` varchar(50) DEFAULT NULL,
   `view_id` varchar(50) DEFAULT NULL,
   `view_details` longtext,
+  `copy_from` varchar(255) DEFAULT NULL,
+  `copy_id` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 SET FOREIGN_KEY_CHECKS = 1;
 
