@@ -1006,6 +1006,8 @@ export default {
         component.y = 1
       }
       component.id = newComponentId
+      // 统一设置背景信息
+      component.commonBackground = deepCopy(COMMON_BACKGROUND)
       this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot', 'newViewInfo')
       this.clearCurrentInfo()
