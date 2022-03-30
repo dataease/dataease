@@ -2,10 +2,10 @@ package io.dataease.provider;
 
 import io.dataease.base.domain.DatasetTableField;
 import io.dataease.base.domain.Datasource;
-import io.dataease.commons.utils.Md5Utils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class DDLProviderImpl extends DDLProvider {
     @Override
@@ -40,7 +40,7 @@ public class DDLProviderImpl extends DDLProvider {
 
         Integer realSize = page * pageNumber < dataList.size() ? page * pageNumber : dataList.size();
         for (String[] strings : dataList.subList((page - 1) * pageNumber, realSize)) {
-            values.append("('").append(Md5Utils.md5(String.join(",", Arrays.asList(strings))))
+            values.append("('").append(UUID.randomUUID())
                     .append("','" ).append(String.join("','", Arrays.asList(strings)))
                     .append("'),");
         }
