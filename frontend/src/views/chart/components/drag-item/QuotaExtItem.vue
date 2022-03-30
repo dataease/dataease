@@ -148,7 +148,7 @@ export default {
     return {
       compareItem: compareItem,
       disableEditCompare: false,
-      tagType: getItemType(this.dimensionData, this.quotaData, this.item)
+      tagType: 'success'
     }
   },
   watch: {

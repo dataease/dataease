@@ -3,7 +3,7 @@
     <el-row v-if="editPanel.optType==='new' && editPanel.panelInfo.nodeType==='panel'">
       <el-col :span="18" style="height: 40px">
         <el-radio v-model="inputType" label="new"> {{ $t('panel.custom') }}</el-radio>
-        <!--        <el-radio v-model="inputType" label="new_outer_template">{{ $t('panel.import_template') }}  </el-radio>-->
+        <el-radio v-model="inputType" label="new_outer_template">{{ $t('panel.import_template') }}  </el-radio>
         <el-radio v-model="inputType" label="new_inner_template" @click.native="getTree">{{ $t('panel.copy_template') }}  </el-radio>
       </el-col>
       <el-col v-if="inputType==='new_outer_template'" :span="6">
@@ -23,7 +23,7 @@
       </el-col>
       <el-col :span="16" :style="classBackground" class="preview-show" />
     </el-row>
-    <!--    <el-row v-if="inputType==='import'" class="preview" :style="classBackground" />-->
+        <el-row v-if="inputType==='new_outer_template'" class="preview" :style="classBackground" />
     <el-row class="root-class">
       <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
       <el-button type="primary" size="mini" @click="save()">{{ $t('commons.confirm') }}</el-button>
@@ -168,6 +168,7 @@ export default {
         this.editPanel.panelInfo.name = this.importTemplateInfo.name
         this.editPanel.panelInfo.panelStyle = this.importTemplateInfo.panelStyle
         this.editPanel.panelInfo.panelData = this.importTemplateInfo.panelData
+        this.editPanel.panelInfo.dynamicData = this.importTemplateInfo.dynamicData
       }
       reader.readAsText(file)
     },

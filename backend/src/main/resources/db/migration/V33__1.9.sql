@@ -250,7 +250,7 @@ END
 ;;
 delimiter ;
 
-INSERT INTO `my_plugin`(`plugin_id`, `name`, `store`, `free`, `cost`, `category`, `descript`, `version`, `install_type`, `creator`, `load_mybatis`, `release_time`, `install_time`, `module_name`, `icon`) VALUES (3, 'tabs插件', 'default', 0, 20000, 'panel', 'tabs插件', '1.0-SNAPSHOT', NULL, 'fit2cloud-chenyw', 0, NULL, NULL, 'dataease-extensions-tabs-backend', NULL);
+INSERT INTO `my_plugin`(`plugin_id`, `name`, `store`, `free`, `cost`, `category`, `descript`, `version`, `install_type`, `creator`, `load_mybatis`, `release_time`, `install_time`, `module_name`, `icon`) VALUES (3, '选项卡插件', 'default', 0, 20000, 'panel', '选项卡插件', '1.0-SNAPSHOT', NULL, 'fit2cloud-chenyw', 0, NULL, NULL, 'dataease-extensions-tabs-backend', NULL);
 
 ALTER TABLE `panel_link_jump_info`
 ADD COLUMN `attach_params` tinyint(1) NULL COMMENT '是否附加点击参数' AFTER `checked`;
@@ -259,3 +259,36 @@ ADD COLUMN `attach_params` tinyint(1) NULL COMMENT '是否附加点击参数' AF
 update `sys_menu` set menu_id = 100 where title = '首页';
 
 INSERT INTO `sys_menu` VALUES (101, 1, 4, 1, '插件管理', 'system-plugin', 'system/plugin/index', 1002, 'peoples', 'plugin', b'0', b'0', b'0', 'plugin:read', NULL, NULL, NULL, 1620281952752);
+
+DROP FUNCTION IF EXISTS `GET_CHART_VIEW_COPY_NAME`;
+delimiter ;;
+CREATE FUNCTION `GET_CHART_VIEW_COPY_NAME`(chartId varchar(255),pid varchar(255))
+ RETURNS varchar(255) CHARSET utf8mb4
+  READS SQL DATA
+BEGIN
+
+DECLARE chartName varchar(255);
+
+DECLARE regexpInfo varchar(255);
+
+DECLARE chartNameCount INTEGER;
+
+select `name`  into chartName from chart_view where id =chartId;
+/**
+因为名称存在（）等特殊字符，所以不能直接用REGEXP进行查找，qrtz_locks
+1.用like 'chartName%' 过滤可能的数据项
+2.REPLACE(name,chartName,'') REGEXP '-copy\\(([0-9])+\\)$' 过滤去掉chartName后的字符以 -copy(/d) 结尾的数据
+3.(LENGTH(REPLACE(name,chartName,''))-LENGTH(replace(REPLACE(name,chartName,''),'-',''))=1) 确定只出现一次 ‘-’ 防止多次copy
+**/
+select (count(1)+1) into chartNameCount from chart_view
+where (LENGTH(REPLACE(name,chartName,''))-LENGTH(replace(REPLACE(name,chartName,''),'-',''))=1)
+and REPLACE(name,chartName,'') REGEXP '-copy\\(([0-9])+\\)$' and name like CONCAT(chartName,'%') and chart_view.scene_id=pid ;
+
+RETURN concat(chartName,'-copy(',chartNameCount,')');
+
+END
+;;
+delimiter ;
+
+update `my_plugin` set `name` = 'X-Pack默认插件' where `plugin_id` = 1;
+update `my_plugin` set `module_name` = 'view-bubblemap-backend' where `plugin_id` = 2;

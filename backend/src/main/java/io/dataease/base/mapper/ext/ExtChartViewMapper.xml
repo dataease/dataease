@@ -187,11 +187,11 @@
                                 `senior`,
                                 `data_from`)
         SELECT #{newChartId},
-               `name`,
+               GET_CHART_VIEW_COPY_NAME(#{oldChartId},#{panelId}) as `name`,
                #{panelId},
                `table_id`,
                `type`,
-               `title`,
+               GET_CHART_VIEW_COPY_NAME(#{oldChartId},#{panelId}) as `title`,
                `x_axis`,
                `x_axis_ext`,
                `y_axis`,
