@@ -1384,9 +1384,9 @@ export default {
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',
-    input_placeholder: 'Please enter the 4-digit password',
+    input_placeholder: 'Please enter the 4-digits-letters',
     pwd_error: 'Wrong password',
-    pwd_format_error: 'Please enter the 4-digit password',
+    pwd_format_error: 'Please enter the 4-digits-letters',
     sure_bt: 'Confirm'
   },
   panel: {

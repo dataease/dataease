@@ -1385,9 +1385,9 @@ export default {
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',
-    input_placeholder: '請輸入4位數字密碼',
+    input_placeholder: '請輸入4位數字或字母',
     pwd_error: '密碼錯誤',
-    pwd_format_error: '請輸入4位數字密碼',
+    pwd_format_error: '請輸入4位數字或字母',
     sure_bt: '確定'
   },
   panel: {
