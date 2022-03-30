@@ -140,7 +140,7 @@ export default {
   },
   data() {
     return {
-      tagType: getItemType(this.dimensionData, this.quotaData, this.item)
+      tagType: 'success'
     }
   },
   watch: {
