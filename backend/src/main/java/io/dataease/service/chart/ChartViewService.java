@@ -10,6 +10,7 @@ import io.dataease.base.mapper.ChartViewMapper;
 import io.dataease.base.mapper.PanelViewMapper;
 import io.dataease.base.mapper.ext.ExtChartGroupMapper;
 import io.dataease.base.mapper.ext.ExtChartViewMapper;
+import io.dataease.base.mapper.ext.ExtPanelGroupExtendDataMapper;
 import io.dataease.commons.constants.ColumnPermissionConstants;
 import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.JdbcConstants;
@@ -47,6 +48,7 @@ import io.dataease.service.panel.PanelViewService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.pentaho.di.core.util.UUIDUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -90,9 +92,11 @@ public class ChartViewService {
     @Resource
     private ChartViewCacheMapper chartViewCacheMapper;
     @Resource
-    private PanelViewService panelViewService;
+    private PanelViewMapper panelViewMapper;
     @Resource
     private PanelGroupExtendDataService extendDataService;
+    @Resource
+    private ExtPanelGroupExtendDataMapper extPanelGroupExtendDataMapper;
 
 
     //默认使用非公平
@@ -121,6 +125,14 @@ public class ChartViewService {
         // 新建的视图也存入缓存表中
         extChartViewMapper.copyToCache(chartView.getId());
 
+        PanelView newPanelView = new PanelView();
+        newPanelView.setId(UUIDUtil.getUUIDAsString());
+        newPanelView.setChartViewId(chartView.getId());
+        newPanelView.setCreateBy(chartView.getCreateBy());
+        newPanelView.setPanelId(chartView.getSceneId());
+        newPanelView.setCreateTime(timestamp);
+        newPanelView.setPosition("panel");
+        panelViewMapper.insertSelective(newPanelView);
         return chartView;
     }
 
@@ -1028,6 +1040,7 @@ public class ChartViewService {
     public String chartCopy(String id, String panelId) {
         String newChartId = UUID.randomUUID().toString();
         extChartViewMapper.chartCopy(newChartId, id, panelId);
+        extPanelGroupExtendDataMapper.copyExtendData(id,newChartId,panelId);
         extChartViewMapper.copyToCache(newChartId);
         return newChartId;
     }
