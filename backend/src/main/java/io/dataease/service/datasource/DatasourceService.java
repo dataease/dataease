@@ -366,47 +366,7 @@ public class DatasourceService {
 
     public ApiDefinition checkApiDatasource(ApiDefinition apiDefinition) throws Exception {
         String response = ApiProvider.execHttpRequest(apiDefinition);
-        if(StringUtils.isEmpty(response)){
-            throw new Exception("该请求返回数据为空");
-        }
-        List<LinkedHashMap> datas = new ArrayList<>();
-        try {
-            datas = JsonPath.read(response,apiDefinition.getDataPath());
-        }catch (Exception e){
-            throw new Exception("jsonPath 路径错误：" + e.getMessage());
-        }
-
-        List<JSONObject> dataList = new ArrayList<>();
-        List<DatasetTableField> fields = new ArrayList<>();
-        Set<String> fieldKeys = new HashSet<>();
-        //第一遍获取 field
-        for (LinkedHashMap data : datas) {
-            Set<String> keys = data.keySet();
-            for (String key : keys) {
-                if(!fieldKeys.contains(key)){
-                    fieldKeys.add(key);
-                    DatasetTableField tableField = new DatasetTableField();
-                    tableField.setOriginName(key);
-                    tableField.setName(key);
-                    tableField.setSize(65535);
-                    tableField.setDeExtractType(0);
-                    tableField.setDeType(0);
-                    tableField.setExtField(0);
-                    fields.add(tableField);
-                }
-            }
-        }
-        //第二遍获取 data
-        for (LinkedHashMap data : datas) {
-            JSONObject jsonObject = new JSONObject();
-            for (String key : fieldKeys) {
-                jsonObject.put(key, Optional.ofNullable(data.get(key)).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
-            }
-            dataList.add(jsonObject);
-        }
-        apiDefinition.setDatas(dataList);
-        apiDefinition.setFields(fields);
-        return apiDefinition;
+        return ApiProvider.checkApiDefinition(apiDefinition, response);
     }
 
     private void checkAndUpdateDatasourceStatus(Datasource datasource){
