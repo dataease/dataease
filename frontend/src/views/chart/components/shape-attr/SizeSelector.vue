@@ -142,7 +142,7 @@
           </el-select>
         </el-form-item>
         <el-form-item v-show="chart.type" :label="$t('chart.space_split')" class="form-item">
-          <el-input-number v-model="sizeForm.spaceSplit" size="mini" @change="changeBarSizeCase" />
+          <el-input-number v-model="sizeForm.spaceSplit" min="0" size="mini" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
 
