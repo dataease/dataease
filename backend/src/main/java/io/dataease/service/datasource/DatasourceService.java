@@ -57,7 +57,7 @@ public class DatasourceService {
     private DataSetGroupService dataSetGroupService;
     @Resource
     private CommonThreadPool commonThreadPool;
-    private static List<String> dsTypes = Arrays.asList("excel", "mysql", "hive", "impala", "mariadb", "ds_doris", "pg", "sqlServer", "oracle", "mongo", "ck", "db2", "es", "redshift", "api");
+    private static List<String> dsTypes = Arrays.asList("TiDB", "StarRocks", "excel", "mysql", "hive", "impala", "mariadb", "ds_doris", "pg", "sqlServer", "oracle", "mongo", "ck", "db2", "es", "redshift", "api");
 
     @DeCleaner(DePermissionType.DATASOURCE)
     public Datasource addDatasource(Datasource datasource) throws Exception{

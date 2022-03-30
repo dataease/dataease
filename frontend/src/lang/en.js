@@ -896,6 +896,8 @@ export default {
     filter_value_can_null: 'Filter value can not empty',
     filter_like: 'Contain',
     filter_not_like: 'Not Contain',
+    filter_in: 'IN',
+    filter_not_in: 'NOT IN',
     chart_details: 'Chart Details',
     export_details: 'Export Details',
     color_light: 'Light',

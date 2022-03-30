@@ -45,11 +45,11 @@ public class DataSetGroupService {
 
     @DeCleaner(DePermissionType.DATASET)
     public DataSetGroupDTO save(DatasetGroup datasetGroup) throws Exception {
-        if (StringUtils.isEmpty(datasetGroup.getType())) {
-            throw new Exception("type can not be empty");
-        }
         checkName(datasetGroup);
         if (StringUtils.isEmpty(datasetGroup.getId())) {
+            if (StringUtils.isEmpty(datasetGroup.getType())) {
+                throw new Exception("type can not be empty");
+            }
             datasetGroup.setId(UUID.randomUUID().toString());
             datasetGroup.setCreateBy(AuthUtils.getUser().getUsername());
             datasetGroup.setCreateTime(System.currentTimeMillis());
