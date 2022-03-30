@@ -877,7 +877,7 @@
                       @onLegendChange="onLegendChange"
                     />
                   </el-collapse-item>
-                  <el-collapse-item name="background" :title="$t('chart.background')">
+                  <el-collapse-item v-if="chart.customStyle.background" name="background" :title="$t('chart.background')">
                     <background-color-selector
                       :param="param"
                       class="attr-selector"

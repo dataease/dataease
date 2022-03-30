@@ -765,7 +765,6 @@ export default {
         xAxis: DEFAULT_XAXIS_STYLE,
         yAxis: DEFAULT_YAXIS_STYLE,
         yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
-        background: DEFAULT_BACKGROUND_COLOR,
         split: DEFAULT_SPLIT
       })
       view.senior = JSON.stringify({
@@ -784,7 +783,7 @@ export default {
       view.extBubble = JSON.stringify([])
       this.setChartDefaultOptions(view)
       const _this = this
-      post('/chart/view/newOne/' + this.panelInfo.id, view).then(response => {
+      post('/chart/view/newOne/' + this.panelInfo.id, view,true).then(response => {
         this.closeCreateChart()
         this.$store.dispatch('chart/setTableId', null)
         this.$store.dispatch('chart/setTableId', this.table.id)
