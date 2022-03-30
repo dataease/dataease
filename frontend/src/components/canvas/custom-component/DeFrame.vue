@@ -1,12 +1,13 @@
 <template>
   <el-row class="main-frame">
     <div v-if="element.frameLinks.src" class="main-frame">
-      <iframe id="iframe" :src="element.frameLinks.src" scrolling="auto" frameborder="0" class="main-frame" />
+      <iframe id="iframe" :src="element.frameLinks.src" scrolling="auto" frameborder="0" class="main-frame" @load="loaded" @error="onError" />
       <div v-if="editMode==='edit'" class="frame-mask">
         <span style="opacity: 1;">
           <span style="font-weight: bold;color: lawngreen;">{{ $t('panel.edit_web_tips') }}</span>
         </span>
       </div>
+      <div v-if="screenShot" class="frame-mask" />
     </div>
     <div v-else class="info-class">
       {{ $t('panel.web_add_tips') }}
@@ -18,7 +19,7 @@
 import { mapState } from 'vuex'
 import NProgress from 'nprogress'
 export default {
-  name: 'DeVideo',
+  name: 'DeFrame',
   props: {
     propValue: {
       type: String,
@@ -35,6 +36,10 @@ export default {
     active: {
       type: Boolean,
       require: false,
+      default: false
+    },
+    screenShot: {
+      type: Boolean,
       default: false
     }
   },
@@ -59,6 +64,12 @@ export default {
   mounted() {
   },
   methods: {
+    loaded(e) {
+      console.log('loaded:', e)
+    },
+    onError(e) {
+      console.log('onError:', e)
+    }
 
   }
 }

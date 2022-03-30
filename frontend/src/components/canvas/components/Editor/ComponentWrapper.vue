@@ -35,6 +35,7 @@
         :edit-mode="'preview'"
         :filters="filters"
         :terminal="terminal"
+        :screen-shot="screenShot"
       />
     </div>
   </div>

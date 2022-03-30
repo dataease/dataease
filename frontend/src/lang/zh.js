@@ -1404,7 +1404,7 @@ export default {
     board_radio: '边框半径',
     background: '背景',
     component_style: '组件样式',
-    web_set_tips: '部分网站可能存在跨域问题无法显示',
+    web_set_tips: '部分网站可能设置不允许嵌入而无法显示',
     repeat_params: '存在名称重复的参数',
     enable_outer_param_set: '启用外部参数设置',
     select_param: '请选择参数...',
