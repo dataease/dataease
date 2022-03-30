@@ -1395,7 +1395,7 @@ export default {
     board_radio: 'Board Radio',
     background: 'Background',
     component_style: 'component Style',
-    web_set_tips: 'Some Websites Cannot Be Displayed Because Of Cross Domain Problems  ',
+    web_set_tips: 'Some Websites Cannot Be Displayed Because Of Not Allow Embedded ',
     repeat_params: 'Repeat Params Exist',
     enable_outer_param_set: 'Enable Outer Param Set',
     select_param: 'Please Select Param...',
