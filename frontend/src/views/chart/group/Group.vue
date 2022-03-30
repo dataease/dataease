@@ -204,7 +204,7 @@
             <span style="float: right;">
               <el-select v-model="view.render" class="render-select" style="width: 70px" size="mini">
                 <el-option
-                  v-for="item in renderOptions"
+                  v-for="item in pluginRenderOptions"
                   :key="item.value"
                   :value="item.value"
                   :label="item.name"
@@ -429,6 +429,13 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    },
+    pluginRenderOptions() {
+      const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
+      const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
+        return { name: plugin.render, value: plugin.render }
+      })
+      return [...this.renderOptions, ...pluginOptions]
     }
   },
   watch: {
@@ -783,7 +790,7 @@ export default {
       view.extBubble = JSON.stringify([])
       this.setChartDefaultOptions(view)
       const _this = this
-      post('/chart/view/newOne/' + this.panelInfo.id, view,true).then(response => {
+      post('/chart/view/newOne/' + this.panelInfo.id, view, true).then(response => {
         this.closeCreateChart()
         this.$store.dispatch('chart/setTableId', null)
         this.$store.dispatch('chart/setTableId', this.table.id)
