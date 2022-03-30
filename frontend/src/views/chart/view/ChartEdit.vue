@@ -175,7 +175,7 @@
                                 @change="changeChartType()"
                               >
                                 <el-option
-                                  v-for="item in renderOptions"
+                                  v-for="item in pluginRenderOptions"
                                   :key="item.value"
                                   :value="item.value"
                                   :label="item.name"
@@ -877,7 +877,7 @@
                       @onLegendChange="onLegendChange"
                     />
                   </el-collapse-item>
-                  <el-collapse-item v-if="chart.customStyle.background" name="background" :title="$t('chart.background')">
+                  <el-collapse-item v-if="chart.customStyle && chart.customStyle.background" name="background" :title="$t('chart.background')">
                     <background-color-selector
                       :param="param"
                       class="attr-selector"
@@ -1378,7 +1378,14 @@ export default {
     },
     ...mapState([
       'panelViewEditInfo'
-    ])
+    ]),
+    pluginRenderOptions() {
+      const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
+      const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
+        return { name: plugin.render, value: plugin.render }
+      })
+      return [...this.renderOptions, ...pluginOptions]
+    }
   },
   watch: {
     'param': function(val) {
