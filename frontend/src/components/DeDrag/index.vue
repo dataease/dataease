@@ -20,9 +20,6 @@
     @mouseenter="enter"
     @mouseleave="leave"
   >
-    <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" @boardSet="boardSet" />
-    <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
-    <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
     <div
       :class="[
         {
@@ -33,6 +30,9 @@
       ]"
       :style="mainSlotStyle"
     >
+      <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" @boardSet="boardSet" />
+      <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
+      <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
       <div
         v-for="(handlei, indexi) in actualHandles"
         :key="indexi"
@@ -1870,6 +1870,7 @@ export default {
   outline: 1px solid #70c0ff;
 }
   .main-background{
+    overflow: hidden;
     width: 100%;
     height: 100%;
     background-size: 100% 100% !important;
