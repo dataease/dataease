@@ -154,7 +154,7 @@
                   <span>{{ $t('chart.chart_type') }}</span>
                   <el-row style="padding: 4px 0 4px 10px;">
                     <span>
-                      <svg-icon :icon-class="view.type" class="chart-icon" />
+                      <svg-icon :icon-class="view.isPlugin ? ('/api/pluginCommon/staticInfo/' + view.type + '/svg') : view.type" class="chart-icon" />
                     </span>
                     <span style="float: right;">
                       <el-popover
@@ -1212,7 +1212,7 @@ import AssistLine from '@/views/chart/components/senior/AssistLine'
 import Threshold from '@/views/chart/components/senior/Threshold'
 import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
-
+import { pluginTypes } from '@/api/chart/chart'
 export default {
   name: 'ChartEdit',
   components: {
@@ -1365,7 +1365,8 @@ export default {
       hasEdit: false,
       quotaItemCompare: {},
       showEditQuotaCompare: false,
-      preChartId: ''
+      preChartId: '',
+      pluginRenderOptions: []
 
     }
   },
@@ -1378,14 +1379,14 @@ export default {
     },
     ...mapState([
       'panelViewEditInfo'
-    ]),
-    pluginRenderOptions() {
+    ])
+    /* pluginRenderOptions() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
       const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
         return { name: plugin.render, value: plugin.render }
       })
       return [...this.renderOptions, ...pluginOptions]
-    }
+    } */
   },
   watch: {
     'param': function(val) {
@@ -1411,8 +1412,19 @@ export default {
     }
   },
   created() {
-    // this.get(this.$store.state.chart.viewId);
-    // this.initAreas()
+    const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views'))
+    if (plugins) {
+      this.loadPluginType()
+    } else {
+      pluginTypes().then(res => {
+        const plugins = res.data
+        localStorage.setItem('plugin-views', JSON.stringify(plugins))
+        this.loadPluginType()
+      }).catch(e => {
+        localStorage.setItem('plugin-views', null)
+        this.loadPluginType()
+      })
+    }
   },
   mounted() {
     this.bindPluginEvent()
@@ -1424,6 +1436,13 @@ export default {
   },
 
   methods: {
+    loadPluginType() {
+      const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
+      const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
+        return { name: plugin.render, value: plugin.render }
+      })
+      this.pluginRenderOptions = [...this.renderOptions, ...pluginOptions]
+    },
     emptyTableData() {
       this.table = {}
       this.dimension = []
