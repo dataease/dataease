@@ -32,8 +32,6 @@ public class DataSetGroupController {
     @Resource
     private DataSetGroupService dataSetGroupService;
     @Resource
-    private ExtractDataService extractDataService;
-    @Resource
     private KettleService kettleService;
 
     @DePermissions(value = {

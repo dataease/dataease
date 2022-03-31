@@ -62,11 +62,25 @@ public class ApiProvider extends DatasourceProvider{
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
         String response = execHttpRequest(apiDefinition);
 
-        fieldList = getTableFileds(datasourceRequest);
+        fieldList = getTableFileds(apiDefinition, response);
         result.put("fieldList", fieldList);
         dataList = fetchResult(response, apiDefinition);
         result.put("dataList", dataList);
         return result;
+    }
+
+
+    private List<TableField> getTableFileds(ApiDefinition apiDefinition, String response) throws Exception {
+        List<TableField> tableFields = new ArrayList<>();
+        for (DatasetTableField field : checkApiDefinition(apiDefinition, response).getFields()) {
+            TableField tableField = new TableField();
+            tableField.setFieldName(field.getOriginName());
+            tableField.setRemarks(field.getName());
+            tableField.setFieldSize(field.getSize());
+            tableField.setFieldType(field.getDeExtractType().toString());
+            tableFields.add(tableField);
+        }
+        return tableFields;
     }
 
     @Override
@@ -83,9 +97,10 @@ public class ApiProvider extends DatasourceProvider{
     public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
         List<ApiDefinition> lists = JSONObject.parseArray(datasourceRequest.getDatasource().getConfiguration(), ApiDefinition.class);
         List<TableField> tableFields = new ArrayList<>();
-        for (ApiDefinition list : lists) {
-            if(datasourceRequest.getTable().equalsIgnoreCase(list.getName())){
-                for (DatasetTableField field : list.getFields()) {
+        for (ApiDefinition apiDefinition : lists) {
+            if(datasourceRequest.getTable().equalsIgnoreCase(apiDefinition.getName())){
+                String response = ApiProvider.execHttpRequest(apiDefinition);
+                for (DatasetTableField field : checkApiDefinition(apiDefinition, response).getFields()) {
                     TableField tableField = new TableField();
                     tableField.setFieldName(field.getOriginName());
                     tableField.setRemarks(field.getName());
@@ -168,6 +183,50 @@ public class ApiProvider extends DatasourceProvider{
                 break;
         }
         return response;
+    }
+
+    static public ApiDefinition checkApiDefinition(ApiDefinition apiDefinition, String response)throws Exception{
+        if(StringUtils.isEmpty(response)){
+            throw new Exception("该请求返回数据为空");
+        }
+        List<LinkedHashMap> datas = new ArrayList<>();
+        try {
+            datas = JsonPath.read(response,apiDefinition.getDataPath());
+        }catch (Exception e){
+            throw new Exception("jsonPath 路径错误：" + e.getMessage());
+        }
+
+        List<JSONObject> dataList = new ArrayList<>();
+        List<DatasetTableField> fields = new ArrayList<>();
+        Set<String> fieldKeys = new HashSet<>();
+        //第一遍获取 field
+        for (LinkedHashMap data : datas) {
+            Set<String> keys = data.keySet();
+            for (String key : keys) {
+                if(!fieldKeys.contains(key)){
+                    fieldKeys.add(key);
+                    DatasetTableField tableField = new DatasetTableField();
+                    tableField.setOriginName(key);
+                    tableField.setName(key);
+                    tableField.setSize(65535);
+                    tableField.setDeExtractType(0);
+                    tableField.setDeType(0);
+                    tableField.setExtField(0);
+                    fields.add(tableField);
+                }
+            }
+        }
+        //第二遍获取 data
+        for (LinkedHashMap data : datas) {
+            JSONObject jsonObject = new JSONObject();
+            for (String key : fieldKeys) {
+                jsonObject.put(key, Optional.ofNullable(data.get(key)).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
+            }
+            dataList.add(jsonObject);
+        }
+        apiDefinition.setDatas(dataList);
+        apiDefinition.setFields(fields);
+        return apiDefinition;
     }
 
     private List<String[]> fetchResult(String result, ApiDefinition apiDefinition){

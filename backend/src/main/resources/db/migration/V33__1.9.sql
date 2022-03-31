@@ -250,7 +250,7 @@ END
 ;;
 delimiter ;
 
-INSERT INTO `my_plugin`(`plugin_id`, `name`, `store`, `free`, `cost`, `category`, `descript`, `version`, `install_type`, `creator`, `load_mybatis`, `release_time`, `install_time`, `module_name`, `icon`) VALUES (3, 'tabs插件', 'default', 0, 20000, 'panel', 'tabs插件', '1.0-SNAPSHOT', NULL, 'fit2cloud-chenyw', 0, NULL, NULL, 'dataease-extensions-tabs-backend', NULL);
+INSERT INTO `my_plugin`(`plugin_id`, `name`, `store`, `free`, `cost`, `category`, `descript`, `version`, `install_type`, `creator`, `load_mybatis`, `release_time`, `install_time`, `module_name`, `icon`) VALUES (3, '选项卡插件', 'default', 0, 20000, 'panel', '选项卡插件', '1.0-SNAPSHOT', NULL, 'fit2cloud-chenyw', 0, NULL, NULL, 'dataease-extensions-tabs-backend', NULL);
 
 ALTER TABLE `panel_link_jump_info`
 ADD COLUMN `attach_params` tinyint(1) NULL COMMENT '是否附加点击参数' AFTER `checked`;
@@ -334,3 +334,5 @@ CREATE TABLE `panel_outer_params_target_view_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
+update `my_plugin` set `name` = 'X-Pack默认插件' where `plugin_id` = 1;
+update `my_plugin` set `module_name` = 'view-bubblemap-backend' where `plugin_id` = 2;

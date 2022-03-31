@@ -758,8 +758,8 @@ public class RedshiftQueryProvider extends QueryProvider {
                         whereValue = PgConstants.WHERE_VALUE_NULL;
                     } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_null")) {
                         whereTerm = String.format(whereTerm, originName);
-                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in")) {
-                        whereValue = "('" + StringUtils.join(value, "','") + "')";
+                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in") || StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "not in")) {
+                        whereValue = "('" + String.join("','", value.split(",")) + "')";
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                         whereValue = "'%" + value + "%'";
                     } else {

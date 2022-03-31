@@ -30,7 +30,7 @@ public class PermissionService {
 
     public List<ChartFieldCustomFilterDTO> getCustomFilters(List<DatasetTableField> fields, DatasetTable datasetTable, Long user) {
         List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
-        Map<String, Object> values = new HashMap<>();
+        Map<String, String> values = new HashMap<>();
         for (DatasetRowPermissions datasetRowPermissions : rowPermissions(datasetTable.getId(), user, values)) {
             ChartFieldCustomFilterDTO dto = new ChartFieldCustomFilterDTO();
             if (StringUtils.isEmpty(datasetRowPermissions.getDatasetFieldId())) {
@@ -51,6 +51,7 @@ public class PermissionService {
                 lists.forEach(chartCustomFilterDTO -> {
                     chartCustomFilterDTO.setFieldId(field.getId());
                     if(datasetRowPermissions.getAuthTargetType().equalsIgnoreCase("sysParams")){
+                        System.out.println(values.get(chartCustomFilterDTO.getValue()).toString());
                         chartCustomFilterDTO.setValue(values.get(chartCustomFilterDTO.getValue()).toString());
                     }
                 });
@@ -96,7 +97,7 @@ public class PermissionService {
     }
 
 
-    private List<DatasetRowPermissions> rowPermissions(String datasetId, Long userId, Map<String, Object> values) {
+    private List<DatasetRowPermissions> rowPermissions(String datasetId, Long userId, Map<String, String> values) {
         List<DatasetRowPermissions> datasetRowPermissions = new ArrayList<>();
         Map<String, RowPermissionService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((RowPermissionService.class));
         if (beansOfType.keySet().size() == 0) {
@@ -139,7 +140,7 @@ public class PermissionService {
         values.put("${sysParams.userEmail}", userEntity.getEmail());
         values.put("${sysParams.userSource}", userEntity.getFrom() == 0 ? "LOCAL" : "OIDC");
         values.put("${sysParams.dept}", userEntity.getDeptName());
-        values.put("${sysParams.roles}", StringUtils.joinWith(",", currentRoleDtos.stream().map(CurrentRoleDto::getName).collect(Collectors.toList())));
+        values.put("${sysParams.roles}", String.join(",", currentRoleDtos.stream().map(CurrentRoleDto::getName).collect(Collectors.toList())));
         return datasetRowPermissions;
     }
 

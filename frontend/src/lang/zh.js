@@ -899,6 +899,8 @@ export default {
     filter_value_can_null: '过滤值不能为空',
     filter_like: '包含',
     filter_not_like: '不包含',
+    filter_in: '属于',
+    filter_not_in: '不属于',
     color_light: '明亮',
     color_classical: '经典',
     color_fresh: '清新',
