@@ -300,8 +300,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
@@ -364,8 +364,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
@@ -438,8 +438,8 @@
                             :index="index"
                             :item="item"
                             :chart="chart"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimensionD"
+                            :quota-data="quota"
                             @onQuotaItemChange="quotaItemChange"
                             @onQuotaItemRemove="quotaItemRemove"
                             @editItemFilter="showQuotaEditFilter"
@@ -476,8 +476,8 @@
                             :index="index"
                             :item="item"
                             :chart="chart"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onQuotaItemChange="quotaItemChange"
                             @onQuotaItemRemove="quotaItemRemove"
                             @editItemFilter="showQuotaEditFilter"
@@ -514,8 +514,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onItemChange="stackItemChange"
                             @onItemRemove="stackItemRemove"
                           />
@@ -559,8 +559,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onItemChange="bubbleItemChange"
                             @onItemRemove="bubbleItemRemove"
                           />
@@ -592,8 +592,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onFilterItemRemove="filterItemRemove"
                             @editItemFilter="showEditFilter"
                           />
@@ -629,8 +629,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onDimensionItemChange="drillItemChange"
                             @onDimensionItemRemove="drillItemRemove"
                           />
@@ -1701,9 +1701,9 @@ export default {
     //   this.closeChangeChart()
     // })
     // },
-    calcData() {
+    calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
       this.changeEditStatus(true)
-      const view = this.buildParam(true, 'chart', false, false)
+      const view = this.buildParam(true, 'chart', false, switchType)
       if (!view) return
       save2Cache(this.panelInfo.id, view).then(() => {
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
