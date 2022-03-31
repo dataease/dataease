@@ -191,6 +191,7 @@ public class DatasourceService {
         datasource.setDesc(updataDsRequest.getDesc());
         datasource.setConfiguration(updataDsRequest.getConfiguration());
         datasource.setCreateTime(null);
+        datasource.setType(updataDsRequest.getType());
         datasource.setUpdateTime(System.currentTimeMillis());
         checkAndUpdateDatasourceStatus(datasource);
         DatasourceExample example = new DatasourceExample();

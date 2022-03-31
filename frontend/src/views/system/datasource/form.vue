@@ -337,10 +337,10 @@ export default {
         apiConfiguration: []
       },
       rule: {
-        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'change'},
-          {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'change'}],
+        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
+          {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
         desc: [{min: 2, max: 50, message: i18n.t('datasource.input_limit_2_50'), trigger: 'blur'}],
-        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'change'}],
+        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur'}],
         'configuration.dataBase': [{
           required: true,
           message: i18n.t('datasource.please_input_data_base'),
@@ -359,43 +359,43 @@ export default {
         'configuration.password': [{
           required: true,
           message: i18n.t('datasource.please_input_password'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
-        'configuration.host': [{required: true, message: i18n.t('datasource.please_input_host'), trigger: 'change'}],
-        'configuration.url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'change'}],
-        'configuration.port': [{required: true, message: i18n.t('datasource.please_input_port'), trigger: 'change'}],
+        'configuration.host': [{required: true, message: i18n.t('datasource.please_input_host'), trigger: 'blur'}],
+        'configuration.url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'blur'}],
+        'configuration.port': [{required: true, message: i18n.t('datasource.please_input_port'), trigger: 'blur'}],
         'configuration.initialPoolSize': [{
           required: true,
           message: i18n.t('datasource.please_input_initial_pool_size'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
         'configuration.minPoolSize': [{
           required: true,
           message: i18n.t('datasource.please_input_min_pool_size'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
         'configuration.maxPoolSize': [{
           required: true,
           message: i18n.t('datasource.please_input_max_pool_size'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
         'configuration.maxIdleTime': [{
           required: true,
           message: i18n.t('datasource.please_input_max_idle_time'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
         'configuration.acquireIncrement': [{
           required: true,
           message: i18n.t('datasource.please_input_acquire_increment'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
         'configuration.connectTimeout': [{
           required: true,
           message: i18n.t('datasource.please_input_connect_timeout'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
-        'url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'change'}],
-        'dataPath': [{required: true, message: i18n.t('datasource.please_input_dataPath'), trigger: 'change'}]
+        'url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'blur'}],
+        'dataPath': [{required: true, message: i18n.t('datasource.please_input_dataPath'), trigger: 'blur'}]
       },
       allTypes: [
         {name: 'mysql', label: 'MySQL', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
@@ -764,6 +764,9 @@ export default {
       }
     },
     addApiItem(item) {
+      this.$nextTick(() => {
+        this.$refs.apiItem.clearValidate()
+      })
       if (item) {
         this.add_api_item = false
         this.api_table_title = this.$t('datasource.edit_api_table')

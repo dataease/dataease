@@ -367,11 +367,10 @@ public class JdbcProvider extends DatasourceProvider {
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         String queryStr = getTablesSql(datasourceRequest);
         try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)) {
-            return "Success";
         } catch (Exception e) {
             DataEaseException.throwException(e.getMessage());
         }
-        return "Error";
+        return "Success";
     }
 
     @Override
