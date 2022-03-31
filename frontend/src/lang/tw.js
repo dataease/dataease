@@ -1393,6 +1393,11 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    is_live: '是否直播',
+    yes: '是',
+    no: '否',
+    live_tips: '优先HTTPS链接',
+    stream_media_add_tips: '请点击添加配置流媒体信息...',
     json_params_error: '第三方参数解析失败，请检查参数格式是否正确',
     inner_padding: '内边距',
     board_radio: '边框半径',

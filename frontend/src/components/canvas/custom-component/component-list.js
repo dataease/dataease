@@ -96,7 +96,18 @@ export const VIDEOLINKS = {
       }
     }
   }
+}
 
+// 流媒体视频信息配置
+export const STREAMMEDIALINKS = {
+  videoType: 'flv',
+  flv: {
+    type: 'flv',
+    isLive: false,
+    cors: true, // 允许跨域
+    loop: true
+    // url: null // 网络动画视频
+  }
 }
 
 // 嵌套页面信息
@@ -147,6 +158,14 @@ export const pictureList = [
     type: 'video',
     label: '视频',
     icon: 'iconfont icon-video',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '20003',
+    component: 'stream-media',
+    type: 'stream-media',
+    label: '流媒体',
+    icon: 'iconfont icon-a-liumeitimeitiliebiao',
     defaultClass: 'text-filter'
   }
 ]
@@ -435,6 +454,27 @@ const list = [
       borderRadius: ''
     },
     videoLinks: VIDEOLINKS,
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '20003',
+    component: 'de-stream-media',
+    type: 'de-stream-media',
+    label: '',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 400,
+      height: 200,
+      borderRadius: ''
+    },
+    streamMediaLinks: STREAMMEDIALINKS,
     x: 1,
     y: 1,
     sizex: 10,
