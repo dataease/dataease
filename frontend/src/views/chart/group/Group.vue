@@ -224,7 +224,7 @@
           </el-row>
         </el-row>
         <el-row class="chart-box" style="text-align: center;">
-          <svg-icon :icon-class="view.type" class="chart-icon" />
+          <svg-icon :icon-class="view.isPlugin ? ('/api/pluginCommon/staticInfo/' + view.type + '/svg') : view.type" class="chart-icon" />
         </el-row>
       </el-row>
 
@@ -297,6 +297,7 @@ import TableSelector from '../view/TableSelector'
 import GroupMoveSelector from '../components/TreeSelector/GroupMoveSelector'
 import ChartMoveSelector from '../components/TreeSelector/ChartMoveSelector'
 import ChartType from '@/views/chart/view/ChartType'
+import { pluginTypes } from '@/api/chart/chart'
 import {
   DEFAULT_COLOR_CASE,
   DEFAULT_LABEL,
@@ -420,7 +421,8 @@ export default {
         folder: this.$t('commons.folder')
       },
       currentViewNodeData: {},
-      currentKey: null
+      currentKey: null,
+      pluginRenderOptions: []
     }
   },
   computed: {
@@ -429,14 +431,14 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
-    },
-    pluginRenderOptions() {
+    }
+    /* pluginRenderOptions() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
       const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
         return { name: plugin.render, value: plugin.render }
       })
       return [...this.renderOptions, ...pluginOptions]
-    }
+    } */
   },
   watch: {
     saveStatus() {
@@ -460,6 +462,21 @@ export default {
     }
 
   },
+  created() {
+    const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views'))
+    if (plugins) {
+      this.loadPluginType()
+    } else {
+      pluginTypes().then(res => {
+        const plugins = res.data
+        localStorage.setItem('plugin-views', JSON.stringify(plugins))
+        this.loadPluginType()
+      }).catch(e => {
+        localStorage.setItem('plugin-views', null)
+        this.loadPluginType()
+      })
+    }
+  },
   mounted() {
     if (this.mountedInit) {
       this.treeNode(true)
@@ -468,6 +485,13 @@ export default {
     this.getChartGroupTree()
   },
   methods: {
+    loadPluginType() {
+      const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
+      const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
+        return { name: plugin.render, value: plugin.render }
+      })
+      this.pluginRenderOptions = [...this.renderOptions, ...pluginOptions]
+    },
     clickAdd(param) {
       this.currGroup = param.data
       if (param.type === 'group') {
