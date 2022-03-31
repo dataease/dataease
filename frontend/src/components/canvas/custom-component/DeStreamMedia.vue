@@ -1,0 +1,120 @@
+<template>
+  <el-row ref="mainPlayer" style="width: 100%;height: 100%">
+    <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
+      <video ref="player" class="centered-video" name="centeredVideo" :controls="editMode!=='edit'" :loop="pOption.loop" muted />
+    </div>
+    <div v-else class="info-stream-class">
+      {{ $t('panel.stream_media_add_tips') }}
+    </div>
+  </el-row>
+</template>
+<script>
+
+import flvjs from 'flv.js'
+import '@/custom-theme.css'
+
+export default {
+  props: {
+    propValue: {
+      type: String,
+      require: true
+    },
+    element: {
+      type: Object
+    },
+    editMode: {
+      type: String,
+      require: false,
+      default: 'edit'
+    },
+    active: {
+      type: Boolean,
+      require: false,
+      default: false
+    },
+    h: {
+      type: Number,
+      default: 200
+    }
+  },
+  data() {
+    return {
+      pOption: this.element.streamMediaLinks[this.element.streamMediaLinks.videoType],
+      flvPlayer: null
+    }
+  },
+
+  computed: {
+    moveFlag() {
+      return (this.element.optStatus.dragging || this.element.optStatus.resizing)
+    },
+    curGap() {
+      return this.element.auxiliaryMatrix ? this.componentGap : 0
+    },
+    player() {
+      return this.$refs.videoPlayer.player
+    }
+  },
+  watch: {
+    pOption: {
+      handler: function() {
+        this.initOption()
+      },
+      deep: true
+    }
+  },
+  created() {
+  },
+  mounted() {
+    this.initOption()
+  },
+  methods: {
+    initOption() {
+      if (flvjs.isSupported() && this.pOption.url) {
+        const video = this.$refs.player
+        if (video) {
+          this.flvPlayer = flvjs.createPlayer(this.pOption)
+          this.flvPlayer.attachMediaElement(video)
+          try {
+            this.flvPlayer.load()
+            this.flvPlayer.play()
+          } catch (error) {
+            console.log(error)
+          }
+        }
+      }
+    }
+  }
+}
+</script>
+
+<style>
+  .info-stream-class{
+    text-align: center;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: beige;
+    font-size: 12px;
+    color: #000000;
+  }
+  .move-bg {
+    height: 100%;
+    width: 100%;
+    background-color: #000000;
+  }
+  .video-container {
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+  }
+  .centered-video {
+    width: 100%;
+    height: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: auto;
+  }
+</style>
+

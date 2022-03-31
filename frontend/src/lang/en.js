@@ -1392,6 +1392,11 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    is_live: 'Is Live',
+    yes: 'Yes',
+    no: 'No',
+    live_tips: 'User Https First',
+    stream_media_add_tips: 'Please Add Stream Media Info...',
     json_params_error: 'Third Party Parameters Parsing Failed. Please Check Whether The Parameters Format Is Correct',
     inner_padding: 'Inner Padding',
     board_radio: 'Board Radio',

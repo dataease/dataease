@@ -443,6 +443,7 @@ export default {
         'rect-shape',
         'de-show-date',
         'de-video',
+        'de-stream-media',
         'de-frame'
       ],
       enableSureButton: false,

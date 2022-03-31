@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "26621948",
+      "name": "流媒体，媒体列表",
+      "font_class": "a-liumeitimeitiliebiao",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
       "icon_id": "4920096",
       "name": "iframe",
       "font_class": "iframe",
