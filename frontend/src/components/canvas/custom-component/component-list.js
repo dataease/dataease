@@ -28,6 +28,18 @@ export const COMMON_BACKGROUND = {
   innerPadding: 0
 }
 
+// 空组件仪表板样式
+export const COMMON_BACKGROUND_NONE = {
+  enable: false,
+  backgroundType: 'color',
+  color: '#FFFFFF',
+  innerImage: null,
+  outerImage: null,
+  alpha: 100,
+  borderRadius: 0,
+  innerPadding: 0
+}
+
 // 公共样式
 export const commonStyle = {
   rotate: 0,

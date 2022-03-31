@@ -30,7 +30,7 @@ CREATE TABLE `chart_view_cache` (
   `chart_type` varchar(255) DEFAULT 'private' COMMENT '视图类型 public 公共 历史可复用的视图，private 私有 专属某个仪表板',
   `is_plugin` bit(1) DEFAULT NULL COMMENT '是否插件',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -55,7 +55,7 @@ CREATE TABLE `panel_group_extend` (
   `template_dynamic_data` longtext COMMENT '模板动态数据',
   `template_version` varchar(255) DEFAULT NULL COMMENT '模板版本号(预留)',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for panel_group_extend_data
@@ -69,7 +69,7 @@ CREATE TABLE `panel_group_extend_data` (
   `copy_from` varchar(255) DEFAULT NULL,
   `copy_id` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 
 SET FOREIGN_KEY_CHECKS = 1;
@@ -86,7 +86,7 @@ CREATE TABLE `de_engine` (
  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人ID',
  `status` varchar(45) DEFAULT NULL COMMENT '状态',
  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.mobileBG', NULL, 'file', 14);
 
@@ -290,5 +290,49 @@ END
 ;;
 delimiter ;
 
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for panel_outer_params
+-- ----------------------------
+CREATE TABLE `panel_outer_params` (
+  `params_id` varchar(50) NOT NULL,
+  `panel_id` varchar(50) DEFAULT NULL,
+  `checked` tinyint(1) DEFAULT NULL,
+  `remark` varchar(255) DEFAULT NULL,
+  `copy_from` varchar(50) DEFAULT NULL,
+  `copy_id` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`params_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+-- ----------------------------
+-- Table structure for panel_outer_params_info
+-- ----------------------------
+CREATE TABLE `panel_outer_params_info` (
+  `params_info_id` varchar(50) NOT NULL,
+  `params_id` varchar(50) DEFAULT NULL,
+  `param_name` varchar(255) DEFAULT NULL COMMENT '参数名',
+  `checked` tinyint(1) DEFAULT NULL COMMENT '是否启用',
+  `copy_from` varchar(255) DEFAULT NULL,
+  `copy_id` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`params_info_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+-- ----------------------------
+-- Table structure for panel_outer_params_target_view_info
+-- ----------------------------
+CREATE TABLE `panel_outer_params_target_view_info` (
+  `target_id` varchar(50) NOT NULL,
+  `params_info_id` varchar(50) DEFAULT NULL,
+  `target_view_id` varchar(50) DEFAULT NULL,
+  `target_field_id` varchar(50) DEFAULT NULL,
+  `copy_from` varchar(255) DEFAULT NULL,
+  `copy_id` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`target_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+SET FOREIGN_KEY_CHECKS = 1;
 update `my_plugin` set `name` = 'X-Pack默认插件' where `plugin_id` = 1;
 update `my_plugin` set `module_name` = 'view-bubblemap-backend' where `plugin_id` = 2;
