@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2459092 */
-  src: url('iconfont.woff2?t=1648367037728') format('woff2'),
-       url('iconfont.woff?t=1648367037728') format('woff'),
-       url('iconfont.ttf?t=1648367037728') format('truetype');
+  src: url('iconfont.woff2?t=1648734668996') format('woff2'),
+       url('iconfont.woff?t=1648734668996') format('woff'),
+       url('iconfont.ttf?t=1648734668996') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-a-liumeitimeitiliebiao:before {
+  content: "\e607";
 }
 
 .icon-iframe:before {
