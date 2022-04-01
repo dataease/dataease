@@ -27,6 +27,7 @@
 <script>
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import { checkAddHttp } from '@/utils/urlUtils'
 
 export default {
   props: {
@@ -69,6 +70,7 @@ export default {
       this.linkInfoTemp = deepCopy(this.linkInfo)
     },
     onSubmit() {
+      this.linkInfoTemp.src = checkAddHttp(this.linkInfoTemp.src)
       this.curComponent.frameLinks = this.linkInfoTemp
       this.$store.state.styleChangeTimes++
       this.popoverClose()

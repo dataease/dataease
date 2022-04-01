@@ -13,6 +13,9 @@
             <!--            <el-radio :label="'hls'">HLS 直播</el-radio>-->
             <!--                    <el-radio :label="'rtmp'">{{$t('panel.streaming_media')}}</el-radio>-->
           </el-radio-group>
+          <span style="color: #909399; font-size: 8px;margin-left: 3px">
+            Tips:{{ $t('panel.live_tips') }}
+          </span>
         </el-form-item>
         <el-row v-if="streamMediaInfoTemp.videoType==='flv'">
           <el-form-item :label="$t('panel.is_live')">
@@ -20,9 +23,6 @@
               <el-radio :label="true">{{ $t('panel.yes') }}</el-radio>
               <el-radio :label="false">{{ $t('panel.no') }}</el-radio>
             </el-radio-group>
-            <span style="color: #909399; font-size: 8px;margin-left: 3px">
-              Tips:{{ $t('panel.live_tips') }}
-            </span>
           </el-form-item>
           <el-form-item v-if="!streamMediaInfoTemp[streamMediaInfoTemp.videoType].isLive" :label="$t('panel.auto_play')">
             <el-switch v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].autoplay" size="mini" />
@@ -50,7 +50,8 @@
 <script>
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
-import bus from "@/utils/bus";
+import bus from '@/utils/bus'
+import { checkAddHttp } from '@/utils/urlUtils'
 
 export default {
   props: {
@@ -93,9 +94,10 @@ export default {
       this.streamMediaInfoTemp = deepCopy(this.linkInfo)
     },
     onSubmit() {
+      this.streamMediaInfoTemp[this.streamMediaInfoTemp.videoType].url = checkAddHttp(this.streamMediaInfoTemp[this.streamMediaInfoTemp.videoType].url)
       this.curComponent.streamMediaLinks = this.streamMediaInfoTemp
       this.$store.state.styleChangeTimes++
-      bus.$emit('streamMediaLinksChange')
+      bus.$emit('streamMediaLinksChange-' + this.curComponent.id)
       this.popoverClose()
     },
     onClose() {
