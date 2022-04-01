@@ -5,7 +5,7 @@
       <div v-if="editMode==='edit'" class="stream-mask" />
     </div>
     <div v-else class="info-stream-class">
-      {{ $t('panel.stream_media_add_tinitOptionips') }}
+      {{ $t('panel.stream_media_add_tips') }}
     </div>
   </el-row>
 </template>
@@ -69,7 +69,7 @@ export default {
   },
   mounted() {
     this.initOption()
-    bus.$on('streamMediaLinksChange', () => {
+    bus.$on('streamMediaLinksChange-' + this.element.id, () => {
       this.initOption()
     })
   },
