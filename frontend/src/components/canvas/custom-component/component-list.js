@@ -208,9 +208,7 @@ const list = [
       letterSpacing: 0,
       textAlign: 'center',
       color: '#000000',
-      verticalAlign: 'middle',
-      backgroundColor: '#ffffff',
-      borderRadius: 0
+      verticalAlign: 'middle'
     },
     hyperlinks: HYPERLINKS,
     x: 1,
@@ -255,8 +253,7 @@ const list = [
     mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 300,
-      height: 200,
-      borderRadius: ''
+      height: 200
     },
     x: 1,
     y: 1,
@@ -296,9 +293,7 @@ const list = [
       height: 200,
       borderStyle: 'solid',
       borderWidth: 0,
-      borderColor: '#000000',
-      backgroundColor: '#ffffff',
-      borderRadius: 0
+      borderColor: '#000000'
     },
     x: 1,
     y: 1,
@@ -317,8 +312,7 @@ const list = [
     mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 300,
-      height: 200,
-      borderRadius: ''
+      height: 200
     },
     x: 1,
     y: 36,
@@ -341,9 +335,7 @@ const list = [
       height: 200,
       borderStyle: 'solid',
       borderWidth: 0,
-      borderColor: '#000000',
-      backgroundColor: '#ffffff',
-      borderRadius: 0
+      borderColor: '#000000'
     },
     options: {
       tabList: [{
@@ -377,10 +369,8 @@ const list = [
       textAlign: 'center',
       color: '#000000',
       verticalAlign: 'middle',
-      backgroundColor: '#ffffff',
       borderStyle: 'solid',
       borderColor: '#000000',
-      borderRadius: 0,
       time_margin: 0,
       padding: 10
     },
@@ -408,8 +398,7 @@ const list = [
     mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 400,
-      height: 200,
-      borderRadius: ''
+      height: 200
     },
     frameLinks: FRAMELINKS,
     x: 1,
@@ -430,8 +419,7 @@ const list = [
     hyperlinks: HYPERLINKS,
     style: {
       width: 400,
-      height: 200,
-      borderRadius: ''
+      height: 200
     },
     x: 1,
     y: 1,
@@ -450,8 +438,7 @@ const list = [
     mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 400,
-      height: 200,
-      borderRadius: ''
+      height: 200
     },
     videoLinks: VIDEOLINKS,
     x: 1,
@@ -471,8 +458,7 @@ const list = [
     mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 400,
-      height: 200,
-      borderRadius: ''
+      height: 200
     },
     streamMediaLinks: STREAMMEDIALINKS,
     x: 1,
