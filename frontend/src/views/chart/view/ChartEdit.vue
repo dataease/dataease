@@ -1744,6 +1744,7 @@ export default {
       view.customFilter = JSON.stringify(this.view.customFilter)
       view.senior = JSON.stringify(this.view.senior)
       view.title = this.view.title
+      view.stylePriority = this.view.stylePriority
       // view.data = this.data
       this.chart = view
 
