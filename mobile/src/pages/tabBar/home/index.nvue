@@ -205,8 +205,14 @@
                 this.switchTab(index);
             },
             ontabchange(e) {
-                // let index = e.target.current || e.detail.current;
+                let index = e.target.current || e.detail.current;
                 // this.switchTab(index);
+
+                if (this.tabIndex === index) {
+                    return;
+                }
+                this.tabIndex = index;
+                this.scrollInto = this.tabBars[index].id;
             },
             switchTab(index) {
                 if (this.newsList[index].data.length === 0) {
