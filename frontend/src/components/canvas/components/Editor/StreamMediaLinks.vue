@@ -14,27 +14,29 @@
             <!--                    <el-radio :label="'rtmp'">{{$t('panel.streaming_media')}}</el-radio>-->
           </el-radio-group>
         </el-form-item>
-        <el-form-item :label="$t('panel.auto_play')">
-          <el-switch v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].autoplay" size="mini" />
-          <span style="color: #909399; font-size: 8px;margin-left: 3px">
-            Tips:{{ $t('panel.live_tips') }}
-          </span>
-        </el-form-item>
-        <el-form-item v-if="streamMediaInfoTemp.videoType==='flv'" :label="$t('panel.play_frequency')">
-          <el-radio-group v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].loop">
-            <el-radio :label="false">{{ $t('panel.play_once') }}</el-radio>
-            <el-radio :label="true">{{ $t('panel.play_circle') }}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item v-if="streamMediaInfoTemp.videoType==='flv'" :label="$t('panel.is_live')">
-          <el-radio-group v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].isLive">
-            <el-radio :label="true">{{ $t('panel.yes') }}</el-radio>
-            <el-radio :label="false">{{ $t('panel.no') }}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item :label="$t('panel.video_links')">
-          <el-input v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].url" />
-        </el-form-item>
+        <el-row v-if="streamMediaInfoTemp.videoType==='flv'">
+          <el-form-item :label="$t('panel.is_live')">
+            <el-radio-group v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].isLive">
+              <el-radio :label="true">{{ $t('panel.yes') }}</el-radio>
+              <el-radio :label="false">{{ $t('panel.no') }}</el-radio>
+            </el-radio-group>
+            <span style="color: #909399; font-size: 8px;margin-left: 3px">
+              Tips:{{ $t('panel.live_tips') }}
+            </span>
+          </el-form-item>
+          <el-form-item v-if="!streamMediaInfoTemp[streamMediaInfoTemp.videoType].isLive" :label="$t('panel.auto_play')">
+            <el-switch v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].autoplay" size="mini" />
+          </el-form-item>
+          <el-form-item v-if="!streamMediaInfoTemp[streamMediaInfoTemp.videoType].isLive" :label="$t('panel.play_frequency')">
+            <el-radio-group v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].loop">
+              <el-radio :label="false">{{ $t('panel.play_once') }}</el-radio>
+              <el-radio :label="true">{{ $t('panel.play_circle') }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item :label="$t('panel.video_links')">
+            <el-input v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].url" />
+          </el-form-item>
+        </el-row>
         <el-form-item>
           <el-button type="primary" @click="onSubmit">{{ $t('panel.confirm') }}</el-button>
           <el-button @click="onClose">{{ $t('panel.cancel') }}</el-button>
@@ -48,6 +50,7 @@
 <script>
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import bus from "@/utils/bus";
 
 export default {
   props: {
@@ -92,6 +95,7 @@ export default {
     onSubmit() {
       this.curComponent.streamMediaLinks = this.streamMediaInfoTemp
       this.$store.state.styleChangeTimes++
+      bus.$emit('streamMediaLinksChange')
       this.popoverClose()
     },
     onClose() {

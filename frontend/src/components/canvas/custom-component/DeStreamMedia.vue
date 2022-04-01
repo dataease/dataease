@@ -1,10 +1,11 @@
 <template>
   <el-row ref="mainPlayer" style="width: 100%;height: 100%">
     <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
-      <video ref="player" class="centered-video" name="centeredVideo" :controls="editMode!=='edit'" :loop="pOption.loop" muted />
+      <video ref="player" class="centered-video" name="centeredVideo" :loop="pOption.loop" controls muted />
+      <div v-if="editMode==='edit'" class="stream-mask" />
     </div>
     <div v-else class="info-stream-class">
-      {{ $t('panel.stream_media_add_tips') }}
+      {{ $t('panel.stream_media_add_tinitOptionips') }}
     </div>
   </el-row>
 </template>
@@ -12,6 +13,7 @@
 
 import flvjs from 'flv.js'
 import '@/custom-theme.css'
+import bus from '@/utils/bus'
 
 export default {
   props: {
@@ -67,6 +69,9 @@ export default {
   },
   mounted() {
     this.initOption()
+    bus.$on('streamMediaLinksChange', () => {
+      this.initOption()
+    })
   },
   methods: {
     initOption() {
@@ -89,7 +94,7 @@ export default {
 </script>
 
 <style>
-  .info-stream-class{
+  .info-stream-class {
     text-align: center;
     height: 100%;
     display: flex;
@@ -99,22 +104,40 @@ export default {
     font-size: 12px;
     color: #000000;
   }
+
   .move-bg {
     height: 100%;
     width: 100%;
     background-color: #000000;
   }
+
   .video-container {
     width: 100%;
     height: 100%;
     background-color: #000000;
   }
+
   .centered-video {
     width: 100%;
     height: 100%;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: auto;
+  }
+
+  .stream-mask {
+    display: flex;
+    height: calc(100% - 60px) !important;
+    width: 100% !important;
+    background-color: #5c5e61;
+    opacity: 0;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>
 
