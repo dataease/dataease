@@ -205,6 +205,7 @@ export default {
       for (let i = 0; i < this.options.length; i++) {
         if (this.options[i].id === this.dataSource) {
           this.selectedDatasource = this.options[i]
+          this.mode = '0'
           if (this.engineMode === 'simple' || (!this.kettleRunning || this.disabledSyncDs.indexOf(this.selectedDatasource.type) !== -1 )) {
             this.disabledSync = true
           } else {
