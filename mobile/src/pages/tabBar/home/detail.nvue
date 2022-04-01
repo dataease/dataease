@@ -5,10 +5,13 @@
 			<block slot="right">
 				<uni-row class="demo-uni-row" >
 					<uni-col :span="12">
-						<view @click="enshrine">
-						<uni-icons v-if="hasStar"  type="star-filled" size="18" color="#007AFF"></uni-icons>
-						<uni-icons v-else type="star"  size="18" color="#999"></uni-icons>
+						<view v-if="banner.index !== 2" @click="enshrine" >
+						    <uni-icons v-if="hasStar"  type="star-filled" size="18" color="#007AFF"></uni-icons>
+						    <uni-icons v-else type="star"  size="18" color="#999"></uni-icons>
 						</view>
+                        <view v-else >
+                            <uni-icons type="star" size="18" color="#fff"></uni-icons>
+                        </view>
 					</uni-col>
 					
 					<uni-col :span="12"  style="margin: 0 10rpx;">
