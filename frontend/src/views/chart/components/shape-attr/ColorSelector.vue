@@ -62,7 +62,7 @@
           <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_item_font_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_border_color')" class="form-item">
+          <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_border_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
           <!--              暂时不支持该功能-->
