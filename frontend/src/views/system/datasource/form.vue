@@ -539,8 +539,13 @@ export default {
               return
             }
             let configuration = JSON.parse(child.configuration)
+            if(!configuration){
+              return
+            }
             switch (this.form.type) {
               case 'mysql':
+              case 'TiDB':
+              case 'StarRocks':
               case 'hive':
               case 'mariadb':
               case 'ds_doris':

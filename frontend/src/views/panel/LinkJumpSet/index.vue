@@ -52,9 +52,9 @@
                   :disable-branch-nodes="true"
                   :normalizer="normalizer"
                   :placeholder="$t('panel.select_jump_panel')"
-                  :noChildrenText="$t('commons.treeselect.no_children_text')"
-                  :noOptionsText="$t('commons.treeselect.no_options_text')"
-                  :noResultsText="$t('commons.treeselect.no_results_text')"
+                  :no-children-text="$t('commons.treeselect.no_children_text')"
+                  :no-options-text="$t('commons.treeselect.no_options_text')"
+                  :no-results-text="$t('commons.treeselect.no_results_text')"
                   style="margin-right: 10px"
                   @select="panelNodeClick"
                   @input="inputVal"
@@ -166,6 +166,7 @@ import { groupTree } from '@/api/panel/panel'
 import { detailList } from '@/api/panel/panelView'
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import { checkAddHttp } from '@/utils/urlUtils'
 
 export default {
   components: { },
@@ -271,6 +272,7 @@ export default {
       this.$emit('closeJumpSetDialog')
     },
     save() {
+      this.linkJumpInfo.content = checkAddHttp(this.linkJumpInfo.content)
       updateJumpSet(this.linkJump).then(rsp => {
         this.$message({
           message: '保存成功',
