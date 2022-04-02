@@ -1628,6 +1628,11 @@ export default {
           }
         }
       })
+      if (view.type === 'label') {
+        if (view.xaxis.length > 1) {
+          view.xaxis.splice(1, view.xaxis.length)
+        }
+      }
       if (view.type.startsWith('pie') ||
         view.type.startsWith('funnel') ||
         view.type.startsWith('text') ||
