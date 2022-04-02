@@ -31,7 +31,8 @@
         "passwordPlaceholder": "請輸入密碼",
         "loginbtn": "登錄",
         "pwdFmtError": "密碼最短為6個字符",
-        "uOrpwdError": "無效賬號或密碼"
+        "uOrpwdError": "無效賬號或密碼",
+		"accFmtError": "帳號最短為1個字符"
     },
     "home": {
         "tab1": "我的收藏",

@@ -67,17 +67,17 @@
 			
 			async loginByPwd() {
 				
-				if (this.username.length < 3) {
+				if (this.username.length < 1) {
 					uni.showToast({
 						icon: 'none',
-						title: '账号最短为 3 个字符'
+						title: this.$t('login.accFmtError')
 					});
 					return;
 				}
-				if (this.password.length < 6) {
+				if (this.password.length < 1) {
 					uni.showToast({
 						icon: 'none',
-						title: this.$t('login.pwdFmtError')
+						title: this.$t('login.passwordPlaceholder')
 					});
 					return;
 				}
