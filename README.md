@@ -70,7 +70,8 @@ curl -sSL https://github.com/dataease/dataease/releases/latest/download/quick_st
 ```
 
 -   [在线文档](https://dataease.io/docs/)
--   [演示视频](https://www.bilibili.com/video/BV1UB4y1K7jA)
+-   [教学视频](https://dataease.io/video.html)
+-   [在线学习班](https://edu.fit2cloud.com/page/2635362?navIndex=0)
 
 ## 微信群
 
