@@ -108,3 +108,12 @@ export function resetViewCache(viewId, panelId) {
     loading: false
   })
 }
+
+export function checkTitle(data) {
+  return request({
+    url: '/chart/view/checkTitle',
+    method: 'post',
+    data: data,
+    loading: false
+  })
+}
