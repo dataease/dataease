@@ -93,7 +93,7 @@
       />
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="sureCurTitle">{{ $t('table.confirm') }}</el-button>
+        <el-button :disabled="!textarea" type="primary" @click="sureCurTitle">{{ $t('table.confirm') }}</el-button>
       </span>
     </el-dialog>
 
