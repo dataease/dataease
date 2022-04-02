@@ -653,6 +653,7 @@ export default {
     kettle_setting: 'Kettle Setting'
   },
   chart: {
+    title_repeat: 'The Title Already Exist',
     save_snapshot: 'Save Snapshot',
     datalist: 'Chart',
     add_group: 'Add Group',

@@ -656,6 +656,7 @@ export default {
     kettle_setting: 'Kettle 设置'
   },
   chart: {
+    title_repeat: '当前标题已存在',
     save_snapshot: '保存缩略图',
     datalist: '视图',
     add_group: '添加分组',
