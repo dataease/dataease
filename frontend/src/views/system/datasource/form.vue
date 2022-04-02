@@ -187,7 +187,7 @@
             </el-tabs>
           </el-row>
           <div slot="footer" class="dialog-footer">
-            <el-button @click="next" v-show="active === 1">{{ $t('fu.steps.next') }}</el-button>
+            <el-button @click="next" :disabled="disabledNext" v-show="active === 1">{{ $t('fu.steps.next') }}</el-button>
             <el-button @click="before" v-show="active === 2">{{ $t('fu.steps.prev') }}</el-button>
             <el-button @click="saveItem" v-show="active === 2">{{ $t('commons.save') }}</el-button>
           </div>
@@ -464,7 +464,8 @@ export default {
         {label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3},
         {label: this.$t('dataset.location'), value: 5}
       ],
-      height: 500
+      height: 500,
+      disabledNext: false
     }
   },
 
@@ -736,16 +737,18 @@ export default {
             const data = JSON.parse(JSON.stringify(this.apiItem))
             data.request = JSON.stringify(data.request)
             this.loading = true
+            this.disabledNext = true
             checkApiDatasource(data).then(res => {
               this.loading = false
+              this.disabledNext = false
               this.apiItem.status = 'Success'
               this.$success(i18n.t('commons.success'))
               this.active++
               this.apiItem.fields = res.data.fields
               this.$refs.plxTable.reloadData(res.data.datas)
             }).catch(res => {
-              this.apiItem.fields = []
               this.loading = false
+              this.disabledNext = false
             })
           } else {
             this.apiItem.fields = []
