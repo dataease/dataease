@@ -239,6 +239,11 @@ public class EsProvider extends DatasourceProvider {
                 tableDesc.setName(row[0]);
                 tables.add(tableDesc);
             }
+            if (row.length == 4 && row[2].contains("TABLE") && row[3].equalsIgnoreCase("INDEX")) {
+                TableDesc tableDesc = new TableDesc();
+                tableDesc.setName(row[1]);
+                tables.add(tableDesc);
+            }
         }
         return tables;
     }
