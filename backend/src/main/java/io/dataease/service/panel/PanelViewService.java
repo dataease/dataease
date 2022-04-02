@@ -127,9 +127,10 @@ public class PanelViewService {
                 //将视图从cache表中更新到正式表中
                 viewIds = panelViewInsertDTOList.stream().map(panelView ->panelView.getChartViewId()).collect(Collectors.toList());
                 extChartViewMapper.copyCacheToView(viewIds);
-                extChartViewMapper.deleteCacheWithPanel(panelId);
             }
         }
+        extChartViewMapper.deleteCacheWithPanel(viewIds,panelId);
+        extChartViewMapper.deleteNoUseView(viewIds,panelId);
         panelGroup.setMobileLayout(mobileLayout);
         return viewIds;
     }

@@ -152,23 +152,23 @@
             chart_view_cache.id   = #{sourceViewId}
     </insert>
 
-<!--    <select id="searchOne" resultMap="BaseResultMapDTO">-->
-<!--        select-->
-<!--        id, `name`, scene_id, table_id, `type`, title, create_by, create_time, update_time,-->
-<!--        style_priority,x_axis, y_axis, custom_attr, custom_style, custom_filter, snapshot-->
-<!--        from chart_view-->
-<!--        <where>-->
-<!--            <if test="sceneId != null">-->
-<!--                and scene_id = #{sceneId,jdbcType=VARCHAR}-->
-<!--            </if>-->
-<!--            <if test="id != null">-->
-<!--                and id = #{id,jdbcType=VARCHAR}-->
-<!--            </if>-->
-<!--        </where>-->
-<!--        <if test="sort != null">-->
-<!--            order by ${sort}-->
-<!--        </if>-->
-<!--    </select>-->
+    <!--    <select id="searchOne" resultMap="BaseResultMapDTO">-->
+    <!--        select-->
+    <!--        id, `name`, scene_id, table_id, `type`, title, create_by, create_time, update_time,-->
+    <!--        style_priority,x_axis, y_axis, custom_attr, custom_style, custom_filter, snapshot-->
+    <!--        from chart_view-->
+    <!--        <where>-->
+    <!--            <if test="sceneId != null">-->
+    <!--                and scene_id = #{sceneId,jdbcType=VARCHAR}-->
+    <!--            </if>-->
+    <!--            <if test="id != null">-->
+    <!--                and id = #{id,jdbcType=VARCHAR}-->
+    <!--            </if>-->
+    <!--        </where>-->
+    <!--        <if test="sort != null">-->
+    <!--            order by ${sort}-->
+    <!--        </if>-->
+    <!--    </select>-->
 
     <select id="search" resultMap="BaseResultMapDTO">
         select
@@ -407,7 +407,7 @@
     </delete>
 
 
-    <select id="searchViewsWithPanelId"  resultMap="BaseResultMapDTO">
+    <select id="searchViewsWithPanelId" resultMap="BaseResultMapDTO">
         SELECT * FROM chart_view
         WHERE
             id IN (
@@ -421,12 +421,14 @@
     </select>
 
     <delete id="deleteCacheWithPanel">
-        DELETE cvc
-        FROM
-            chart_view_cache cvc
-            INNER JOIN panel_view pv ON cvc.id = pv.chart_view_id
-        WHERE
-            pv.panel_id = #{panelId}
+        delete from chart_view_cache
+        where scene_id = #{panelId}
+        <if test="viewIds != null and viewIds.size() > 0">
+            and id not in
+            <foreach collection="viewIds" item="viewId" open='(' separator=',' close=')'>
+                #{viewId}
+            </foreach>
+        </if>
 	</delete>
     <delete id="deleteViewCache">
         delete from chart_view_cache where id = #{viewId}
@@ -434,35 +436,35 @@
 
     <update id="copyCacheToView">
         UPDATE chart_view cv,
-            chart_view_cache cve
-            SET cv.`name` = cve.`name`,
-            cv.title = cve.title,
-            cv.scene_id = cve.scene_id,
-            cv.table_id = cve.table_id,
-            cv.`type` = cve.`type`,
-            cv.render = cve.render,
-            cv.result_count = cve.result_count,
-            cv.result_mode = cve.result_mode,
-            cv.create_by = cve.create_by,
-            cv.create_time = cve.create_time,
-            cv.update_time = cve.update_time,
-            cv.style_priority = cve.style_priority,
-            cv.chart_type = cve.chart_type,
-            cv.is_plugin = cve.is_plugin,
-            cv.x_axis = cve.x_axis,
-            cv.x_axis_ext = cve.x_axis_ext,
-            cv.y_axis = cve.y_axis,
-            cv.y_axis_ext = cve.y_axis_ext,
-            cv.ext_stack = cve.ext_stack,
-            cv.ext_bubble = cve.ext_bubble,
-            cv.custom_attr = cve.custom_attr,
-            cv.custom_style = cve.custom_style,
-            cv.custom_filter = cve.custom_filter,
-            cv.drill_fields = cve.drill_fields,
-           cv.senior = cve.senior,
+        chart_view_cache cve
+        SET cv.`name` = cve.`name`,
+        cv.title = cve.title,
+        cv.scene_id = cve.scene_id,
+        cv.table_id = cve.table_id,
+        cv.`type` = cve.`type`,
+        cv.render = cve.render,
+        cv.result_count = cve.result_count,
+        cv.result_mode = cve.result_mode,
+        cv.create_by = cve.create_by,
+        cv.create_time = cve.create_time,
+        cv.update_time = cve.update_time,
+        cv.style_priority = cve.style_priority,
+        cv.chart_type = cve.chart_type,
+        cv.is_plugin = cve.is_plugin,
+        cv.x_axis = cve.x_axis,
+        cv.x_axis_ext = cve.x_axis_ext,
+        cv.y_axis = cve.y_axis,
+        cv.y_axis_ext = cve.y_axis_ext,
+        cv.ext_stack = cve.ext_stack,
+        cv.ext_bubble = cve.ext_bubble,
+        cv.custom_attr = cve.custom_attr,
+        cv.custom_style = cve.custom_style,
+        cv.custom_filter = cve.custom_filter,
+        cv.drill_fields = cve.drill_fields,
+        cv.senior = cve.senior,
         cv.SNAPSHOT = cve.SNAPSHOT,
         cv.data_from = cve.data_from
-        where cve.id = cv.id  and cv.id in
+        where cve.id = cv.id and cv.id in
         <foreach collection="viewIds" item="viewId" open='(' separator=',' close=')'>
             #{viewId}
         </foreach>
@@ -500,4 +502,15 @@
         cv.data_from = cve.data_from
         where cve.id = cv.id  and cv.id =#{viewId}
     </update>
+
+    <delete id="deleteNoUseView">
+        delete from chart_view
+        where scene_id = #{panelId}
+        <if test="viewIds != null and viewIds.size() > 0">
+            and id not in
+            <foreach collection="viewIds" item="viewId" open='(' separator=',' close=')'>
+                #{viewId}
+            </foreach>
+        </if>
+    </delete>
 </mapper>

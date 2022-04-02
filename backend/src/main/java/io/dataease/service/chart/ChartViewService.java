@@ -115,6 +115,16 @@ public class ChartViewService {
         return getOne(chartView.getId(), "panel_edit");
     }
 
+    public String checkTitle(ChartViewCacheRequest chartView){
+        ChartViewCacheExample example = new ChartViewCacheExample();
+        example.createCriteria().andTitleEqualTo(chartView.getTitle()).andSceneIdEqualTo(chartView.getSceneId()).andIdNotEqualTo(chartView.getId());
+        List<ChartViewCache>  result =  chartViewCacheMapper.selectByExample(example);
+        if(CollectionUtils.isNotEmpty(result)){
+           return "fail";
+        }else{
+            return "success";
+        }
+    }
 
     public ChartViewWithBLOBs newOne(ChartViewWithBLOBs chartView) {
         long timestamp = System.currentTimeMillis();
@@ -1030,7 +1040,7 @@ public class ChartViewService {
         extChartViewMapper.chartCopy(newChartId, id, panelId);
         extChartViewMapper.copyCache(id,newChartId);
         extPanelGroupExtendDataMapper.copyExtendData(id,newChartId,panelId);
-        chartViewCacheService.refreshCache(id);
+        chartViewCacheService.refreshCache(newChartId);
         return newChartId;
     }
 
@@ -1061,7 +1071,7 @@ public class ChartViewService {
     }
 
     public void initViewCache(String panelId) {
-        extChartViewMapper.deleteCacheWithPanel(panelId);
+        extChartViewMapper.deleteCacheWithPanel(null,panelId);
     }
 
 }
