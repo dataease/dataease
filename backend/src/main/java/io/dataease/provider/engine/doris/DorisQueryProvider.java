@@ -965,7 +965,7 @@ public class DorisQueryProvider extends QueryProvider {
             if (x.getDeType() == 1) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == 0) {
-                    fieldName = String.format(DorisConstants.DATE_FORMAT, originField, format);
+                    fieldName = String.format(DorisConstants.DATE_FORMAT, String.format(DorisConstants.STR_TO_DATE, originField, DorisConstants.DEFAULT_DATE_FORMAT), format);
                 } else {
                     String cast = String.format(DorisConstants.CAST, originField, DorisConstants.DEFAULT_INT_FORMAT) + "/1000";
                     String from_unixtime = String.format(DorisConstants.FROM_UNIXTIME, cast, DorisConstants.DEFAULT_DATE_FORMAT);
