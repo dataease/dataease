@@ -89,6 +89,69 @@
             chart_view.id   = #{id}
     </insert>
 
+    <insert id="copyCache">
+        INSERT INTO chart_view_cache (
+            id,
+            `name`,
+            title,
+            scene_id,
+            table_id,
+            `type`,
+            render,
+            result_count,
+            result_mode,
+            create_by,
+            create_time,
+            update_time,
+            style_priority,
+            chart_type,
+            is_plugin,
+            x_axis,
+            x_axis_ext,
+            y_axis,
+            y_axis_ext,
+            ext_stack,
+            ext_bubble,
+            custom_attr,
+            custom_style,
+            custom_filter,
+            drill_fields,
+            senior,
+            SNAPSHOT,
+            data_from
+            ) SELECT
+            #{newViewId} as id,
+            `name`,
+            title,
+            scene_id,
+            table_id,
+            `type`,
+            render,
+            result_count,
+            result_mode,
+            create_by,
+            create_time,
+            update_time,
+            style_priority,
+            chart_type,
+            is_plugin,
+            x_axis,
+            x_axis_ext,
+            y_axis,
+            y_axis_ext,
+            ext_stack,
+            ext_bubble,
+            custom_attr,
+            custom_style,
+            custom_filter,
+            drill_fields,
+            senior,
+            SNAPSHOT,
+            data_from  from chart_view_cache
+        WHERE
+            chart_view_cache.id   = #{sourceViewId}
+    </insert>
+
 <!--    <select id="searchOne" resultMap="BaseResultMapDTO">-->
 <!--        select-->
 <!--        id, `name`, scene_id, table_id, `type`, title, create_by, create_time, update_time,-->
@@ -200,8 +263,8 @@
                `custom_filter`,
                `drill_fields`,
                `create_by`,
-               `create_time`,
-               `update_time`,
+               unix_timestamp()*1000 as `create_time`,
+               unix_timestamp()*1000 as `update_time`,
                `snapshot`,
                `style_priority`,
                `ext_stack`,
@@ -403,5 +466,38 @@
         <foreach collection="viewIds" item="viewId" open='(' separator=',' close=')'>
             #{viewId}
         </foreach>
+    </update>
+
+    <update id="updateToCache">
+        UPDATE chart_view_cache cv,
+        chart_view cve
+        SET cv.`name` = cve.`name`,
+        cv.title = cve.title,
+        cv.scene_id = cve.scene_id,
+        cv.table_id = cve.table_id,
+        cv.`type` = cve.`type`,
+        cv.render = cve.render,
+        cv.result_count = cve.result_count,
+        cv.result_mode = cve.result_mode,
+        cv.create_by = cve.create_by,
+        cv.create_time = cve.create_time,
+        cv.update_time = cve.update_time,
+        cv.style_priority = cve.style_priority,
+        cv.chart_type = cve.chart_type,
+        cv.is_plugin = cve.is_plugin,
+        cv.x_axis = cve.x_axis,
+        cv.x_axis_ext = cve.x_axis_ext,
+        cv.y_axis = cve.y_axis,
+        cv.y_axis_ext = cve.y_axis_ext,
+        cv.ext_stack = cve.ext_stack,
+        cv.ext_bubble = cve.ext_bubble,
+        cv.custom_attr = cve.custom_attr,
+        cv.custom_style = cve.custom_style,
+        cv.custom_filter = cve.custom_filter,
+        cv.drill_fields = cve.drill_fields,
+        cv.senior = cve.senior,
+        cv.SNAPSHOT = cve.SNAPSHOT,
+        cv.data_from = cve.data_from
+        where cve.id = cv.id  and cv.id =#{viewId}
     </update>
 </mapper>

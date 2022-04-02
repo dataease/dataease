@@ -101,9 +101,7 @@ ADD COLUMN `copy_from` varchar(255) NULL COMMENT '复制来源' AFTER `update_ti
 ADD COLUMN `copy_id` varchar(255) NULL COMMENT '复制ID' AFTER `copy_from`;
 
 
--- ----------------------------
--- Function structure for copy_auth
--- ----------------------------
+
 DROP FUNCTION IF EXISTS `copy_auth`;
 delimiter ;;
 CREATE FUNCTION `copy_auth`(authSource varchar(255),authSourceType varchar(255),authUser varchar(255))
@@ -130,25 +128,25 @@ select id from  sys_auth where sys_auth.auth_source=authSource and sys_auth.auth
 delete from sys_auth where sys_auth.auth_source=authSource and sys_auth.auth_source_type=authSourceType;
 
 INSERT INTO sys_auth (
-	id,
-	auth_source,
-	auth_source_type,
-	auth_target,
-	auth_target_type,
-	auth_time,
-	auth_user
+ id,
+ auth_source,
+ auth_source_type,
+ auth_target,
+ auth_target_type,
+ auth_time,
+ auth_user
 )
 VALUES
-	(
-		authId,
-		authSource,
-		authSourceType,
-		userId,
-		'user',
-	unix_timestamp(
-	now())* 1000,'auto');
+ (
+  authId,
+  authSource,
+  authSourceType,
+  userId,
+  'user',
+ unix_timestamp(
+ now())* 1000,'auto');
 
-	INSERT INTO  sys_auth_detail (
+ INSERT INTO  sys_auth_detail (
             id,
             auth_id,
             privilege_name,
@@ -175,50 +173,52 @@ VALUES
 
 insert into sys_auth(
 id,
-	auth_source,
-	auth_source_type,
-	auth_target,
-	auth_target_type,
-	auth_time,
-	auth_user,
-	copy_from,
-	copy_id
+ auth_source,
+ auth_source_type,
+ auth_target,
+ auth_target_type,
+ auth_time,
+ auth_user,
+ copy_from,
+ copy_id
 )
 SELECT
-	uuid() as id,
-	authSource as auth_source,
-	authSourceType as auth_source_type,
-	auth_target,
-	auth_target_type,
-	NOW()* 1000 as auth_time,
-	'auto' as auth_user,
-	id as copy_from,
-	copyId as copy_id
+ uuid() as id,
+ authSource as auth_source,
+ authSourceType as auth_source_type,
+ auth_target,
+ auth_target_type,
+ NOW()* 1000 as auth_time,
+ 'auto' as auth_user,
+ id as copy_from,
+ copyId as copy_id
 FROM
-	sys_auth
+ sys_auth
 WHERE
-	auth_source IN (
-	SELECT
-		pid
-	FROM
-		v_auth_model
-	WHERE
-		id = authSource
-		AND model_type = authSourceType
-	)
-	AND auth_source_type = authSourceType;
+ auth_source = (
+ SELECT
+  pid
+ FROM
+  v_auth_model
+ WHERE
+  id = authSource
+  AND model_type = authSourceType
+ )
+ AND auth_source_type = authSourceType
+ and  concat(auth_target,'-',auth_target_type) !=CONCAT(userId,'-','user');
+
 INSERT INTO sys_auth_detail (
-	id,
-	auth_id,
-	privilege_name,
-	privilege_type,
-	privilege_value,
-	privilege_extend,
-	remark,
-	create_user,
-	create_time,
-	copy_from,
-	copy_id
+ id,
+ auth_id,
+ privilege_name,
+ privilege_type,
+ privilege_value,
+ privilege_extend,
+ remark,
+ create_user,
+ create_time,
+ copy_from,
+ copy_id
 ) SELECT
 uuid() AS id,
 sa_copy.t_id AS auth_id,
@@ -233,16 +233,38 @@ now())* 1000 AS create_time,
 id AS copy_from,
 copyId AS copy_id
 FROM
-	sys_auth_detail
-	INNER JOIN (
-	SELECT
-		id AS t_id,
-		copy_from AS s_id
-	FROM
-		sys_auth
-	WHERE
-		copy_id = copyId
-	) sa_copy ON sys_auth_detail.auth_id = sa_copy.s_id;
+ sys_auth_detail
+ INNER JOIN (
+ SELECT
+  id AS t_id,
+  copy_from AS s_id
+ FROM
+  sys_auth
+ WHERE
+  copy_id = copyId
+ ) sa_copy ON sys_auth_detail.auth_id = sa_copy.s_id;
+
+RETURN 'success';
+
+END
+;;
+delimiter ;
+
+-- ----------------------------
+-- Function structure for delete_auth_source
+-- ----------------------------
+DROP FUNCTION IF EXISTS `delete_auth_source`;
+delimiter ;;
+CREATE FUNCTION `delete_auth_source`(authSource varchar(255),authSourceType varchar(255))
+ RETURNS varchar(255) CHARSET utf8mb4
+  READS SQL DATA
+BEGIN
+
+delete from sys_auth_detail where auth_id in (
+select id from  sys_auth where sys_auth.auth_source=authSource and sys_auth.auth_source_type=authSourceType
+);
+
+delete from sys_auth where sys_auth.auth_source=authSource and sys_auth.auth_source_type=authSourceType;
 
 RETURN 'success';
 
@@ -336,3 +358,8 @@ CREATE TABLE `panel_outer_params_target_view_info` (
 SET FOREIGN_KEY_CHECKS = 1;
 update `my_plugin` set `name` = 'X-Pack默认插件' where `plugin_id` = 1;
 update `my_plugin` set `module_name` = 'view-bubblemap-backend' where `plugin_id` = 2;
+
+DROP TRIGGER `new_auth_panel`;
+DROP TRIGGER `new_auth_dataset_group`;
+DROP TRIGGER `new_auth_dataset_table`;
+DROP TRIGGER `new_auth_link`;

@@ -244,8 +244,6 @@ export default {
       'picture-add': [
         'borderStyle',
         'borderWidth',
-        'borderRadius',
-        'opacity',
         'borderColor',
         'hyperlinks'
       ],
@@ -254,15 +252,12 @@ export default {
         'fontSize',
         'fontWeight',
         'letterSpacing',
-        'color',
-        'backgroundColor'
+        'color'
       ],
       // tab组件显示的属性
       'de-tabs': [
         'borderStyle',
         'borderWidth',
-        'borderRadius',
-        'opacity',
         'borderColor',
         'deTabStyle'
       ],
@@ -270,20 +265,14 @@ export default {
       'rect-shape': [
         'borderStyle',
         'borderWidth',
-        'borderRadius',
-        'opacity',
-        'borderColor',
-        'backgroundColor'
+        'borderColor'
       ],
       // 时间组件显示的属性
       'de-show-date': [
         'textAlign',
         'fontSize',
         'fontWeight',
-        'opacity',
-        'borderRadius',
         'color',
-        'backgroundColor',
         'date-format',
         'time_margin',
         'padding'
@@ -295,10 +284,7 @@ export default {
         'fontSize',
         'fontWeight',
         'letterSpacing',
-        'opacity',
-        'borderRadius',
         'color',
-        'backgroundColor',
         'hyperlinks'
       ],
       'de-video': [
@@ -405,9 +391,9 @@ export default {
         this.innerOpacity = this.styleInfo['opacity'] * 100
       }
       if (this.curComponent.type === 'v-text') {
-        this.mainWidthOffset = 600
+        this.mainWidthOffset = 400
       } else if (this.curComponent.type === 'de-show-date') {
-        this.mainWidthOffset = 600
+        this.mainWidthOffset = 350
       } else {
         this.mainWidthOffset = document.getElementById('main-attr').offsetWidth - 50
       }
