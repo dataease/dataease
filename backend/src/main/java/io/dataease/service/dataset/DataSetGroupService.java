@@ -7,6 +7,7 @@ import io.dataease.base.mapper.DatasetGroupMapper;
 import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.SysAuthConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.TreeUtils;
@@ -54,8 +55,10 @@ public class DataSetGroupService {
             datasetGroup.setCreateBy(AuthUtils.getUser().getUsername());
             datasetGroup.setCreateTime(System.currentTimeMillis());
             datasetGroupMapper.insert(datasetGroup);
+            String userName = AuthUtils.getUser().getUsername();
             // 清理权限缓存
             CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
+            sysAuthService.copyAuth(datasetGroup.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
         } else {
             datasetGroupMapper.updateByPrimaryKeySelective(datasetGroup);
         }
