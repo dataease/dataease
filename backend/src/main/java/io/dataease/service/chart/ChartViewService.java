@@ -97,6 +97,8 @@ public class ChartViewService {
     private PanelGroupExtendDataService extendDataService;
     @Resource
     private ExtPanelGroupExtendDataMapper extPanelGroupExtendDataMapper;
+    @Resource
+    private ChartViewCacheService chartViewCacheService;
 
 
     //默认使用非公平
@@ -130,7 +132,7 @@ public class ChartViewService {
         chartView.setUpdateTime(timestamp);
         chartViewMapper.insertSelective(chartView);
         // 新建的视图也存入缓存表中
-        extChartViewMapper.copyToCache(chartView.getId());
+        chartViewCacheService.refreshCache(chartView.getId());
 
         PanelView newPanelView = new PanelView();
         newPanelView.setId(UUIDUtil.getUUIDAsString());
@@ -153,27 +155,6 @@ public class ChartViewService {
             CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
         });
     }
-
-
-//    // 直接保存统一到缓存表
-//    public ChartViewWithBLOBs save(ChartViewRequest chartView) {
-//        checkName(chartView);
-//        long timestamp = System.currentTimeMillis();
-//        chartView.setUpdateTime(timestamp);
-//        if (ObjectUtils.isEmpty(chartView.getId())) {
-//            chartView.setId(UUID.randomUUID().toString());
-//            chartView.setCreateBy(AuthUtils.getUser().getUsername());
-//            chartView.setCreateTime(timestamp);
-//            chartView.setUpdateTime(timestamp);
-//            chartViewMapper.insertSelective(chartView);
-//        } else {
-//            chartViewMapper.updateByPrimaryKeySelective(chartView);
-//        }
-//        Optional.ofNullable(chartView.getId()).ifPresent(id -> {
-//            CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
-//        });
-//        return getOneWithPermission(chartView.getId());
-//    }
 
     public List<ChartViewDTO> list(ChartViewRequest chartViewRequest) {
         chartViewRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
@@ -268,7 +249,7 @@ public class ChartViewService {
                 //仪表板编辑页面 从缓存表中取数据 缓存表中没有数据则进行插入
                 result = extChartViewMapper.searchOneFromCache(id);
                 if (result == null) {
-                    extChartViewMapper.copyToCache(id);
+                    chartViewCacheService.refreshCache(id);
                     result = extChartViewMapper.searchOneFromCache(id);
                 }
             } else {
@@ -1047,8 +1028,9 @@ public class ChartViewService {
     public String chartCopy(String id, String panelId) {
         String newChartId = UUID.randomUUID().toString();
         extChartViewMapper.chartCopy(newChartId, id, panelId);
+        extChartViewMapper.copyCache(id,newChartId);
         extPanelGroupExtendDataMapper.copyExtendData(id,newChartId,panelId);
-        extChartViewMapper.copyToCache(newChartId);
+        chartViewCacheService.refreshCache(id);
         return newChartId;
     }
 
@@ -1082,9 +1064,4 @@ public class ChartViewService {
         extChartViewMapper.deleteCacheWithPanel(panelId);
     }
 
-    public void resetViewCache(String viewId) {
-        extChartViewMapper.deleteViewCache(viewId);
-
-        extChartViewMapper.copyToCache(viewId);
-    }
 }

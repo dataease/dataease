@@ -30,7 +30,8 @@
         "passwordPlaceholder": "Please Input Password:",
         "loginbtn": "Login",
         "pwdFmtError": "Password Must More Than 6 Characters",
-        "uOrpwdError": "Invalid Account Or Password"
+        "uOrpwdError": "Invalid Account Or Password",
+		"accFmtError": "Account Must More Than 1 Characters"
     },
     "home": {
         "tab1": "My Favorites",
