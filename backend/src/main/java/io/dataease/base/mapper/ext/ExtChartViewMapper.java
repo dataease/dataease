@@ -39,7 +39,7 @@ public interface ExtChartViewMapper {
 
     void copyToCache(@Param("id") String id );
 
-    void deleteCacheWithPanel(@Param("panelId") String panelId );
+    void deleteCacheWithPanel(@Param("viewIds") List<String> viewIds,@Param("panelId") String panelId );
 
     void deleteViewCache(@Param("viewId") String viewId );
 
@@ -48,4 +48,6 @@ public interface ExtChartViewMapper {
     int updateToCache(@Param("viewId") String viewId );
 
     void copyCache(@Param("sourceViewId") String sourceViewId,@Param("newViewId") String newViewId);
+
+    void deleteNoUseView(@Param("viewIds") List<String> viewIds,@Param("panelId") String panelId );
 }

@@ -657,7 +657,7 @@
             />
             <div
               v-else
-              style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
+              style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;padding-right: 6px"
               class="attr-style theme-border-class"
             >
               <el-row class="padding-lr">
@@ -877,7 +877,7 @@
                       @onLegendChange="onLegendChange"
                     />
                   </el-collapse-item>
-                  <el-collapse-item v-if="chart.customStyle && chart.customStyle.background" name="background" :title="$t('chart.background')">
+                  <el-collapse-item v-if="chart.customStyle && view.customStyle.background" name="background" :title="$t('chart.background')">
                     <background-color-selector
                       :param="param"
                       class="attr-selector"

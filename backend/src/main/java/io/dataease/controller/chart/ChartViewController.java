@@ -155,4 +155,10 @@ public class ChartViewController {
         chartViewCacheService.refreshCache(id);
     }
 
+    @ApiOperation("校验视图Title")
+    @PostMapping("/checkTitle")
+    public String checkTitle( @RequestBody ChartViewCacheRequest request) {
+        return chartViewService.checkTitle(request);
+    }
+
 }
