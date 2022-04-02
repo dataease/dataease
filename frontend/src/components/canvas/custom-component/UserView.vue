@@ -264,7 +264,7 @@ export default {
       return this.canvasStyleData.panel.resultCount
     },
     innerPadding() {
-      return this.element.commonBackground.innerPadding || 0
+      return this.element.commonBackground && this.element.commonBackground.innerPadding || 0
     },
     ...mapState([
       'canvasStyleData',
