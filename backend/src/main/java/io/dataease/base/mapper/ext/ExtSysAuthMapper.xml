@@ -14,4 +14,8 @@
       select if(CHECK_TREE_NO_MANAGE_PRIVILEGE(#{userId},#{modelType},#{nodeId})>0,1,0)
     </select>
 
+    <select id="copyAuth" resultType="String">
+        select copy_auth(#{authSource},#{authSourceType},#{authUser})
+    </select>
+
 </mapper>

@@ -11,6 +11,7 @@ import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.base.mapper.ext.ExtDataSourceMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
 import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.SysAuthConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.AuthUtils;
@@ -34,6 +35,7 @@ import io.dataease.provider.datasource.ApiProvider;
 import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.service.dataset.DataSetGroupService;
 import io.dataease.service.message.DeMsgutil;
+import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,6 +59,8 @@ public class DatasourceService {
     private DataSetGroupService dataSetGroupService;
     @Resource
     private CommonThreadPool commonThreadPool;
+    @Resource
+    private SysAuthService sysAuthService;
     private static List<String> dsTypes = Arrays.asList("TiDB", "StarRocks", "excel", "mysql", "hive", "impala", "mariadb", "ds_doris", "pg", "sqlServer", "oracle", "mongo", "ck", "db2", "es", "redshift", "api");
 
     @DeCleaner(DePermissionType.DATASOURCE)
@@ -73,6 +77,7 @@ public class DatasourceService {
         checkAndUpdateDatasourceStatus(datasource);
         datasourceMapper.insertSelective(datasource);
         handleConnectionPool(datasource, "add");
+        sysAuthService.copyAuth(datasource.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASOURCE);
         return datasource;
     }
 
