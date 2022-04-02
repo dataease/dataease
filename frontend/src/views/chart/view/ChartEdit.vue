@@ -438,7 +438,7 @@
                             :index="index"
                             :item="item"
                             :chart="chart"
-                            :dimension-data="dimensionD"
+                            :dimension-data="dimension"
                             :quota-data="quota"
                             @onQuotaItemChange="quotaItemChange"
                             @onQuotaItemRemove="quotaItemRemove"
