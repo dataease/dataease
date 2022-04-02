@@ -266,7 +266,7 @@ public class EsProvider extends DatasourceProvider {
         if (Integer.valueOf(versionList[0]) == 6) {
             esConfiguration.setUri("_xpack/sql");
         }
-        if (Integer.valueOf(versionList[0]) == 7) {
+        if (Integer.valueOf(versionList[0]) > 6) {
             esConfiguration.setUri("_sql");
         }
         datasourceRequest.getDatasource().setConfiguration(new Gson().toJson(esConfiguration));
