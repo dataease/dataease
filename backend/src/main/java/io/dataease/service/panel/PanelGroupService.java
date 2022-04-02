@@ -6,10 +6,7 @@ import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.base.domain.*;
 import io.dataease.base.mapper.*;
 import io.dataease.base.mapper.ext.*;
-import io.dataease.commons.constants.AuthConstants;
-import io.dataease.commons.constants.CommonConstants;
-import io.dataease.commons.constants.DePermissionType;
-import io.dataease.commons.constants.PanelConstants;
+import io.dataease.commons.constants.*;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.TreeUtils;
@@ -31,6 +28,7 @@ import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.sys.SysAuthService;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.slf4j.Logger;
@@ -94,7 +92,6 @@ public class PanelGroupService {
     @Resource
     private ExtPanelGroupExtendDataMapper extPanelGroupExtendDataMapper;
 
-
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         panelGroupRequest.setUserId(userId);
@@ -110,22 +107,21 @@ public class PanelGroupService {
     }
 
     @DeCleaner(DePermissionType.PANEL)
-//    @Transactional
     public PanelGroup saveOrUpdate(PanelGroupRequest request) {
+        String userName = AuthUtils.getUser().getUsername();
         String panelId = request.getId();
         if(StringUtils.isNotEmpty(panelId)){
             panelViewService.syncPanelViews(request);
         }
-        if (StringUtils.isEmpty(panelId)) {
-            // 新建
+        if (StringUtils.isEmpty(panelId)) { // 新建
             checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, null, request.getNodeType());
             panelId = newPanel(request);
             panelGroupMapper.insert(request);
             // 清理权限缓存
             clearPermissionCache();
-        } else if ("toDefaultPanel".equals(request.getOptType())) {
+            sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
+        } else if ("toDefaultPanel".equals(request.getOptType())) { // 转存为默认仪表板
             panelId = UUID.randomUUID().toString();
-            // 转存为默认仪表板
             PanelGroupWithBLOBs newDefaultPanel = panelGroupMapper.selectByPrimaryKey(request.getId());
             newDefaultPanel.setPanelType(PanelConstants.PANEL_TYPE_SYSTEM);
             newDefaultPanel.setNodeType(PanelConstants.PANEL_NODE_TYPE_PANEL);
@@ -139,10 +135,12 @@ public class PanelGroupService {
             panelGroupMapper.insertSelective(newDefaultPanel);
             // 清理权限缓存
             clearPermissionCache();
+            sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
         } else if ("copy".equals(request.getOptType())) {
             panelId = this.panelGroupCopy(request, null, true);
             // 清理权限缓存
             clearPermissionCache();
+            sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
         } else if ("move".equals(request.getOptType())) {
             PanelGroupWithBLOBs panelInfo = panelGroupMapper.selectByPrimaryKey(request.getId());
             if (panelInfo.getPid().equalsIgnoreCase(request.getPid())) {
@@ -446,6 +444,5 @@ public class PanelGroupService {
         CacheUtils.removeAll(AuthConstants.ROLE_PANEL_NAME);
         CacheUtils.removeAll(AuthConstants.DEPT_PANEL_NAME);
     }
-
 
 }

@@ -20,4 +20,9 @@ public class SysAuthService {
         }
     }
 
+    public void copyAuth(String authSource,String authSourceType){
+        String userName = AuthUtils.getUser().getUsername();
+        extSysAuthMapper.copyAuth(authSource,authSourceType,userName);
+    }
+
 }

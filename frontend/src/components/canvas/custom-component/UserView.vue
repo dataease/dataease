@@ -264,7 +264,7 @@ export default {
       return this.canvasStyleData.panel.resultCount
     },
     innerPadding() {
-      return this.element.commonBackground.innerPadding || 0
+      return this.element.commonBackground && this.element.commonBackground.innerPadding || 0
     },
     ...mapState([
       'canvasStyleData',
@@ -758,9 +758,11 @@ export default {
         this.chart.customStyle = param.viewInfo.customStyle
         this.chart.senior = param.viewInfo.senior
         this.chart.title = param.viewInfo.title
+        this.chart.stylePriority = param.viewInfo.stylePriority
         this.sourceCustomAttrStr = this.chart.customAttr
         this.sourceCustomStyleStr = this.chart.customStyle
         this.mergeScale()
+        this.mergeStyle()
       }
     }
   }

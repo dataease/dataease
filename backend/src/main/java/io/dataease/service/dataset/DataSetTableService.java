@@ -33,6 +33,7 @@ import io.dataease.provider.datasource.JdbcProvider;
 import io.dataease.provider.DDLProvider;
 import io.dataease.provider.QueryProvider;
 import io.dataease.service.engine.EngineService;
+import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -102,6 +103,8 @@ public class DataSetTableService {
     private PermissionService permissionService;
     @Resource
     private EngineService engineService;
+    @Resource
+    private SysAuthService sysAuthService;
 
     private static boolean isUpdatingDatasetTableStatus = false;
     private static final String lastUpdateTime = "${__last_update_time__}";
@@ -261,6 +264,10 @@ public class DataSetTableService {
             datasetTable.setCreateBy(AuthUtils.getUser().getUsername());
             datasetTable.setCreateTime(System.currentTimeMillis());
             int insert = datasetTableMapper.insert(datasetTable);
+            // 清理权限缓存
+            CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
+            sysAuthService.copyAuth(datasetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
+
             // 添加表成功后，获取当前表字段和类型，抽象到dataease数据库
             if (insert == 1) {
                 saveTableField(datasetTable);

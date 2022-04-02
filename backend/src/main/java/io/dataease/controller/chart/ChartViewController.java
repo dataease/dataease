@@ -13,6 +13,7 @@ import io.dataease.controller.request.chart.ChartViewCacheRequest;
 import io.dataease.controller.request.chart.ChartViewRequest;
 import io.dataease.controller.response.ChartDetail;
 import io.dataease.dto.chart.ChartViewDTO;
+import io.dataease.service.chart.ChartViewCacheService;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.panel.PanelViewService;
 import io.swagger.annotations.Api;
@@ -34,8 +35,9 @@ import java.util.List;
 public class ChartViewController {
     @Resource
     private ChartViewService chartViewService;
+
     @Resource
-    private PanelViewService panelViewService;
+    private ChartViewCacheService chartViewCacheService;
 
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
     @ApiOperation("保存")
@@ -150,7 +152,7 @@ public class ChartViewController {
     @ApiOperation("重置视图缓存")
     @PostMapping("/resetViewCache/{id}/{panelId}")
     public void resetViewCache(@PathVariable String id, @PathVariable String panelId) {
-        chartViewService.resetViewCache(id);
+        chartViewCacheService.refreshCache(id);
     }
 
 }
