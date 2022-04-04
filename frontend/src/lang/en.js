@@ -1646,7 +1646,9 @@ export default {
     uninstall_cancel: 'Cancel uninstall plugin',
     setting_background: 'BackGround',
     setting_jump: 'Jump Setting',
-    select_view: 'Select View'
+    select_view: 'Select View',
+    un_install_success: 'Uninstall is successful and restart takes effect',
+    un_install_error: 'Uninstall failed, please contact the administrator'
   },
   display: {
     logo: 'Head system logo',
