@@ -1644,9 +1644,11 @@ export default {
     creator: '作者',
     install_time: '安裝時間',
     release_time: '時間',
-    un_install: '卸載',
+    un_install: '卸載(重啟服務後生效)',
     uninstall_confirm: '確定卸載該插件',
-    uninstall_cancel: '取消卸載插件'
+    uninstall_cancel: '取消卸載插件',
+    un_install_success: '卸載成功，重啟生效',
+    un_install_error: '卸載失敗，請聯系管理員'
   },
   display: {
     logo: '頭部繫統logo',
