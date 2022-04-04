@@ -8,7 +8,6 @@
       @search="search"
     >
       <template #toolbar>
-        <!-- <el-button @click="create">{{ $t('plugin.local_install') }}</el-button> -->
 
         <el-upload
           :action="baseUrl+'api/plugin/upload'"
@@ -46,7 +45,7 @@
           <span>{{ scope.row.installTime | timestampFormatDate }}</span>
         </template>
       </el-table-column>
-      <!-- <fu-table-operations :buttons="buttons" label="操作" fix /> -->
+      <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix />
     </complex-table>
 
   </layout-content>
@@ -72,6 +71,10 @@ export default {
         //   label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del,
         //   show: checkPermission(['user:del'])
         // }
+        {
+          label: this.$t('plugin.un_install'), icon: 'el-icon-delete', type: 'danger', click: this.del,
+          disabled: this.btnDisabled
+        }
       ],
       searchConfig: {
         useQuickSearch: true,
@@ -113,6 +116,8 @@ export default {
       this.uploading = true
     },
     uploadFail(response, file, fileList) {
+      const msg = response && response.message || '安装失败'
+      this.$error(msg)
       this.uploading = false
     },
     uploadSuccess(response, file, fileList) {
@@ -121,20 +126,23 @@ export default {
     },
 
     del(row) {
-      this.$confirm(this.$t('user.delete_confirm'), '', {
+      this.$confirm(this.$t('plugin.uninstall_confirm'), '', {
         confirmButtonText: this.$t('commons.confirm'),
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'
       }).then(() => {
         uninstall(row.pluginId).then(res => {
           this.search()
-          this.$success('卸载成功')
+          this.$success(this.$t('plugin.un_install_success'))
         }).catch(() => {
-          this.$error('卸载失败')
+          this.$error(this.$t('plugin.un_install_error'))
         })
       }).catch(() => {
-        this.$info(this.$t('commons.delete_cancel'))
+        this.$info(this.$t('plugin.uninstall_cancel'))
       })
+    },
+    btnDisabled(row) {
+      return row.pluginId < 4
     }
 
   }
