@@ -42,7 +42,8 @@ export default {
   data() {
     return {
       pOption: this.element.streamMediaLinks[this.element.streamMediaLinks.videoType],
-      flvPlayer: null
+      flvPlayer: null,
+      videoShow: true
     }
   },
 
@@ -70,7 +71,13 @@ export default {
   mounted() {
     this.initOption()
     bus.$on('streamMediaLinksChange-' + this.element.id, () => {
-      this.initOption()
+      this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType],
+      this.flvPlayer = null,
+      this.videoShow = false
+      this.$nextTick(() => {
+        this.videoShow = true
+        this.initOption()
+      })
     })
   },
   methods: {
