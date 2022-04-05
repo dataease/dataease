@@ -28,6 +28,7 @@
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { checkAddHttp } from '@/utils/urlUtils'
+import bus from '@/utils/bus'
 
 export default {
   props: {
@@ -73,6 +74,7 @@ export default {
       this.linkInfoTemp.src = checkAddHttp(this.linkInfoTemp.src)
       this.curComponent.frameLinks = this.linkInfoTemp
       this.$store.state.styleChangeTimes++
+      bus.$emit('frameLinksChange-' + this.curComponent.id)
       this.popoverClose()
     },
     onClose() {

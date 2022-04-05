@@ -1,7 +1,7 @@
 <template>
   <el-row class="main-frame">
     <div v-if="element.frameLinks.src" class="main-frame">
-      <iframe id="iframe" :src="element.frameLinks.src" scrolling="auto" frameborder="0" class="main-frame" @load="loaded" @error="onError" />
+      <iframe v-if="frameShow" id="iframe" :src="element.frameLinks.src" scrolling="auto" frameborder="0" class="main-frame" @load="loaded" @error="onError" />
       <div v-if="editMode==='edit'" class="frame-mask">
         <span style="opacity: 1;">
           <span style="font-weight: bold;color: lawngreen;">{{ $t('panel.edit_web_tips') }}</span>
@@ -17,7 +17,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import NProgress from 'nprogress'
+import bus from '@/utils/bus'
 export default {
   name: 'DeFrame',
   props: {
@@ -45,7 +45,8 @@ export default {
   },
   data() {
     return {
-      pOption: {}
+      pOption: {},
+      frameShow: true
     }
   },
 
@@ -62,6 +63,12 @@ export default {
   created() {
   },
   mounted() {
+    bus.$on('frameLinksChange-' + this.element.id, () => {
+      this.frameShow = false
+      this.$nextTick(() => {
+        this.frameShow = true
+      })
+    })
   },
   methods: {
     loaded(e) {
