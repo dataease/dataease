@@ -43,6 +43,7 @@
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { checkAddHttp } from '@/utils/urlUtils'
+import bus from "@/utils/bus";
 
 export default {
   props: {
@@ -88,6 +89,7 @@ export default {
       this.linkInfoTemp[this.linkInfoTemp.videoType].sources[0].src = checkAddHttp(this.linkInfoTemp[this.linkInfoTemp.videoType].sources[0].src)
       this.curComponent.videoLinks = this.linkInfoTemp
       this.$store.state.styleChangeTimes++
+      bus.$emit('videoLinksChange-' + this.curComponent.id)
       this.popoverClose()
     },
     onClose() {

@@ -2,12 +2,12 @@
   <el-row ref="mainPlayer">
     <div v-if="element.videoLinks[element.videoLinks.videoType].sources[0].src" class="player">
       <video-player
+        v-if="showVideo"
         ref="videoPlayer"
         class="vjs-custom-skin"
         :options="editMode==='preview'?pOption:playerOptions"
         :playsinline="true"
         @play="onPlayerPlay($event)"
-        @pause="onPlayerPause($event)"
         @ended="onPlayerEnded($event)"
         @loadeddata="onPlayerLoadeddata($event)"
         @waiting="onPlayerWaiting($event)"
@@ -29,6 +29,7 @@
 // custom skin css
 import '@/custom-theme.css'
 import { mapState } from 'vuex'
+import bus from '@/utils/bus'
 // import SWF_URL from 'videojs-swf/dist/video-js.swf'
 
 export default {
@@ -59,7 +60,8 @@ export default {
   },
   data() {
     return {
-      pOption: {}
+      pOption: {},
+      showVideo: true
     }
   },
 
@@ -83,15 +85,22 @@ export default {
       'canvasStyleData'
     ])
   },
-  created() {
-    this.initOption()
-  },
   watch: {
     h(newVal, oldVla) {
       this.initOption()
     }
   },
+  created() {
+    this.initOption()
+  },
   mounted() {
+    bus.$on('videoLinksChange-' + this.element.id, () => {
+      this.showVideo = false
+      this.$nextTick(() => {
+        this.showVideo = true
+        this.initOption()
+      })
+    })
   },
   methods: {
     initOption() {
@@ -101,9 +110,6 @@ export default {
     // listen event
     onPlayerPlay(player) {
       // console.log('player play!', player)
-    },
-    onPlayerPause(player) {
-      // console.log('player pause!', player)
     },
     onPlayerEnded(player) {
       // console.log('player ended!', player)
