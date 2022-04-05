@@ -35,5 +35,7 @@ public class MyPlugin implements Serializable {
 
     private String icon;
 
+    private String require = "1.9.0";
+
     private static final long serialVersionUID = 1L;
 }

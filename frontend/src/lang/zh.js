@@ -1654,9 +1654,11 @@ export default {
     creator: '作者',
     install_time: '安装时间',
     release_time: '时间',
-    un_install: '卸载',
+    un_install: '卸载(卸载并重启服务后生效)',
     uninstall_confirm: '确定卸载该插件',
-    uninstall_cancel: '取消卸载插件'
+    uninstall_cancel: '取消卸载插件',
+    un_install_success: '卸载成功，重启生效',
+    un_install_error: '卸载失败，请联系管理员'
   },
   display: {
     logo: '头部系统logo',

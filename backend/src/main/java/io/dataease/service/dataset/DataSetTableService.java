@@ -1101,10 +1101,10 @@ public class DataSetTableService {
         Map<String, String[]> customInfo = new TreeMap<>();
         for (DataTableInfoCustomUnion ele : dataTableInfoDTO.getList()) {
             DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(ele.getTableId());
-            String table = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
             if (ObjectUtils.isEmpty(datasetTable)) {
                 throw new RuntimeException(Translator.get("i18n_custom_ds_delete"));
             }
+            String table = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(ele.getCheckedFields());
             if (CollectionUtils.isEmpty(fields)) {
                 throw new RuntimeException(Translator.get("i18n_cst_ds_tb_or_field_deleted"));
