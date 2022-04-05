@@ -876,7 +876,12 @@ public class ExtractDataService {
             case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfiguration.class);
                 dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfiguration.getHost().trim(), mysqlConfiguration.getDataBase().trim(), mysqlConfiguration.getPort().toString(), mysqlConfiguration.getUsername(), mysqlConfiguration.getPassword());
-                dataMeta.addExtraOption("MYSQL", "characterEncoding", "UTF-8");
+                if(StringUtils.isNotEmpty(mysqlConfiguration.getExtraParams()) && mysqlConfiguration.getExtraParams().split("&").length > 0){
+                    String[] params = mysqlConfiguration.getExtraParams().split("&");
+                    for(int i=0;i<params.length;i++){
+                        dataMeta.addExtraOption("MYSQL", params[i].split("=")[0], params[i].split("=")[1]);
+                    }
+                }
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputStep = inputStep(transMeta, selectSQL);
