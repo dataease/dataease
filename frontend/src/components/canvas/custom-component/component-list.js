@@ -77,7 +77,8 @@ export const VIDEOLINKS = {
       remainingTimeDisplay: false,
       currentTimeDisplay: false, // 当前时间
       volumeControl: false, // 声音控制键
-      fullscreenToggle: false
+      fullscreenToggle: false,
+      pause: false
     },
     sources: [{
     }]
