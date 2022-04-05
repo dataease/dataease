@@ -31,7 +31,7 @@ export function save(data) {
 
 export function deleteKettle(id) {
   return request({
-    url: '/delete/' + id,
+    url: '/kettle/delete/' + id,
     method: 'delete',
     loading: true
   })

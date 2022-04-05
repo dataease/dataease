@@ -118,7 +118,7 @@ export default {
         }],
         'configuration.passwd': [{
           required: true,
-          message: this.$t('dcommons.required'),
+          message: this.$t('commons.required'),
           trigger: 'blur'
         }]
       }

@@ -46,7 +46,7 @@
       </el-row>
       <el-row>
         <el-col>
-          <el-form-item :label="$t('datasource.http_port')" prop="configuration.port">
+          <el-form-item :label="$t('datasource.http_port')" prop="configuration.httpPort">
             <el-input v-model="form.configuration.httpPort" autocomplete="off" type="number" min="0"/>
           </el-form-item>
         </el-col>
@@ -156,6 +156,13 @@ export default {
             trigger: ['change', 'blur']
           }
         ],
+        'configuration.httpPort': [
+          {
+            required: true,
+            message: this.$t('datasource.please_input_port'),
+            trigger: ['change', 'blur']
+          }
+        ],
         'configuration.dataBase': [
           {
             required: true,
@@ -212,7 +219,7 @@ export default {
       this.show = false
     },
     save() {
-      if (this.form.configuration.dataSourceType === 'jdbc' && this.form.configuration.port <= 0) {
+      if (this.form.configuration.dataSourceType === 'jdbc' && (this.form.configuration.port <= 0 || this.form.configuration.httpPort <= 0)) {
         this.$message.error(i18n.t('datasource.port_no_less_then_0'))
         return
       }
@@ -256,7 +263,7 @@ export default {
         this.$message.error(i18n.t('datasource.please_choose_schema'))
         return
       }
-      if (this.form.configuration.dataSourceType === 'jdbc' && this.form.configuration.port <= 0) {
+      if (this.form.configuration.dataSourceType === 'jdbc' && (this.form.configuration.port <= 0 || this.form.configuration.httpPort <= 0)) {
         this.$message.error(i18n.t('datasource.port_no_less_then_0'))
         return
       }
