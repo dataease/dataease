@@ -252,6 +252,7 @@ public class JdbcProvider extends DatasourceProvider {
         } catch (SQLException e) {
             DataEaseException.throwException(e);
         } catch (Exception e) {
+            e.printStackTrace();
             DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
         }
         return new ArrayList<>();
@@ -285,7 +286,7 @@ public class JdbcProvider extends DatasourceProvider {
             String l = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : f;
             String t = metaData.getColumnTypeName(j + 1);
             if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name()) && l.contains(".")) {
-                l = l.split(".")[1];
+                l = l.split("\\.")[1];
             }
             TableField field = new TableField();
             field.setFieldName(l);
