@@ -872,6 +872,8 @@ public class ExtractDataService {
             case ds_doris:
             case mariadb:
             case mysql:
+            case TiDB:
+            case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfiguration.class);
                 dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfiguration.getHost().trim(), mysqlConfiguration.getDataBase().trim(), mysqlConfiguration.getPort().toString(), mysqlConfiguration.getUsername(), mysqlConfiguration.getPassword());
                 dataMeta.addExtraOption("MYSQL", "characterEncoding", "UTF-8");
