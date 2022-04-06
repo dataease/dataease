@@ -672,7 +672,7 @@ public class JdbcProvider extends DatasourceProvider {
                 if (StringUtils.isEmpty(db2Configuration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "select TABNAME from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'T';".replace("DE_SCHEMA", db2Configuration.getSchema());
+                return "select TABNAME from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'T'".replace("DE_SCHEMA", db2Configuration.getSchema());
             default:
                 return "show tables;";
         }
@@ -722,7 +722,7 @@ public class JdbcProvider extends DatasourceProvider {
                 if (StringUtils.isEmpty(db2Configuration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "select TABNAME from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'V';".replace("DE_SCHEMA", db2Configuration.getSchema());
+                return "select TABNAME from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'V'".replace("DE_SCHEMA", db2Configuration.getSchema());
 
             default:
                 return null;
@@ -738,7 +738,7 @@ public class JdbcProvider extends DatasourceProvider {
             case sqlServer:
                 return "select name from sys.schemas;";
             case db2:
-                return "select SCHEMANAME from syscat.SCHEMATA   WHERE \"DEFINER\" ='USER';".replace("USER", db2Configuration.getUsername().toUpperCase()) ;
+                return "select SCHEMANAME from syscat.SCHEMATA   WHERE \"DEFINER\" ='USER'".replace("USER", db2Configuration.getUsername().toUpperCase()) ;
             case pg:
                 return "SELECT nspname FROM pg_namespace;";
             case redshift:
