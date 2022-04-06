@@ -224,7 +224,7 @@
           </el-row>
         </el-row>
         <el-row class="chart-box" style="text-align: center;">
-          <svg-icon :icon-class="view.isPlugin ? ('/api/pluginCommon/staticInfo/' + view.type + '/svg') : view.type" class="chart-icon" />
+          <svg-icon :icon-class="view.isPlugin && view.type && view.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + view.type + '/svg') : view.type" class="chart-icon" />
         </el-row>
       </el-row>
 

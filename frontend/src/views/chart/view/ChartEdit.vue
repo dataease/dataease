@@ -154,7 +154,7 @@
                   <span>{{ $t('chart.chart_type') }}</span>
                   <el-row style="padding: 4px 0 4px 10px;">
                     <span>
-                      <svg-icon :icon-class="view.isPlugin ? ('/api/pluginCommon/staticInfo/' + view.type + '/svg') : view.type" class="chart-icon" />
+                      <svg-icon :icon-class="view.isPlugin && view.type && view.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + view.type + '/svg') : view.type" class="chart-icon" />
                     </span>
                     <span style="float: right;">
                       <el-popover
