@@ -14,7 +14,7 @@ export function pluginLists(page, size, data) {
 
 export function uninstall(pluginId) {
   return request({
-    url: pathMap.queryPath + pluginId,
+    url: pathMap.uninstallPath + pluginId,
     method: 'post',
     loading: true
   })
