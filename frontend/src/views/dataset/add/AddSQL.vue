@@ -41,7 +41,7 @@
 
           <el-form-item v-if="mode === '1'" class="form-item">
             <el-select v-model="syncType" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
-              <el-option :label="$t('dataset.sync_now')" value="sync_now"/>
+              <el-option :label="$t('dataset.sync_now')" value="sync_now" :disabled="engineMode === 'simple'"/>
               <el-option :label="$t('dataset.sync_latter')" value="sync_latter"/>
             </el-select>
           </el-form-item>
