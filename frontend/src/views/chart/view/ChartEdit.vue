@@ -2197,6 +2197,7 @@ export default {
 
     // 更换数据集
     changeChart() {
+      this.view.dataFrom = 'dataset'
       if (this.view.tableId !== this.changeTable.id) {
         this.view.tableId = this.changeTable.id
         this.view.xaxis = []
@@ -2207,7 +2208,6 @@ export default {
         this.view.extStack = []
         this.view.extBubble = []
         this.view.drillFields = []
-        this.view.dataFrom = 'dataset'
       }
       // this.save(true, 'chart', false)
       this.calcData(true, 'chart', false)
