@@ -406,7 +406,7 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     private Connection getConnectionFromPool(DatasourceRequest datasourceRequest) throws Exception {
-        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mongo.name())){
+        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mongo.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())){
             return getConnection(datasourceRequest);
         }
         DruidDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
