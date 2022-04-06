@@ -255,14 +255,14 @@ public class PluginService {
     }
 
     public boolean versionMatch(String pluginVersion) {
-        List<Integer> versionLists = Arrays.stream(version.split(".")).map(CodingUtil::string2Integer).collect(Collectors.toList());
-        List<Integer> requireVersionLists = Arrays.stream(pluginVersion.split(".")).map(CodingUtil::string2Integer).collect(Collectors.toList());
+        List<Integer> versionLists = Arrays.stream(version.split("\\.")).map(CodingUtil::string2Integer).collect(Collectors.toList());
+        List<Integer> requireVersionLists = Arrays.stream(pluginVersion.split("\\.")).map(CodingUtil::string2Integer).collect(Collectors.toList());
         int maxSize = Math.max(versionLists.size(), requireVersionLists.size());
         for (int i = 0; i < maxSize; i++) {
             Integer currentV = versionLists.size() == i ? 0 : versionLists.get(i);
             Integer requireV = requireVersionLists.size() == i ? 0 : requireVersionLists.get(i);
             if (requireV > currentV) return false;
         }
-        return false;
+        return true;
     }
 }
