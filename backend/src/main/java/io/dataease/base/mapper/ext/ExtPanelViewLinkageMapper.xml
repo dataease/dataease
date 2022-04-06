@@ -34,19 +34,19 @@
 
     <select id="getViewLinkageGather" resultMap="LinkageGatherMap">
         SELECT
-        chart_view.`name` as 'targetViewName',
-        chart_view.id as 'target_view_id',
-        chart_view.table_id,
+        chart_view_cache.`name` as 'targetViewName',
+        chart_view_cache.id as 'target_view_id',
+        chart_view_cache.table_id,
         (case when panel_view_linkage.target_view_id is null then 0 else 1 end) as 'linkageActive',
         panel_view_linkage_field.source_field,
         panel_view_linkage_field.target_field
         FROM
-        chart_view
-        LEFT JOIN panel_view_linkage ON chart_view.id = panel_view_linkage.target_view_id
+        chart_view_cache
+        LEFT JOIN panel_view_linkage ON chart_view_cache.id = panel_view_linkage.target_view_id
         AND panel_view_linkage.panel_id = #{panelId}
         AND panel_view_linkage.source_view_id = #{sourceViewId}
         LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
-        where chart_view.id in
+        where chart_view_cache.id in
         <foreach collection="targetViewIds" item="targetViewId" index="index" open="(" close=")" separator=",">
             #{targetViewId}
         </foreach>
