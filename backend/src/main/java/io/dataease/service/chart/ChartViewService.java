@@ -524,6 +524,9 @@ public class ChartViewService {
             fieldMap.put("extBubble",extBubble);
             PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view);
             String sql = pluginViewSql(pluginViewParam, view);
+            if (StringUtils.isBlank(sql)) {
+                return emptyChartViewDTO(view);
+            }
             datasourceRequest.setQuery(sql);
             data = datasourceProvider.getData(datasourceRequest);
 
