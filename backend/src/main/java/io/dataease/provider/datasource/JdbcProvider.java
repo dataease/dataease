@@ -526,7 +526,7 @@ public class JdbcProvider extends DatasourceProvider {
         druidDataSource.setInitialSize(jdbcConfiguration.getInitialPoolSize());// 初始连接数
         druidDataSource.setMinIdle(jdbcConfiguration.getMinPoolSize()); // 最小连接数
         druidDataSource.setMaxActive(jdbcConfiguration.getMaxPoolSize()); // 最大连接数
-        if (datasourceRequest.getDatasource().getType().equals(DatasourceTypes.mongo.name()) || datasourceRequest.getDatasource().getType().equals(DatasourceTypes.hive.name())) {
+        if (datasourceRequest.getDatasource().getType().equals(DatasourceTypes.mongo.name()) || datasourceRequest.getDatasource().getType().equals(DatasourceTypes.hive.name()) || datasourceRequest.getDatasource().getType().equals(DatasourceTypes.impala.name())) {
             WallFilter wallFilter = new WallFilter();
             wallFilter.setDbType(DatasourceTypes.mysql.name());
             druidDataSource.setProxyFilters(Arrays.asList(new Filter[]{wallFilter}));
