@@ -87,17 +87,24 @@ export function baseGaugeOption(chart_option, chart) {
             show: false
           }
           chart_option.series[0].axisTick = {
+            splitNumber: 5, // TODO 刻度间隔数
+            length: 10, // TODO 子刻度线长度
             lineStyle: {
-              color: 'auto'
+              color: 'auto',
+              width: 2// TODO 子刻度线宽度
             }
           }
           chart_option.series[0].splitLine = {
+            length: 18, // TODO 刻度线长度
             lineStyle: {
-              color: 'auto'
+              color: 'auto',
+              width: 2// TODO 刻度线宽度
             }
           }
           chart_option.series[0].axisLabel = {
-            color: 'auto'
+            color: 'auto',
+            distance: 20, // TODO 刻度值文字里刻度线距离
+            fontSize: 20// TODO 刻度值字体大小
           }
         }
       }
