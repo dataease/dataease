@@ -128,9 +128,9 @@ public class PanelViewService {
                 viewIds = panelViewInsertDTOList.stream().map(panelView ->panelView.getChartViewId()).collect(Collectors.toList());
                 extChartViewMapper.copyCacheToView(viewIds);
             }
+            extChartViewMapper.deleteCacheWithPanel(viewIds,panelId);
+            extChartViewMapper.deleteNoUseView(viewIds,panelId);
         }
-        extChartViewMapper.deleteCacheWithPanel(viewIds,panelId);
-        extChartViewMapper.deleteNoUseView(viewIds,panelId);
         panelGroup.setMobileLayout(mobileLayout);
         return viewIds;
     }
