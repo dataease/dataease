@@ -29,7 +29,7 @@
               <span v-if="data.nodeType==='folder'">
                 <i class="el-icon-folder" />
               </span>
-              <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+              <span :title="data.name" style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
             </span>
           </span>
         </el-tree>
