@@ -43,6 +43,7 @@
 
 <script>
 import { COLOR_PANEL, DEFAULT_TITLE_STYLE } from '../../chart/chart'
+import { checkTitle } from '@/api/chart/chart'
 
 export default {
   name: 'TitleSelectorAntV',
@@ -107,10 +108,18 @@ export default {
         this.titleForm.title = this.chart.title
         return
       }
-      if (!this.titleForm.show) {
-        this.isSetting = false
-      }
-      this.$emit('onTextChange', this.titleForm)
+      checkTitle({ id: this.chart.id, title: this.titleForm.title, sceneId: this.chart.sceneId }).then((rsp) => {
+        if (rsp.data === 'success') {
+          if (!this.titleForm.show) {
+            this.isSetting = false
+          }
+          this.$emit('onTextChange', this.titleForm)
+        } else {
+          this.$error(this.$t('chart.title_repeat'))
+          this.titleForm.title = this.chart.title
+          return
+        }
+      })
     },
     inputOnInput: function(e) {
       this.$forceUpdate()
