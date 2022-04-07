@@ -1,7 +1,7 @@
 <template>
   <el-col>
     <el-row>
-      <el-button v-if="hasDataPermission('manage',param.privileges) && table.type !== 'excel'" icon="el-icon-setting" size="mini" @click="showConfig">
+      <el-button v-if="hasDataPermission('manage',param.privileges) && enableUpdate" icon="el-icon-setting" size="mini" @click="showConfig">
         {{ $t('dataset.update_setting') }}
       </el-button>
       <el-button icon="el-icon-refresh" size="mini" @click="refreshLog">
@@ -335,6 +335,7 @@ import 'codemirror/addon/hint/show-hint'
 // vue-cron
 import cron from '@/components/cron/cron'
 import {hasDataPermission} from '@/utils/permission'
+import {engineMode} from "@/api/system/engine";
 export default {
   name: 'UpdateInfo',
   components: { codemirror, cron },
@@ -411,7 +412,9 @@ export default {
       cronEdit: false,
       lang: this.$store.getters.language === 'en_US' ? 'en' : 'cn',
       taskLastRequestComplete: true,
-      taskLogLastRequestComplete: true
+      taskLogLastRequestComplete: true,
+      enableUpdate: true,
+      engineMode: 'local'
     }
   },
   computed: {
@@ -425,7 +428,6 @@ export default {
         if(hasDataPermission('manage',this.param.privileges)){
           this.listTask()
         }
-
         this.listTaskLog()
       },
       immediate: true
@@ -454,6 +456,23 @@ export default {
         this.listTask(false)
       }
     }, 10000)
+
+    engineMode().then(res => {
+      this.engineMode = res.data
+      if (this.engineMode === 'simple' ) {
+        if(this.table.type === 'api'){
+          this.enableUpdate = true
+        }else {
+          this.enableUpdate = false
+        }
+      } else {
+        if(this.table.type === 'excel'){
+          this.enableUpdate = false
+        }else {
+          this.enableUpdate = true
+        }
+      }
+    })
   },
   beforeDestroy() {
     clearInterval(this.taskTimer)

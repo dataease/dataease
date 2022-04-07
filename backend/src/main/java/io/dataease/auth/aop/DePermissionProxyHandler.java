@@ -18,6 +18,7 @@ import io.dataease.auth.annotation.DePermissionProxy;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.dto.PermissionProxy;
+import io.dataease.exception.DataEaseException;
 
 @Aspect
 @Component
@@ -51,15 +52,18 @@ public class DePermissionProxyHandler {
 
         } catch (Throwable throwable) {
             LogUtil.error(throwable.getMessage(), throwable);
-            throw new RuntimeException(throwable.getMessage());
+            /* throw new RuntimeException(throwable.getMessage()); */
+            DataEaseException.throwException(throwable);
         } finally {
             AuthUtils.cleanProxyUser();
         }
+        return null;
 
     }
 
     private PermissionProxy getProxy(Object arg, DePermissionProxy annotation, int layer) throws Exception {
-        if(null == arg) return null;
+        if (null == arg)
+            return null;
         String value = annotation.value();
         Class<?> parameterType = arg.getClass();
         if (arg instanceof PermissionProxy) {

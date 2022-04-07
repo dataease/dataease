@@ -224,6 +224,12 @@ export default {
         return 'Db2'
       } else if (type === 'api') {
         return 'API'
+      } else if (type === 'impala') {
+        return 'Apache Impala'
+      }if (type === 'TiDB') {
+        return 'TiDB'
+      }if (type === 'StarRocks') {
+        return 'StarRocks'
       }
     },
 

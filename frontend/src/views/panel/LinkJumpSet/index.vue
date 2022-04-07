@@ -52,9 +52,9 @@
                   :disable-branch-nodes="true"
                   :normalizer="normalizer"
                   :placeholder="$t('panel.select_jump_panel')"
-                  :noChildrenText="$t('commons.treeselect.no_children_text')"
-                  :noOptionsText="$t('commons.treeselect.no_options_text')"
-                  :noResultsText="$t('commons.treeselect.no_results_text')"
+                  :no-children-text="$t('commons.treeselect.no_children_text')"
+                  :no-options-text="$t('commons.treeselect.no_options_text')"
+                  :no-results-text="$t('commons.treeselect.no_results_text')"
                   style="margin-right: 10px"
                   @select="panelNodeClick"
                   @input="inputVal"
@@ -70,6 +70,9 @@
                   <el-radio label="_self">{{ $t('panel.now_window') }}</el-radio>
                   <el-radio label="_blank">{{ $t('panel.new_window') }}</el-radio>
                 </el-radio-group>
+              </el-col>
+              <el-col v-if="linkJumpInfo.linkType==='outer'" :span="9">
+                <el-checkbox v-model="linkJumpInfo.attachParams">附加点击参数</el-checkbox>
               </el-col>
             </el-row>
             <el-row v-if="linkJumpInfo.linkType==='inner'" style="margin-top: 5px;" class="top_border">
@@ -163,6 +166,7 @@ import { groupTree } from '@/api/panel/panel'
 import { detailList } from '@/api/panel/panelView'
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import { checkAddHttp } from '@/utils/urlUtils'
 
 export default {
   components: { },
@@ -268,6 +272,7 @@ export default {
       this.$emit('closeJumpSetDialog')
     },
     save() {
+      this.linkJumpInfo.content = checkAddHttp(this.linkJumpInfo.content)
       updateJumpSet(this.linkJump).then(rsp => {
         this.$message({
           message: '保存成功',
@@ -291,6 +296,9 @@ export default {
       }
       if (!this.linkJumpInfo.content) {
         this.linkJumpInfo.content = 'http://'
+      }
+      if (!this.linkJumpInfo.attachParams) {
+        this.linkJumpInfo.attachParams = false
       }
       if (this.linkJumpInfo.targetPanelId) {
         this.getPanelViewList(this.linkJumpInfo.targetPanelId)

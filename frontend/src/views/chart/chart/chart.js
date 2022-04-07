@@ -78,6 +78,38 @@ export const DEFAULT_TOOLTIP = {
   },
   formatter: ''
 }
+export const DEFAULT_TOTAL = {
+  row: {
+    showGrandTotals: true,
+    showSubTotals: true,
+    reverseLayout: false,
+    reverseSubLayout: false,
+    label: '总计',
+    subLabel: '小计',
+    subTotalsDimensions: [],
+    calcTotals: {
+      aggregation: 'SUM'
+    },
+    calcSubTotals: {
+      aggregation: 'SUM'
+    }
+  },
+  col: {
+    showGrandTotals: true,
+    showSubTotals: true,
+    reverseLayout: false,
+    reverseSubLayout: false,
+    label: '总计',
+    subLabel: '小计',
+    subTotalsDimensions: [],
+    calcTotals: {
+      aggregation: 'SUM'
+    },
+    calcSubTotals: {
+      aggregation: 'SUM'
+    }
+  }
+}
 export const DEFAULT_TITLE_STYLE = {
   show: true,
   fontSize: '18',
@@ -193,8 +225,8 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
 }
 export const DEFAULT_BACKGROUND_COLOR = {
   color: '#ffffff',
-  alpha: 100,
-  borderRadius: 5
+  alpha: 0,
+  borderRadius: 0
 }
 export const DEFAULT_SPLIT = {
   name: {
@@ -239,6 +271,13 @@ export const DEFAULT_SPLIT = {
   splitArea: {
     show: true
   }
+}
+export const DEFAULT_FUNCTION_CFG = {
+  sliderShow: false,
+  sliderRange: [0, 10]
+}
+export const DEFAULT_THRESHOLD = {
+  gaugeThreshold: ''
 }
 // chart config
 export const BASE_BAR = {

@@ -5,13 +5,13 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import com.alibaba.druid.wall.WallFilter;
 import com.google.gson.Gson;
-import io.dataease.commons.constants.DatasourceTypes;
 import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.dto.datasource.*;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.provider.ProviderFactory;
-import io.dataease.provider.query.QueryProvider;
+import io.dataease.provider.QueryProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -154,7 +154,7 @@ public class JdbcProvider extends DatasourceProvider {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 String database;
-                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())) {
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())) {
                     database = resultSet.getString("TABLE_SCHEM");
                 } else {
                     database = resultSet.getString("TABLE_CAT");
@@ -226,9 +226,11 @@ public class JdbcProvider extends DatasourceProvider {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
-            case de_doris:
+            case engine_doris:
             case ds_doris:
             case mariadb:
+            case TiDB:
+            case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 return mysqlConfiguration.getDataBase();
             case sqlServer:
@@ -250,6 +252,7 @@ public class JdbcProvider extends DatasourceProvider {
         } catch (SQLException e) {
             DataEaseException.throwException(e);
         } catch (Exception e) {
+            e.printStackTrace();
             DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
         }
         return new ArrayList<>();
@@ -282,7 +285,7 @@ public class JdbcProvider extends DatasourceProvider {
             String f = metaData.getColumnName(j + 1);
             String l = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : f;
             String t = metaData.getColumnTypeName(j + 1);
-            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name()) && l.contains("\\.")) {
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name()) && l.contains(".")) {
                 l = l.split("\\.")[1];
             }
             TableField field = new TableField();
@@ -365,11 +368,10 @@ public class JdbcProvider extends DatasourceProvider {
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         String queryStr = getTablesSql(datasourceRequest);
         try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)) {
-            return "Success";
         } catch (Exception e) {
             DataEaseException.throwException(e.getMessage());
         }
-        return "Error";
+        return "Success";
     }
 
     @Override
@@ -395,6 +397,7 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
                 if (dataSource != null) {
                     dataSource.close();
+                    jdbcConnection.remove(datasourceRequest.getDatasource().getId());
                 }
                 break;
             default:
@@ -403,7 +406,7 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     private Connection getConnectionFromPool(DatasourceRequest datasourceRequest) throws Exception {
-        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mongo.name())){
+        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mongo.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())){
             return getConnection(datasourceRequest);
         }
         DruidDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
@@ -425,8 +428,11 @@ public class JdbcProvider extends DatasourceProvider {
         switch (datasourceType) {
             case mysql:
             case mariadb:
-            case de_doris:
+            case engine_doris:
+            case engine_mysql:
             case ds_doris:
+            case TiDB:
+            case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 username = mysqlConfiguration.getUsername();
                 password = mysqlConfiguration.getPassword();
@@ -483,6 +489,13 @@ public class JdbcProvider extends DatasourceProvider {
                 driver = hiveConfiguration.getDriver();
                 jdbcurl = hiveConfiguration.getJdbc();
                 break;
+            case impala:
+                ImpalaConfiguration impalaConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), ImpalaConfiguration.class);
+                username = impalaConfiguration.getUsername();
+                password = impalaConfiguration.getPassword();
+                driver = impalaConfiguration.getDriver();
+                jdbcurl = impalaConfiguration.getJdbc();
+                break;
             case db2:
                 Db2Configuration db2Configuration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), Db2Configuration.class);
                 username = db2Configuration.getUsername();
@@ -513,7 +526,7 @@ public class JdbcProvider extends DatasourceProvider {
         druidDataSource.setInitialSize(jdbcConfiguration.getInitialPoolSize());// 初始连接数
         druidDataSource.setMinIdle(jdbcConfiguration.getMinPoolSize()); // 最小连接数
         druidDataSource.setMaxActive(jdbcConfiguration.getMaxPoolSize()); // 最大连接数
-        if (datasourceRequest.getDatasource().getType().equals(DatasourceTypes.mongo.name()) || datasourceRequest.getDatasource().getType().equals(DatasourceTypes.hive.name())) {
+        if (datasourceRequest.getDatasource().getType().equals(DatasourceTypes.mongo.name()) || datasourceRequest.getDatasource().getType().equals(DatasourceTypes.hive.name()) || datasourceRequest.getDatasource().getType().equals(DatasourceTypes.impala.name())) {
             WallFilter wallFilter = new WallFilter();
             wallFilter.setDbType(DatasourceTypes.mysql.name());
             druidDataSource.setProxyFilters(Arrays.asList(new Filter[]{wallFilter}));
@@ -529,8 +542,11 @@ public class JdbcProvider extends DatasourceProvider {
         switch (datasourceType) {
             case mysql:
             case mariadb:
-            case de_doris:
+            case engine_mysql:
+            case engine_doris:
             case ds_doris:
+            case TiDB:
+            case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 dataSource.setUrl(mysqlConfiguration.getJdbc());
                 dataSource.setDriverClassName(mysqlConfiguration.getDriver());
@@ -583,6 +599,13 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setUrl(hiveConfiguration.getJdbc());
                 jdbcConfiguration = hiveConfiguration;
                 break;
+            case impala:
+                ImpalaConfiguration impalaConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), ImpalaConfiguration.class);
+                dataSource.setPassword(impalaConfiguration.getPassword());
+                dataSource.setDriverClassName(impalaConfiguration.getDriver());
+                dataSource.setUrl(impalaConfiguration.getJdbc());
+                jdbcConfiguration = impalaConfiguration;
+                break;
             case db2:
                 Db2Configuration db2Configuration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), Db2Configuration.class);
                 dataSource.setPassword(db2Configuration.getPassword());
@@ -604,12 +627,16 @@ public class JdbcProvider extends DatasourceProvider {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
+            case engine_mysql:
             case mariadb:
+            case TiDB:
                 JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
                 return String.format("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' ;", jdbcConfiguration.getDataBase());
-            case de_doris:
+            case engine_doris:
             case ds_doris:
+            case StarRocks:
             case hive:
+            case impala:
                 return "show tables";
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
@@ -645,7 +672,7 @@ public class JdbcProvider extends DatasourceProvider {
                 if (StringUtils.isEmpty(db2Configuration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "select TABNAME from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'T';".replace("DE_SCHEMA", db2Configuration.getSchema());
+                return "select TABNAME from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'T'".replace("DE_SCHEMA", db2Configuration.getSchema());
             default:
                 return "show tables;";
         }
@@ -656,9 +683,12 @@ public class JdbcProvider extends DatasourceProvider {
         switch (datasourceType) {
             case mysql:
             case mariadb:
-            case de_doris:
+            case engine_doris:
+            case engine_mysql:
             case ds_doris:
             case ck:
+            case TiDB:
+            case StarRocks:
                 return null;
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
@@ -692,7 +722,7 @@ public class JdbcProvider extends DatasourceProvider {
                 if (StringUtils.isEmpty(db2Configuration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "select TABNAME from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'V';".replace("DE_SCHEMA", db2Configuration.getSchema());
+                return "select TABNAME from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'V'".replace("DE_SCHEMA", db2Configuration.getSchema());
 
             default:
                 return null;
@@ -708,7 +738,7 @@ public class JdbcProvider extends DatasourceProvider {
             case sqlServer:
                 return "select name from sys.schemas;";
             case db2:
-                return "select SCHEMANAME from syscat.SCHEMATA   WHERE \"DEFINER\" ='USER';".replace("USER", db2Configuration.getUsername().toUpperCase()) ;
+                return "select SCHEMANAME from syscat.SCHEMATA   WHERE \"DEFINER\" ='USER'".replace("USER", db2Configuration.getUsername().toUpperCase()) ;
             case pg:
                 return "SELECT nspname FROM pg_namespace;";
             case redshift:

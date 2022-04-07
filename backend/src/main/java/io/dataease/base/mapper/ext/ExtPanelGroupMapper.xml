@@ -33,6 +33,7 @@
         panel_group.`name` AS label,
         panel_group.`source`,
         panel_group.`panel_type`,
+        sourcePanelGroup.`mobile_layout`,
         sourcePanelGroup.`name` as source_panel_name,
         authInfo.privileges as `privileges`
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'panel') cids) t,panel_group
@@ -105,6 +106,7 @@
         panel_group.panel_type,
         panel_group.`name` AS label,
         panel_group.`node_type`,
+        panel_group.`mobile_layout`,
         (case when ISNULL(defaultPanelGroup.id) then false else true end) is_default,
         defaultPanelGroup.id as default_panel_id,
         defaultPanelGroup.`name` as default_panel_name,
@@ -171,6 +173,14 @@
         delete from panel_group where FIND_IN_SET(panel_group.id,GET_PANEL_GROUP_WITH_CHILDREN(#{pid})) or FIND_IN_SET(panel_group.source,GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
     </delete>
 
+    <delete id="deleteCircleView">
+        delete from chart_view where FIND_IN_SET(chart_view.scene_id,GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+    </delete>
+
+    <delete id="deleteCircleViewCache">
+        delete from chart_view_cache where FIND_IN_SET(chart_view_cache.scene_id,GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+    </delete>
+
     <insert id="copyPanelView">
     INSERT INTO panel_view ( id, panel_id, chart_view_id ) SELECT
     uuid(),
@@ -189,14 +199,13 @@
         WHERE
             chart_view.chart_type = 'private'
             AND chart_view.scene_id = #{panelId}
-            AND id NOT IN (
-            SELECT
-                panel_view.chart_view_id
-            FROM
-                panel_view
-            WHERE
-                panel_view.panel_id = #{panelId}
-            )
+        <if test="viewIds != null and viewIds.size>0">
+            AND id NOT IN
+            <foreach collection="viewIds" item="viewId" open="(" separator="," close=")" >
+                #{viewId}
+            </foreach>
+        </if>
+
     </delete>
 
 </mapper>

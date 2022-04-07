@@ -575,6 +575,7 @@ export default {
     secret: '請輸入Secret',
     scope: '請輸入scope',
     redirectUrl: '請輸入redirectUrl',
+    input_mapping: '請輸入OIDC屬性映射',
     open: '啓用OIDC認證'
   },
   role: {
@@ -649,9 +650,12 @@ export default {
     port: '端口號不能爲空',
     account: '賬戶不能爲空',
     test_recipients: '測試收件人',
-    tip: '提示：僅用來作爲測試郵件收件人'
+    tip: '提示：僅用來作爲測試郵件收件人',
+    engine_mode_setting: '引擎設置',
+    kettle_setting: 'Kettle 設置'
   },
   chart: {
+    title_repeat: '当前标题已存在',
     save_snapshot: '保存縮略圖',
     datalist: '視圖',
     add_group: '添加分組',
@@ -894,6 +898,8 @@ export default {
     filter_value_can_null: '過濾值不能爲空',
     filter_like: '包含',
     filter_not_like: '不包含',
+    filter_in: '屬於',
+    filter_not_in: '不屬於',
     color_light: '明亮',
     color_classical: '經典',
     color_fresh: '清新',
@@ -1029,7 +1035,36 @@ export default {
     table_item_align: '表格對齊方式',
     table_align_left: '左對齊',
     table_align_center: '居中',
-    table_align_right: '右對齊'
+    table_align_right: '右對齊',
+    draw_back: '收回',
+    senior: '高級',
+    senior_cfg: '高級設置',
+    function_cfg: '功能設置',
+    analyse_cfg: '分析預警',
+    slider: '縮略軸',
+    slider_range: '默認範圍',
+    chart_no_senior: '當前圖表類型暫無高級配置，敬請期待',
+    assist_line: '輔助線',
+    field_fixed: '固定值',
+    line_type_dotted: '點',
+    value_can_not_empty: '值不能為空',
+    value_error: '值必須為數值',
+    threshold: '閾值',
+    threshold_range: '閾值區間',
+    gauge_threshold_format_error: '格式錯誤',
+    total_cfg: '總計配置',
+    col_cfg: '列匯總',
+    row_cfg: '行匯總',
+    total_show: '總計',
+    total_position: '位置',
+    total_label: '別名',
+    sub_total_show: '小計',
+    total_pos_top: '頂部',
+    total_pos_bottom: '底部',
+    total_pos_left: '左側',
+    total_pos_right: '右側',
+    chart_label: '文本卡',
+    drag_block_label: '標簽'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
@@ -1299,6 +1334,13 @@ export default {
     min_pool_size: '最小連接數',
     max_pool_size: '最大連接數',
     max_idle_time: '最大空閑(秒)',
+    doris_host: 'Doris 地址',
+    query_port: 'Query Port',
+    http_port: 'Http Port',
+    bucket_num: 'Bucket 數量',
+    replication_num: '副本數量',
+    please_input_bucket_num: '請輸入 Bucket 數量',
+    please_input_replication_num: '請輸入副本數量',
     acquire_increment: '增長數',
     connect_timeout: '連接超時(秒)',
     please_input_initial_pool_size: '請輸入初始連接數',
@@ -1346,12 +1388,35 @@ export default {
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',
-    input_placeholder: '請輸入4位數字密碼',
+    input_placeholder: '請輸入4位數字或字母',
     pwd_error: '密碼錯誤',
-    pwd_format_error: '請輸入4位數字密碼',
+    pwd_format_error: '請輸入4位數字或字母',
     sure_bt: '確定'
   },
   panel: {
+    is_live: '是否直播',
+    yes: '是',
+    no: '否',
+    live_tips: '优先HTTPS链接',
+    stream_media_add_tips: '请点击添加配置流媒体信息...',
+    json_params_error: '第三方参数解析失败，请检查参数格式是否正确',
+    inner_padding: '内边距',
+    board_radio: '边框半径',
+    background: '背景',
+    component_style: '组件样式',
+    web_set_tips: '部分网站可能设置不允许嵌入而无法显示',
+    repeat_params: '存在名称重复的参数',
+    enable_outer_param_set: '启用外部参数设置',
+    select_param: '请选择参数...',
+    add_param_link_field: '添加参数联动字段',
+    add_param: '添加参数',
+    enable_param: '启用参数',
+    param_name: '参数名称',
+    outer_param_set: '外部参数设置',
+    input_param_name: '请输入参数名称',
+    params_setting: '外部参数设置',
+    template_view_tips: '当前是模板视图,请点击更换数据集',
+    edit_web_tips: '编辑状态不可操作网页内部',
     no_auth_role: '未分享角色',
     auth_role: '已分享角色',
     picture_limit: '只能插入圖片',
@@ -1551,7 +1616,9 @@ export default {
     play_once: '播放一次',
     play_circle: '循環播放',
     video_links: '視頻鏈接',
+    web_url: '网页地址',
     video_add_tips: '請點擊添加配置視頻信息...',
+    web_add_tips: '請點擊添加网页信息...',
     panel_view_result_show: '視圖結果展示',
     panel_view_result_tips: '選擇儀錶闆會覆蓋視圖的結果展示數量，取值範圍1~10000',
     timeout_refresh: '請求超時，稍後刷新...',
@@ -1564,7 +1631,8 @@ export default {
     choose_background: '选择组件背景',
     choose_background_tips: '组件自有的背景设置会覆盖当前设置',
     setting_background: '设置背景',
-    setting_jump: '跳转设置'
+    setting_jump: '跳转设置',
+    select_view: '请选择视图...'
   },
   plugin: {
     local_install: '本地安裝',
@@ -1577,9 +1645,11 @@ export default {
     creator: '作者',
     install_time: '安裝時間',
     release_time: '時間',
-    un_install: '卸載',
+    un_install: '卸載(重啟服務後生效)',
     uninstall_confirm: '確定卸載該插件',
-    uninstall_cancel: '取消卸載插件'
+    uninstall_cancel: '取消卸載插件',
+    un_install_success: '卸載成功，重啟生效',
+    un_install_error: '卸載失敗，請聯系管理員'
   },
   display: {
     logo: '頭部繫統logo',
@@ -1600,7 +1670,9 @@ export default {
     themeLight: '淺色',
     themeDark: '深色',
     themeCustom: '自定義',
-    openHomePage: '顯示首頁'
+    openHomePage: '顯示首頁',
+
+    mobileBG: '移動端登錄頁背景'
 
   },
   auth: {
@@ -1610,6 +1682,15 @@ export default {
     dept: '組織',
     role: '角色',
     user: '用戶',
+    sysParams: '系統變量',
+    sysParams_type: {
+      user_id: '用戶ID',
+      user_name: '用戶名',
+      user_source: '用戶來源',
+      user_email: '郵箱',
+      dept: '組織',
+      role: '角色'
+    },
     linkAuth: '數據源',
     datasetAuth: '數據集',
     chartAuth: '視圖',
@@ -1894,5 +1975,13 @@ export default {
     email: '郵箱：',
     tel: '電話：',
     web: '網址：'
+  },
+  kettle: {
+    add: '添加 Kettle 服務',
+    status: '狀態',
+    carte: 'Kettle 地址',
+    port: '端口',
+    user: '用戶名',
+    passwd: '密碼'
   }
 }

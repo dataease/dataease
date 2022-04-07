@@ -1,6 +1,19 @@
 <template>
   <div class="de-tabs-div">
-    <el-tabs v-model="activeTabName" type="card" class="de-tabs">
+    <async-solt-component
+      v-model="activeTabName"
+      :url="url"
+      type="card"
+      style-type="radioGroup"
+      class="de-tabs-height"
+      :font-color="fontColor"
+      :active-color="activeColor"
+      :border-color="borderColor"
+      :border-active-color="borderActiveColor"
+      @tab-click="handleClick"
+    >
+      <!--  <plugin-com ref="dataease-tabs" v-model="activeTabName" type="card" class="de-tabs" component-name="dataease-tabs" @tab-click="handleClick"> -->
+      <!-- <el-tabs v-model="activeTabName" type="card" class="de-tabs" @tab-click="handleClick"> -->
       <el-tab-pane
         v-for="(item, index) in element.options.tabList"
         :key="item.name+index"
@@ -58,7 +71,8 @@
         </div>
 
       </el-tab-pane>
-    </el-tabs>
+    </async-solt-component>
+    <!-- </el-tabs> -->
 
     <el-dialog
       :title="$t('detabs.eidttitle')"
@@ -79,7 +93,7 @@
       />
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="sureCurTitle">{{ $t('table.confirm') }}</el-button>
+        <el-button :disabled="!titleValid" type="primary" @click="sureCurTitle">{{ $t('table.confirm') }}</el-button>
       </span>
     </el-dialog>
 
@@ -108,7 +122,7 @@
 </template>
 
 <script>
-
+import AsyncSoltComponent from '@/components/AsyncSoltComponent'
 import ViewSelect from '@/views/panel/ViewSelect'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
@@ -118,7 +132,7 @@ import { chartCopy } from '@/api/chart/chart'
 import { buildFilterMap } from '@/utils/conditionUtil'
 export default {
   name: 'DeTabls',
-  components: { ViewSelect },
+  components: { ViewSelect, AsyncSoltComponent },
   props: {
     element: {
       type: Object,
@@ -150,7 +164,13 @@ export default {
       dialogVisible: false,
       textarea: '',
       curItem: null,
-      viewDialogVisible: false
+      viewDialogVisible: false,
+      url: '/api/pluginCommon/component/dataease-tabs'
+      /* fontColor: '#999999',
+      activeColor: '#f18406',
+
+      borderColor: '#999999',
+      borderActiveColor: '#f18406' */
 
     }
   },
@@ -165,11 +185,27 @@ export default {
       const map = buildFilterMap(this.componentData)
       return map
     },
+
     ...mapState([
       'componentData',
       'curComponent',
       'mobileLayoutStatus'
-    ])
+    ]),
+    fontColor() {
+      return this.element && this.element.style && this.element.style.headFontColor || 'none'
+    },
+    activeColor() {
+      return this.element && this.element.style && this.element.style.headFontActiveColor || 'none'
+    },
+    borderColor() {
+      return this.element && this.element.style && this.element.style.headBorderColor || 'none'
+    },
+    borderActiveColor() {
+      return this.element && this.element.style && this.element.style.headBorderActiveColor || 'none'
+    },
+    titleValid() {
+      return !!this.textarea && !!this.textarea.trim()
+    }
   },
   watch: {
     curComponent: {
@@ -244,6 +280,7 @@ export default {
         this.curItem.name = newComponentId
         this.viewDialogVisible = false
         this.activeTabName = newComponentId
+        this.$store.dispatch('chart/setViewId', component.propValue.viewId)
         this.styleChange()
       })
       // this.setComponentInfo()
@@ -275,6 +312,7 @@ export default {
           this.activeTabName = this.element.options.tabList[activIndex].name
         }
       }
+      this.$store.dispatch('chart/setViewId', null)
       this.styleChange()
     },
 
@@ -295,6 +333,16 @@ export default {
     },
     chartResize() {
       // this.$refs[this.activeTabName]
+    },
+    handleClick(tab) {
+      const name = tab.name
+      this.element.options.tabList.forEach(item => {
+        if (item && item.name === name && item.content && item.content.propValue && item.content.propValue.viewId) {
+          this.filterMap[item.content.propValue.viewId] = item.content.filters
+          this.$store.dispatch('chart/setViewId', item.content.propValue.viewId)
+        }
+      })
+      // console.log(tab)
     }
 
   }
@@ -306,7 +354,7 @@ export default {
     height: 100%;
     overflow: hidden;
   }
-  .de-tabs {
+  .de-tabs-height {
     height: 100%;
   }
 

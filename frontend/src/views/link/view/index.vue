@@ -11,6 +11,7 @@ import Preview from '@/components/canvas/components/Editor/Preview'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import { queryPanelJumpInfo, queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
 import { panelInit } from '@/components/canvas/utils/utils'
+import { getOuterParamsInfo } from '@/api/panel/outerParams'
 
 export default {
   name: 'LinkView',
@@ -37,6 +38,8 @@ export default {
   methods: {
     setPanelInfo() {
       loadResource(this.resourceId).then(res => {
+        this.show = false
+        let loadingCount = 0
         this.$store.dispatch('panel/setPanelInfo', {
           id: res.data.id,
           name: res.data.name,
@@ -54,25 +57,65 @@ export default {
         queryPanelJumpInfo(this.resourceId).then(rsp => {
           this.$store.commit('setNowPanelJumpInfo', rsp.data)
         })
+
         // 如果含有跳转参数 进行触发
         const tempParam = localStorage.getItem('jumpInfoParam')
-        if (tempParam) {
-          localStorage.removeItem('jumpInfoParam')
-          const jumpParam = JSON.parse(tempParam)
-          const jumpRequestParam = {
-            sourcePanelId: jumpParam.sourcePanelId,
-            sourceViewId: jumpParam.sourceViewId,
-            sourceFieldId: jumpParam.sourceFieldId,
-            targetPanelId: this.resourceId
+        // 添加外部参数
+        const attachParamsEncode = this.$route.query.attachParams
+
+        tempParam && loadingCount++
+        attachParamsEncode && loadingCount++
+
+        if (attachParamsEncode) {
+          try {
+            const Base64 = require('js-base64').Base64
+            const attachParam = JSON.parse(decodeURIComponent(Base64.decode(attachParamsEncode)))
+            getOuterParamsInfo(this.resourceId).then(rsp => {
+              if (--loadingCount === 0) {
+                this.show = true
+              }
+              this.$store.commit('setNowPanelOuterParamsInfo', rsp.data)
+              this.$store.commit('addOuterParamsFilter', attachParam)
+            })
+          } catch (e) {
+            if (--loadingCount === 0) {
+              this.show = true
+            }
+
+            this.$message({
+              message: this.$t('panel.json_params_error'),
+              type: 'error',
+              showClose: true
+            })
+            console.log('outerParams Decode error：', e)
           }
-          this.show = false
-          // 刷新跳转目标仪表板联动信息
-          queryTargetPanelJumpInfo(jumpRequestParam).then(rsp => {
-            this.show = true
-            this.$store.commit('setNowTargetPanelJumpInfo', rsp.data)
-            this.$store.commit('addViewTrackFilter', jumpParam)
-          })
-        } else {
+        }
+
+        if (tempParam) {
+          try {
+            localStorage.removeItem('jumpInfoParam')
+            const jumpParam = JSON.parse(tempParam)
+            const jumpRequestParam = {
+              sourcePanelId: jumpParam.sourcePanelId,
+              sourceViewId: jumpParam.sourceViewId,
+              sourceFieldId: jumpParam.sourceFieldId,
+              targetPanelId: this.resourceId
+            }
+            // 刷新跳转目标仪表板联动信息
+            queryTargetPanelJumpInfo(jumpRequestParam).then(rsp => {
+              this.show = true
+              this.$store.commit('setNowTargetPanelJumpInfo', rsp.data)
+              this.$store.commit('addViewTrackFilter', jumpParam)
+            })
+          } catch (e) {
+            if (--loadingCount === 0) {
+              this.show = true
+            }
+            console.log('tempParam error：', e)
+          }
+        }
+
+        if (loadingCount === 0) {
           this.show = true
         }
       })

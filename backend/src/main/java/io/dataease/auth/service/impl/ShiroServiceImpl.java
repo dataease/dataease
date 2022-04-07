@@ -55,6 +55,10 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/linkJump/queryPanelJumpInfo/**", ANON);
         filterChainDefinitionMap.put("/linkJump/queryTargetPanelJumpInfo", ANON);
 
+        //外部跳转参数
+        filterChainDefinitionMap.put("/outerParams/**", ANON);
+
+
         filterChainDefinitionMap.put("/tempMobileLink/**", ANON);
         filterChainDefinitionMap.put("/de-app/**", ANON);
         filterChainDefinitionMap.put("/app.html", ANON);
@@ -64,6 +68,8 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/**/*.js", ANON);
         filterChainDefinitionMap.put("/**/*.css", ANON);
         filterChainDefinitionMap.put("/**/*.map", ANON);
+        filterChainDefinitionMap.put("/**/*.svg", ANON);
+
 
         filterChainDefinitionMap.put("/api/auth/login", ANON);
         filterChainDefinitionMap.put("/api/auth/isPluginLoaded", ANON);
@@ -73,6 +79,7 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/api/auth/isOpenOidc", ANON);
         filterChainDefinitionMap.put("/api/auth/getPublicKey", ANON);
         filterChainDefinitionMap.put("/api/pluginCommon/component/*", ANON);
+        filterChainDefinitionMap.put("/api/pluginCommon/staticInfo/**", ANON);
         filterChainDefinitionMap.put("/plugin/oidc/authInfo", ANON);
         filterChainDefinitionMap.put("/sso/callBack*", ANON);
 

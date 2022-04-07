@@ -5,7 +5,7 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <div :style="commonStyle">
+    <div :style="commonStyle" class="main_view">
       <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
       <close-bar v-if="previewVisible" @closePreview="closePreview" />
       <de-out-widget
@@ -35,6 +35,7 @@
         :edit-mode="'preview'"
         :filters="filters"
         :terminal="terminal"
+        :screen-shot="screenShot"
       />
     </div>
   </div>
@@ -49,6 +50,7 @@ import DeOutWidget from '@/components/dataease/DeOutWidget'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 import CloseBar from '@/components/canvas/components/Editor/CloseBar'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export default {
   components: { CloseBar, MobileCheckBar, DeOutWidget, EditBar },
@@ -81,6 +83,10 @@ export default {
     filters: {
       type: Array,
       default: () => []
+    },
+    screenShot: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -94,13 +100,23 @@ export default {
         width: '100%',
         height: '100%'
       }
-      if (this.config.commonBackground && this.config.commonBackground.enable) {
-        if (this.config.commonBackground.backgroundType === 'innerImage') {
-          style['background'] = `url(${this.config.commonBackground.innerImage}) no-repeat`
-        } else if (this.config.commonBackground.backgroundType === 'outerImage') {
-          style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat`
+      if (this.config.commonBackground) {
+        style['padding'] = (this.config.commonBackground.innerPadding || 0) + 'px'
+        style['border-radius'] = (this.config.commonBackground.borderRadius || 0) + 'px'
+        if (this.config.commonBackground.enable) {
+          if (this.config.commonBackground.backgroundType === 'innerImage') {
+            let innerImage = this.config.commonBackground.innerImage
+            if (this.screenShot) {
+              innerImage = innerImage.replace('svg', 'png')
+            }
+            style['background'] = `url(${innerImage}) no-repeat`
+          } else if (this.config.commonBackground.backgroundType === 'outerImage') {
+            style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat`
+          } else if (this.config.commonBackground.backgroundType === 'color') {
+            style['background-color'] = hexColorToRGBA(this.config.commonBackground.color, this.config.commonBackground.alpha)
+          }
         }
-        style['background-size'] = `100% 100%`
+        style['overflow'] = 'hidden'
       }
       return style
     },
@@ -219,5 +235,8 @@ export default {
     outline: none;
     width: 100% !important;
     height: 100%;
+  }
+  .main_view{
+    background-size: 100% 100%!important;
   }
 </style>

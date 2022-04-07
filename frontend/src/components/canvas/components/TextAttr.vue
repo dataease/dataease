@@ -134,9 +134,26 @@
         </el-tooltip>
       </div>
 
+      <div v-if="attrShow('streamMediaLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-tooltip content="流媒体信息">
+          <StreamMediaLinks :link-info="curComponent.streamMediaLinks" />
+        </el-tooltip>
+      </div>
+
+      <div v-if="attrShow('frameLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-tooltip content="网页地址">
+          <FrameLinks :link-info="curComponent.frameLinks" />
+        </el-tooltip>
+      </div>
       <div v-if="attrShow('date-format')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <el-tooltip content="日期格式">
           <date-format :format-info="curComponent.formatInfo" />
+        </el-tooltip>
+      </div>
+
+      <div v-if="attrShow('deTabStyle')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+        <el-tooltip content="tab内部样式">
+          <tab-style :style-info="styleInfo" />
         </el-tooltip>
       </div>
 
@@ -148,12 +165,13 @@
 import { mapState } from 'vuex'
 import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
 import VideoLinks from '@/components/canvas/components/Editor/VideoLinks'
+import StreamMediaLinks from '@/components/canvas/components/Editor/StreamMediaLinks'
 import DateFormat from '@/components/canvas/components/Editor/DateFormat'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
-import { chartTransStr2Object } from '@/views/panel/panel'
+import FrameLinks from '@/components/canvas/components/Editor/FrameLinks'
 
 export default {
-  components: { Hyperlinks, DateFormat, VideoLinks },
+  components: { FrameLinks, Hyperlinks, DateFormat, VideoLinks, StreamMediaLinks },
   props: {
     scrollLeft: {
       type: Number,
@@ -226,8 +244,6 @@ export default {
       'picture-add': [
         'borderStyle',
         'borderWidth',
-        'borderRadius',
-        'opacity',
         'borderColor',
         'hyperlinks'
       ],
@@ -236,35 +252,27 @@ export default {
         'fontSize',
         'fontWeight',
         'letterSpacing',
-        'color',
-        'backgroundColor'
+        'color'
       ],
       // tab组件显示的属性
       'de-tabs': [
         'borderStyle',
         'borderWidth',
-        'borderRadius',
-        'opacity',
-        'borderColor'
+        'borderColor',
+        'deTabStyle'
       ],
       // 矩形组件显示的属性
       'rect-shape': [
         'borderStyle',
         'borderWidth',
-        'borderRadius',
-        'opacity',
-        'borderColor',
-        'backgroundColor'
+        'borderColor'
       ],
       // 时间组件显示的属性
       'de-show-date': [
         'textAlign',
         'fontSize',
         'fontWeight',
-        'opacity',
-        'borderRadius',
         'color',
-        'backgroundColor',
         'date-format',
         'time_margin',
         'padding'
@@ -276,16 +284,20 @@ export default {
         'fontSize',
         'fontWeight',
         'letterSpacing',
-        'opacity',
-        'borderRadius',
         'color',
-        'backgroundColor',
         'hyperlinks'
       ],
-      // 文本组件显示的属性
       'de-video': [
         'opacity',
         'videoLinks'
+      ],
+      'de-stream-media': [
+        'opacity',
+        'streamMediaLinks'
+      ],
+      'de-frame': [
+        'opacity',
+        'frameLinks'
       ]
     }
   },
@@ -379,9 +391,9 @@ export default {
         this.innerOpacity = this.styleInfo['opacity'] * 100
       }
       if (this.curComponent.type === 'v-text') {
-        this.mainWidthOffset = 600
+        this.mainWidthOffset = 400
       } else if (this.curComponent.type === 'de-show-date') {
-        this.mainWidthOffset = 600
+        this.mainWidthOffset = 350
       } else {
         this.mainWidthOffset = document.getElementById('main-attr').offsetWidth - 50
       }
@@ -416,6 +428,18 @@ export default {
     },
     styleChange() {
       this.$store.commit('recordStyleChange')
+    },
+    goHeadFontColor() {
+      this.$refs.headFontColorPicker.handleTrigger()
+    },
+    goHeadFontActiveColor() {
+      this.$refs.headFontActiveColorPicker.handleTrigger()
+    },
+    goHeadBorderColor() {
+      this.$refs.headBorderColorPicker.handleTrigger()
+    },
+    goHeadBorderActiveColor() {
+      this.$refs.headBorderActiveColorPicker.handleTrigger()
     }
   }
 }
@@ -447,7 +471,6 @@ export default {
   ::v-deep .el-color-dropdown__link-btn {
     display: inline!important;
   }
-
 
   ::v-deep input::-webkit-outer-spin-button,
   ::v-deep input::-webkit-inner-spin-button {

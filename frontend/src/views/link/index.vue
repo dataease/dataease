@@ -1,9 +1,9 @@
 <template>
   <div style="height: 100%;">
     <link-error v-if="showIndex===0" :resource-id="resourceId" />
-    <link-pwd v-if="showIndex===1" :resource-id="resourceId" :user="user" @fresh-token="refreshToken" />
-    <link-view v-if="showIndex===2" :resource-id="resourceId" :user="user"/>
-    <link-expire v-if="showIndex===3" :resource-id="resourceId" :user="user"/>
+    <link-pwd v-if="showIndex===1" :resource-id="resourceId" :user="userId" @fresh-token="refreshToken" />
+    <link-view v-if="showIndex===2" :resource-id="resourceId" :user="userId"/>
+    <link-expire v-if="showIndex===3" :resource-id="resourceId" :user="userId"/>
   </div>
 </template>
 <script>
@@ -21,6 +21,7 @@ export default {
   data() {
     return {
       resourceId: null,
+      userId: null,
       PARAMKEY: 'link',
       link: null,
       user: null,
@@ -46,10 +47,11 @@ export default {
         this.showError()
         return
       }
-      let params = this.user ? { link: encodeURIComponent(this.link), user: this.user} : { link: encodeURIComponent(this.link)};
+      let params = this.user ? { link: encodeURIComponent(this.link), user: encodeURIComponent(this.user)} : { link: encodeURIComponent(this.link)};
       validate(params).then(res => {
-        const { resourceId, valid, enablePwd, passPwd, expire } = res.data
+        const { resourceId, valid, enablePwd, passPwd, expire, userId} = res.data
         this.resourceId = resourceId
+        this.userId = userId
         // 如果链接无效 直接显示无效页面
         if (!valid || !resourceId) {
           this.showError()

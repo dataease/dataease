@@ -60,13 +60,12 @@
         </javaClientGenerator>
 
         <!--要生成的数据库表 -->
-        <table tableName="dataease_code_version"/>
-<!--        <table tableName="chart_view"/>-->
-<!--        <table tableName="panel_view"/>-->
-<!--        <table tableName="panel_link_jump"/>-->
-<!--        <table tableName="panel_link_jump_info"/>-->
-<!--        <table tableName="panel_link_jump_target_view_info"/>-->
-<!--        <table tableName="panel_view_linkage"/>-->
-<!--        <table tableName="panel_view_linkage_field"/>-->
+<!--        <table tableName="de_engine">-->
+<!--            <columnOverride column="configuration" property="configuration" javaType="java.lang.String"/>-->
+<!--        </table>-->
+        <table tableName="panel_link_jump"/>
+        <table tableName="panel_link_jump_info"/>
+<!--        <table tableName="panel_outer_params_info"/>-->
+<!--        <table tableName="panel_outer_params_target_view_info"/>-->
     </context>
 </generatorConfiguration>

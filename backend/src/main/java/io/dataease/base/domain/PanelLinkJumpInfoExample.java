@@ -654,6 +654,66 @@ public class PanelLinkJumpInfoExample {
             return (Criteria) this;
         }
 
+        public Criteria andAttachParamsIsNull() {
+            addCriterion("attach_params is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttachParamsIsNotNull() {
+            addCriterion("attach_params is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttachParamsEqualTo(Boolean value) {
+            addCriterion("attach_params =", value, "attachParams");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttachParamsNotEqualTo(Boolean value) {
+            addCriterion("attach_params <>", value, "attachParams");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttachParamsGreaterThan(Boolean value) {
+            addCriterion("attach_params >", value, "attachParams");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttachParamsGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("attach_params >=", value, "attachParams");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttachParamsLessThan(Boolean value) {
+            addCriterion("attach_params <", value, "attachParams");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttachParamsLessThanOrEqualTo(Boolean value) {
+            addCriterion("attach_params <=", value, "attachParams");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttachParamsIn(List<Boolean> values) {
+            addCriterion("attach_params in", values, "attachParams");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttachParamsNotIn(List<Boolean> values) {
+            addCriterion("attach_params not in", values, "attachParams");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttachParamsBetween(Boolean value1, Boolean value2) {
+            addCriterion("attach_params between", value1, value2, "attachParams");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttachParamsNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("attach_params not between", value1, value2, "attachParams");
+            return (Criteria) this;
+        }
+
         public Criteria andCopyFromIsNull() {
             addCriterion("copy_from is null");
             return (Criteria) this;

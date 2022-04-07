@@ -573,6 +573,7 @@ export default {
     secret: 'Please key Secret',
     scope: 'Please key scope',
     redirectUrl: 'Please key redirectUrl',
+    input_mapping: 'Please key OIDC mapping',
     open: 'Enable OIDC Authentication'
   },
   role: {
@@ -647,9 +648,12 @@ export default {
     port: 'Port number cannot be empty',
     account: 'Account cannot be empty',
     test_recipients: 'Test recipients',
-    tip: 'Tip: use as test mail recipient only'
+    tip: 'Tip: use as test mail recipient only',
+    engine_mode_setting: 'Engine Setting',
+    kettle_setting: 'Kettle Setting'
   },
   chart: {
+    title_repeat: 'The Title Already Exist',
     save_snapshot: 'Save Snapshot',
     datalist: 'Chart',
     add_group: 'Add Group',
@@ -893,6 +897,8 @@ export default {
     filter_value_can_null: 'Filter value can not empty',
     filter_like: 'Contain',
     filter_not_like: 'Not Contain',
+    filter_in: 'IN',
+    filter_not_in: 'NOT IN',
     chart_details: 'Chart Details',
     export_details: 'Export Details',
     color_light: 'Light',
@@ -1029,7 +1035,36 @@ export default {
     table_item_align: 'Body Align',
     table_align_left: 'Left',
     table_align_center: 'Center',
-    table_align_right: 'Right'
+    table_align_right: 'Right',
+    draw_back: 'Draw Back',
+    senior: 'Senior',
+    senior_cfg: 'Senior Config',
+    function_cfg: 'Function Config',
+    analyse_cfg: 'Analyse',
+    slider: 'Slider',
+    slider_range: 'Range',
+    chart_no_senior: 'This chart type not support senior config,please look forward to.',
+    assist_line: 'Assist Line',
+    field_fixed: 'Fixed',
+    line_type_dotted: 'Dotted',
+    value_can_not_empty: 'Value can not be empty',
+    value_error: 'Value illegal',
+    threshold: 'Threshold',
+    threshold_range: 'Range',
+    gauge_threshold_format_error: 'Format Error',
+    total_cfg: 'Total Config',
+    col_cfg: 'Column',
+    row_cfg: 'Row',
+    total_show: 'Total',
+    total_position: 'Position',
+    total_label: 'Alias',
+    sub_total_show: 'Sub Total',
+    total_pos_top: 'Top',
+    total_pos_bottom: 'Bottom',
+    total_pos_left: 'Left',
+    total_pos_right: 'Right',
+    chart_label: 'Label',
+    drag_block_label: 'Label'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1298,6 +1333,13 @@ export default {
     min_pool_size: 'Minimum of connections',
     max_pool_size: 'Maximum connection',
     max_idle_time: 'Maximum idle (seconds)',
+    doris_host: 'Doris Address',
+    query_port: 'Query Port',
+    http_port: 'Http Port',
+    bucket_num: 'Bucket number',
+    replication_num: 'Replication number',
+    please_input_bucket_num: 'Please enter  Bucket number',
+    please_input_replication_num: 'Please enter Replication number',
     acquire_increment: 'Growth number',
     connect_timeout: 'Connection timeout (seconds)',
     please_input_initial_pool_size: 'Please enter the number of initial connections',
@@ -1345,12 +1387,35 @@ export default {
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',
-    input_placeholder: 'Please enter the 4-digit password',
+    input_placeholder: 'Please enter the 4-digits-letters',
     pwd_error: 'Wrong password',
-    pwd_format_error: 'Please enter the 4-digit password',
+    pwd_format_error: 'Please enter the 4-digits-letters',
     sure_bt: 'Confirm'
   },
   panel: {
+    is_live: 'Is Live',
+    yes: 'Yes',
+    no: 'No',
+    live_tips: 'User Https First',
+    stream_media_add_tips: 'Please Add Stream Media Info...',
+    json_params_error: 'Third Party Parameters Parsing Failed. Please Check Whether The Parameters Format Is Correct',
+    inner_padding: 'Inner Padding',
+    board_radio: 'Board Radio',
+    background: 'Background',
+    component_style: 'component Style',
+    web_set_tips: 'Some Websites Cannot Be Displayed Because Of Not Allow Embedded ',
+    repeat_params: 'Repeat Params Exist',
+    enable_outer_param_set: 'Enable Outer Param Set',
+    select_param: 'Please Select Param...',
+    add_param_link_field: "Add Params' Linked Field",
+    add_param: 'Add Param',
+    enable_param: 'Enable Param',
+    param_name: 'Param Name',
+    outer_param_set: 'Outer Param Set',
+    input_param_name: "Please Input Param's Name",
+    params_setting: 'Outer Params Setting',
+    template_view_tips: "Template's Views. Please Change",
+    edit_web_tips: 'The Inner Event Can Be Used When Then Panel Not In Edit Status',
     no_auth_role: 'Unshared roles',
     auth_role: 'Shared roles',
     picture_limit: 'Only pictures can be inserted',
@@ -1550,7 +1615,9 @@ export default {
     play_once: 'Once',
     play_circle: 'Circle',
     video_links: 'Video Links',
+    web_url: 'Web URL',
     video_add_tips: 'Please Add Video Info...',
+    web_add_tips: 'Please Add Web Url Info...',
     panel_view_result_show: 'View Result Show',
     panel_view_result_tips: 'Chose "Panel" Will Overwrite View`s Result,Range 1~10000',
     timeout_refresh: 'Timeout，Will Refresh...',
@@ -1578,7 +1645,10 @@ export default {
     uninstall_confirm: 'Comfirm to uninstall the plugin?',
     uninstall_cancel: 'Cancel uninstall plugin',
     setting_background: 'BackGround',
-    setting_jump: 'Jump Setting'
+    setting_jump: 'Jump Setting',
+    select_view: 'Select View',
+    un_install_success: 'Uninstall is successful and restart takes effect',
+    un_install_error: 'Uninstall failed, please contact the administrator'
   },
   display: {
     logo: 'Head system logo',
@@ -1591,7 +1661,8 @@ export default {
     themeLight: 'Light',
     themeDark: 'Dark',
     themeCustom: 'Custom',
-    openHomePage: 'Show Home Page'
+    openHomePage: 'Show Home Page',
+    mobileBG: 'Mobile Login page BG'
 
   },
   auth: {
@@ -1601,6 +1672,14 @@ export default {
     dept: 'Dept',
     role: 'Role',
     user: 'User',
+    sysParams_type: {
+      user_id: 'User ID',
+      user_name: 'User Name',
+      user_source: 'User From',
+      user_email: 'Email',
+      dept: 'Dept',
+      role: 'Role'
+    },
     linkAuth: 'Datasource',
     datasetAuth: 'Dataset',
     chartAuth: 'Chart',
@@ -1885,5 +1964,13 @@ export default {
     email: 'Email:',
     tel: 'Tel:',
     web: 'Web:'
+  },
+  kettle: {
+    add: 'Add Kettle',
+    status: 'Status',
+    carte: 'Kettle Address',
+    port: 'Port',
+    user: 'User',
+    passwd: 'Password'
   }
 }

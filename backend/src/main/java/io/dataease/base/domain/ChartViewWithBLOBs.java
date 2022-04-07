@@ -29,6 +29,8 @@ public class ChartViewWithBLOBs extends ChartView implements Serializable {
 
     private String drillFields;
 
+    private String senior;
+
     private String snapshot;
 
     private static final long serialVersionUID = 1L;

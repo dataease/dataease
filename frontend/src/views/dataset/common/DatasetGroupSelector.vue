@@ -115,6 +115,7 @@
 
 <script>
 import { isKettleRunning, post } from '@/api/dataset/dataset'
+import {engineMode} from "@/api/system/engine";
 
 export default {
   name: 'DatasetGroupSelector',
@@ -219,6 +220,9 @@ export default {
   },
   created() {
     this.kettleState()
+    engineMode().then(res => {
+      this.engineMode = res.data
+    })
   },
   methods: {
     filterNode(value, data) {
@@ -271,7 +275,7 @@ export default {
             return !(ele.mode === 0 && ele.type === 'sql')
           })
           for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].mode === 1 && this.kettleRunning === false) {
+            if (this.tables[i].mode === 1 && this.kettleRunning === false && this.engineMode !== 'simple' ) {
               this.$set(this.tables[i], 'disabled', true)
             }
           }

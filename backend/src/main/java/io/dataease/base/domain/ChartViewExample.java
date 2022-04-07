@@ -1113,6 +1113,76 @@ public class ChartViewExample {
             addCriterion("is_plugin not between", value1, value2, "isPlugin");
             return (Criteria) this;
         }
+
+        public Criteria andDataFromIsNull() {
+            addCriterion("data_from is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataFromIsNotNull() {
+            addCriterion("data_from is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataFromEqualTo(String value) {
+            addCriterion("data_from =", value, "dataFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataFromNotEqualTo(String value) {
+            addCriterion("data_from <>", value, "dataFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataFromGreaterThan(String value) {
+            addCriterion("data_from >", value, "dataFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataFromGreaterThanOrEqualTo(String value) {
+            addCriterion("data_from >=", value, "dataFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataFromLessThan(String value) {
+            addCriterion("data_from <", value, "dataFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataFromLessThanOrEqualTo(String value) {
+            addCriterion("data_from <=", value, "dataFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataFromLike(String value) {
+            addCriterion("data_from like", value, "dataFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataFromNotLike(String value) {
+            addCriterion("data_from not like", value, "dataFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataFromIn(List<String> values) {
+            addCriterion("data_from in", values, "dataFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataFromNotIn(List<String> values) {
+            addCriterion("data_from not in", values, "dataFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataFromBetween(String value1, String value2) {
+            addCriterion("data_from between", value1, value2, "dataFrom");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataFromNotBetween(String value1, String value2) {
+            addCriterion("data_from not between", value1, value2, "dataFrom");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

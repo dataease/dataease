@@ -43,7 +43,9 @@
       >
         <slot :name="handlei" />
       </div>
-      <slot />
+      <div :style="mainSlotStyleInner" class="main-background">
+        <slot />
+      </div>
     </div>
   </div>
 </template>
@@ -59,6 +61,7 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export default {
   replace: true,
@@ -531,13 +534,22 @@ export default {
         width: this.computedMainSlotWidth,
         height: this.computedMainSlotHeight
       }
-      if (this.element.commonBackground && this.element.commonBackground.enable) {
-        if (this.element.commonBackground.backgroundType === 'innerImage') {
-          style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat`
-        } else if (this.element.commonBackground.backgroundType === 'outerImage') {
-          style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat`
+      return style
+    },
+    mainSlotStyleInner() {
+      const style = {}
+      if (this.element.commonBackground) {
+        style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
+        style['border-radius'] = (this.element.commonBackground.borderRadius || 0) + 'px'
+        if (this.element.commonBackground.enable) {
+          if (this.element.commonBackground.backgroundType === 'innerImage') {
+            style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat`
+          } else if (this.element.commonBackground.backgroundType === 'outerImage') {
+            style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat`
+          } else if (this.element.commonBackground.backgroundType === 'color') {
+            style['background-color'] = hexColorToRGBA(this.element.commonBackground.color, this.element.commonBackground.alpha)
+          }
         }
-        style['background-size'] = `100% 100%`
       }
       return style
     },
@@ -1604,7 +1616,6 @@ export default {
     },
     // 记录当前样式
     recordCurStyle() {
-      // debugger
       const style = {
         ...this.defaultStyle
       }
@@ -1619,7 +1630,6 @@ export default {
 
     // 记录当前样式 矩阵处理
     recordMatrixCurStyle() {
-      // debugger
       const left = Math.round(this.left / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
       const top = Math.round(this.top / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
       const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
@@ -1644,7 +1654,6 @@ export default {
     },
     // 记录当前样式 跟随阴影位置 矩阵处理
     recordMatrixCurShadowStyle() {
-      // debugger
       const left = (this.element.x - 1) * this.curCanvasScale.matrixStyleWidth
       const top = (this.element.y - 1) * this.curCanvasScale.matrixStyleHeight
       const width = this.element.sizex * this.curCanvasScale.matrixStyleWidth
@@ -1860,4 +1869,10 @@ export default {
 .de-drag-active-inner{
   outline: 1px solid #70c0ff;
 }
+  .main-background{
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    background-size: 100% 100% !important;
+  }
 </style>

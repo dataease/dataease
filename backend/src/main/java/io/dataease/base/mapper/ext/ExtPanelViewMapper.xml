@@ -110,6 +110,4 @@
             and chart_view.id is not null
     </insert>
 
-
-
 </mapper>

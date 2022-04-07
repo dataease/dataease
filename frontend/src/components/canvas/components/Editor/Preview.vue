@@ -21,6 +21,7 @@
           :in-screen="inScreen"
           :terminal="terminal"
           :filters="filterMap[item.propValue && item.propValue.viewId]"
+          :screen-shot="screenShot"
         />
         <!--视图详情-->
         <el-dialog

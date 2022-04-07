@@ -45,9 +45,12 @@
           <el-col>
             <el-button size="mini" icon="el-icon-plus" type="text" @click="addApiItem(undefined)"/>
             <el-table :data="form.apiConfiguration" class="my_table" max-height="300" height="300">
-              <el-table-column prop="name" :label="$t('datasource.data_table_name')" width="150" show-overflow-tooltip></el-table-column>
-              <el-table-column prop="method" :label="$t('datasource.method')" width="150" show-overflow-tooltip></el-table-column>
-              <el-table-column prop="url" :label="$t('datasource.url')" width="150" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="name" :label="$t('datasource.data_table_name')" width="150"
+                               show-overflow-tooltip></el-table-column>
+              <el-table-column prop="method" :label="$t('datasource.method')" width="150"
+                               show-overflow-tooltip></el-table-column>
+              <el-table-column prop="url" :label="$t('datasource.url')" width="150"
+                               show-overflow-tooltip></el-table-column>
               <el-table-column prop="status" :label="$t('commons.status')" width="150">
                 <template slot-scope="scope">
                   <span v-if="scope.row.status === 'Success'" style="color: green">
@@ -70,13 +73,14 @@
           </el-col>
         </el-form-item>
 
-        <el-dialog :title="api_table_title" :visible="edit_api_item" :before-close="closeEditItem" width="60%" class="dialog-css" append-to-body>
+        <el-dialog :title="api_table_title" :visible="edit_api_item" :before-close="closeEditItem" width="60%"
+                   class="dialog-css" append-to-body>
           <el-steps :active="active" align-center>
             <el-step title="步骤 1"></el-step>
             <el-step title="步骤 2"></el-step>
           </el-steps>
 
-          <el-row  v-show="active === 1">
+          <el-row v-show="active === 1">
             <el-form ref="apiItem" size="small" :model="apiItem" label-width="100px" :rules="rule">
               <p class="tip">{{ $t('datasource.base_info') }} </p>
 
@@ -85,7 +89,8 @@
               </el-form-item>
 
               <el-form-item :label="$t('datasource.request')" prop="url">
-                <el-input :placeholder="$t('datasource.path_all_info')" v-model="apiItem.url" class="ms-http-input" size="small"  >
+                <el-input :placeholder="$t('datasource.path_all_info')" v-model="apiItem.url" class="ms-http-input"
+                          size="small">
                   <el-select v-model="apiItem.method" slot="prepend" style="width: 100px" size="small">
                     <el-option v-for="item in reqOptions" :key="item.id" :label="item.label" :value="item.id"/>
                   </el-select>
@@ -96,88 +101,93 @@
                 <p class="tip">{{ $t('datasource.req_param') }} </p>
                 <!-- HTTP 请求参数 -->
                 <el-form-item>
-                  <api-http-request-form  :headers="apiItem.request.headers" :request="apiItem.request" :response="responseData"/>
+                  <api-http-request-form :headers="apiItem.request.headers" :request="apiItem.request"
+                                         :response="responseData"/>
                 </el-form-item>
               </div>
 
               <el-form-item :label="$t('datasource.data_path')" prop="dataPath">
                 <el-input :placeholder="$t('datasource.data_path_desc')" v-model="apiItem.dataPath" autocomplete="off"/>
               </el-form-item>
-<!--              <el-button style="margin-top: 12px;" @click="validateApi(undefined)" v-show="active === 1">{{ $t('commons.validate') }}</el-button>-->
+              <!--              <el-button style="margin-top: 12px;" @click="validateApi(undefined)" v-show="active === 1">{{ $t('commons.validate') }}</el-button>-->
             </el-form>
           </el-row>
-          <el-row  v-show="active === 2">
+          <el-row v-show="active === 2">
             <el-tabs v-model="api_step2_active_name" @tab-click="handleClick">
               <el-tab-pane :label="$t('dataset.data_preview')" name="first">
-                <ux-grid ref="plxTable" size="mini" style="width: 100%;" :height="height" :checkbox-config="{highlight: true}" :width-resize="true" >
-                  <ux-table-column v-for="field in apiItem.fields" :key="field.originName" min-width="200px" :field="field.originName" :resizable="true">
+                <ux-grid ref="plxTable" size="mini" style="width: 100%;" :height="height"
+                         :checkbox-config="{highlight: true}" :width-resize="true">
+                  <ux-table-column v-for="field in apiItem.fields" :key="field.originName" min-width="200px"
+                                   :field="field.originName" :resizable="true">
                     <template slot="header">
-                      <svg-icon v-if="field.deExtractType === 0" icon-class="field_text" class="field-icon-text" />
-                      <svg-icon v-if="field.deExtractType === 1" icon-class="field_time" class="field-icon-time" />
-                      <svg-icon v-if="field.deExtractType === 2 || field.deExtractType === 3" icon-class="field_value" class="field-icon-value" />
-                      <svg-icon v-if="field.deExtractType === 5" icon-class="field_location" class="field-icon-location" />
+                      <svg-icon v-if="field.deExtractType === 0" icon-class="field_text" class="field-icon-text"/>
+                      <svg-icon v-if="field.deExtractType === 1" icon-class="field_time" class="field-icon-time"/>
+                      <svg-icon v-if="field.deExtractType === 2 || field.deExtractType === 3" icon-class="field_value"
+                                class="field-icon-value"/>
+                      <svg-icon v-if="field.deExtractType === 5" icon-class="field_location"
+                                class="field-icon-location"/>
                       <span>{{ field.name }}</span>
                     </template>
                   </ux-table-column>
                 </ux-grid>
               </el-tab-pane>
-<!--              暂时屏蔽掉字段管理-->
-<!--              <el-tab-pane label="字段管理" name="second">-->
-<!--                <el-table :data="apiItem.fields" size="mini">-->
-<!--                  <el-table-column property="name" :label="$t('dataset.field_name')" width="180">-->
-<!--                    <template slot-scope="scope">-->
-<!--                      <el-input v-model="scope.row.name" size="mini"/>-->
-<!--                    </template>-->
-<!--                  </el-table-column>-->
+              <!--              暂时屏蔽掉字段管理-->
+              <!--              <el-tab-pane label="字段管理" name="second">-->
+              <!--                <el-table :data="apiItem.fields" size="mini">-->
+              <!--                  <el-table-column property="name" :label="$t('dataset.field_name')" width="180">-->
+              <!--                    <template slot-scope="scope">-->
+              <!--                      <el-input v-model="scope.row.name" size="mini"/>-->
+              <!--                    </template>-->
+              <!--                  </el-table-column>-->
 
-<!--                  <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="100">-->
-<!--                    <template slot-scope="scope">-->
-<!--                      <span v-if="scope.row.extField === 0" :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">-->
-<!--                        <span style="font-size: 12px;">{{ scope.row.originName }}</span>-->
-<!--                      </span>-->
-<!--                    </template>-->
-<!--                  </el-table-column>-->
+              <!--                  <el-table-column property="originName" :label="$t('dataset.field_origin_name')" width="100">-->
+              <!--                    <template slot-scope="scope">-->
+              <!--                      <span v-if="scope.row.extField === 0" :title="scope.row.originName" class="field-class" style="width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">-->
+              <!--                        <span style="font-size: 12px;">{{ scope.row.originName }}</span>-->
+              <!--                      </span>-->
+              <!--                    </template>-->
+              <!--                  </el-table-column>-->
 
-<!--                  <el-table-column property="deExtractType" :label="$t('dataset.field_type')" width="140">-->
-<!--                    <template slot-scope="scope">-->
-<!--                      <el-select v-model="scope.row.deExtractType" size="mini" style="display: inline-block;width: 26px;">-->
-<!--                        <el-option v-for="item in fieldTypes" :key="item.value" :label="item.label" :value="item.value">-->
-<!--                        <span style="float: left">-->
-<!--                          <svg-icon v-if="item.value === 0" icon-class="field_text" class="field-icon-text" />-->
-<!--                          <svg-icon v-if="item.value === 1" icon-class="field_time" class="field-icon-time" />-->
-<!--                          <svg-icon v-if="item.value === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />-->
-<!--                          <svg-icon v-if="item.value === 5" icon-class="field_location" class="field-icon-location" />-->
-<!--                        </span>-->
-<!--                          <span style="float: left; color: #8492a6; font-size: 12px">{{ item.label }}</span>-->
-<!--                        </el-option>-->
-<!--                      </el-select>-->
-<!--                      <span style="margin-left: 8px;">-->
-<!--                      <span v-if="scope.row.deExtractType === 0">-->
-<!--                        <svg-icon icon-class="field_text" class="field-icon-text" />-->
-<!--                        <span class="field-class">{{ $t('dataset.text') }}</span>-->
-<!--                      </span>-->
-<!--                      <span v-if="scope.row.deExtractType === 1">-->
-<!--                        <svg-icon v-if="scope.row.deExtractType === 1" icon-class="field_time" class="field-icon-time" />-->
-<!--                        <span class="field-class">{{ $t('dataset.time') }}</span>-->
-<!--                      </span>-->
-<!--                      <span v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3">-->
-<!--                        <svg-icon v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3" icon-class="field_value" class="field-icon-value" />-->
-<!--                        <span v-if="scope.row.deExtractType === 2" class="field-class">{{ $t('dataset.value') }}</span>-->
-<!--                        <span v-if="scope.row.deExtractType === 3" class="field-class">{{ $t('dataset.value') + '(' + $t('dataset.float') + ')' }}</span>-->
-<!--                      </span>-->
-<!--                      <span v-if="scope.row.deExtractType === 5">-->
-<!--                        <svg-icon v-if="scope.row.deExtractType === 5" icon-class="field_location" class="field-icon-location" />-->
-<!--                        <span class="field-class">{{ $t('dataset.location') }}</span>-->
-<!--                      </span>-->
-<!--                    </span>-->
-<!--                    </template>-->
-<!--                  </el-table-column>-->
-<!--                </el-table>-->
-<!--              </el-tab-pane>-->
+              <!--                  <el-table-column property="deExtractType" :label="$t('dataset.field_type')" width="140">-->
+              <!--                    <template slot-scope="scope">-->
+              <!--                      <el-select v-model="scope.row.deExtractType" size="mini" style="display: inline-block;width: 26px;">-->
+              <!--                        <el-option v-for="item in fieldTypes" :key="item.value" :label="item.label" :value="item.value">-->
+              <!--                        <span style="float: left">-->
+              <!--                          <svg-icon v-if="item.value === 0" icon-class="field_text" class="field-icon-text" />-->
+              <!--                          <svg-icon v-if="item.value === 1" icon-class="field_time" class="field-icon-time" />-->
+              <!--                          <svg-icon v-if="item.value === 2 || item.value === 3" icon-class="field_value" class="field-icon-value" />-->
+              <!--                          <svg-icon v-if="item.value === 5" icon-class="field_location" class="field-icon-location" />-->
+              <!--                        </span>-->
+              <!--                          <span style="float: left; color: #8492a6; font-size: 12px">{{ item.label }}</span>-->
+              <!--                        </el-option>-->
+              <!--                      </el-select>-->
+              <!--                      <span style="margin-left: 8px;">-->
+              <!--                      <span v-if="scope.row.deExtractType === 0">-->
+              <!--                        <svg-icon icon-class="field_text" class="field-icon-text" />-->
+              <!--                        <span class="field-class">{{ $t('dataset.text') }}</span>-->
+              <!--                      </span>-->
+              <!--                      <span v-if="scope.row.deExtractType === 1">-->
+              <!--                        <svg-icon v-if="scope.row.deExtractType === 1" icon-class="field_time" class="field-icon-time" />-->
+              <!--                        <span class="field-class">{{ $t('dataset.time') }}</span>-->
+              <!--                      </span>-->
+              <!--                      <span v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3">-->
+              <!--                        <svg-icon v-if="scope.row.deExtractType === 2 || scope.row.deExtractType === 3" icon-class="field_value" class="field-icon-value" />-->
+              <!--                        <span v-if="scope.row.deExtractType === 2" class="field-class">{{ $t('dataset.value') }}</span>-->
+              <!--                        <span v-if="scope.row.deExtractType === 3" class="field-class">{{ $t('dataset.value') + '(' + $t('dataset.float') + ')' }}</span>-->
+              <!--                      </span>-->
+              <!--                      <span v-if="scope.row.deExtractType === 5">-->
+              <!--                        <svg-icon v-if="scope.row.deExtractType === 5" icon-class="field_location" class="field-icon-location" />-->
+              <!--                        <span class="field-class">{{ $t('dataset.location') }}</span>-->
+              <!--                      </span>-->
+              <!--                    </span>-->
+              <!--                    </template>-->
+              <!--                  </el-table-column>-->
+              <!--                </el-table>-->
+              <!--              </el-tab-pane>-->
             </el-tabs>
           </el-row>
           <div slot="footer" class="dialog-footer">
-            <el-button @click="next" v-show="active === 1">{{ $t('fu.steps.next') }}</el-button>
+            <el-button @click="next" :disabled="disabledNext" v-show="active === 1">{{ $t('fu.steps.next') }}</el-button>
             <el-button @click="before" v-show="active === 2">{{ $t('fu.steps.prev') }}</el-button>
             <el-button @click="saveItem" v-show="active === 2">{{ $t('commons.save') }}</el-button>
           </div>
@@ -327,10 +337,10 @@ export default {
         apiConfiguration: []
       },
       rule: {
-        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'change'},
-          {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'change'}],
+        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
+          {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
         desc: [{min: 2, max: 50, message: i18n.t('datasource.input_limit_2_50'), trigger: 'blur'}],
-        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'change'}],
+        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur'}],
         'configuration.dataBase': [{
           required: true,
           message: i18n.t('datasource.please_input_data_base'),
@@ -349,71 +359,59 @@ export default {
         'configuration.password': [{
           required: true,
           message: i18n.t('datasource.please_input_password'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
-        'configuration.host': [{required: true, message: i18n.t('datasource.please_input_host'), trigger: 'change'}],
-        'configuration.url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'change'}],
-        'configuration.port': [{required: true, message: i18n.t('datasource.please_input_port'), trigger: 'change'}],
+        'configuration.host': [{required: true, message: i18n.t('datasource.please_input_host'), trigger: 'blur'}],
+        'configuration.url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'blur'}],
+        'configuration.port': [{required: true, message: i18n.t('datasource.please_input_port'), trigger: 'blur'}],
         'configuration.initialPoolSize': [{
           required: true,
           message: i18n.t('datasource.please_input_initial_pool_size'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
         'configuration.minPoolSize': [{
           required: true,
           message: i18n.t('datasource.please_input_min_pool_size'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
         'configuration.maxPoolSize': [{
           required: true,
           message: i18n.t('datasource.please_input_max_pool_size'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
         'configuration.maxIdleTime': [{
           required: true,
           message: i18n.t('datasource.please_input_max_idle_time'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
         'configuration.acquireIncrement': [{
           required: true,
           message: i18n.t('datasource.please_input_acquire_increment'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
         'configuration.connectTimeout': [{
           required: true,
           message: i18n.t('datasource.please_input_connect_timeout'),
-          trigger: 'change'
+          trigger: 'blur'
         }],
-        'url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'change'}],
-        'dataPath': [{required: true, message: i18n.t('datasource.please_input_dataPath'), trigger: 'change'}]
+        'url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'blur'}],
+        'dataPath': [{required: true, message: i18n.t('datasource.please_input_dataPath'), trigger: 'blur'}]
       },
       allTypes: [
-        {
-          name: 'mysql',
-          label: 'MySQL',
-          type: 'jdbc',
-          extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
-        },
+        {name: 'mysql', label: 'MySQL', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
+        {name: 'TiDB', label: 'TiDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
         {name: 'hive', label: 'Apache Hive', type: 'jdbc', extraParams: ''},
+        {name: 'impala', label: 'Apache Impala', type: 'jdbc', extraParams: 'AuthMech=0'},
         {name: 'oracle', label: 'Oracle', type: 'jdbc'},
         {name: 'sqlServer', label: 'SQL Server', type: 'jdbc', extraParams: ''},
         {name: 'pg', label: 'PostgreSQL', type: 'jdbc', extraParams: ''},
         {name: 'es', label: 'Elasticsearch', type: 'es'},
-        {
-          name: 'mariadb',
-          label: 'MariaDB',
-          type: 'jdbc',
-          extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
-        },
-        {
-          name: 'ds_doris',
-          label: 'Doris',
-          type: 'jdbc',
-          extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
-        },
+        {name: 'mariadb', label: 'MariaDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
+        {name: 'StarRocks', label: 'StarRocks', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
+        {name: 'ds_doris', label: 'Doris', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
         {name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: ''},
         {name: 'redshift', label: 'AWS Redshift', type: 'jdbc'},
-        {name: 'mongo', label: 'MongoDB', type: 'jdbc', extraParams: 'rebuildschema=true'},
+        {name: 'mongo', label: 'MongoDB', type: 'jdbc', extraParams: 'rebuildschema=true&authSource=admin'},
         {name: 'db2', label: 'Db2', type: 'jdbc', extraParams: ''},
         {name: 'api', label: 'API', type: 'api', extraParams: ''}
       ],
@@ -460,13 +458,14 @@ export default {
       api_table_title: '',
       api_step2_active_name: 'first',
       fieldTypes: [
-        { label: this.$t('dataset.text'), value: 0 },
-        { label: this.$t('dataset.time'), value: 1 },
-        { label: this.$t('dataset.value'), value: 2 },
-        { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3 },
-        { label: this.$t('dataset.location'), value: 5 }
+        {label: this.$t('dataset.text'), value: 0},
+        {label: this.$t('dataset.time'), value: 1},
+        {label: this.$t('dataset.value'), value: 2},
+        {label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3},
+        {label: this.$t('dataset.location'), value: 5}
       ],
-      height: 500
+      height: 500,
+      disabledNext: false
     }
   },
 
@@ -511,8 +510,8 @@ export default {
       this.form = JSON.parse(JSON.stringify(row))
 
       this.originConfiguration = this.form.configuration
-      if(row.type === 'api'){
-      }else {
+      if (row.type === 'api') {
+      } else {
         this.form.configuration = JSON.parse(this.form.configuration)
       }
     },
@@ -541,8 +540,13 @@ export default {
               return
             }
             let configuration = JSON.parse(child.configuration)
+            if(!configuration){
+              return
+            }
             switch (this.form.type) {
               case 'mysql':
+              case 'TiDB':
+              case 'StarRocks':
               case 'hive':
               case 'mariadb':
               case 'ds_doris':
@@ -583,16 +587,16 @@ export default {
         }
         const method = this.formType === 'add' ? addDs : editDs
         const form = JSON.parse(JSON.stringify(this.form))
-        if(form.type === 'api'){
-          if(this.form.apiConfiguration.length < 1){
+        if (form.type === 'api') {
+          if (this.form.apiConfiguration.length < 1) {
             this.$message.error(i18n.t('datasource.api_table_not_empty'))
             return
           }
-          form.apiConfiguration.forEach(item =>{
+          form.apiConfiguration.forEach(item => {
             delete item.status
           })
           form.configuration = JSON.stringify(form.apiConfiguration)
-        }else {
+        } else {
           form.configuration = JSON.stringify(form.configuration)
         }
 
@@ -652,9 +656,9 @@ export default {
       this.$refs.dsForm.validate(valid => {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
-          if(data.type === 'api') {
+          if (data.type === 'api') {
             data.configuration = JSON.stringify(data.apiConfiguration)
-          }else {
+          } else {
             data.configuration = JSON.stringify(data.configuration)
           }
           if (data.showModel === 'show' && !this.canEdit) {
@@ -675,7 +679,7 @@ export default {
               if (res.success) {
                 this.$success(i18n.t('datasource.validate_success'))
               } else {
-                if(data.type === 'api') {
+                if (data.type === 'api') {
                   this.form.apiConfiguration = res.data.apiConfiguration
                 }
                 if (res.message.length < 2500) {
@@ -708,23 +712,23 @@ export default {
       this.$emit('refresh-type', form)
     },
     next() {
-      if(this.active === 1){
+      if (this.active === 1) {
         let hasRepeatName = false
-        if(this.add_api_item){
+        if (this.add_api_item) {
           this.form.apiConfiguration.forEach(item => {
-            if(item.name === this.apiItem.name){
+            if (item.name === this.apiItem.name) {
               hasRepeatName = true
             }
           })
-        }else {
+        } else {
           let index = this.form.apiConfiguration.indexOf(this.apiItem)
-          for(let i=0; i < this.form.apiConfiguration.length;i++ ){
-            if(i !== index && this.form.apiConfiguration[i].name === this.apiItem.name){
+          for (let i = 0; i < this.form.apiConfiguration.length; i++) {
+            if (i !== index && this.form.apiConfiguration[i].name === this.apiItem.name) {
               hasRepeatName = true
             }
           }
         }
-        if(hasRepeatName){
+        if (hasRepeatName) {
           this.$message.error(i18n.t('datasource.has_repeat_name'))
           return
         }
@@ -733,16 +737,18 @@ export default {
             const data = JSON.parse(JSON.stringify(this.apiItem))
             data.request = JSON.stringify(data.request)
             this.loading = true
+            this.disabledNext = true
             checkApiDatasource(data).then(res => {
               this.loading = false
+              this.disabledNext = false
               this.apiItem.status = 'Success'
               this.$success(i18n.t('commons.success'))
               this.active++
               this.apiItem.fields = res.data.fields
               this.$refs.plxTable.reloadData(res.data.datas)
             }).catch(res => {
-              this.apiItem.fields = []
               this.loading = false
+              this.disabledNext = false
             })
           } else {
             this.apiItem.fields = []
@@ -761,16 +767,19 @@ export default {
     saveItem() {
       this.active = 0
       this.edit_api_item = false
-      if(this.add_api_item){
+      if (this.add_api_item) {
         this.form.apiConfiguration.push(this.apiItem)
       }
     },
     addApiItem(item) {
+      this.$nextTick(() => {
+        this.$refs.apiItem.clearValidate()
+      })
       if (item) {
         this.add_api_item = false
         this.api_table_title = this.$t('datasource.edit_api_table')
         this.apiItem = item
-      }else {
+      } else {
         this.add_api_item = true
         this.apiItem = JSON.parse(JSON.stringify(this.defaultApiItem))
         this.api_table_title = this.$t('datasource.add_api_table')
@@ -782,9 +791,9 @@ export default {
       this.form.apiConfiguration.splice(this.form.apiConfiguration.indexOf(item), 1)
     },
     validateApi(item) {
-      if(undefined){
+      if (undefined) {
 
-      }else {
+      } else {
         this.$refs.apiItem.validate(valid => {
           if (valid) {
             const data = JSON.parse(JSON.stringify(this.apiItem))
@@ -809,41 +818,46 @@ export default {
   }
 }
 </script>
-<style  scoped>
-  .el-input {
-    width: 300px;
-  }
-  .el-select {
-    width: 300px;
-  }
-  .ms-http-input {
-    width: 500px;
-    margin-top: 5px;
-  }
-  .tip {
-    padding: 3px 5px;
-    font-size: 16px;
-    border-radius: 0;
-    border-left: 4px solid #409EFF;
-    margin: 5px 5px 10px 5px;
-  }
-  .el-select>>>input{
-    padding-right: 10px;
-  }
-  .el-select>>>.el-input__suffix{
-    right: 0;
-  }
+<style scoped>
+.el-input {
+  width: 300px;
+}
 
-  .dialog-css>>>.el-dialog__header {
-    padding: 10px 20px 0px;
-  }
+.el-select {
+  width: 300px;
+}
 
-  .dialog-css>>>.el-dialog__body {
-    padding: 10px 20px 10px;
-  }
+.ms-http-input {
+  width: 500px;
+  margin-top: 5px;
+}
 
-  .dialog-footer>>> .el-dialog__footer {
-    padding: 10px 10px 10px;
-  }
+.tip {
+  padding: 3px 5px;
+  font-size: 16px;
+  border-radius: 0;
+  border-left: 4px solid #409EFF;
+  margin: 5px 5px 10px 5px;
+}
+
+.el-select >>> input {
+  padding-right: 10px;
+}
+
+.el-select >>> .el-input__suffix {
+  right: 0;
+}
+
+.dialog-css >>> .el-dialog__header {
+  padding: 10px 20px 0px;
+}
+
+.dialog-css >>> .el-dialog__body {
+  padding: 10px 20px 10px;
+}
+
+.dialog-footer >>> .el-dialog__footer {
+  padding: 10px 10px 10px;
+}
 
 </style>

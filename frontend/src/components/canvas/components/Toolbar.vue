@@ -38,6 +38,9 @@
       <el-tooltip :content="$t('panel.fullscreen_preview')">
         <el-button class="el-icon-view" size="mini" circle @click="clickPreview" />
       </el-tooltip>
+      <el-tooltip :content="$t('panel.params_setting')">
+        <el-button class="icon iconfont-tb icon-canshu" size="mini" circle @click="openOuterParamsSet" />
+      </el-tooltip>
       <span style="float: right;margin-left: 10px">
         <el-button size="mini" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
@@ -298,6 +301,9 @@ export default {
 
     clickPreview() {
       this.$emit('previewFullScreen')
+    },
+    openOuterParamsSet() {
+      this.$emit('outerParamsSetVisibleChange', true)
     },
     changeAidedDesign() {
       this.$emit('changeAidedDesign')

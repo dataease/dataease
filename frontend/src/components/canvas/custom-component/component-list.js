@@ -16,15 +16,28 @@ export const BASE_MOBILE_STYLE = {
   auxiliaryMatrix: true
 }
 
-// 公共背景
+// 组件仪表板样式
 export const COMMON_BACKGROUND = {
-  enable: false,
-  backgroundType: 'innerImage',
+  enable: true,
+  backgroundType: 'color',
   color: '#FFFFFF',
   innerImage: null,
   outerImage: null,
   alpha: 100,
-  borderRadius: 5
+  borderRadius: 5,
+  innerPadding: 0
+}
+
+// 空组件仪表板样式
+export const COMMON_BACKGROUND_NONE = {
+  enable: false,
+  backgroundType: 'color',
+  color: '#FFFFFF',
+  innerImage: null,
+  outerImage: null,
+  alpha: 100,
+  borderRadius: 0,
+  innerPadding: 0
 }
 
 // 公共样式
@@ -64,7 +77,8 @@ export const VIDEOLINKS = {
       remainingTimeDisplay: false,
       currentTimeDisplay: false, // 当前时间
       volumeControl: false, // 声音控制键
-      fullscreenToggle: false
+      fullscreenToggle: false,
+      pause: false
     },
     sources: [{
     }]
@@ -83,7 +97,23 @@ export const VIDEOLINKS = {
       }
     }
   }
+}
 
+// 流媒体视频信息配置
+export const STREAMMEDIALINKS = {
+  videoType: 'flv',
+  flv: {
+    type: 'flv',
+    isLive: false,
+    cors: true, // 允许跨域
+    loop: true
+    // url: null // 网络动画视频
+  }
+}
+
+// 嵌套页面信息
+export const FRAMELINKS = {
+  src: ''
 }
 
 export const assistList = [
@@ -130,16 +160,32 @@ export const pictureList = [
     label: '视频',
     icon: 'iconfont icon-video',
     defaultClass: 'text-filter'
+  },
+  {
+    id: '20003',
+    component: 'stream-media',
+    type: 'stream-media',
+    label: '流媒体',
+    icon: 'iconfont icon-a-liumeitimeitiliebiao',
+    defaultClass: 'text-filter'
   }
 ]
 
-export const dateList = [
+export const otherList = [
   {
     id: '30001',
     component: 'de-show-date',
     type: 'de-show-date',
     label: '时间',
     icon: 'iconfont icon-shijian',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '30002',
+    component: 'de-frame',
+    type: 'de-frame',
+    label: '网页',
+    icon: 'iconfont icon-iframe',
     defaultClass: 'text-filter'
   }
 ]
@@ -163,9 +209,7 @@ const list = [
       letterSpacing: 0,
       textAlign: 'center',
       color: '#000000',
-      verticalAlign: 'middle',
-      backgroundColor: '#ffffff',
-      borderRadius: 0
+      verticalAlign: 'middle'
     },
     hyperlinks: HYPERLINKS,
     x: 1,
@@ -210,8 +254,7 @@ const list = [
     mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 300,
-      height: 200,
-      borderRadius: ''
+      height: 200
     },
     x: 1,
     y: 1,
@@ -251,9 +294,7 @@ const list = [
       height: 200,
       borderStyle: 'solid',
       borderWidth: 0,
-      borderColor: '#000000',
-      backgroundColor: '#ffffff',
-      borderRadius: 0
+      borderColor: '#000000'
     },
     x: 1,
     y: 1,
@@ -272,8 +313,7 @@ const list = [
     mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 300,
-      height: 200,
-      borderRadius: ''
+      height: 200
     },
     x: 1,
     y: 36,
@@ -296,9 +336,7 @@ const list = [
       height: 200,
       borderStyle: 'solid',
       borderWidth: 0,
-      borderColor: '#000000',
-      backgroundColor: '#ffffff',
-      borderRadius: 0
+      borderColor: '#000000'
     },
     options: {
       tabList: [{
@@ -332,10 +370,8 @@ const list = [
       textAlign: 'center',
       color: '#000000',
       verticalAlign: 'middle',
-      backgroundColor: '#ffffff',
       borderStyle: 'solid',
       borderColor: '#000000',
-      borderRadius: 0,
       time_margin: 0,
       padding: 10
     },
@@ -354,6 +390,26 @@ const list = [
     miniSizey: 1
   },
   {
+    id: '30002',
+    component: 'de-frame',
+    type: 'de-frame',
+    label: '',
+    icon: 'iconfont icon-iframe',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 400,
+      height: 200
+    },
+    frameLinks: FRAMELINKS,
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
     id: '20001',
     component: 'picture-add',
     type: 'picture-add',
@@ -364,8 +420,7 @@ const list = [
     hyperlinks: HYPERLINKS,
     style: {
       width: 400,
-      height: 200,
-      borderRadius: ''
+      height: 200
     },
     x: 1,
     y: 1,
@@ -384,10 +439,29 @@ const list = [
     mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 400,
-      height: 200,
-      borderRadius: ''
+      height: 200
     },
     videoLinks: VIDEOLINKS,
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '20003',
+    component: 'de-stream-media',
+    type: 'de-stream-media',
+    label: '',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 400,
+      height: 200
+    },
+    streamMediaLinks: STREAMMEDIALINKS,
     x: 1,
     y: 1,
     sizex: 10,

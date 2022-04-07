@@ -1,11 +1,17 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
-    <de-aside-container style="padding: 0 0;">
-      <ds-tree ref="dsTree" :datasource="datasource" @switch-main="switchMain"/>
+    <de-aside-container style="padding: 0 0;" type="datasource">
+      <ds-tree ref="dsTree" :datasource="datasource" @switch-main="switchMain" />
     </de-aside-container>
     <de-main-container>
-      <component :is="component" v-if="!!component" :params="param" :tData="tData" @refresh-type="refreshType"
-                 @switch-component="switchMain"/>
+      <component
+        :is="component"
+        v-if="!!component"
+        :params="param"
+        :t-data="tData"
+        @refresh-type="refreshType"
+        @switch-component="switchMain"
+      />
     </de-main-container>
   </de-container>
 </template>
@@ -20,7 +26,7 @@ import DataHome from './DataHome'
 
 export default {
   name: 'DsMain',
-  components: {DeMainContainer, DeContainer, DeAsideContainer, DsTree, DataHome},
+  components: { DeMainContainer, DeContainer, DeAsideContainer, DsTree, DataHome },
   data() {
     return {
       component: DataHome,
@@ -37,7 +43,7 @@ export default {
   methods: {
     // 切换main区内容
     switchMain(param) {
-      const {component, componentParam, tData} = param
+      const { component, componentParam, tData } = param
       this.component = DataHome
       this.param = null
       this.$nextTick(() => {
@@ -55,7 +61,7 @@ export default {
       })
     },
     refreshType(datasource) {
-      this.datasource = datasource;
+      this.datasource = datasource
       this.$refs.dsTree && this.$refs.dsTree.refreshType(datasource)
     },
     msg2Current(sourceParam) {

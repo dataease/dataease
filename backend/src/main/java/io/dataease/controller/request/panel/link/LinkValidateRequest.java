@@ -8,5 +8,5 @@ import java.io.Serializable;
 public class LinkValidateRequest implements Serializable {
 
     private String link;
-    private Long user;
+    private String user;
 }

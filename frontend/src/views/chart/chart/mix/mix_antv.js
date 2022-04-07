@@ -43,7 +43,7 @@ export function baseMixOptionAntV(plot, container, chart, action) {
     const o = {
       type: '',
       options: {
-        color: colors[i % 9],
+        color: colors[i % colors.length],
         data: d.data,
         xField: 'field',
         yField: 'value',

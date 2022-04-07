@@ -13,7 +13,7 @@
         </el-button>
       </el-row>
     </el-row>
-    <el-divider />
+    <el-divider/>
     <el-row>
       <el-form :inline="true">
         <el-form-item class="form-item">
@@ -28,15 +28,16 @@
         </el-form-item>
         <el-form-item class="form-item">
           <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
-            <el-option :label="$t('dataset.direct_connect')" value="0" />
-            <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning || selectedDatasource.type==='es' || selectedDatasource.type==='ck' || selectedDatasource.type==='mongo' || selectedDatasource.type==='redshift' || selectedDatasource.type==='hive'" />
+            <el-option :label="$t('dataset.direct_connect')" value="0"/>
+            <el-option :label="$t('dataset.sync_data')" value="1"
+                       :disabled="disabledSync"/>
           </el-select>
         </el-form-item>
 
         <el-form-item v-if="mode === '1'" class="form-item">
           <el-select v-model="syncType" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
-            <el-option :label="$t('dataset.sync_now')" value="sync_now" />
-            <el-option :label="$t('dataset.sync_latter')" value="sync_latter" />
+            <el-option :label="$t('dataset.sync_now')" value="sync_now"/>
+            <el-option :label="$t('dataset.sync_latter')" value="sync_latter"/>
           </el-select>
         </el-form-item>
 
@@ -53,12 +54,14 @@
     </el-row>
     <el-col style="overflow-y: auto;">
       <el-checkbox-group v-model="checkTableList" size="small">
-        <el-tooltip v-for="t in tableData" :key="t.name" :disabled="t.enableCheck" effect="dark" :content="$t('dataset.table_already_add_to')+': '+t.datasetPath" placement="bottom">
+        <el-tooltip v-for="t in tableData" :key="t.name" :disabled="t.enableCheck" effect="dark"
+                    :content="$t('dataset.table_already_add_to')+': '+t.datasetPath" placement="bottom">
           <el-checkbox
             border
             :label="t.name"
             :disabled="!t.enableCheck"
-          >{{ showTableNameWithComment(t) }}</el-checkbox>
+          >{{ showTableNameWithComment(t) }}
+          </el-checkbox>
         </el-tooltip>
       </el-checkbox-group>
     </el-col>
@@ -66,7 +69,8 @@
 </template>
 
 <script>
-import { listDatasource, post, isKettleRunning } from '@/api/dataset/dataset'
+import {listDatasource, post, isKettleRunning, disabledSyncDs} from '@/api/dataset/dataset'
+import {engineMode} from "@/api/system/engine";
 
 export default {
   name: 'AddDB',
@@ -87,13 +91,16 @@ export default {
       syncType: 'sync_now',
       tableData: [],
       kettleRunning: false,
-      selectedDatasource: {}
+      selectedDatasource: {},
+      engineMode: 'local',
+      disabledSync: true,
+      disabledSyncDs: disabledSyncDs
     }
   },
   watch: {
     dataSource(val) {
       if (val) {
-        post('/datasource/getTables', { id: val }).then(response => {
+        post('/datasource/getTables/' + val, {}).then(response => {
           this.tables = response.data
           this.tableData = JSON.parse(JSON.stringify(this.tables))
         })
@@ -101,13 +108,20 @@ export default {
           if (this.options[i].id === val) {
             this.selectedDatasource = this.options[i]
             this.mode = '0'
+            if (this.engineMode === 'simple' || (!this.kettleRunning || this.disabledSyncDs.indexOf(this.selectedDatasource.type) !== -1 )) {
+              this.disabledSync = true
+            } else {
+              this.disabledSync = false
+            }
           }
         }
       }
     },
     searchTable(val) {
       if (val && val !== '') {
-        this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) })))
+        this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => {
+          return ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase())
+        })))
       } else {
         this.tableData = JSON.parse(JSON.stringify(this.tables))
       }
@@ -121,6 +135,9 @@ export default {
   },
   created() {
     this.kettleState()
+    engineMode().then(res => {
+      this.engineMode = res.data
+    })
   },
   methods: {
     initDataSource() {
@@ -152,7 +169,7 @@ export default {
       const tables = []
       const mode = this.mode
       const syncType = this.syncType
-      this.checkTableList.forEach(function(name) {
+      this.checkTableList.forEach(function (name) {
         tables.push({
           name: ds.name + '_' + name,
           sceneId: sceneId,
@@ -160,7 +177,7 @@ export default {
           type: 'db',
           syncType: syncType,
           mode: parseInt(mode),
-          info: JSON.stringify({ table: name })
+          info: JSON.stringify({table: name})
         })
       })
       post('/dataset/table/batchAdd', tables).then(response => {
@@ -171,7 +188,7 @@ export default {
 
     cancel() {
       this.dataReset()
-      this.$emit('switchComponent', { name: '' })
+      this.$emit('switchComponent', {name: ''})
     },
 
     dataReset() {
@@ -187,25 +204,25 @@ export default {
 </script>
 
 <style scoped>
-  .el-divider--horizontal {
-    margin: 12px 0;
-  }
+.el-divider--horizontal {
+  margin: 12px 0;
+}
 
-  .form-item {
-    margin-bottom: 6px;
-  }
+.form-item {
+  margin-bottom: 6px;
+}
 
-  .el-checkbox {
-    margin-bottom: 14px;
-    margin-left: 0;
-    margin-right: 14px;
-  }
+.el-checkbox {
+  margin-bottom: 14px;
+  margin-left: 0;
+  margin-right: 14px;
+}
 
-  .el-checkbox.is-bordered + .el-checkbox.is-bordered {
-    margin-left: 0;
-  }
+.el-checkbox.is-bordered + .el-checkbox.is-bordered {
+  margin-left: 0;
+}
 
-  span{
-    font-size: 14px;
-  }
+span {
+  font-size: 14px;
+}
 </style>

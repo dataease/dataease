@@ -48,7 +48,7 @@ export default {
     privileges: {
       type: String,
       required: false,
-      default: 'use'
+      default: null
     },
     clearEmptyDir: {
       type: Boolean,

@@ -136,6 +136,10 @@ public class PanelLinkService {
         PanelLinkExample example = new PanelLinkExample();
         example.createCriteria().andResourceIdEqualTo(resourceId);
         mapper.deleteByExample(example);
+
+        PanelLinkMappingExample mappingExample = new PanelLinkMappingExample();
+        mappingExample.createCriteria().andResourceIdEqualTo(resourceId);
+        panelLinkMappingMapper.deleteByExample(mappingExample);
     }
 
     public String decryptParam(String text) throws Exception {
@@ -155,7 +159,7 @@ public class PanelLinkService {
     private String buildLinkParam(PanelLink link) {
         String linkParam = encrypt(link.getResourceId());
         if (link.getUserId() != null) {
-            linkParam = linkParam + USERPARAM + link.getUserId().toString();
+            linkParam = linkParam + USERPARAM + encrypt(link.getUserId().toString());
         }
         return linkParam;
     }

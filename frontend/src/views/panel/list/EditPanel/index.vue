@@ -2,13 +2,13 @@
   <el-row v-loading="loading">
     <el-row v-if="editPanel.optType==='new' && editPanel.panelInfo.nodeType==='panel'">
       <el-col :span="18" style="height: 40px">
-        <el-radio v-model="inputType" label="self"> {{ $t('panel.custom') }}</el-radio>
-        <!--        <el-radio v-model="inputType" label="import">{{ $t('panel.import_template') }}  </el-radio>-->
-        <el-radio v-model="inputType" label="copy" @click.native="getTree">{{ $t('panel.copy_template') }}  </el-radio>
+        <el-radio v-model="inputType" label="new"> {{ $t('panel.custom') }}</el-radio>
+        <el-radio v-model="inputType" label="new_outer_template">{{ $t('panel.import_template') }}  </el-radio>
+        <el-radio v-model="inputType" label="new_inner_template" @click.native="getTree">{{ $t('panel.copy_template') }}  </el-radio>
       </el-col>
-      <el-col v-if="inputType==='import'" :span="6">
+      <el-col v-if="inputType==='new_outer_template'" :span="6">
         <el-button class="el-icon-upload" size="small" type="primary" @click="goFile">{{ $t('panel.upload_template') }}</el-button>
-        <input id="input" ref="files" type="file" accept=".DE" hidden @change="handleFileChange">
+        <input id="input" ref="files" type="file" accept=".DET" hidden @change="handleFileChange">
       </el-col>
     </el-row>
     <el-row style="margin-top: 5px">
@@ -17,13 +17,13 @@
         <el-input v-model="editPanel.panelInfo.name" clearable size="mini" />
       </el-col>
     </el-row>
-    <el-row v-if="inputType==='copy'" class="preview">
+    <el-row v-if="inputType==='new_inner_template'" class="preview">
       <el-col :span="8" style="height:100%;overflow-y: auto">
         <template-all-list :template-list="templateList" @showCurrentTemplateInfo="showCurrentTemplateInfo" />
       </el-col>
       <el-col :span="16" :style="classBackground" class="preview-show" />
     </el-row>
-    <!--    <el-row v-if="inputType==='import'" class="preview" :style="classBackground" />-->
+        <el-row v-if="inputType==='new_outer_template'" class="preview" :style="classBackground" />
     <el-row class="root-class">
       <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
       <el-button type="primary" size="mini" @click="save()">{{ $t('commons.confirm') }}</el-button>
@@ -48,7 +48,7 @@ export default {
   data() {
     return {
       loading: false,
-      inputType: 'self',
+      inputType: 'new',
       fieldName: 'name',
       tableRadio: null,
       keyWordSearch: '',
@@ -73,13 +73,14 @@ export default {
   },
   watch: {
     inputType(newVal) {
-      if (newVal === 'self') {
+      if (newVal === 'new') {
         this.editPanel = deepCopy(this.editPanelOut)
       } else {
         this.editPanel.panelInfo.name = null
         this.editPanel.panelInfo.panelStyle = null
         this.editPanel.panelInfo.panelData = null
         this.importTemplateInfo.snapshot = null
+        this.editPanel.panelInfo.templateId = null
       }
     }
   },
@@ -107,9 +108,10 @@ export default {
       document.removeEventListener('keypress', this.entryKey)
     },
     showCurrentTemplateInfo(data) {
+      this.editPanel.panelInfo.templateId = data.id
       this.editPanel.panelInfo.name = data.name
-      this.editPanel.panelInfo.panelStyle = data.templateStyle
-      this.editPanel.panelInfo.panelData = data.templateData
+      // this.editPanel.panelInfo.panelStyle = data.templateStyle
+      // this.editPanel.panelInfo.panelData = data.templateData
       this.importTemplateInfo.snapshot = data.snapshot
     },
     getTree() {
@@ -139,17 +141,22 @@ export default {
         return false
       }
 
-      if (!this.editPanel.panelInfo.panelData && this.editPanel.optType === 'new' && this.inputType === 'copy') {
+      if (!this.editPanel.panelInfo.templateId && this.editPanel.optType === 'new' && this.inputType === 'new_inner_template') {
         this.$warning(this.$t('chart.template_can_not_empty'))
         return false
       }
+      this.editPanel.panelInfo['newFrom'] = this.inputType
+      this.loading = true
       panelSave(this.editPanel.panelInfo).then(response => {
         this.$message({
           message: this.$t('commons.save_success'),
           type: 'success',
           showClose: true
         })
+        this.loading = false
         this.$emit('closeEditPanelDialog', response.data)
+      }).catch(() => {
+        this.loading = false
       })
     },
     handleFileChange(e) {
@@ -161,6 +168,7 @@ export default {
         this.editPanel.panelInfo.name = this.importTemplateInfo.name
         this.editPanel.panelInfo.panelStyle = this.importTemplateInfo.panelStyle
         this.editPanel.panelInfo.panelData = this.importTemplateInfo.panelData
+        this.editPanel.panelInfo.dynamicData = this.importTemplateInfo.dynamicData
       }
       reader.readAsText(file)
     },

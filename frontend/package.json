@@ -1,6 +1,6 @@
 {
   "name": "dataease",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "dataease front",
   "private": true,
   "scripts": {
@@ -13,8 +13,9 @@
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
   },
   "dependencies": {
-    "@antv/g2plot": "^2.3.32",
-    "@antv/s2": "^1.7.0",
+    "@antv/g2plot": "^2.4.9",
+    "@antv/s2": "^1.11.0",
+    "@antv/util": "^2.0.17",
     "@riophae/vue-treeselect": "0.4.0",
     "@tinymce/tinymce-vue": "^3.2.8",
     "axios": "^0.21.1",
@@ -26,6 +27,7 @@
     "file-save": "^0.2.0",
     "file-saver": "^2.0.5",
     "fit2cloud-ui": "1.5.4",
+    "flv.js": "^1.6.2",
     "html2canvasde": "^v1.1.4-de",
     "jquery": "^3.1.1",
     "js-base64": "^3.7.2",
@@ -53,6 +55,7 @@
     "vue-axios": "3.2.4",
     "vue-clipboard2": "0.3.1",
     "vue-codemirror": "^4.0.6",
+    "vue-friendly-iframe": "^0.20.0",
     "vue-fullscreen": "^2.5.2",
     "vue-i18n": "7.3.2",
     "vue-proportion-directive": "^1.1.0",

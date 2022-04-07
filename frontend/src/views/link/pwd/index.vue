@@ -60,7 +60,8 @@ export default {
           { required: true, message: this.$t('pblink.key_pwd'), trigger: 'blur' },
           {
             required: true,
-            pattern: /^\d{4}$/,
+            /* pattern: /^\d{4}$/, */
+            pattern: /^[a-zA-Z0-9]{4}$/,
             message: this.$t('pblink.pwd_format_error'),
             trigger: 'blur'
           }
@@ -92,7 +93,7 @@ export default {
       this.msg = null
       this.$refs.pwdForm.validate(valid => {
         if (!valid) return false
-        const param = this.user ? {password: this.form.password, resourceId: this.resourceId, user: this.user} : {password: this.form.password, resourceId: this.resourceId}
+        const param = this.user ? { password: this.form.password, resourceId: this.resourceId, user: this.user } : { password: this.form.password, resourceId: this.resourceId }
         validatePwd(param).then(res => {
           if (!res.data) {
             this.msg = this.$t('pblink.pwd_error')

@@ -10,6 +10,7 @@ import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.service.dataset.DataSetGroupService;
 import io.dataease.service.dataset.ExtractDataService;
+import io.dataease.service.kettle.KettleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.Logical;
@@ -31,7 +32,7 @@ public class DataSetGroupController {
     @Resource
     private DataSetGroupService dataSetGroupService;
     @Resource
-    private ExtractDataService extractDataService;
+    private KettleService kettleService;
 
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id"),
@@ -39,7 +40,7 @@ public class DataSetGroupController {
     }, logical = Logical.AND)
     @ApiOperation("保存")
     @PostMapping("/save")
-    public DataSetGroupDTO save(@RequestBody DatasetGroup datasetGroup) {
+    public DataSetGroupDTO save(@RequestBody DatasetGroup datasetGroup) throws Exception {
         return dataSetGroupService.save(datasetGroup);
     }
 
@@ -71,6 +72,6 @@ public class DataSetGroupController {
     @ApiIgnore
     @PostMapping("/isKettleRunning")
     public boolean isKettleRunning() {
-        return extractDataService.isKettleRunning();
+        return kettleService.isKettleRunning();
     }
 }

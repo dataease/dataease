@@ -279,7 +279,7 @@ export default {
     id: 'ID',
     millisecond: '毫秒',
     cannot_be_null: '不能为空',
-    required: '{0}是必填的',
+    required: '必填',
     already_exists: '名称不能重复',
     modifier: '修改人',
     validate: '校验',
@@ -576,6 +576,7 @@ export default {
     secret: '请输入Secret',
     scope: '请输入scope',
     redirectUrl: '请输入redirectUrl',
+    input_mapping: '請輸入OIDC屬性映射',
     open: '启用OIDC认证'
   },
   role: {
@@ -650,9 +651,12 @@ export default {
     port: '端口号不能为空',
     account: '账户不能为空',
     test_recipients: '测试收件人',
-    tip: '提示：仅用来作为测试邮件收件人'
+    tip: '提示：仅用来作为测试邮件收件人',
+    engine_mode_setting: '引擎设置',
+    kettle_setting: 'Kettle 设置'
   },
   chart: {
+    title_repeat: '当前标题已存在',
     save_snapshot: '保存缩略图',
     datalist: '视图',
     add_group: '添加分组',
@@ -896,6 +900,8 @@ export default {
     filter_value_can_null: '过滤值不能为空',
     filter_like: '包含',
     filter_not_like: '不包含',
+    filter_in: '属于',
+    filter_not_in: '不属于',
     color_light: '明亮',
     color_classical: '经典',
     color_fresh: '清新',
@@ -1032,7 +1038,36 @@ export default {
     table_item_align: '表格对齐方式',
     table_align_left: '左对齐',
     table_align_center: '居中',
-    table_align_right: '右对齐'
+    table_align_right: '右对齐',
+    draw_back: '收回',
+    senior: '高级',
+    senior_cfg: '高级设置',
+    function_cfg: '功能设置',
+    analyse_cfg: '分析预警',
+    slider: '缩略轴',
+    slider_range: '默认范围',
+    chart_no_senior: '当前图表类型暂无高级配置，敬请期待',
+    assist_line: '辅助线',
+    field_fixed: '固定值',
+    line_type_dotted: '点',
+    value_can_not_empty: '值不能为空',
+    value_error: '值必须为数值',
+    threshold: '阈值',
+    threshold_range: '阈值区间',
+    gauge_threshold_format_error: '格式错误',
+    total_cfg: '总计配置',
+    col_cfg: '列汇总',
+    row_cfg: '行汇总',
+    total_show: '总计',
+    total_position: '位置',
+    total_label: '别名',
+    sub_total_show: '小计',
+    total_pos_top: '顶部',
+    total_pos_bottom: '底部',
+    total_pos_left: '左侧',
+    total_pos_right: '右侧',
+    chart_label: '文本卡',
+    drag_block_label: '标签'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1271,6 +1306,9 @@ export default {
     user_name: '用户名',
     password: '密码',
     host: '主机名/IP地址',
+    doris_host: 'Doris 地址',
+    query_port: 'Query Port',
+    http_port: 'Http Port',
     port: '端口',
     datasource_url: '地址',
     please_input_datasource_url: '请输入 Elasticsearch 地址，如: http://es_host:es_port',
@@ -1302,6 +1340,10 @@ export default {
     initial_pool_size: '初始连接数',
     min_pool_size: '最小连接数',
     max_pool_size: '最大连接数',
+    bucket_num: 'Bucket 数量',
+    replication_num: '副本数量',
+    please_input_bucket_num: '请输入 Bucket 数量',
+    please_input_replication_num: '请输入副本数量',
     max_idle_time: '最大空闲(秒)',
     acquire_increment: '增长数',
     connect_timeout: '连接超时(秒)',
@@ -1354,12 +1396,35 @@ export default {
   },
   pblink: {
     key_pwd: '请输入密码打开链接',
-    input_placeholder: '请输入4位数字密码',
+    input_placeholder: '请输入4位数字或字母',
     pwd_error: '密码错误',
-    pwd_format_error: '请输入4位数字密码',
+    pwd_format_error: '请输入4位数字或字母',
     sure_bt: '确定'
   },
   panel: {
+    is_live: '是否直播',
+    yes: '是',
+    no: '否',
+    live_tips: '优先HTTPS链接',
+    stream_media_add_tips: '请点击添加配置流媒体信息...',
+    json_params_error: '第三方参数解析失败，请检查参数格式是否正确',
+    inner_padding: '内边距',
+    board_radio: '边框半径',
+    background: '背景',
+    component_style: '组件样式',
+    web_set_tips: '部分网站可能设置不允许嵌入而无法显示',
+    repeat_params: '存在名称重复的参数',
+    enable_outer_param_set: '启用外部参数设置',
+    select_param: '请选择参数...',
+    add_param_link_field: '添加参数联动字段',
+    add_param: '添加参数',
+    enable_param: '启用参数',
+    param_name: '参数名称',
+    outer_param_set: '外部参数设置',
+    input_param_name: '请输入参数名称',
+    params_setting: '外部参数设置',
+    template_view_tips: '当前是模板视图,请点击更换数据集',
+    edit_web_tips: '编辑状态不可操作网页内部',
     no_auth_role: '未分享角色',
     auth_role: '已分享角色',
     picture_limit: '只能插入图片',
@@ -1560,7 +1625,9 @@ export default {
     play_once: '播放一次',
     play_circle: '循环播放',
     video_links: '视频链接',
+    web_url: '网页地址',
     video_add_tips: '请点击添加配置视频信息...',
+    web_add_tips: '请点击添加网页信息...',
     panel_view_result_show: '视图结果展示',
     panel_view_result_tips: '选择仪表板会覆盖视图的结果展示数量，取值范围1~10000',
     timeout_refresh: '请求超时，稍后刷新...',
@@ -1573,7 +1640,8 @@ export default {
     choose_background: '选择组件背景',
     choose_background_tips: '组件自有的背景设置会覆盖当前设置',
     setting_background: '设置背景',
-    setting_jump: '跳转设置'
+    setting_jump: '跳转设置',
+    select_view: '请选择视图...'
   },
   plugin: {
     local_install: '本地安装',
@@ -1586,9 +1654,11 @@ export default {
     creator: '作者',
     install_time: '安装时间',
     release_time: '时间',
-    un_install: '卸载',
+    un_install: '卸载(卸载并重启服务后生效)',
     uninstall_confirm: '确定卸载该插件',
-    uninstall_cancel: '取消卸载插件'
+    uninstall_cancel: '取消卸载插件',
+    un_install_success: '卸载成功，重启生效',
+    un_install_error: '卸载失败，请联系管理员'
   },
   display: {
     logo: '头部系统logo',
@@ -1609,7 +1679,8 @@ export default {
     themeLight: '浅色',
     themeDark: '深色',
     themeCustom: '自定义',
-    openHomePage: '显示首页'
+    openHomePage: '显示首页',
+    mobileBG: '移动端登录页背景'
 
   },
   auth: {
@@ -1619,6 +1690,15 @@ export default {
     dept: '组织',
     role: '角色',
     user: '用户',
+    sysParams: '系统变量',
+    sysParams_type: {
+      user_id: '用户ID',
+      user_name: '用户名',
+      user_source: '用户来源',
+      user_email: '邮箱',
+      dept: '组织',
+      role: '角色'
+    },
     linkAuth: '数据源',
     datasetAuth: '数据集',
     chartAuth: '视图',
@@ -1903,5 +1983,13 @@ export default {
     email: '邮箱：',
     tel: '电话：',
     web: '网址：'
+  },
+  kettle: {
+    add: '添加 Kettle 服务',
+    status: '状态',
+    carte: 'Kettle 地址',
+    port: '端口',
+    user: '用户名',
+    passwd: '密码'
   }
 }

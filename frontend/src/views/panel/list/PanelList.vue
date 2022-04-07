@@ -39,9 +39,10 @@
             <span slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span>
-                  <svg-icon icon-class="panel" class="ds-icon-scene" />
+                  <svg-icon v-if="!data.mobileLayout" icon-class="panel" class="ds-icon-scene" />
+                  <svg-icon v-if="data.mobileLayout" icon-class="panel-mobile" class="ds-icon-scene" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span style="margin-left: 12px;" class="child" @click.stop>
                 <el-dropdown v-if="hasDataPermission('manage',data.privileges)" trigger="click" size="small" @command="clickMore">
@@ -90,12 +91,13 @@
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
               <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span v-if="data.nodeType === 'panel'">
-                  <svg-icon icon-class="panel" class="ds-icon-scene" />
+                  <svg-icon v-if="!data.mobileLayout" icon-class="panel" class="ds-icon-scene" />
+                  <svg-icon v-if="data.mobileLayout" icon-class="panel-mobile" class="ds-icon-scene" />
                 </span>
                 <span v-if="data.nodeType === 'folder'">
                   <i class="el-icon-folder" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)" class="child">
                 <span v-if="data.nodeType ==='folder'" @click.stop>
@@ -688,9 +690,6 @@ export default {
       this.$store.commit('refreshSnapshot')
       this.$store.commit('setComponentData', [])
       this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
-      // 清空临时画布数据
-      this.$store.dispatch('panel/setComponentDataTemp', null)
-      this.$store.dispatch('panel/setCanvasStyleDataTemp', null)
       this.$store.dispatch('panel/setPanelInfo', data)
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },

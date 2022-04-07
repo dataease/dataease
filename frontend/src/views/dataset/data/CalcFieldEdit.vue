@@ -126,7 +126,7 @@
                 <br>
                 如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])
                 <br>
-                非直连模式数据集，使用Doris数据库函数，可参考Doris官网 http://doris.apache.org/master/zh-CN/
+                非直连模式数据集，使用Doris数据库函数，可参考Doris官网 https://doris.apache.org/zh-CN/
               </div>
               <i class="el-icon-info" style="cursor: pointer;" />
             </el-tooltip>

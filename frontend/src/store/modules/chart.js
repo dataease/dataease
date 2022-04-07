@@ -3,7 +3,7 @@ const getDefaultState = () => {
     sceneData: {},
     table: {},
     sceneId: {},
-    viewId: {},
+    viewId: null,
     tableId: {},
     chartSceneData: {}
   }

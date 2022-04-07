@@ -1,10 +1,12 @@
 import request from '@/utils/request'
+import store from '@/store'
+import { queryPanelComponents } from '@/api/panel/panel'
 
-export function post(url, data) {
+export function post(url, data, loading = false) {
   return request({
     url: url,
     method: 'post',
-    loading: true,
+    loading: loading,
     data
   })
 }
@@ -13,7 +15,7 @@ export function getChartTree(data) {
   return request({
     url: 'api',
     method: 'post',
-    loading: true,
+    loading: false,
     data
   })
 }
@@ -38,7 +40,7 @@ export function searchAdviceSceneId(panelId) {
   return request({
     url: '/chart/view/searchAdviceSceneId/' + panelId,
     method: 'get',
-    loading: true
+    loading: false
   })
 }
 
@@ -54,7 +56,7 @@ export function ajaxGetDataOnly(id, panelId, data) {
   return request({
     url: '/chart/view/getData/' + id + '/' + panelId,
     method: 'post',
-    loading: true,
+    loading: false,
     hideMsg: true,
     data
   })
@@ -75,3 +77,43 @@ export function deleteCircle(id) {
   })
 }
 
+export function getChartDetails(id, panelId, data) {
+  return request({
+    url: '/chart/view/get/' + id + '/' + panelId,
+    method: 'post',
+    loading: false,
+    data
+  })
+}
+
+export function save2Cache(panelId, data) {
+  return request({
+    url: '/chart/view/save2Cache/' + panelId,
+    method: 'post',
+    loading: false,
+    data
+  })
+}
+
+export function resetViewCacheCallBack(viewId, panelId, callback) {
+  // 加载仪表板组件视图数据
+  resetViewCache(viewId, panelId).then(rep => {
+    callback(rep)
+  })
+}
+export function resetViewCache(viewId, panelId) {
+  return request({
+    url: '/chart/view/resetViewCache/' + viewId + '/' + panelId,
+    method: 'post',
+    loading: false
+  })
+}
+
+export function checkTitle(data) {
+  return request({
+    url: '/chart/view/checkTitle',
+    method: 'post',
+    data: data,
+    loading: false
+  })
+}

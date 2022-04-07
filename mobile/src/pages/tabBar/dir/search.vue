@@ -43,9 +43,12 @@ export default {
 			timer: null
 		};
 	},
-	onLoad() {
+	onLoad() {		
 		// 本示例用的是高德 sdk ，请根据具体需求换成自己的服务器接口。
 		this.amapPlugin = util.mapInit();
+		this.historyList = uni.getStorageSync('search:history');		
+	},
+	created() {
 		this.historyList = uni.getStorageSync('search:history');
 	},
 	methods: {
@@ -101,8 +104,10 @@ export default {
             const param = {
                 id: node.id,
                 title: node.text,
-                index: 4
+                index: 4,
+                userId: node.userId
             }
+			this.isHistory= false
             if(node.type === 'panel') {
                 
                 uni.navigateTo({

@@ -17,7 +17,7 @@
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
           <field-error-tips v-if="tagType === 'danger'" />
           <span v-if="chart.type !== 'table-info' && item.summary" class="summary-span">
-            {{ $t('chart.' + item.summary) }}<span v-if="item.compareCalc && item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
+            {{ $t('chart.' + item.summary) }}<span v-if="false && item.compareCalc && item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
           </span>
           <i class="el-icon-arrow-down el-icon--right" style="position: absolute;top: 6px;right: 10px;" />
         </el-tag>
@@ -148,7 +148,7 @@ export default {
     return {
       compareItem: compareItem,
       disableEditCompare: false,
-      tagType: getItemType(this.dimensionData, this.quotaData, this.item)
+      tagType: 'success'
     }
   },
   watch: {
@@ -173,12 +173,17 @@ export default {
       }
     },
     isEnableCompare() {
-      const xAxis = JSON.parse(this.chart.xaxis)
+      let xAxis = null
+      if (Object.prototype.toString.call(this.chart.xaxis) === '[object Array]') {
+        xAxis = JSON.parse(JSON.stringify(this.chart.xaxis))
+      } else {
+        xAxis = JSON.parse(this.chart.xaxis)
+      }
       const t1 = xAxis.filter(ele => {
         return ele.deType === 1
       })
       // 暂时只支持类别轴/维度的时间类型字段
-      if (t1.length > 0 && this.chart.type !== 'text' && this.chart.type !== 'gauge' && this.chart.type !== 'liquid') {
+      if (t1.length > 0 && this.chart.type !== 'text' && this.chart.type !== 'label' && this.chart.type !== 'gauge' && this.chart.type !== 'liquid') {
         this.disableEditCompare = false
       } else {
         this.disableEditCompare = true

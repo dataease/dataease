@@ -1,5 +1,5 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { componentStyle } from '../common/common'
+import { componentStyle, seniorCfg } from '../common/common'
 
 export function baseLineOption(chart_option, chart) {
   // 处理shape attr
@@ -25,7 +25,7 @@ export function baseLineOption(chart_option, chart) {
       const y = chart.data.series[i]
       // color
       y.itemStyle = {
-        color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha)
+        color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
       }
       // size
       if (customAttr.size) {
@@ -55,6 +55,7 @@ export function baseLineOption(chart_option, chart) {
   }
   // console.log(chart_option);
   componentStyle(chart_option, chart)
+  seniorCfg(chart_option, chart)
   return chart_option
 }
 

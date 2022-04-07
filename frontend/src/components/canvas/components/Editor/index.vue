@@ -57,6 +57,7 @@
       @linkJumpSet="linkJumpSet(item)"
       @boardSet="boardSet(item)"
       @canvasDragging="canvasDragging"
+      @editComponent="editComponent(index,item)"
     >
       <component
         :is="item.component"
@@ -178,7 +179,7 @@
       :destroy-on-close="true"
       :append-to-body="true"
     >
-      <background />
+      <background v-if="boardSetVisible" @backgroundSetClose="backgroundSetClose" />
     </el-dialog>
   </div>
 </template>
@@ -1024,14 +1025,15 @@ export default {
         _this.positionBoxInfoArray = positionBox
       }, 500)
     }
-    eventBus.$on('backgroundSetClose', () => {
-      this.boardSetVisible = false
-    })
   },
   created() {
   },
   methods: {
+    backgroundSetClose() {
+      this.boardSetVisible = false
+    },
     boardSet(item) {
+      this.$emit('boardSet', item)
       this.boardSetVisible = true
     },
     changeStyleWithScale,
@@ -1269,7 +1271,6 @@ export default {
       this.timeMachine = null
     },
     openChartDetailsDialog(chartInfo) {
-      debugger
       this.showChartInfo = chartInfo.chart
       this.showChartTableInfo = chartInfo.tableChart
       this.chartDetailsVisible = true
@@ -1284,6 +1285,11 @@ export default {
     resizeView(index, item) {
       if (item.type === 'view' || item.type === 'de-show-date') {
         this.$refs.wrapperChild[index].chartResize()
+      }
+    },
+    editComponent(index, item) {
+      if (item.type === 'view') {
+        this.$refs.wrapperChild[index].editChart()
       }
     },
     handleDragOver(e) {

@@ -35,6 +35,12 @@ public class DeFileUtils {
         }
         return filename;
     }
+
+    public static void validateExist(String path) {
+        File dir = new File(path);
+        if (dir.exists()) return ;
+        dir.mkdirs();
+    }
     /**
      * 将文件名解析成文件的上传路径
      */
@@ -42,6 +48,7 @@ public class DeFileUtils {
         String name = getFileNameNoEx(file.getOriginalFilename());
         String suffix = getExtensionName(file.getOriginalFilename());
         try {
+            validateExist(filePath);
             String fileName = name  + "." + suffix;
             String path = filePath + fileName;
             // getCanonicalFile 可解析正确各种路径

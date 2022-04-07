@@ -1,5 +1,15 @@
 import { Line, Area } from '@antv/g2plot'
-import { getTheme, getLabel, getTooltip, getLegend, getXAxis, getYAxis, getPadding } from '@/views/chart/chart/common/common_antv'
+import {
+  getTheme,
+  getLabel,
+  getTooltip,
+  getLegend,
+  getXAxis,
+  getYAxis,
+  getPadding,
+  getSlider,
+  getAnalyse
+} from '@/views/chart/chart/common/common_antv'
 
 export function baseLineOptionAntV(plot, container, chart, action) {
   // theme
@@ -13,6 +23,9 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   const yAxis = getYAxis(chart)
   // data
   const data = chart.data.datas
+  // config
+  const slider = getSlider(chart)
+  const analyse = getAnalyse(chart)
   // options
   const options = {
     point: {},
@@ -27,6 +40,8 @@ export function baseLineOptionAntV(plot, container, chart, action) {
     legend: legend,
     xAxis: xAxis,
     yAxis: yAxis,
+    slider: slider,
+    annotations: analyse,
     interactions: [
       {
         type: 'element-active', cfg: {
@@ -100,6 +115,9 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
   const yAxis = getYAxis(chart)
   // data
   const data = chart.data.datas
+  // config
+  const slider = getSlider(chart)
+  const analyse = getAnalyse(chart)
   // options
   const options = {
     point: {},
@@ -114,6 +132,8 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
     legend: legend,
     xAxis: xAxis,
     yAxis: yAxis,
+    slider: slider,
+    annotations: analyse,
     interactions: [
       {
         type: 'element-active', cfg: {

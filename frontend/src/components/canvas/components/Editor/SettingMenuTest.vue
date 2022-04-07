@@ -46,9 +46,6 @@ export default {
       this.$refs.trackButton.$el.click()
     },
     edit() {
-      // 编辑时临时保存 当前修改的画布
-      this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
-      this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
       if (this.curComponent.type === 'view') {
         this.$store.dispatch('chart/setViewId', null)
         this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
@@ -126,7 +123,6 @@ export default {
       this.$store.commit('recordSnapshot')
     },
     linkageSetting() {
-      debugger
       // sourceViewId 也加入查询
       const targetViewIds = this.componentData.filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
         .map(item => item.propValue.viewId)

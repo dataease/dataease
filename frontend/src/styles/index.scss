@@ -151,6 +151,7 @@ div:focus {
 
   .el-tabs__content {
     height: calc(100% - 55px) !important;
+    margin-top: 5px;
 
     .el-tab-pane {
       height: 100% !important;
@@ -399,9 +400,9 @@ div:focus {
   height: 5px;
 }
 
-.el-color-dropdown__link-btn {
+/* .el-color-dropdown__link-btn {
   display: none !important;
-}
+} */
 
 .el-table {
   background-color: var(--TableBG) !important;
@@ -549,11 +550,11 @@ div:focus {
 }
 
 .blackTheme .el-tabs__item:not(.is-active) {
-  color: var(--TextPrimary) !important;
+  color: var(--TextPrimary);
 }
 
 .blackTheme .el-tabs__item:hover {
-  color: var(--Main) !important;
+  color: var(--Main);
 }
 
 .blackTheme:not(.in-panel) .elx-table--main-wrapper {
@@ -791,5 +792,22 @@ div:focus {
 .no-label-item {
   .el-form-item__content {
     margin-left: 10px !important;
+  }
+}
+
+.picker-color-div {
+  height: 32px;
+  margin-top: 32px;
+}
+
+
+
+.theme-input {
+  >input {
+    padding-left: 40px !important;
+  }
+
+  >span.el-input__prefix {
+    padding-top: 0px;
   }
 }

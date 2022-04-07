@@ -10,14 +10,15 @@ import io.dataease.base.mapper.DatasetTableMapper;
 import io.dataease.base.mapper.DatasourceMapper;
 import io.dataease.base.mapper.ext.ExtDataSourceMapper;
 import io.dataease.base.mapper.ext.query.GridExample;
-import io.dataease.commons.constants.DatasourceTypes;
 import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.SysAuthConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.ResultHolder;
+import io.dataease.controller.datasource.request.UpdataDsRequest;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.controller.request.datasource.DatasourceRequest;
@@ -28,11 +29,13 @@ import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.dto.datasource.*;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.datasource.ApiProvider;
 import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.service.dataset.DataSetGroupService;
 import io.dataease.service.message.DeMsgutil;
+import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,10 +59,16 @@ public class DatasourceService {
     private DataSetGroupService dataSetGroupService;
     @Resource
     private CommonThreadPool commonThreadPool;
+    @Resource
+    private SysAuthService sysAuthService;
+    private static List<String> dsTypes = Arrays.asList("TiDB", "StarRocks", "excel", "mysql", "hive", "impala", "mariadb", "ds_doris", "pg", "sqlServer", "oracle", "mongo", "ck", "db2", "es", "redshift", "api");
 
     @DeCleaner(DePermissionType.DATASOURCE)
     public Datasource addDatasource(Datasource datasource) throws Exception{
-        checkName(datasource);
+        if(!dsTypes.contains(datasource.getType())){
+            throw new Exception("Datasource type not supported.");
+        }
+        checkName(datasource.getName(),datasource.getType(), datasource.getId());
         long currentTimeMillis = System.currentTimeMillis();
         datasource.setId(UUID.randomUUID().toString());
         datasource.setUpdateTime(currentTimeMillis);
@@ -68,10 +77,11 @@ public class DatasourceService {
         checkAndUpdateDatasourceStatus(datasource);
         datasourceMapper.insertSelective(datasource);
         handleConnectionPool(datasource, "add");
+        sysAuthService.copyAuth(datasource.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASOURCE);
         return datasource;
     }
 
-    private void handleConnectionPool(Datasource datasource, String type) {
+    public void handleConnectionPool(Datasource datasource, String type) {
         commonThreadPool.addTask(() -> {
             try {
                 DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
@@ -94,7 +104,7 @@ public class DatasourceService {
                 switch (datasourceType) {
                     case mysql:
                     case mariadb:
-                    case de_doris:
+                    case engine_doris:
                     case ds_doris:
                         datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), MysqlConfiguration.class)) );
                         break;
@@ -176,12 +186,22 @@ public class DatasourceService {
         return ResultHolder.success("success");
     }
 
-    public void updateDatasource(Datasource datasource) {
-        checkName(datasource);
+    public void updateDatasource(UpdataDsRequest updataDsRequest)throws Exception{
+        if(!dsTypes.contains(updataDsRequest.getType())){
+            throw new Exception("Datasource type not supported.");
+        }
+        checkName(updataDsRequest.getName(),updataDsRequest.getType(),updataDsRequest.getId());
+        Datasource datasource = new Datasource();
+        datasource.setName(updataDsRequest.getName());
+        datasource.setDesc(updataDsRequest.getDesc());
+        datasource.setConfiguration(updataDsRequest.getConfiguration());
         datasource.setCreateTime(null);
+        datasource.setType(updataDsRequest.getType());
         datasource.setUpdateTime(System.currentTimeMillis());
         checkAndUpdateDatasourceStatus(datasource);
-        datasourceMapper.updateByPrimaryKeySelective(datasource);
+        DatasourceExample example = new DatasourceExample();
+        example.createCriteria().andIdEqualTo(updataDsRequest.getId());
+        datasourceMapper.updateByExampleSelective(datasource, example);
         handleConnectionPool(datasource, "edit");
     }
 
@@ -221,7 +241,6 @@ public class DatasourceService {
         }catch (Exception e){
             return ResultHolder.error("Datasource is invalid: " + e.getMessage());
         }
-
     }
 
     public ResultHolder validate(String datasourceId) {
@@ -272,8 +291,8 @@ public class DatasourceService {
         return datasourceProvider.getSchema(datasourceRequest);
     }
 
-    public List<DBTableDTO> getTables(Datasource datasource) throws Exception {
-        Datasource ds = datasourceMapper.selectByPrimaryKey(datasource.getId());
+    public List<DBTableDTO> getTables(String id) throws Exception {
+        Datasource ds = datasourceMapper.selectByPrimaryKey(id);
         DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
@@ -324,7 +343,6 @@ public class DatasourceService {
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
         datasources.forEach(datasource -> {
             commonThreadPool.addTask(()->{
-                System.out.println(System.currentTimeMillis());
                 try {
                     handleConnectionPool(datasource, "add");
                 } catch (Exception e) {
@@ -334,13 +352,13 @@ public class DatasourceService {
         });
     }
 
-    private void checkName(Datasource datasource) {
+    private void checkName(String datasourceName, String type, String id) {
         DatasourceExample example = new DatasourceExample();
         DatasourceExample.Criteria criteria = example.createCriteria();
-        criteria.andNameEqualTo(datasource.getName());
-        criteria.andTypeEqualTo(datasource.getType());
-        if (StringUtils.isNotEmpty(datasource.getId())) {
-            criteria.andIdNotEqualTo(datasource.getId());
+        criteria.andNameEqualTo(datasourceName);
+        criteria.andTypeEqualTo(type);
+        if (StringUtils.isNotEmpty(id)) {
+            criteria.andIdNotEqualTo(id);
         }
         if (CollectionUtils.isNotEmpty(datasourceMapper.selectByExample(example))) {
             DEException.throwException(Translator.get("i18n_ds_name_exists"));
@@ -354,47 +372,7 @@ public class DatasourceService {
 
     public ApiDefinition checkApiDatasource(ApiDefinition apiDefinition) throws Exception {
         String response = ApiProvider.execHttpRequest(apiDefinition);
-        if(StringUtils.isEmpty(response)){
-            throw new Exception("该请求返回数据为空");
-        }
-        List<LinkedHashMap> datas = new ArrayList<>();
-        try {
-            datas = JsonPath.read(response,apiDefinition.getDataPath());
-        }catch (Exception e){
-            throw new Exception("jsonPath 路径错误：" + e.getMessage());
-        }
-
-        List<JSONObject> dataList = new ArrayList<>();
-        List<DatasetTableField> fields = new ArrayList<>();
-        Set<String> fieldKeys = new HashSet<>();
-        //第一遍获取 field
-        for (LinkedHashMap data : datas) {
-            Set<String> keys = data.keySet();
-            for (String key : keys) {
-                if(!fieldKeys.contains(key)){
-                    fieldKeys.add(key);
-                    DatasetTableField tableField = new DatasetTableField();
-                    tableField.setOriginName(key);
-                    tableField.setName(key);
-                    tableField.setSize(65535);
-                    tableField.setDeExtractType(0);
-                    tableField.setDeType(0);
-                    tableField.setExtField(0);
-                    fields.add(tableField);
-                }
-            }
-        }
-        //第二遍获取 data
-        for (LinkedHashMap data : datas) {
-            JSONObject jsonObject = new JSONObject();
-            for (String key : fieldKeys) {
-                jsonObject.put(key, Optional.ofNullable(data.get(key)).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
-            }
-            dataList.add(jsonObject);
-        }
-        apiDefinition.setDatas(dataList);
-        apiDefinition.setFields(fields);
-        return apiDefinition;
+        return ApiProvider.checkApiDefinition(apiDefinition, response);
     }
 
     private void checkAndUpdateDatasourceStatus(Datasource datasource){

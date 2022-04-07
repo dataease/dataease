@@ -14,7 +14,7 @@
           <el-dropdown-item v-if="'view'===curComponent.type" icon="el-icon-link" @click.native="linkageSetting">{{ $t('panel.linkage_setting') }}</el-dropdown-item>
           <el-dropdown-item v-if="'de-tabs'===curComponent.type" icon="el-icon-link" @click.native="addTab">{{ $t('panel.add_tab') }}</el-dropdown-item>
           <el-dropdown-item v-if="'view'===curComponent.type" icon="el-icon-connection" @click.native="linkJumpSet">{{ $t('panel.setting_jump') }}</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-full-screen" @click.native="boardSet">{{ $t('panel.setting_background') }}</el-dropdown-item>
+          <el-dropdown-item icon="el-icon-magic-stick" @click.native="boardSet">{{ $t('panel.component_style') }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -46,23 +46,11 @@ export default {
   ]),
   methods: {
     edit() {
-      // 编辑时临时保存 当前修改的画布
-      this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
-      this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
-      if (this.curComponent.type === 'view') {
-        this.$store.dispatch('chart/setViewId', null)
-        this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
-        bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }})
-      }
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit')
-      }
-
-      // 编辑样式组件
-
-      if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
+      } else if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
         bus.$emit('component-dialog-style')
-      }
+      } else { bus.$emit('change_panel_right_draw', true) }
     },
     lock() {
       this.$store.commit('lock')
@@ -127,7 +115,6 @@ export default {
       this.$store.commit('recordSnapshot', 'bottomComponent')
     },
     linkageSetting() {
-      debugger
       // sourceViewId 也加入查询
       const targetViewIds = this.componentData.filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
         .map(item => item.propValue.viewId)

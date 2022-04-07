@@ -195,4 +195,16 @@ public class CodingUtil {
         }
         return shortBuffer.toString();
     }
+
+    public static Integer string2Integer(String str) {
+        StringBuffer sb = new StringBuffer();
+        if (StringUtils.isBlank(str)) return null;
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (Character.isDigit(c)) {
+                sb.append(c);
+            }
+        }
+        return sb.length() > 0 ? Integer.parseInt(sb.toString()) : null;
+    }
 }

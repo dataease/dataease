@@ -1,6 +1,6 @@
 <template>
   <div class="bar-main">
-    <div v-if="!linkageSettingStatus">
+    <div>
       <span v-if="isEdit" :title="$t('panel.edit')">
         <i class="icon iconfont icon-edit" @click.stop="edit" />
       </span>
@@ -51,12 +51,9 @@ export default {
   },
   methods: {
     edit() {
-      // 编辑时临时保存 当前修改的画布
-      this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
-      this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
       this.$store.dispatch('chart/setViewId', null)
       this.$store.dispatch('chart/setViewId', this.viewId)
-      bus.$emit('PanelSwitchComponent', { name: 'ChartEdit', param: { 'id': this.viewId, 'optType': 'edit' }})
+      bus.$emit('change_panel_right_draw', true)
     },
     linkageEdit() {
 

@@ -13,7 +13,7 @@
           </span>
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
           <field-error-tips v-if="tagType === 'danger'" />
-          <span v-if="item.deType === 1" class="summary-span">
+          <span v-if="false && item.deType === 1" class="summary-span">
             {{ $t('chart.' + item.dateStyle) }}
           </span>
           <i class="el-icon-arrow-down el-icon--right" style="position: absolute;top: 6px;right: 10px;" />
@@ -120,7 +120,7 @@ export default {
   },
   data() {
     return {
-      tagType: getItemType(this.dimensionData, this.quotaData, this.item)
+      tagType: 'success'
     }
   },
   watch: {

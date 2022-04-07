@@ -11,8 +11,9 @@ import io.dataease.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
-import io.dataease.provider.query.QueryProvider;
-import io.dataease.provider.query.SQLConstants;
+import io.dataease.plugins.common.constants.EsSqlLConstants;
+import io.dataease.provider.QueryProvider;
+import io.dataease.plugins.common.constants.SQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static io.dataease.provider.query.SQLConstants.TABLE_ALIAS_PREFIX;
+import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREFIX;
 
 @Service("esQuery")
 public class EsQueryProvider extends QueryProvider {
@@ -223,7 +224,11 @@ public class EsQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == DeTypeConstants.DE_TIME) {
                     originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    if (x.getDeType() == 2 || x.getDeType() == 3) {
+                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "bigint");
+                    } else {
+                        originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -252,7 +257,11 @@ public class EsQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == DeTypeConstants.DE_TIME) {
                     originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    if (y.getDeType() == 2 || y.getDeType() == 3) {
+                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName()), "bigint");
+                    } else {
+                        originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -332,7 +341,11 @@ public class EsQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
                     originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    if (x.getDeType() == 2 || x.getDeType() == 3) {
+                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "bigint");
+                    } else {
+                        originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -408,7 +421,11 @@ public class EsQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == DeTypeConstants.DE_TIME) {
                     originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    if (x.getDeType() == 2 || x.getDeType() == 3) {
+                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "bigint");
+                    } else {
+                        originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -437,7 +454,11 @@ public class EsQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == DeTypeConstants.DE_TIME) {
                     originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    if (y.getDeType() == 2 || y.getDeType() == 3) {
+                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName()), "bigint");
+                    } else {
+                        originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -516,7 +537,11 @@ public class EsQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
                     originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
-                    originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    if (x.getDeType() == 2 || x.getDeType() == 3) {
+                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "bigint");
+                    } else {
+                        originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -548,7 +573,11 @@ public class EsQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
                     originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    if (y.getDeType() == 2 || y.getDeType() == 3) {
+                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName()), "bigint");
+                    } else {
+                        originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -615,7 +644,7 @@ public class EsQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLSummary(String table, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, ChartViewWithBLOBs view) {
+    public String getSQLSummary(String table, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, ChartViewWithBLOBs view, Datasource ds) {
         // 字段汇总 排序等
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(EsSqlLConstants.KEYWORD_TABLE, table))
@@ -634,7 +663,11 @@ public class EsQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
                     originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    if (y.getDeType() == 2 || y.getDeType() == 3) {
+                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName()), "bigint");
+                    } else {
+                        originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -688,7 +721,7 @@ public class EsQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLSummaryAsTmp(String sql, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, ChartViewWithBLOBs view) {
-        return getSQLSummary("(" + sqlFix(sql) + ")", yAxis, fieldCustomFilter, extFilterRequestList, view);
+        return getSQLSummary("(" + sqlFix(sql) + ")", yAxis, fieldCustomFilter, extFilterRequestList, view, null);
     }
 
     @Override
@@ -825,8 +858,8 @@ public class EsQueryProvider extends QueryProvider {
                         whereValue = "''";
                     } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_empty")) {
                         whereValue = "''";
-                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in")) {
-                        whereValue = "('" + StringUtils.join(value, "','") + "')";
+                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in") || StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "not in")) {
+                        whereValue = "('" + String.join("','", value.split(",")) + "')";
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                         whereValue = "'%" + value + "%'";
                     } else {

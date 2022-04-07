@@ -43,3 +43,10 @@ export function validate(data) {
         data
     })
 }
+
+export function getUIinfo() {
+  return request({
+    url: '/system/ui/info',
+    method: 'get'
+  })
+}

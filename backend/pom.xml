@@ -5,7 +5,7 @@
     <parent>
         <artifactId>dataease-server</artifactId>
         <groupId>io.dataease</groupId>
-        <version>1.8.0</version>
+        <version>1.9.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -83,11 +83,11 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
             <version>2.1.2</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -106,6 +106,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.28</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -214,18 +215,14 @@
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-interface</artifactId>
-            <version>1.8.0</version>
+            <version>1.9.0</version>
         </dependency>
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-view</artifactId>
-            <version>1.8.0</version>
+            <version>1.9.0</version>
         </dependency>
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <version>5.7.4</version>
-        </dependency>
+
         <!-- kettle及数据源依赖 -->
         <dependency>
             <groupId>pentaho-kettle</groupId>
@@ -278,6 +275,16 @@
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>2.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
         </dependency>
     </dependencies>
 
@@ -403,7 +410,7 @@
                     <dependency>
                         <groupId>mysql</groupId>
                         <artifactId>mysql-connector-java</artifactId>
-                        <version>8.0.16</version>
+                        <version>8.0.28</version>
                     </dependency>
                     <dependency>
                         <groupId>com.itfsw</groupId>
@@ -413,7 +420,7 @@
                 </dependencies>
             </plugin>
 
-            
+
         </plugins>
     </build>
 
@@ -479,7 +486,7 @@
             </properties>
         </profile>
     </profiles>
-    
+
 
     <repositories>
         <repository>

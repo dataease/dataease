@@ -40,7 +40,7 @@ export function baseFunnelOption(chart_option, chart) {
         y.name = chart.data.x[i]
         // color
         y.itemStyle = {
-          color: hexColorToRGBA(customAttr.color.colors[i % 9], customAttr.color.alpha)
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
         }
         // y.type = 'funnel'
         chart_option.series[0].data.push(y)

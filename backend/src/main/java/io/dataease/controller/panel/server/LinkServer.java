@@ -65,9 +65,14 @@ public class LinkServer implements LinkApi {
         link = URLDecoder.decode(link, "UTF-8");
         String json = panelLinkService.decryptParam(link);
 
+        String user = request.getUser();
+        user = URLDecoder.decode(user, "UTF-8");
+        user = panelLinkService.decryptParam(user);
+
         ValidateDto dto = new ValidateDto();
+        dto.setUserId(user);
         String resourceId = json;
-        PanelLink one = panelLinkService.findOne(resourceId, request.getUser());
+        PanelLink one = panelLinkService.findOne(resourceId, Long.valueOf(user));
         dto.setResourceId(resourceId);
         if (ObjectUtils.isEmpty(one)) {
             dto.setValid(false);

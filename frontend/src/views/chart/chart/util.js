@@ -53,6 +53,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'antv',
     category: 'chart.chart_type_quota',
+    value: 'label',
+    title: 'chart.chart_label',
+    icon: 'label'
+  },
+  {
+    render: 'antv',
+    category: 'chart.chart_type_quota',
     value: 'text',
     title: 'chart.chart_card',
     icon: 'text'
@@ -189,6 +196,13 @@ export const TYPE_CONFIGS = [
     icon: 'table-info'
   },
 
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_quota',
+    value: 'label',
+    title: 'chart.chart_label',
+    icon: 'label'
+  },
   {
     render: 'echarts',
     category: 'chart.chart_type_quota',

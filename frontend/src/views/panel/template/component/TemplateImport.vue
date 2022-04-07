@@ -1,5 +1,5 @@
 <template>
-  <el-row>
+  <el-row v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <el-row style="margin-top: 5px">
       <el-col :span="4">{{ $t('commons.name') }}</el-col>
       <el-col :span="16">
@@ -7,7 +7,7 @@
       </el-col>
       <el-col :span="4">
         <el-button style="margin-left: 10px" class="el-icon-upload" size="small" type="primary" @click="goFile">{{ $t('panel.upload_template') }}</el-button>
-        <input id="input" ref="files" type="file" accept=".DE" hidden @change="handleFileChange">
+        <input id="input" ref="files" type="file" accept=".DET" hidden @change="handleFileChange">
       </el-col>
     </el-row>
     <el-row class="preview" :style="classBackground" />
@@ -44,6 +44,7 @@ export default {
         name: '',
         templateStyle: null,
         templateData: null,
+        dynamicData: null,
         snapshot: ''
       }
     }
@@ -118,6 +119,7 @@ export default {
         this.templateInfo.templateStyle = this.importTemplateInfo.panelStyle
         this.templateInfo.templateData = this.importTemplateInfo.panelData
         this.templateInfo.snapshot = this.importTemplateInfo.snapshot
+        this.templateInfo.dynamicData = this.importTemplateInfo.dynamicData
         this.templateInfo.nodeType = 'template'
       }
       reader.readAsText(file)

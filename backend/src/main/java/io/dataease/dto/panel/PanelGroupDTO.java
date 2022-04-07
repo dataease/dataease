@@ -2,11 +2,13 @@ package io.dataease.dto.panel;
 
 import io.dataease.base.domain.PanelGroupWithBLOBs;
 import io.dataease.commons.model.ITreeBase;
+import io.dataease.dto.chart.ChartViewDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author: wangjiahao
@@ -31,6 +33,7 @@ public class PanelGroupDTO extends PanelGroupWithBLOBs implements ITreeBase<Pane
     private String sourcePanelName;
     @ApiModelProperty("子节点")
     private List<PanelGroupDTO> children;
-
+    @ApiModelProperty("视图信息")
+    private List<Map<String, ChartViewDTO>> viewsInfo;
 
 }

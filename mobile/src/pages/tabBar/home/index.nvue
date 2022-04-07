@@ -118,6 +118,9 @@
 						datas.forEach(item => {
 							item.article_type = 1
 							item.image_url = '../../../static/yibiaobans.png'
+                            if(item.nickName) {
+                                item.title += ('(' + item.nickName + ')')
+                            }
 							if(item.time)
 							    item.rightText = formatHistoryDate(item.time)
 						})
@@ -151,10 +154,12 @@
 			    const param = {
 			        id: node.id,
 			        title: node.title,
-			        index: this.tabIndex
+			        index: this.tabIndex,
+                    userId: node.userId
 			    }
 			    if(this.tabIndex === 1) {
 			        param.index = node.index
+                    param.userId = node.userId
 			    }
 			
 			    uni.navigateTo({
@@ -200,8 +205,14 @@
                 this.switchTab(index);
             },
             ontabchange(e) {
-                // let index = e.target.current || e.detail.current;
+                let index = e.target.current || e.detail.current;
                 // this.switchTab(index);
+
+                if (this.tabIndex === index) {
+                    return;
+                }
+                this.tabIndex = index;
+                this.scrollInto = this.tabBars[index].id;
             },
             switchTab(index) {
                 if (this.newsList[index].data.length === 0) {

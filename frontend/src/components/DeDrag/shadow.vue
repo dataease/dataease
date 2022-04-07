@@ -12,7 +12,6 @@ export default {
   computed: {
     styleInfo() {
       // console.log('styleInfo==>')
-      // debugger
       // console.log('dragComponentInfo==>' + this.dragComponentInfo.shadowStyle.x)
       let left = 0
       let top = 0

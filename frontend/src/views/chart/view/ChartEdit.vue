@@ -1,7 +1,16 @@
 <template>
-  <el-row v-loading="loading" style="height: 100%;overflow-y: hidden;width: 100%;">
+  <el-row v-loading="loading" style="height: 100%;overflow-y: hidden;width: 100%;border-left: 1px solid #E6E6E6">
+    <el-tooltip :content="$t('chart.draw_back')">
+      <el-button
+        class="el-icon-d-arrow-right"
+        style="position:absolute;left: 4px;top: 5px;z-index: 1000"
+        size="mini"
+        circle
+        @click="closePanelEdit"
+      />
+    </el-tooltip>
+    <!--    <i class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 11px"></i>-->
     <el-row style="height: 40px;" class="padding-lr">
-      <span class="title-text" style="line-height: 40px;">{{ view.name }}</span>
       <el-popover
         placement="right-start"
         width="400"
@@ -10,25 +19,44 @@
         @hide="hideTab"
       >
         <dataset-chart-detail type="chart" :data="view" :tab-status="tabStatus" />
-        <i slot="reference" class="el-icon-warning icon-class" style="margin-left: 4px;cursor: pointer;" />
+        <i
+          slot="reference"
+          class="el-icon-warning icon-class"
+          style="position:absolute; margin-left: 30px; top:14px;cursor: pointer;"
+        />
       </el-popover>
+      <span class="title-text view-title-name" style="line-height: 40px;">{{ view.name }}</span>
       <span style="float: right;line-height: 40px;">
-        <el-button size="mini" @click="close">
-          {{ $t('chart.close') }}
-        </el-button>
-        <el-button size="mini" :disabled="!hasEdit" @click="reset">
+        <!--        <el-button size="mini" @click="closePanelEdit">-->
+        <!--          {{ $t('chart.draw_back') }}-->
+        <!--        </el-button>-->
+        <el-button type="warning" round size="mini" :disabled="!hasEdit" @click="reset">
           {{ $t('chart.recover') }}
         </el-button>
-        <el-button size="mini" type="primary" @click="closeEdit">
-          {{ $t('commons.save') }}
-        </el-button>
+        <!--        <el-button size="mini" type="primary" @click="closeEdit">-->
+        <!--          {{ $t('commons.save') }}-->
+        <!--        </el-button>-->
       </span>
     </el-row>
-    <el-row class="view-panel">
+    <el-row class="view-panel-row">
       <el-tabs :stretch="true" class="tab-header">
-        <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 360px">
+        <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 300px">
+          <div v-if="view.dataFrom==='template'" class="view-panel-Mask">
+            <span style="opacity: 1;">
+              <el-button
+                style="opacity: 1!important;"
+                type="warning"
+                :title="$t('chart.change_ds')"
+                size="mini"
+                round
+                @click="changeDs"
+              >
+                <span style="font-weight: bold">{{ $t('panel.template_view_tips') }}<i class="el-icon-refresh el-icon--right" /></span>
+              </el-button>
+            </span>
+          </div>
           <el-row class="view-panel">
-            <el-col class="theme-border-class" style="width: 180px;border-right: 1px solid #E6E6E6;">
+            <el-col class="theme-border-class" :span="12" style="border-right: 1px solid #E6E6E6;">
               <div style="display: flex;align-items: center;justify-content: center;padding: 6px;">
                 <el-input
                   v-model="searchField"
@@ -117,7 +145,8 @@
             </el-col>
 
             <el-col
-              style="height: 100%;width: 180px;border-right: 1px solid #E6E6E6;"
+              :span="12"
+              style="height: 100%;border-right: 1px solid #E6E6E6;"
               class="theme-border-class"
             >
               <div style="height: 60px;overflow:auto" class="padding-lr theme-border-class">
@@ -125,7 +154,7 @@
                   <span>{{ $t('chart.chart_type') }}</span>
                   <el-row style="padding: 4px 0 4px 10px;">
                     <span>
-                      <svg-icon :icon-class="view.type" class="chart-icon" />
+                      <svg-icon :icon-class="view.isPlugin && view.type && view.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + view.type + '/svg') : view.type" class="chart-icon" />
                     </span>
                     <span style="float: right;">
                       <el-popover
@@ -146,7 +175,7 @@
                                 @change="changeChartType()"
                               >
                                 <el-option
-                                  v-for="item in renderOptions"
+                                  v-for="item in pluginRenderOptions"
                                   :key="item.value"
                                   :value="item.value"
                                   :label="item.name"
@@ -218,7 +247,11 @@
                     </el-row>
                   </el-row>
 
-                  <plugin-com v-if="view.isPlugin" :component-name="view.type + '-data'" :obj="{view, param, chart, dimensionData, quotaData}" />
+                  <plugin-com
+                    v-if="view.isPlugin"
+                    :component-name="view.type + '-data'"
+                    :obj="{view, param, chart, dimensionData, quotaData}"
+                  />
                   <div v-else>
 
                     <el-row v-if="view.type ==='map'" class="padding-lr">
@@ -267,8 +300,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
@@ -286,18 +319,29 @@
                       class="padding-lr"
                     >
                       <span style="width: 80px;text-align: right;">
-                        <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
+                        <span v-if="view.type && view.type.includes('table')">{{
+                          $t('chart.drag_block_table_data_column')
+                        }}</span>
                         <span
                           v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
                         >{{ $t('chart.drag_block_type_axis') }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('pie')"
                         >{{ $t('chart.drag_block_pie_label') }}</span>
-                        <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_split') }}</span>
-                        <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_label') }}</span>
+                        <span v-else-if="view.type && view.type.includes('funnel')">{{
+                          $t('chart.drag_block_funnel_split')
+                        }}</span>
+                        <span v-else-if="view.type && view.type.includes('radar')">{{
+                          $t('chart.drag_block_radar_label')
+                        }}</span>
                         <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.area') }}</span>
-                        <span v-else-if="view.type && view.type.includes('treemap')">{{ $t('chart.drag_block_treemap_label') }}</span>
-                        <span v-else-if="view.type && view.type === 'word-cloud'">{{ $t('chart.drag_block_word_cloud_label') }}</span>
+                        <span v-else-if="view.type && view.type.includes('treemap')">{{
+                          $t('chart.drag_block_treemap_label')
+                        }}</span>
+                        <span v-else-if="view.type && view.type === 'word-cloud'">{{
+                          $t('chart.drag_block_word_cloud_label')
+                        }}</span>
+                        <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
                         /
                         <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
                         <span
@@ -320,8 +364,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
@@ -334,26 +378,46 @@
                       </div>
                     </el-row>
                     <!--yaxis-->
-                    <el-row v-if="view.type !=='table-info'" class="padding-lr" style="margin-top: 6px;">
+                    <el-row
+                      v-if="view.type !=='table-info' && view.type !=='label'"
+                      class="padding-lr"
+                      style="margin-top: 6px;"
+                    >
                       <span style="width: 80px;text-align: right;">
-                        <span v-if="view.type && view.type.includes('table')">{{ $t('chart.drag_block_table_data_column') }}</span>
+                        <span v-if="view.type && view.type.includes('table')">{{
+                          $t('chart.drag_block_table_data_column')
+                        }}</span>
                         <span
                           v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'waterfall')"
                         >{{ $t('chart.drag_block_value_axis') }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('pie')"
                         >{{ $t('chart.drag_block_pie_angel') }}</span>
-                        <span v-else-if="view.type && view.type.includes('funnel')">{{ $t('chart.drag_block_funnel_width') }}</span>
-                        <span v-else-if="view.type && view.type.includes('radar')">{{ $t('chart.drag_block_radar_length') }}</span>
-                        <span v-else-if="view.type && view.type.includes('gauge')">{{ $t('chart.drag_block_gauge_angel') }}</span>
+                        <span v-else-if="view.type && view.type.includes('funnel')">{{
+                          $t('chart.drag_block_funnel_width')
+                        }}</span>
+                        <span v-else-if="view.type && view.type.includes('radar')">{{
+                          $t('chart.drag_block_radar_length')
+                        }}</span>
+                        <span v-else-if="view.type && view.type.includes('gauge')">{{
+                          $t('chart.drag_block_gauge_angel')
+                        }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('text')"
                         >{{ $t('chart.drag_block_label_value') }}</span>
                         <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.chart_data') }}</span>
-                        <span v-else-if="view.type && view.type.includes('tree')">{{ $t('chart.drag_block_treemap_size') }}</span>
-                        <span v-else-if="view.type && view.type === 'chart-mix'">{{ $t('chart.drag_block_value_axis_main') }}</span>
-                        <span v-else-if="view.type && view.type === 'liquid'">{{ $t('chart.drag_block_progress') }}</span>
-                        <span v-else-if="view.type && view.type === 'word-cloud'">{{ $t('chart.drag_block_word_cloud_size') }}</span>
+                        <span v-else-if="view.type && view.type.includes('tree')">{{
+                          $t('chart.drag_block_treemap_size')
+                        }}</span>
+                        <span v-else-if="view.type && view.type === 'chart-mix'">{{
+                          $t('chart.drag_block_value_axis_main')
+                        }}</span>
+                        <span
+                          v-else-if="view.type && view.type === 'liquid'"
+                        >{{ $t('chart.drag_block_progress') }}</span>
+                        <span v-else-if="view.type && view.type === 'word-cloud'">{{
+                          $t('chart.drag_block_word_cloud_size')
+                        }}</span>
                         /
                         <span>{{ $t('chart.quota') }}</span>
                       </span>
@@ -374,8 +438,8 @@
                             :index="index"
                             :item="item"
                             :chart="chart"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onQuotaItemChange="quotaItemChange"
                             @onQuotaItemRemove="quotaItemRemove"
                             @editItemFilter="showQuotaEditFilter"
@@ -412,8 +476,8 @@
                             :index="index"
                             :item="item"
                             :chart="chart"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onQuotaItemChange="quotaItemChange"
                             @onQuotaItemRemove="quotaItemRemove"
                             @editItemFilter="showQuotaEditFilter"
@@ -450,8 +514,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onItemChange="stackItemChange"
                             @onItemRemove="stackItemRemove"
                           />
@@ -462,7 +526,11 @@
                       </div>
                     </el-row>
                     <!--extBubble-->
-                    <el-row v-if="view.type && view.type.includes('scatter')" class="padding-lr" style="margin-top: 6px;">
+                    <el-row
+                      v-if="view.type && view.type.includes('scatter')"
+                      class="padding-lr"
+                      style="margin-top: 6px;"
+                    >
                       <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.bubble_size') }}</span>
                         /
@@ -491,8 +559,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onItemChange="bubbleItemChange"
                             @onItemRemove="bubbleItemRemove"
                           />
@@ -524,8 +592,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onFilterItemRemove="filterItemRemove"
                             @editItemFilter="showEditFilter"
                           />
@@ -536,7 +604,7 @@
                       </div>
                     </el-row>
                     <el-row
-                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud' && view.type !== 'table-pivot'"
+                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud' && view.type !== 'table-pivot' && view.type !=='label'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -561,8 +629,8 @@
                             :param="param"
                             :index="index"
                             :item="item"
-                            :dimension-data="dimensionData"
-                            :quota-data="quotaData"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
                             @onDimensionItemChange="drillItemChange"
                             @onDimensionItemRemove="drillItemRemove"
                           />
@@ -578,7 +646,7 @@
             </el-col>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 360px;">
+        <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 300px">
           <el-row class="view-panel">
             <plugin-com
               v-if="view.isPlugin"
@@ -589,7 +657,7 @@
             />
             <div
               v-else
-              style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
+              style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;padding-right: 6px"
               class="attr-style theme-border-class"
             >
               <el-row class="padding-lr">
@@ -637,7 +705,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'word-cloud'"
+                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -657,7 +725,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge'"
+                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
@@ -674,6 +742,18 @@
                       class="attr-selector"
                       :chart="chart"
                       @onTooltipChange="onTooltipChange"
+                    />
+                  </el-collapse-item>
+                  <el-collapse-item
+                    v-show="view.type === 'table-pivot'"
+                    name="totalCfg"
+                    :title="$t('chart.total_cfg')"
+                  >
+                    <total-cfg
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onTotalCfgChange="onTotalCfgChange"
                     />
                   </el-collapse-item>
                 </el-collapse>
@@ -778,7 +858,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall' && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
+                    v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall' && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
                     name="legend"
                     :title="$t('chart.legend')"
                   >
@@ -797,7 +877,7 @@
                       @onLegendChange="onLegendChange"
                     />
                   </el-collapse-item>
-                  <el-collapse-item name="background" :title="$t('chart.background')">
+                  <el-collapse-item v-if="chart.customStyle && view.customStyle.background" name="background" :title="$t('chart.background')">
                     <background-color-selector
                       :param="param"
                       class="attr-selector"
@@ -810,9 +890,68 @@
             </div>
           </el-row>
         </el-tab-pane>
+        <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 300px;">
+          <el-row class="view-panel">
+            <div
+              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge'))"
+              style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
+              class="attr-style theme-border-class"
+            >
+              <el-row
+                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))"
+              >
+                <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
+                <el-collapse v-model="attrActiveNames" class="style-collapse">
+                  <el-collapse-item name="function" :title="$t('chart.function_cfg')">
+                    <function-cfg
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onFunctionCfgChange="onFunctionCfgChange"
+                    />
+                  </el-collapse-item>
+                </el-collapse>
+              </el-row>
+              <el-row
+                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge'))"
+              >
+                <span class="padding-lr">{{ $t('chart.analyse_cfg') }}</span>
+                <el-collapse v-model="styleActiveNames" class="style-collapse">
+                  <el-collapse-item
+                    v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))"
+                    name="analyse"
+                    :title="$t('chart.assist_line')"
+                  >
+                    <assist-line
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onAssistLineChange="onAssistLineChange"
+                    />
+                  </el-collapse-item>
+                  <el-collapse-item
+                    v-if="view.type && (view.type.includes('gauge'))"
+                    name="threshold"
+                    :title="$t('chart.threshold')"
+                  >
+                    <threshold
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onThresholdChange="onThresholdChange"
+                    />
+                  </el-collapse-item>
+                </el-collapse>
+              </el-row>
+            </div>
+            <div v-else class="no-senior">
+              {{ $t('chart.chart_no_senior') }}
+            </div>
+          </el-row>
+        </el-tab-pane>
       </el-tabs>
 
-      <el-col style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
+      <el-col v-if="editFrom==='view'" style="height: 100%;min-width: 500px;border-top: 1px solid #E6E6E6;">
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <div ref="imageWrapper" style="height: 100%">
             <plugin-com
@@ -823,7 +962,7 @@
               class="chart-class"
             />
             <chart-component
-              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'echarts'"
+              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'echarts'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -831,7 +970,7 @@
               @onChartClick="chartClick"
             />
             <chart-component-g2
-              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'"
+              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'antv'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -839,7 +978,7 @@
               @onChartClick="chartClick"
             />
             <chart-component-s2
-              v-else-if="httpRequest.status && chart.type && chart.type.includes('table') && !chart.type.includes('text') && renderComponent() === 'antv'"
+              v-else-if="httpRequest.status && chart.type && chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'antv'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -854,6 +993,11 @@
             />
             <label-normal
               v-else-if="httpRequest.status && chart.type && chart.type.includes('text')"
+              :chart="chart"
+              class="table-class"
+            />
+            <label-normal-text
+              v-else-if="httpRequest.status && chart.type && chart.type === 'label'"
               :chart="chart"
               class="table-class"
             />
@@ -991,7 +1135,13 @@
 </template>
 
 <script>
-import { ajaxGetDataOnly, post } from '@/api/chart/chart'
+import {
+  ajaxGetDataOnly,
+  post,
+  getChartDetails,
+  save2Cache,
+  resetViewCacheCallBack
+} from '@/api/chart/chart'
 import DimensionItem from '../components/drag-item/DimensionItem'
 import QuotaItem from '../components/drag-item/QuotaItem'
 import FilterItem from '../components/drag-item/FilterItem'
@@ -1006,12 +1156,15 @@ import DatasetChartDetail from '../../dataset/common/DatasetChartDetail'
 import {
   DEFAULT_BACKGROUND_COLOR,
   DEFAULT_COLOR_CASE,
+  DEFAULT_FUNCTION_CFG,
   DEFAULT_LABEL,
   DEFAULT_LEGEND_STYLE,
   DEFAULT_SIZE,
   DEFAULT_SPLIT,
+  DEFAULT_THRESHOLD,
   DEFAULT_TITLE_STYLE,
   DEFAULT_TOOLTIP,
+  DEFAULT_TOTAL,
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE
@@ -1052,9 +1205,22 @@ import { compareItem } from '@/views/chart/chart/compare'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import DimensionExtItem from '@/views/chart/components/drag-item/DimensionExtItem'
 import PluginCom from '@/views/system/plugin/PluginCom'
+import { mapState } from 'vuex'
+
+import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
+import AssistLine from '@/views/chart/components/senior/AssistLine'
+import Threshold from '@/views/chart/components/senior/Threshold'
+import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
+import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
+import { pluginTypes } from '@/api/chart/chart'
 export default {
   name: 'ChartEdit',
   components: {
+    LabelNormalText,
+    TotalCfg,
+    Threshold,
+    AssistLine,
+    FunctionCfg,
     DimensionExtItem,
     ChartComponentS2,
     CompareEdit,
@@ -1102,6 +1268,11 @@ export default {
     param: {
       type: Object,
       required: true
+    },
+    editFrom: {
+      type: String,
+      required: false,
+      default: 'view'
     }
   },
   data() {
@@ -1127,7 +1298,8 @@ export default {
           color: DEFAULT_COLOR_CASE,
           size: DEFAULT_SIZE,
           label: DEFAULT_LABEL,
-          tooltip: DEFAULT_TOOLTIP
+          tooltip: DEFAULT_TOOLTIP,
+          totalCfg: DEFAULT_TOTAL
         },
         customStyle: {
           text: DEFAULT_TITLE_STYLE,
@@ -1137,6 +1309,11 @@ export default {
           yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
           background: DEFAULT_BACKGROUND_COLOR,
           split: DEFAULT_SPLIT
+        },
+        senior: {
+          functionCfg: DEFAULT_FUNCTION_CFG,
+          assistLine: [],
+          threshold: DEFAULT_THRESHOLD
         },
         customFilter: [],
         render: 'antv',
@@ -1187,7 +1364,9 @@ export default {
       drill: false,
       hasEdit: false,
       quotaItemCompare: {},
-      showEditQuotaCompare: false
+      showEditQuotaCompare: false,
+      preChartId: '',
+      pluginRenderOptions: []
 
     }
   },
@@ -1197,42 +1376,88 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
-    }
+    },
+    ...mapState([
+      'panelViewEditInfo'
+    ])
+    /* pluginRenderOptions() {
+      const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
+      const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
+        return { name: plugin.render, value: plugin.render }
+      })
+      return [...this.renderOptions, ...pluginOptions]
+    } */
   },
   watch: {
-    'param': function() {
+    'param': function(val) {
       if (this.param.optType === 'new') {
         //
-      } else {
-        this.resetDrill()
-        this.getData(this.param.id)
+      } else if (this.param.id !== this.preChartId) {
+        this.preChartId = this.param.id
+        this.chartInit()
+        // console.log('fromwatch:' + JSON.stringify(val))
       }
     },
     searchField(val) {
       this.fieldFilter(val)
     },
     'chartType': function(newVal, oldVal) {
-      this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal)
       if ((newVal === 'map' || newVal === 'buddle-map') && newVal !== oldVal) {
         this.initAreas()
       }
       this.$emit('typeChange', newVal)
+    },
+    'view.type': function(newVal, oldVal) {
+      this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal)
     }
   },
   created() {
-    // this.get(this.$store.state.chart.viewId);
-    // this.initAreas()
+    const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views'))
+    if (plugins) {
+      this.loadPluginType()
+    } else {
+      pluginTypes().then(res => {
+        const plugins = res.data
+        localStorage.setItem('plugin-views', JSON.stringify(plugins))
+        this.loadPluginType()
+      }).catch(e => {
+        localStorage.setItem('plugin-views', null)
+        this.loadPluginType()
+      })
+    }
   },
   mounted() {
     this.bindPluginEvent()
-    // this.get(this.$store.state.chart.viewId);
-    this.getData(this.param.id)
-    // this.myEcharts();
+    this.initFromPanel()
+    this.chartInit()
+    // console.log('mounted')
   },
   activated() {
   },
 
   methods: {
+    loadPluginType() {
+      const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
+      const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
+        return { name: plugin.render, value: plugin.render }
+      })
+      this.pluginRenderOptions = [...this.renderOptions, ...pluginOptions]
+    },
+    emptyTableData() {
+      this.table = {}
+      this.dimension = []
+      this.quota = []
+      this.dimensionData = []
+      this.quotaData = []
+    },
+    initFromPanel() {
+      this.hasEdit = (this.panelViewEditInfo[this.param.id] || false)
+    },
+    chartInit() {
+      this.resetDrill()
+      this.initFromPanel()
+      this.getChart(this.param.id)
+    },
     bindPluginEvent() {
       bus.$on('show-dimension-edit-filter', this.showDimensionEditFilter)
       bus.$on('show-rename', this.showRename)
@@ -1277,10 +1502,10 @@ export default {
     },
     buildParam(getData, trigger, needRefreshGroup = false, switchType = false) {
       if (!this.view.resultCount ||
-          this.view.resultCount === '' ||
-          isNaN(Number(this.view.resultCount)) ||
-          String(this.view.resultCount).includes('.') ||
-          parseInt(this.view.resultCount) < 1) {
+        this.view.resultCount === '' ||
+        isNaN(Number(this.view.resultCount)) ||
+        String(this.view.resultCount).includes('.') ||
+        parseInt(this.view.resultCount) < 1) {
         this.view.resultCount = '1000'
       }
       if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
@@ -1403,14 +1628,19 @@ export default {
           }
         }
       })
+      if (view.type === 'label') {
+        if (view.xaxis.length > 1) {
+          view.xaxis.splice(1, view.xaxis.length)
+        }
+      }
       if (view.type.startsWith('pie') ||
-          view.type.startsWith('funnel') ||
-          view.type.startsWith('text') ||
-          view.type.startsWith('gauge') ||
-          view.type === 'treemap' ||
-          view.type === 'liquid' ||
-          view.type === 'word-cloud' ||
-          view.type === 'waterfall') {
+        view.type.startsWith('funnel') ||
+        view.type.startsWith('text') ||
+        view.type.startsWith('gauge') ||
+        view.type === 'treemap' ||
+        view.type === 'liquid' ||
+        view.type === 'word-cloud' ||
+        view.type === 'waterfall') {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
@@ -1425,10 +1655,10 @@ export default {
         view.customAttr.label.show = true
       }
       if (view.type === 'liquid' ||
-          (view.type.includes('table') && view.render === 'echarts') ||
-          view.type.includes('text') ||
-          view.type.includes('gauge') ||
-          view.type === 'table-pivot') {
+        (view.type.includes('table') && view.render === 'echarts') ||
+        view.type.includes('text') ||
+        view.type.includes('gauge') ||
+        view.type === 'table-pivot') {
         view.drillFields = []
       }
       view.customFilter.forEach(function(ele) {
@@ -1436,6 +1666,9 @@ export default {
           ele.filter = []
         }
       })
+      this.chart = JSON.parse(JSON.stringify(view))
+      this.view = JSON.parse(JSON.stringify(view))
+      // stringify json param
       view.xaxis = JSON.stringify(view.xaxis)
       view.xaxisExt = JSON.stringify(view.xaxisExt)
       view.yaxis = JSON.stringify(view.yaxis)
@@ -1446,53 +1679,62 @@ export default {
       view.extStack = JSON.stringify(view.extStack)
       view.drillFields = JSON.stringify(view.drillFields)
       view.extBubble = JSON.stringify(view.extBubble)
+      view.senior = JSON.stringify(view.senior)
       delete view.data
       return view
     },
+    // calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
+    // this.hasEdit = true
+    // const view = this.buildParam(getData, trigger, needRefreshGroup, switchType)
+    // if (!view) return
+    // post('/chart/view/calcData/' + this.panelInfo.id, {
+    //   view: view,
+    //   requestList: {
+    //     filter: [],
+    //     drill: this.drillClickDimensionList
+    //   }
+    // }).then(response => {
+    //   const view = JSON.parse(JSON.stringify(response.data))
+    //   this.view.xaxis = view.xaxis ? JSON.parse(view.xaxis) : []
+    //   this.view.xaxisExt = view.xaxisExt ? JSON.parse(view.xaxisExt) : []
+    //   this.view.yaxis = view.yaxis ? JSON.parse(view.yaxis) : []
+    //   this.view.yaxisExt = view.yaxisExt ? JSON.parse(view.yaxisExt) : []
+    //   this.view.extStack = view.extStack ? JSON.parse(view.extStack) : []
+    //   this.view.drillFields = view.drillFields ? JSON.parse(view.drillFields) : []
+    //   this.view.extBubble = view.extBubble ? JSON.parse(view.extBubble) : []
+    //   this.view.customAttr = view.customAttr ? JSON.parse(view.customAttr) : {}
+    //   this.view.customStyle = view.customStyle ? JSON.parse(view.customStyle) : {}
+    //   this.view.customFilter = view.customFilter ? JSON.parse(view.customFilter) : {}
+    // this.view.senior = view.senior ? JSON.parse(view.senior) : {}
+    // 将视图传入echart组件
+    //   this.chart = response.data
+    //   this.data = response.data.data
+    //   // console.log(JSON.stringify(this.chart))
+    //   this.httpRequest.status = true
+    //   if (this.chart.privileges) {
+    //     this.param.privileges = this.chart.privileges
+    //   }
+    //   if (!response.data.drill) {
+    //     this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
+    //
+    //     this.resetDrill()
+    //   }
+    //   this.drill = response.data.drill
+    //   this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
+    //
+    //   this.closeChangeChart()
+    // })
+    // },
     calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
-      this.hasEdit = true
-      const view = this.buildParam(getData, trigger, needRefreshGroup, switchType)
+      this.changeEditStatus(true)
+      const view = this.buildParam(true, 'chart', false, switchType)
       if (!view) return
-      post('/chart/view/calcData/' + this.panelInfo.id, {
-        view: view,
-        requestList: {
-          filter: [],
-          drill: this.drillClickDimensionList
-        }
-      }).then(response => {
-        const view = JSON.parse(JSON.stringify(response.data))
-        this.view.xaxis = view.xaxis ? JSON.parse(view.xaxis) : []
-        this.view.xaxisExt = view.xaxisExt ? JSON.parse(view.xaxisExt) : []
-        this.view.yaxis = view.yaxis ? JSON.parse(view.yaxis) : []
-        this.view.yaxisExt = view.yaxisExt ? JSON.parse(view.yaxisExt) : []
-        this.view.extStack = view.extStack ? JSON.parse(view.extStack) : []
-        this.view.drillFields = view.drillFields ? JSON.parse(view.drillFields) : []
-        this.view.extBubble = view.extBubble ? JSON.parse(view.extBubble) : []
-        this.view.customAttr = view.customAttr ? JSON.parse(view.customAttr) : {}
-        this.view.customStyle = view.customStyle ? JSON.parse(view.customStyle) : {}
-        this.view.customFilter = view.customFilter ? JSON.parse(view.customFilter) : {}
-        // 将视图传入echart组件
-        this.chart = response.data
-        this.data = response.data.data
-        // console.log(JSON.stringify(this.chart))
-        this.httpRequest.status = true
-        if (this.chart.privileges) {
-          this.param.privileges = this.chart.privileges
-        }
-        if (!response.data.drill) {
-          this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
-
-          this.resetDrill()
-        }
-        this.drill = response.data.drill
-        this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
-
-        this.closeChangeChart()
+      save2Cache(this.panelInfo.id, view).then(() => {
+        bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
     },
-
     calcStyle() {
-      this.hasEdit = true
+      this.changeEditStatus(true)
       // 将视图传入echart...组件
       const view = JSON.parse(JSON.stringify(this.view))
       view.xaxis = JSON.stringify(this.view.xaxis)
@@ -1505,8 +1747,18 @@ export default {
       view.customAttr = JSON.stringify(this.view.customAttr)
       view.customStyle = JSON.stringify(this.view.customStyle)
       view.customFilter = JSON.stringify(this.view.customFilter)
-      view.data = this.data
+      view.senior = JSON.stringify(this.view.senior)
+      view.title = this.view.title
+      view.stylePriority = this.view.stylePriority
+      // view.data = this.data
       this.chart = view
+
+      // 保存到缓存表
+      const viewSave = this.buildParam(true, 'chart', false, false)
+      if (!viewSave) return
+      save2Cache(this.panelInfo.id, viewSave)
+
+      bus.$emit('view-in-cache', { type: 'styleChange', viewId: this.param.id, viewInfo: view })
     },
 
     closeEdit() {
@@ -1529,6 +1781,9 @@ export default {
         this.$success(this.$t('commons.save_success'))
       })
     },
+    closePanelEdit() {
+      bus.$emit('change_panel_right_draw', false)
+    },
     close() {
       this.closeChangeChart()
       // 从仪表板入口关闭
@@ -1542,7 +1797,8 @@ export default {
       if (id) {
         ajaxGetDataOnly(id, this.panelInfo.id, {
           filter: [],
-          drill: this.drillClickDimensionList
+          drill: this.drillClickDimensionList,
+          queryFrom: 'panelEdit'
         }).then(response => {
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
@@ -1556,6 +1812,7 @@ export default {
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
+          this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
           // 将视图传入echart组件
           this.chart = response.data
           this.data = response.data.data
@@ -1585,10 +1842,14 @@ export default {
         this.view = {}
       }
     },
-    getChart(id) {
+    getChart(id, queryFrom = 'panel_edit') {
       if (id) {
-        post('/chart/view/get/' + id + '/' + this.panelInfo.id, {}).then(response => {
-          this.initTableData(response.data.tableId)
+        getChartDetails(id, this.panelInfo.id, { queryFrom: queryFrom }).then(response => {
+          if (response.data.dataFrom === 'template') {
+            this.emptyTableData()
+          } else {
+            this.initTableData(response.data.tableId)
+          }
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
@@ -1600,6 +1861,7 @@ export default {
           this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
+          this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
 
           // 将视图传入echart组件
           this.chart = response.data
@@ -1678,6 +1940,11 @@ export default {
       this.calcStyle()
     },
 
+    onTotalCfgChange(val) {
+      this.view.customAttr.totalCfg = val
+      this.calcStyle()
+    },
+
     onChangeXAxisForm(val) {
       this.view.customStyle.xAxis = val
       this.calcStyle()
@@ -1700,6 +1967,21 @@ export default {
 
     onChangeSplitForm(val) {
       this.view.customStyle.split = val
+      this.calcStyle()
+    },
+
+    onFunctionCfgChange(val) {
+      this.view.senior.functionCfg = val
+      this.calcStyle()
+    },
+
+    onAssistLineChange(val) {
+      this.view.senior.assistLine = val
+      this.calcStyle()
+    },
+
+    onThresholdChange(val) {
+      this.view.senior.threshold = val
       this.calcStyle()
     },
 
@@ -1791,9 +2073,9 @@ export default {
     },
     saveResultFilter() {
       if (((this.filterItem.deType === 0 || this.filterItem.deType === 5) && this.filterItem.filterType !== 'enum') ||
-          this.filterItem.deType === 1 ||
-          this.filterItem.deType === 2 ||
-          this.filterItem.deType === 3) {
+        this.filterItem.deType === 1 ||
+        this.filterItem.deType === 2 ||
+        this.filterItem.deType === 3) {
         for (let i = 0; i < this.filterItem.filter.length; i++) {
           const f = this.filterItem.filter[i]
           if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
@@ -1915,6 +2197,7 @@ export default {
 
     // 更换数据集
     changeChart() {
+      this.view.dataFrom = 'dataset'
       if (this.view.tableId !== this.changeTable.id) {
         this.view.tableId = this.changeTable.id
         this.view.xaxis = []
@@ -1929,6 +2212,7 @@ export default {
       // this.save(true, 'chart', false)
       this.calcData(true, 'chart', false)
       this.initTableData(this.view.tableId)
+      this.closeChangeChart()
     },
 
     fieldFilter(val) {
@@ -1982,7 +2266,7 @@ export default {
         this.dragCheckType(this.view.xaxis, 'd')
       }
       this.dragMoveDuplicate(this.view.xaxis, e)
-      if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxis.length > 1) {
+      if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'label') && this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
       }
       this.calcData(true)
@@ -2133,7 +2417,7 @@ export default {
         this.currentAcreaNode = null
         const current = this.$refs.dynamicChart
         if (this.view.isPlugin) {
-          current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
+          current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
         } else {
           current && current.registerDynamicMap && current.registerDynamicMap(null)
         }
@@ -2166,7 +2450,10 @@ export default {
       // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(this.currentAcreaNode.code)
       const current = this.$refs.dynamicChart
       if (this.view.isPlugin) {
-        current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: this.currentAcreaNode.code })
+        current && current.callPluginInner && current.callPluginInner({
+          methodName: 'registerDynamicMap',
+          methodParam: this.currentAcreaNode.code
+        })
       } else {
         current && current.registerDynamicMap && current.registerDynamicMap(this.currentAcreaNode.code)
       }
@@ -2190,7 +2477,10 @@ export default {
         // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(nextNode.code)
         const current = this.$refs.dynamicChart
         if (this.view.isPlugin) {
-          nextNode && current && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: nextNode.code })
+          nextNode && current && current.callPluginInner && current.callPluginInner({
+            methodName: 'registerDynamicMap',
+            methodParam: nextNode.code
+          })
         } else {
           nextNode && current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
         }
@@ -2215,9 +2505,17 @@ export default {
     },
 
     reset() {
-      this.getData(this.param.id)
+      this.changeEditStatus(false)
+      this.getChart(this.param.id, 'panel')
+      const _this = this
+      resetViewCacheCallBack(this.param.id, this.panelInfo.id, function(rsp) {
+        bus.$emit('view-in-cache', { type: 'propChange', viewId: _this.param.id })
+      })
     },
-
+    changeEditStatus(status) {
+      this.hasEdit = status
+      this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
+    },
     changeChartType() {
       this.setChartDefaultOptions()
       this.calcData(true, 'chart', true, true)
@@ -2252,328 +2550,391 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-  .padding-lr {
-    padding: 0 6px;
+.padding-lr {
+  padding: 0 6px;
+}
+
+.itxst {
+  margin: 10px;
+  text-align: left;
+}
+
+.col {
+  width: 40%;
+  flex: 1;
+  padding: 10px;
+  border: solid 1px #eee;
+  border-radius: 5px;
+  float: left;
+}
+
+.col + .col {
+  margin-left: 10px;
+}
+
+.view-panel-row {
+  display: flex;
+  background-color: #f7f8fa;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: calc(100vh - 75px);
+}
+
+.view-panel-Mask {
+  display: flex;
+  height: calc(100vh - 60px);
+  background-color: #5c5e61;
+  opacity: 0.7;
+  position:absolute;
+  top:0px;
+  left: 0px;
+  width: 300px;
+  z-index: 2;
+  cursor:not-allowed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-panel {
+  display: flex;
+  height: calc(100% - 80px);
+  background-color: #f7f8fa;
+}
+
+.blackTheme .view-panel {
+  background-color: var(--MainBG);
+}
+
+.drag-list {
+  height: calc(100% - 26px);
+  overflow: auto;
+}
+
+.item-dimension {
+  padding: 2px 10px;
+  margin: 2px 2px 0 2px;
+  border: solid 1px #eee;
+  text-align: left;
+  color: #606266;
+  /*background-color: rgba(35,46,64,.05);*/
+  background-color: white;
+  display: block;
+  word-break: break-all;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.blackTheme .item-dimension {
+  border: solid 1px;
+  border-color: var(--TableBorderColor);
+  color: var(--TextPrimary);
+  background-color: var(--MainBG);
+}
+
+.item-dimension + .item-dimension {
+  margin-top: 2px;
+}
+
+.item-dimension:hover {
+  color: #1890ff;
+  background: #e8f4ff;
+  border-color: #a3d3ff;
+  cursor: pointer;
+}
+
+.blackTheme .item-dimension:hover {
+  color: var(--Main);
+  background: var(--ContentBG);
+  cursor: pointer;
+}
+
+.item-quota {
+  padding: 2px 10px;
+  margin: 2px 2px 0 2px;
+  border: solid 1px #eee;
+  text-align: left;
+  color: #606266;
+  background-color: white;
+  display: block;
+  word-break: break-all;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.blackTheme .item-quota {
+  border: solid 1px;
+  border-color: var(--TableBorderColor);
+  color: var(--TextPrimary);
+  background-color: var(--MainBG);
+}
+
+.item-quota + .item-quota {
+  margin-top: 2px;
+}
+
+.item-quota:hover {
+  color: #67c23a;
+  background: #f0f9eb;
+  border-color: #b2d3a3;
+  cursor: pointer;
+}
+
+.blackTheme .item-quota:hover {
+  background: var(--ContentBG);
+}
+
+.el-form-item {
+  margin-bottom: 0;
+}
+
+span {
+  font-size: 12px;
+}
+
+.tab-header > > > .el-tabs__header {
+  border-top: solid 1px #eee;
+  border-right: solid 1px #eee;
+}
+
+.tab-header > > > .el-tabs__item {
+  font-size: 12px;
+  padding: 0 20px !important;
+}
+
+.blackTheme .tab-header > > > .el-tabs__item {
+  background-color: var(--MainBG);
+}
+
+.tab-header > > > .el-tabs__nav-scroll {
+  padding-left: 0 !important;
+}
+
+.tab-header > > > .el-tabs__header {
+  margin: 0 !important;
+}
+
+.tab-header > > > .el-tabs__content {
+}
+
+.draggable-group {
+  display: block;
+  width: 100%;
+  height: calc(100% - 6px);
+}
+
+.chart-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.el-radio {
+  margin: 5px;
+}
+
+.el-radio > > > .el-radio__label {
+  padding-left: 0;
+}
+
+.attr-style {
+  height: calc(100vh - 56px - 60px - 40px - 40px);
+}
+
+.blackTheme .attr-style {
+  color: var(--TextPrimary);
+}
+
+.attr-selector {
+  width: 100%;
+  height: 100%;
+  margin: 6px 0;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  background-color: white
+}
+
+.blackTheme .attr-selector {
+
+  background-color: var(--MainBG)
+}
+
+.disabled-none-cursor {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.chart-class {
+  height: 100%;
+  padding: 10px;
+}
+
+.table-class {
+  height: calc(100% - 20px);
+}
+
+.dialog-css > > > .el-dialog__title {
+  font-size: 14px;
+}
+
+.dialog-css > > > .el-dialog__header {
+  padding: 20px 20px 0;
+}
+
+.dialog-css > > > .el-dialog__body {
+  padding: 10px 20px 20px;
+}
+
+.filter-btn-class {
+  padding: 6px;
+  border: none;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-error-class {
+  text-align: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ece7e7;
+}
+
+.blackTheme .chart-error-class {
+
+  background-color: var(--MainBG)
+}
+
+.field-height {
+  height: calc(50% - 20px);
+  border-top: 1px solid #E6E6E6;
+}
+
+.blackTheme .field-height {
+
+  border-top: 1px solid;
+  border-color: var(--TableBorderColor) !important;
+}
+
+.padding-tab {
+  padding: 0;
+  height: 100%;
+}
+
+.tree-select-span {
+  > > > div.vue-treeselect__control {
+    height: 32px !important;
+    font-weight: normal !important;
   }
+}
 
-  .itxst {
-    margin: 10px;
-    text-align: left;
-  }
+.drag-block-style {
+  padding: 2px 0 0 0;
+  width: 100%;
+  min-height: 32px;
+  border-radius: 4px;
+  border: 1px solid #DCDFE6;
+  overflow-x: hidden;
+  display: flex;
+  align-items: center;
+  background-color: white;
+}
 
-  .col {
-    width: 40%;
-    flex: 1;
-    padding: 10px;
-    border: solid 1px #eee;
-    border-radius: 5px;
-    float: left;
-  }
+.blackTheme .drag-block-style {
+  border: 1px solid;
+  border-color: var(--TableBorderColor);
+  background-color: var(--ContentBG);
+}
 
-  .col + .col {
-    margin-left: 10px;
-  }
+.drag-placeholder-style {
+  position: absolute;
+  top: calc(50% - 2px);
+  left: 0;
+  width: 100%;
+  color: #CCCCCC;
+}
 
-  .view-panel {
-    display: flex;
-    height: calc(100% - 40px);
-    background-color: #f7f8fa;
-  }
+.blackTheme .drag-placeholder-style {
+  color: var(--TextPrimary);
+}
 
-  .blackTheme .view-panel {
-    background-color: var(--MainBG);
-  }
+.drag-placeholder-style-span {
+  padding-left: 16px;
+}
 
-  .drag-list {
-    height: calc(100% - 26px);
-    overflow: auto;
-  }
+.blackTheme .theme-border-class {
+  color: var(--TextPrimary) !important;
+  background-color: var(--ContentBG);
+}
 
-  .item-dimension {
-    padding: 2px 10px;
-    margin: 2px 2px 0 2px;
-    border: solid 1px #eee;
-    text-align: left;
-    color: #606266;
-    /*background-color: rgba(35,46,64,.05);*/
-    background-color: white;
-    display: block;
-    word-break: break-all;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
+.blackTheme .padding-lr {
+  border-color: var(--TableBorderColor) !important;
+}
 
-  .blackTheme .item-dimension {
-    border: solid 1px;
-    border-color: var(--TableBorderColor);
-    color: var(--TextPrimary);
-    background-color: var(--MainBG);
-  }
+.blackTheme .theme-item-class {
+  background-color: var(--MainBG) !important;
+  border-color: var(--TableBorderColor) !important;
+}
 
-  .item-dimension + .item-dimension {
-    margin-top: 2px;
-  }
+.icon-class {
+  color: #6c6c6c;
+}
 
-  .item-dimension:hover {
-    color: #1890ff;
-    background: #e8f4ff;
-    border-color: #a3d3ff;
-    cursor: pointer;
-  }
+.blackTheme .icon-class {
+  color: #cccccc;
+}
 
-  .blackTheme .item-dimension:hover {
-    color: var(--Main);
-    background: var(--ContentBG);
-    cursor: pointer;
-  }
+.result-count {
+  width: 50px;
+}
 
-  .item-quota {
-    padding: 2px 10px;
-    margin: 2px 2px 0 2px;
-    border: solid 1px #eee;
-    text-align: left;
-    color: #606266;
-    background-color: white;
-    display: block;
-    word-break: break-all;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
+.result-count > > > input {
+  padding: 0 4px;
+}
 
-  .blackTheme .item-quota {
-    border: solid 1px;
-    border-color: var(--TableBorderColor);
-    color: var(--TextPrimary);
-    background-color: var(--MainBG);
-  }
+.radio-span > > > .el-radio__label {
+  margin-left: 4px;
+}
 
-  .item-quota + .item-quota {
-    margin-top: 2px;
-  }
+.view-title-name {
+  display: -moz-inline-box;
+  display: inline-block;
+  width: 130px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin-left: 45px;
+}
 
-  .item-quota:hover {
-    color: #67c23a;
-    background: #f0f9eb;
-    border-color: #b2d3a3;
-    cursor: pointer;
-  }
+::v-deep .item-axis {
+  width: 128px !important;
+}
 
-  .blackTheme .item-quota:hover {
-    background: var(--ContentBG);
-  }
+::v-deep .el-slider__input {
+  width: 80px !important;
+}
 
-  .el-form-item {
-    margin-bottom: 0;
-  }
+::v-deep .el-input-number--mini {
+  width: 100px !important;
+}
 
-  span {
-    font-size: 12px;
-  }
+::v-deep .el-slider__runway.show-input{
+  width: 80px!important;
+}
 
-  .tab-header > > > .el-tabs__header {
-    border-top: solid 1px #eee;
-    border-right: solid 1px #eee;
-  }
-
-  .tab-header > > > .el-tabs__item {
-    font-size: 12px;
-    padding: 0 60px!important;
-  }
-
-  .blackTheme .tab-header > > > .el-tabs__item {
-    background-color: var(--MainBG);
-  }
-
-  .tab-header > > > .el-tabs__nav-scroll {
-    padding-left: 0 !important;
-  }
-
-  .tab-header > > > .el-tabs__header {
-    margin: 0 !important;
-  }
-
-  .tab-header > > > .el-tabs__content {
-    height: 100%;
-  }
-
-  .draggable-group {
-    display: block;
-    width: 100%;
-    height: calc(100% - 6px);
-  }
-
-  .chart-icon {
-    width: 20px;
-    height: 20px;
-  }
-
-  .el-radio {
-    margin: 5px;
-  }
-
-  .el-radio > > > .el-radio__label {
-    padding-left: 0;
-  }
-
-  .attr-style {
-    height: calc(100vh - 56px - 60px - 40px - 40px);
-  }
-
-  .blackTheme .attr-style {
-    color: var(--TextPrimary);
-  }
-
-  .attr-selector {
-    width: 100%;
-    height: 100%;
-    margin: 6px 0;
-    padding: 0 4px;
-    display: flex;
-    align-items: center;
-    background-color: white
-  }
-
-  .blackTheme .attr-selector {
-
-    background-color: var(--MainBG)
-  }
-
-  .disabled-none-cursor {
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
-  .chart-class {
-    height: 100%;
-    padding: 10px;
-  }
-
-  .table-class {
-    height: calc(100% - 20px);
-  }
-
-  .dialog-css > > > .el-dialog__title {
-    font-size: 14px;
-  }
-
-  .dialog-css > > > .el-dialog__header {
-    padding: 20px 20px 0;
-  }
-
-  .dialog-css > > > .el-dialog__body {
-    padding: 10px 20px 20px;
-  }
-
-  .filter-btn-class {
-    padding: 6px;
-    border: none;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .chart-error-class {
-    text-align: center;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #ece7e7;
-  }
-
-  .blackTheme .chart-error-class {
-
-    background-color: var(--MainBG)
-  }
-
-  .field-height {
-    height: calc(50% - 20px);
-    border-top: 1px solid #E6E6E6;
-  }
-
-  .blackTheme .field-height {
-
-    border-top: 1px solid;
-    border-color: var(--TableBorderColor) !important;
-  }
-
-  .padding-tab {
-    padding: 0;
-    height: 100%;
-  }
-
-  .tree-select-span {
-    > > > div.vue-treeselect__control {
-      height: 32px !important;
-      font-weight: normal !important;
-    }
-  }
-
-  .drag-block-style {
-    padding: 2px 0 0 0;
-    width: 100%;
-    min-height: 32px;
-    border-radius: 4px;
-    border: 1px solid #DCDFE6;
-    overflow-x: hidden;
-    display: flex;
-    align-items: center;
-    background-color: white;
-  }
-
-  .blackTheme .drag-block-style {
-    border: 1px solid;
-    border-color: var(--TableBorderColor);
-    background-color: var(--ContentBG);
-  }
-
-  .drag-placeholder-style {
-    position: absolute;
-    top: calc(50% - 2px);
-    left: 0;
-    width: 100%;
-    color: #CCCCCC;
-  }
-
-  .blackTheme .drag-placeholder-style {
-    color: var(--TextPrimary);
-  }
-
-  .drag-placeholder-style-span {
-    padding-left: 16px;
-  }
-
-  .blackTheme .theme-border-class {
-    color: var(--TextPrimary) !important;
-    background-color: var(--ContentBG);
-  }
-
-  .blackTheme .padding-lr {
-    border-color: var(--TableBorderColor) !important;
-  }
-
-  .blackTheme .theme-item-class {
-    background-color: var(--MainBG) !important;
-    border-color: var(--TableBorderColor) !important;
-  }
-
-  .icon-class {
-    color: #6c6c6c;
-  }
-
-  .blackTheme .icon-class {
-    color: #cccccc;
-  }
-
-  .result-count {
-    width: 80px;
-  }
-
-  .radio-span > > > .el-radio__label {
-    margin-left: 4px;
-  }
+.no-senior {
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  padding-top: 40px;
+  overflow: auto;
+  border-right: 1px solid #e6e6e6;
+  height: 100%;
+}
 
 </style>

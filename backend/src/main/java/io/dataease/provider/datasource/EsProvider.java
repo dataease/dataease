@@ -13,6 +13,7 @@ import io.dataease.dto.datasource.TableDesc;
 import io.dataease.dto.datasource.TableField;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.constants.EsSqlLConstants;
 import io.dataease.provider.query.es.EsQueryProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -97,7 +98,7 @@ public class EsProvider extends DatasourceProvider {
 
     @Override
     public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
-        datasourceRequest.setQuery("desc " + datasourceRequest.getTable());
+        datasourceRequest.setQuery("desc " + String.format(EsSqlLConstants.KEYWORD_TABLE, datasourceRequest.getTable()));
         List<TableField> tableFields = new ArrayList<>();
         try {
             String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "?format=json");
@@ -239,6 +240,11 @@ public class EsProvider extends DatasourceProvider {
                 tableDesc.setName(row[0]);
                 tables.add(tableDesc);
             }
+            if (row.length == 4 && row[2].contains("TABLE") && row[3].equalsIgnoreCase("INDEX")) {
+                TableDesc tableDesc = new TableDesc();
+                tableDesc.setName(row[1]);
+                tables.add(tableDesc);
+            }
         }
         return tables;
     }
@@ -266,7 +272,7 @@ public class EsProvider extends DatasourceProvider {
         if (Integer.valueOf(versionList[0]) == 6) {
             esConfiguration.setUri("_xpack/sql");
         }
-        if (Integer.valueOf(versionList[0]) == 7) {
+        if (Integer.valueOf(versionList[0]) > 6) {
             esConfiguration.setUri("_sql");
         }
         datasourceRequest.getDatasource().setConfiguration(new Gson().toJson(esConfiguration));
@@ -287,6 +293,7 @@ public class EsProvider extends DatasourceProvider {
         Request request = new Request();
         request.setQuery(sql);
         request.setFetch_size(datasourceRequest.getFetchSize());
+        System.out.println(new Gson().toJson(request));
         String url = esConfiguration.getUrl().endsWith("/") ? esConfiguration.getUrl() + uri : esConfiguration.getUrl() + "/" + uri;
         String response = HttpClientUtil.post(url, new Gson().toJson(request), httpClientConfig);
         return response;

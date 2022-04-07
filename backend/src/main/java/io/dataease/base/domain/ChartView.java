@@ -35,5 +35,7 @@ public class ChartView implements Serializable {
 
     private Boolean isPlugin;
 
+    private String dataFrom;
+
     private static final long serialVersionUID = 1L;
 }

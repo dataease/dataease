@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "26621948",
+      "name": "流媒体，媒体列表",
+      "font_class": "a-liumeitimeitiliebiao",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "4920096",
+      "name": "iframe",
+      "font_class": "iframe",
+      "unicode": "e6de",
+      "unicode_decimal": 59102
+    },
+    {
+      "icon_id": "19610186",
+      "name": "参数",
+      "font_class": "canshu",
+      "unicode": "e6d7",
+      "unicode_decimal": 59095
+    },
+    {
       "icon_id": "12851123",
       "name": "更换",
       "font_class": "genghuan",
@@ -158,6 +179,13 @@
       "font_class": "xuanfuanniu",
       "unicode": "e8e6",
       "unicode_decimal": 59622
+    },
+    {
+      "icon_id": "27514350",
+      "name": "右悬浮-选中",
+      "font_class": "youxuanfu-copy-copy",
+      "unicode": "eb86",
+      "unicode_decimal": 60294
     },
     {
       "icon_id": "15196968",

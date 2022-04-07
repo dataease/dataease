@@ -26,12 +26,14 @@ import java.util.stream.Collectors;
 public class DePermissionAnnotationHandler {
 
     @Around(value = "@annotation(io.dataease.auth.annotation.DePermissions)")
-    public Object PermissionsAround(ProceedingJoinPoint point) {
+    public Object PermissionsAround(ProceedingJoinPoint point) throws Throwable{
 
+        if (AuthUtils.getUser().getIsAdmin()) {
+            return point.proceed(point.getArgs());
+        }
+        Boolean access = false;
         try {
-            if (AuthUtils.getUser().getIsAdmin()) {
-                return point.proceed(point.getArgs());
-            }
+
             MethodSignature ms = (MethodSignature) point.getSignature();
             Method method = ms.getMethod();
             DePermissions annotation = method.getAnnotation(DePermissions.class);
@@ -39,41 +41,45 @@ public class DePermissionAnnotationHandler {
             DePermission[] dePermissions = annotation.value();
             Object[] args = point.getArgs();
             if (logical == Logical.AND) {
+                access = true;
                 for (int i = 0; i < dePermissions.length; i++) {
                     DePermission permission = dePermissions[i];
                     boolean currentAccess = access(args[permission.paramIndex()], permission, 0);
                     if (!currentAccess) {
-                        return null;
+                        access = false;
+                        break;
                     }
                 }
             } else {
                 List<Exception> exceptions = new ArrayList<>();
-                Boolean someAccess = false;
                 for (int i = 0; i < dePermissions.length; i++) {
                     DePermission permission = dePermissions[i];
                     try {
                         boolean currentAccess = access(args[permission.paramIndex()], permission, 0);
                         if (currentAccess) {
-                            someAccess = true;
+                            access = true;
                             break;
                         }
                     } catch (Exception e) {
                         exceptions.add(e);
                     }
                 }
-                if (!someAccess) {
+                if (!access && exceptions.size() > 0) {
                     throw exceptions.get(0);
                 }
             }
-            return point.proceed(point.getArgs());
+
         } catch (Throwable throwable) {
             LogUtil.error(throwable.getMessage(), throwable);
             throw new RuntimeException(throwable.getMessage());
         }
+
+        return access ? point.proceed(point.getArgs()) : null;
     }
 
     @Around(value = "@annotation(io.dataease.auth.annotation.DePermission)")
-    public Object PermissionAround(ProceedingJoinPoint point) {
+    public Object PermissionAround(ProceedingJoinPoint point) throws Throwable{
+        Boolean access = false;
         try {
             if (AuthUtils.getUser().getIsAdmin()) {
                 return point.proceed(point.getArgs());
@@ -84,14 +90,14 @@ public class DePermissionAnnotationHandler {
             DePermission annotation = method.getAnnotation(DePermission.class);
             Object arg = point.getArgs()[annotation.paramIndex()];
             if (access(arg, annotation, 0)) {
-                return point.proceed(point.getArgs());
+                access = true;
             }
-            return false;
-
         } catch (Throwable throwable) {
             LogUtil.error(throwable.getMessage(), throwable);
             throw new RuntimeException(throwable.getMessage());
         }
+
+        return access ? point.proceed(point.getArgs()) : null;
     }
 
     private Boolean access(Object arg, DePermission annotation, int layer) throws Exception {

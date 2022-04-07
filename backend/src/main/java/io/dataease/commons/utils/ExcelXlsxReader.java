@@ -33,7 +33,7 @@ import java.util.*;
 public class ExcelXlsxReader extends DefaultHandler {
 
     /**
-     * 自定义获取表格某些信息
+     * 自定义获取表格某些信
      */
     public Map map = new TreeMap<String,String>();
     /**
@@ -99,6 +99,8 @@ public class ExcelXlsxReader extends DefaultHandler {
      * 日期格式字符串
      */
     private String formatString;
+
+
 
     //定义前一个元素和当前元素的位置，用来计算其中空的单元格数量，如A6和A8等
     private String preRef = null, ref = null;

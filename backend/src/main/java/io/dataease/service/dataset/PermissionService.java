@@ -30,7 +30,8 @@ public class PermissionService {
 
     public List<ChartFieldCustomFilterDTO> getCustomFilters(List<DatasetTableField> fields, DatasetTable datasetTable, Long user) {
         List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
-        for (DatasetRowPermissions datasetRowPermissions : rowPermissions(datasetTable.getId(), user)) {
+        Map<String, String> values = new HashMap<>();
+        for (DatasetRowPermissions datasetRowPermissions : rowPermissions(datasetTable.getId(), user, values)) {
             ChartFieldCustomFilterDTO dto = new ChartFieldCustomFilterDTO();
             if (StringUtils.isEmpty(datasetRowPermissions.getDatasetFieldId())) {
                 continue;
@@ -49,15 +50,24 @@ public class PermissionService {
                 List<ChartCustomFilterItemDTO> lists = JSONObject.parseArray(datasetRowPermissions.getFilter(), ChartCustomFilterItemDTO.class);
                 lists.forEach(chartCustomFilterDTO -> {
                     chartCustomFilterDTO.setFieldId(field.getId());
+                    if(datasetRowPermissions.getAuthTargetType().equalsIgnoreCase("sysParams")){
+                        System.out.println(values.get(chartCustomFilterDTO.getValue()).toString());
+                        chartCustomFilterDTO.setValue(values.get(chartCustomFilterDTO.getValue()).toString());
+                    }
                 });
                 dto.setFilter(lists);
                 dto.setLogic(datasetRowPermissions.getLogic());
+
                 customFilter.add(dto);
             } else {
                 if (StringUtils.isEmpty(datasetRowPermissions.getEnumCheckField())) {
                     continue;
                 }
-                dto.setEnumCheckField(Arrays.asList(datasetRowPermissions.getEnumCheckField().split(",").clone()));
+                if(datasetRowPermissions.getAuthTargetType().equalsIgnoreCase("sysParams")){
+                    dto.setEnumCheckField(Arrays.asList(values.get(datasetRowPermissions.getEnumCheckField()).toString().split(",").clone()));
+                }else {
+                    dto.setEnumCheckField(Arrays.asList(datasetRowPermissions.getEnumCheckField().split(",").clone()));
+                }
                 customFilter.add(dto);
             }
         }
@@ -87,7 +97,7 @@ public class PermissionService {
     }
 
 
-    private List<DatasetRowPermissions> rowPermissions(String datasetId, Long userId) {
+    private List<DatasetRowPermissions> rowPermissions(String datasetId, Long userId, Map<String, String> values) {
         List<DatasetRowPermissions> datasetRowPermissions = new ArrayList<>();
         Map<String, RowPermissionService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((RowPermissionService.class));
         if (beansOfType.keySet().size() == 0) {
@@ -106,7 +116,8 @@ public class PermissionService {
         }
         userId = userEntity.getUserId();
         deptId = userEntity.getDeptId();
-        roleIds = authUserService.roles(userId).stream().map(r -> Long.valueOf(r)).collect(Collectors.toList());
+        List<CurrentRoleDto> currentRoleDtos = authUserService.roleInfos(userId);
+        roleIds = currentRoleDtos.stream().map(CurrentRoleDto::getId).collect(Collectors.toList());
         DataSetRowPermissionsDTO dataSetRowPermissionsDTO = new DataSetRowPermissionsDTO();
         dataSetRowPermissionsDTO.setDatasetId(datasetId);
         dataSetRowPermissionsDTO.setAuthTargetIds(Collections.singletonList(userId));
@@ -118,6 +129,18 @@ public class PermissionService {
         dataSetRowPermissionsDTO.setAuthTargetIds(Collections.singletonList(deptId));
         dataSetRowPermissionsDTO.setAuthTargetType("dept");
         datasetRowPermissions.addAll(rowPermissionService.searchRowPermissions(dataSetRowPermissionsDTO));
+
+        dataSetRowPermissionsDTO.setAuthTargetType("sysParams");
+        dataSetRowPermissionsDTO.setAuthTargetIds(null);
+        datasetRowPermissions.addAll(rowPermissionService.searchRowPermissions(dataSetRowPermissionsDTO));
+
+
+        values.put("${sysParams.userId}", userEntity.getUsername());
+        values.put("${sysParams.userName}", userEntity.getNickName());
+        values.put("${sysParams.userEmail}", userEntity.getEmail());
+        values.put("${sysParams.userSource}", userEntity.getFrom() == 0 ? "LOCAL" : "OIDC");
+        values.put("${sysParams.dept}", userEntity.getDeptName());
+        values.put("${sysParams.roles}", String.join(",", currentRoleDtos.stream().map(CurrentRoleDto::getName).collect(Collectors.toList())));
         return datasetRowPermissions;
     }
 

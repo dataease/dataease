@@ -156,6 +156,11 @@ public class SysUserService {
         });
     }
 
+    public boolean validateLoginType(Integer from, Integer loginType) {
+
+        return ObjectUtils.isNotEmpty(from) && ObjectUtils.isNotEmpty(loginType) && from == loginType;
+    }
+
     public List<String> ldapUserNames() {
 
         List<String> usernames = extSysUserMapper.ldapUserNames(1);
