@@ -45,6 +45,9 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 - Hive
 - DB2
 - API
+- Impala
+- TiDB
+- StarRocks
 
 > 更多数据源支持持续增加中...
 
