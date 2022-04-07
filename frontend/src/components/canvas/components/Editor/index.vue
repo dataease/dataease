@@ -143,7 +143,7 @@
 
     <!--视图详情-->
     <el-dialog
-      :title="'['+showChartInfo.name+']'+$t('chart.chart_details')"
+      :title="$t('chart.chart_details')"
       :visible.sync="chartDetailsVisible"
       width="70%"
       class="dialog-css"
