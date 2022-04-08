@@ -68,8 +68,8 @@
             >
               <i class="el-icon-plus" />
             </el-upload>
-            <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogVisible">
-              <img width="100%" :src="dialogImageUrl" alt="">
+            <el-dialog top="25vh" width="600px" :append-to-body="true" :destroy-on-close="true" :visible.sync="dialogVisible">
+              <img width="100%" :src="dialogImageUrl">
             </el-dialog>
           </el-col>
         </el-row>
