@@ -2,11 +2,13 @@ package io.dataease.plugins.server;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.pool.PriorityThreadPoolExecutor;
 import io.dataease.commons.utils.*;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
+import io.dataease.plugins.common.entity.XpackConditionEntity;
 import io.dataease.plugins.common.entity.XpackGridRequest;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.email.dto.request.XpackEmailCreate;
@@ -25,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -47,6 +50,18 @@ public class XEmailTaskServer {
             @RequestBody XpackGridRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
+        CurrentUserDto user = AuthUtils.getUser();
+        if (!user.getIsAdmin()) {
+            Long userId = user.getUserId();
+            XpackConditionEntity condition = new XpackConditionEntity();
+            condition.setField("u.user_id");
+            condition.setOperator("eq");
+            condition.setValue(userId);
+            List<XpackConditionEntity> conditions = CollectionUtils.isEmpty(request.getConditions()) ? new ArrayList<>() : request.getConditions();
+            conditions.add(condition);
+            request.setConditions(conditions);
+        }
+
         List<XpackTaskGridDTO> tasks = emailXpackService.taskGrid(request);
         if (CollectionUtils.isNotEmpty(tasks)) {
             tasks.forEach(item -> {
