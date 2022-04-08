@@ -67,7 +67,7 @@
                   >
                     <transition-group>
                       <div
-                        v-for="item in fieldDatas.filter(item => !keyWord || (item.name && item.name.toLocaleLowerCase().includes(keyWord)))"
+                        v-for="item in fieldDatas"
                         :key="item.id"
                         :class="myAttrs && myAttrs.fieldId && myAttrs.fieldId.includes(item.id) ? 'filter-db-row-checked' : 'filter-db-row'"
                         class="filter-db-row"
@@ -140,7 +140,7 @@
                   >
                     <transition-group>
                       <div
-                        v-for="item in comFieldDatas.filter(item => !viewKeyWord || item.name.toLocaleLowerCase().includes(viewKeyWord))"
+                        v-for="item in comFieldDatas"
                         :key="item.id"
                         :class="myAttrs && myAttrs.fieldId && myAttrs.fieldId.includes(item.id) ? 'filter-db-row-checked' : 'filter-db-row'"
                         class="filter-db-row"
@@ -237,7 +237,9 @@ export default {
       sceneDatas: [],
       //   viewDatas: [],
       fieldDatas: [],
+      originFieldDatas: [],
       comFieldDatas: [],
+      originComFieldDatas: [],
       defaultProps: {
         label: 'name',
         children: 'children',
@@ -298,6 +300,11 @@ export default {
     keyWord(val) {
       this.expandedArray = []
       if (this.showDomType === 'field') {
+        let results = this.originFieldDatas
+        if (val) {
+          results = this.originFieldDatas.filter(item => item.name.toLocaleLowerCase().includes(val))
+        }
+        this.fieldDatas = JSON.parse(JSON.stringify(results))
         return
       }
       if (this.timer) {
@@ -306,6 +313,16 @@ export default {
       this.timer = setTimeout(() => {
         this.getTreeData(val)
       }, (val && val !== '') ? 1000 : 0)
+    },
+
+    viewKeyWord(val) {
+      if (this.comShowDomType === 'field') {
+        let results = this.originComFieldDatas
+        if (val) {
+          results = this.originComFieldDatas.filter(item => item.name.toLocaleLowerCase().includes(val))
+        }
+        this.comFieldDatas = JSON.parse(JSON.stringify(results))
+      }
     }
   },
   created() {
@@ -512,7 +529,8 @@ export default {
         if (this.widget && this.widget.filterFieldMethod) {
           datas = this.widget.filterFieldMethod(datas)
         }
-        this.fieldDatas = datas
+        this.originFieldDatas = datas
+        this.fieldDatas = JSON.parse(JSON.stringify(datas))
       })
     },
     comLoadField(tableId) {
@@ -521,7 +539,8 @@ export default {
         if (this.widget && this.widget.filterFieldMethod) {
           datas = this.widget.filterFieldMethod(datas)
         }
-        this.comFieldDatas = datas
+        this.originComFieldDatas = datas
+        this.comFieldDatas = JSON.parse(JSON.stringify(datas))
       })
     },
     showFieldDatas(row) {
