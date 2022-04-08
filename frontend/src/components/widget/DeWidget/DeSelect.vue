@@ -90,7 +90,7 @@ export default {
       this.changeValue(value)
     },
     'element.options.attrs.fieldId': function(value, old) {
-      if (typeof value === 'undefined' || value === old) return
+      if (value === null || typeof value === 'undefined' || value === old) return
       this.datas = []
 
       let method = multFieldValues
