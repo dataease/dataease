@@ -188,4 +188,14 @@ export function initViewCache(panelId) {
     loading: false
   })
 }
+export function exportDetails(data) {
+  // 初始化仪表板视图缓存
+  return request({
+    url: 'panel/group/exportDetails',
+    method: 'post',
+    data: data,
+    loading: true,
+    responseType: 'blob'
+  })
+}
 
