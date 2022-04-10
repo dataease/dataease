@@ -13,6 +13,7 @@ import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
+import io.dataease.controller.request.panel.PanelViewDetailsRequest;
 import io.dataease.dto.PanelGroupExtendDataDTO;
 import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.chart.ChartViewDTO;
@@ -20,6 +21,7 @@ import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseRequest;
 import io.dataease.dto.panel.po.PanelViewInsertDTO;
+import io.dataease.excel.utils.EasyExcelExporter;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
@@ -30,14 +32,24 @@ import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.Base64Utils;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,6 +63,7 @@ public class PanelGroupService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
+    private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
     @Resource
     private PanelGroupMapper panelGroupMapper;
     @Resource
@@ -110,7 +123,7 @@ public class PanelGroupService {
     public PanelGroup saveOrUpdate(PanelGroupRequest request) {
         String userName = AuthUtils.getUser().getUsername();
         String panelId = request.getId();
-        if(StringUtils.isNotEmpty(panelId)){
+        if (StringUtils.isNotEmpty(panelId)) {
             panelViewService.syncPanelViews(request);
         }
         if (StringUtils.isEmpty(panelId)) { // 新建
@@ -310,46 +323,46 @@ public class PanelGroupService {
         return newPanelId;
     }
 
-    public String newPanel(PanelGroupRequest request){
+    public String newPanel(PanelGroupRequest request) {
         String newPanelId = UUIDUtil.getUUIDAsString();
         String newFrom = request.getNewFrom();
         String templateStyle = null;
         String templateData = null;
         String dynamicData = null;
-        if(PanelConstants.NEW_PANEL_FROM.NEW.equals(newFrom)){
+        if (PanelConstants.NEW_PANEL_FROM.NEW.equals(newFrom)) {
 
-        }else{
+        } else {
             //内部模板新建
-            if(PanelConstants.NEW_PANEL_FROM.NEW_INNER_TEMPLATE.equals(newFrom)){
+            if (PanelConstants.NEW_PANEL_FROM.NEW_INNER_TEMPLATE.equals(newFrom)) {
                 PanelTemplateWithBLOBs panelTemplate = templateMapper.selectByPrimaryKey(request.getTemplateId());
                 templateStyle = panelTemplate.getTemplateStyle();
                 templateData = panelTemplate.getTemplateData();
                 dynamicData = panelTemplate.getDynamicData();
-            }else if(PanelConstants.NEW_PANEL_FROM.NEW_OUTER_TEMPLATE.equals(newFrom)){
+            } else if (PanelConstants.NEW_PANEL_FROM.NEW_OUTER_TEMPLATE.equals(newFrom)) {
                 templateStyle = request.getPanelStyle();
                 templateData = request.getPanelData();
                 dynamicData = request.getDynamicData();
             }
-            Map<String,String> dynamicDataMap = JSON.parseObject(dynamicData,Map.class);
+            Map<String, String> dynamicDataMap = JSON.parseObject(dynamicData, Map.class);
             List<PanelViewInsertDTO> panelViews = new ArrayList<>();
             List<PanelGroupExtendDataDTO> viewsData = new ArrayList<>();
-            for(Map.Entry<String, String> entry : dynamicDataMap.entrySet()){
+            for (Map.Entry<String, String> entry : dynamicDataMap.entrySet()) {
                 String originViewId = entry.getKey();
                 String originViewData = entry.getValue();
-                ChartViewDTO chartView = JSON.parseObject(originViewData,ChartViewDTO.class);
+                ChartViewDTO chartView = JSON.parseObject(originViewData, ChartViewDTO.class);
                 String position = chartView.getPosition();
                 String newViewId = UUIDUtil.getUUIDAsString();
                 chartView.setId(newViewId);
                 chartView.setSceneId(newPanelId);
                 chartView.setDataFrom(CommonConstants.VIEW_DATA_FROM.TEMPLATE);
                 //TODO 数据处理 1.替换viewId 2.加入panelView 数据(数据来源为template) 3.加入模板view data数据
-                templateData = templateData.replaceAll(originViewId,newViewId);
-                panelViews.add(new PanelViewInsertDTO(newViewId,newPanelId,position));
-                viewsData.add(new PanelGroupExtendDataDTO(newPanelId,newViewId,originViewData));
+                templateData = templateData.replaceAll(originViewId, newViewId);
+                panelViews.add(new PanelViewInsertDTO(newViewId, newPanelId, position));
+                viewsData.add(new PanelGroupExtendDataDTO(newPanelId, newViewId, originViewData));
                 chartViewMapper.insertSelective(chartView);
                 extChartViewMapper.copyToCache(newViewId);
             }
-            if(CollectionUtils.isNotEmpty(panelViews)){
+            if (CollectionUtils.isNotEmpty(panelViews)) {
                 extPanelViewMapper.savePanelView(panelViews);
                 extPanelGroupExtendDataMapper.savePanelExtendData(viewsData);
             }
@@ -439,10 +452,77 @@ public class PanelGroupService {
         }
         return null;
     }
-    private void clearPermissionCache(){
+
+    private void clearPermissionCache() {
         CacheUtils.removeAll(AuthConstants.USER_PANEL_NAME);
         CacheUtils.removeAll(AuthConstants.ROLE_PANEL_NAME);
         CacheUtils.removeAll(AuthConstants.DEPT_PANEL_NAME);
     }
 
+
+    public void exportPanelViewDetails(PanelViewDetailsRequest request, HttpServletResponse response) throws IOException {
+        OutputStream outputStream = response.getOutputStream();
+        try {
+            String snapshot = request.getSnapshot();
+            List<String[]> details = request.getDetails();
+            details.add(0,request.getHeader());
+            HSSFWorkbook wb = new HSSFWorkbook();
+            //明细sheet
+            HSSFSheet detailsSheet = wb.createSheet("视图明细");
+
+            //给单元格设置样式
+            CellStyle cellStyle = wb.createCellStyle();
+            Font font = wb.createFont();
+            //设置字体大小
+            font.setFontHeightInPoints((short) 12);
+            //设置字体加粗
+            font.setBold(true);
+            //给字体设置样式
+            cellStyle.setFont(font);
+            //设置单元格背景颜色
+            cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            //设置单元格填充样式(使用纯色背景颜色填充)
+            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            if (CollectionUtils.isNotEmpty(details)) {
+                for (int i = 0; i < details.size(); i++) {
+                    HSSFRow row = detailsSheet.createRow(i);
+                    String[] rowData = details.get(i);
+                    if (rowData != null) {
+                        for (int j = 0; j < rowData.length; j++) {
+                            HSSFCell cell = row.createCell(j);
+                            cell.setCellValue(rowData[j]);
+                            if(i==0){// 头部
+                                cell.setCellStyle(cellStyle);
+                                //设置列的宽度
+                                detailsSheet.setColumnWidth(j, 255*20);
+                            }
+                        }
+                    }
+                }
+            }
+            if(StringUtils.isNotEmpty(snapshot)){
+                //截图sheet 1px ≈ 2.33dx ≈ 0.48 dy  8*24 个单元格
+                HSSFSheet snapshotSheet = wb.createSheet("截图");
+                short reDefaultRowHeight = (short)Math.round(request.getSnapshotHeight()*3.5/8);
+                int reDefaultColumnWidth = (int)Math.round(request.getSnapshotWidth()*0.25/24);
+                snapshotSheet.setDefaultColumnWidth(reDefaultColumnWidth);
+                snapshotSheet.setDefaultRowHeight(reDefaultRowHeight);
+
+                //画图的顶级管理器，一个sheet只能获取一个（一定要注意这点）i
+                HSSFPatriarch patriarch = snapshotSheet.createDrawingPatriarch();
+                HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, reDefaultColumnWidth, reDefaultColumnWidth,(short) 0, 0, (short)8, 24);
+                anchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
+                patriarch.createPicture(anchor, wb.addPicture(Base64Utils.decodeFromString(snapshot.replace(DATA_URL_TITLE,"")), HSSFWorkbook.PICTURE_TYPE_JPEG));
+            }
+            response.setContentType("application/vnd.ms-excel");
+            //文件名称
+            response.setHeader("Content-disposition", "attachment;filename=" + request.getViewName() + ".xlsx");
+            wb.write(outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            DataEaseException.throwException(e);
+        }
+    }
 }

@@ -10,6 +10,7 @@ import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.controller.request.panel.PanelGroupRequest;
+import io.dataease.controller.request.panel.PanelViewDetailsRequest;
 import io.dataease.dto.PermissionProxy;
 import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
@@ -22,6 +23,8 @@ import org.apache.shiro.authz.annotation.Logical;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -99,5 +102,13 @@ public class PanelGroupController {
     public Map queryPanelComponents(@PathVariable String id){
         return panelGroupService.queryPanelComponents(id);
     }
+
+    @ApiOperation("导出仪表板视图明细")
+    @PostMapping("/exportDetails")
+    @I18n
+    public void exportDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws IOException {
+        panelGroupService.exportPanelViewDetails(request,response);
+    }
+
 
 }

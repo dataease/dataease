@@ -1,18 +1,19 @@
 <template>
-  <de-container>
-    <de-aside-container v-if="chart.type !== 'table-normal' && chart.type !== 'table-info'" :style="customStyle">
-      <plugin-com
-        v-if="chart.isPlugin"
-
-        :component-name="chart.type + '-view'"
-        :obj="{chart}"
-        class="chart-class"
-      />
-      <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
-      <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
-      <chart-component-s2 v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
-      <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
-      <label-normal-text v-else-if="chart.type === 'label'" :chart="chart" class="table-class" />
+  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+    <de-aside-container v-if="showChartCanvas">
+      <div id="chartCanvas" :style="customStyle">
+        <plugin-com
+          v-if="chart.isPlugin"
+          :component-name="chart.type + '-view'"
+          :obj="{chart}"
+          class="chart-class"
+        />
+        <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
+        <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
+        <chart-component-s2 v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
+        <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
+        <label-normal-text v-else-if="chart.type === 'label'" :chart="chart" class="table-class" />
+      </div>
     </de-aside-container>
     <de-main-container>
       <table-normal :chart="chartTable" :show-summary="false" class="table-class" />
@@ -28,12 +29,14 @@ import LabelNormal from '@/views/chart/components/normal/LabelNormal'
 import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
-import { export_json_to_excel } from '@/plugins/Export2Excel'
+// import { export_json_to_excel } from '@/plugins/Export2Excel'
 import { mapState } from 'vuex'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
+import { exportDetails } from '@/api/panel/panel'
+import html2canvas from 'html2canvasde'
 export default {
   name: 'UserView',
   components: { LabelNormalText, ChartComponentS2, ChartComponentG2, DeMainContainer, DeContainer, DeAsideContainer, ChartComponent, TableNormal, LabelNormal, PluginCom },
@@ -53,8 +56,12 @@ export default {
     }
   },
   computed: {
+    showChartCanvas() {
+      return this.chart.type !== 'table-normal' && this.chart.type !== 'table-info'
+    },
     customStyle() {
       let style = {
+        height: '100%'
       }
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
@@ -83,11 +90,39 @@ export default {
   },
   methods: {
     exportExcel() {
+      const _this = this
+      if (this.showChartCanvas) {
+        html2canvas(document.getElementById('chartCanvas')).then(canvas => {
+          const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
+          _this.exportExcelDownload(snapshot, canvas.width, canvas.height)
+        })
+      } else {
+        _this.exportExcelDownload()
+      }
+    },
+    exportExcelDownload(snapshot, width, height) {
       const excelHeader = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.name)
       const excelHeaderKeys = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.dataeaseName)
       const excelData = JSON.parse(JSON.stringify(this.chart.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       const excelName = this.chart.name
-      export_json_to_excel(excelHeader, excelData, excelName)
+      const request = {
+        viewName: excelName,
+        header: excelHeader,
+        details: excelData,
+        snapshot: snapshot,
+        snapshotWidth: width,
+        snapshotHeight: height
+      }
+      exportDetails(request).then((res) => {
+        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = excelName // 下载的文件名
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
     },
 
     renderComponent() {
