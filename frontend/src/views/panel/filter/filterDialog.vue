@@ -302,7 +302,7 @@ export default {
       if (this.showDomType === 'field') {
         let results = this.originFieldDatas
         if (val) {
-          results = this.originFieldDatas.filter(item => item.name.toLocaleLowerCase().includes(val))
+          results = this.originFieldDatas.filter(item => item.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
         }
         this.fieldDatas = JSON.parse(JSON.stringify(results))
         return
@@ -319,7 +319,7 @@ export default {
       if (this.comShowDomType === 'field') {
         let results = this.originComFieldDatas
         if (val) {
-          results = this.originComFieldDatas.filter(item => item.name.toLocaleLowerCase().includes(val))
+          results = this.originComFieldDatas.filter(item => item.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
         }
         this.comFieldDatas = JSON.parse(JSON.stringify(results))
       }
