@@ -468,7 +468,7 @@ public class PanelGroupService {
             details.add(0,request.getHeader());
             HSSFWorkbook wb = new HSSFWorkbook();
             //明细sheet
-            HSSFSheet detailsSheet = wb.createSheet("视图明细");
+            HSSFSheet detailsSheet = wb.createSheet("数据");
 
             //给单元格设置样式
             CellStyle cellStyle = wb.createCellStyle();
@@ -503,7 +503,7 @@ public class PanelGroupService {
             }
             if(StringUtils.isNotEmpty(snapshot)){
                 //截图sheet 1px ≈ 2.33dx ≈ 0.48 dy  8*24 个单元格
-                HSSFSheet snapshotSheet = wb.createSheet("截图");
+                HSSFSheet snapshotSheet = wb.createSheet("图表");
                 short reDefaultRowHeight = (short)Math.round(request.getSnapshotHeight()*3.5/8);
                 int reDefaultColumnWidth = (int)Math.round(request.getSnapshotWidth()*0.25/24);
                 snapshotSheet.setDefaultColumnWidth(reDefaultColumnWidth);

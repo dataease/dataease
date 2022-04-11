@@ -1,18 +1,20 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
     <de-aside-container v-if="showChartCanvas">
-      <div id="chartCanvas" :style="customStyle">
-        <plugin-com
-          v-if="chart.isPlugin"
-          :component-name="chart.type + '-view'"
-          :obj="{chart}"
-          class="chart-class"
-        />
-        <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
-        <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
-        <chart-component-s2 v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
-        <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
-        <label-normal-text v-else-if="chart.type === 'label'" :chart="chart" class="table-class" />
+      <div id="chartCanvas" class="canvas-class" :style="customStyle">
+        <div class="canvas-class" :style="commonStyle">
+          <plugin-com
+            v-if="chart.isPlugin"
+            :component-name="chart.type + '-view'"
+            :obj="{chart}"
+            class="chart-class"
+          />
+          <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
+          <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
+          <chart-component-s2 v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
+          <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
+          <label-normal-text v-else-if="chart.type === 'label'" :chart="chart" class="table-class" />
+        </div>
       </div>
     </de-aside-container>
     <de-main-container>
@@ -37,6 +39,9 @@ import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { exportDetails } from '@/api/panel/panel'
 import html2canvas from 'html2canvasde'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { deepCopy } from '@/components/canvas/utils/utils'
+import { get } from '@/api/system/dynamic'
 export default {
   name: 'UserView',
   components: { LabelNormalText, ChartComponentS2, ChartComponentG2, DeMainContainer, DeContainer, DeAsideContainer, ChartComponent, TableNormal, LabelNormal, PluginCom },
@@ -52,7 +57,8 @@ export default {
   },
   data() {
     return {
-      refId: null
+      refId: null,
+      element: {}
     }
   },
   computed: {
@@ -61,7 +67,6 @@ export default {
     },
     customStyle() {
       let style = {
-        height: '100%'
       }
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
@@ -81,12 +86,34 @@ export default {
       }
       return style
     },
+    commonStyle() {
+      const style = {}
+      if (this.element && this.element.commonBackground) {
+        style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
+        style['border-radius'] = (this.element.commonBackground.borderRadius || 0) + 'px'
+        if (this.element.commonBackground.enable) {
+          if (this.element.commonBackground.backgroundType === 'innerImage') {
+            const innerImage = this.element.commonBackground.innerImage.replace('svg', 'png')
+            style['background'] = `url(${innerImage}) no-repeat`
+          } else if (this.element.commonBackground.backgroundType === 'outerImage') {
+            style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat`
+          } else if (this.element.commonBackground.backgroundType === 'color') {
+            style['background-color'] = hexColorToRGBA(this.element.commonBackground.color, this.element.commonBackground.alpha)
+          }
+        }
+        style['overflow'] = 'hidden'
+      }
+      return style
+    },
     ...mapState([
       'isClickComponent',
       'curComponent',
       'componentData',
       'canvasStyleData'
     ])
+  },
+  mounted() {
+    this.element = deepCopy(this.curComponent)
   },
   methods: {
     exportExcel() {
@@ -118,7 +145,7 @@ export default {
         const link = document.createElement('a')
         link.style.display = 'none'
         link.href = URL.createObjectURL(blob)
-        link.download = excelName // 下载的文件名
+        link.download = excelName + '.xlsx' // 下载的文件名
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
@@ -149,5 +176,10 @@ export default {
   }
   .table-class{
     height: 100%;
+  }
+  .canvas-class{
+    width: 100%;
+    height: 100%;
+    background-size: 100% 100% !important;
   }
 </style>
