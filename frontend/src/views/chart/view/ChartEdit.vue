@@ -1088,7 +1088,7 @@
       width="70%"
       class="dialog-css"
     >
-      <table-selector @getTable="getTable" />
+      <table-selector :checked-table="table" @getTable="getTable" />
       <p style="margin-top: 10px;color:#F56C6C;font-size: 12px;">{{ $t('chart.change_ds_tip') }}</p>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeChangeChart">{{ $t('chart.cancel') }}</el-button>
@@ -2598,7 +2598,7 @@ export default {
 
 .view-panel {
   display: flex;
-  height: calc(100% - 80px);
+  height: 100%;
   background-color: #f7f8fa;
 }
 
@@ -2717,6 +2717,7 @@ span {
 }
 
 .tab-header > > > .el-tabs__content {
+  height: calc(100% - 40px);
 }
 
 .draggable-group {
