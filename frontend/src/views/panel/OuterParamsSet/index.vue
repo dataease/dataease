@@ -204,7 +204,7 @@ export default {
       currentFiledTreeNode: null,
       defaultOuterParamsInfo: {
         paramName: '',
-        checked: false,
+        checked: true,
         targetViewInfoList: []
       },
       defaultTargetViewInfo: {
@@ -322,12 +322,16 @@ export default {
       targetViewInfo.targetFieldId = null
     },
     sourceFieldCheckedChange(data) {
+      if (data.checked) {
+        this.outerParams.checked = true
+      }
       this.$nextTick(() => {
         this.$refs.outerParamsInfoTree.setCurrentKey(data.paramsInfoId)
         this.nodeClick(data)
       })
     },
     addOuterParamsInfo() {
+      this.outerParams.checked = true
       const outerParamsInfo = deepCopy(this.defaultOuterParamsInfo)
       outerParamsInfo['paramsInfoId'] = uuid.v1()
       this.outerParamsInfoArray.push(outerParamsInfo)
