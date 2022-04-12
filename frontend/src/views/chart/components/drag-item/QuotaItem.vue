@@ -49,13 +49,14 @@
                 <i class="el-icon-arrow-right el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-if="item.id === 'count' || item.deType === 0 || item.deType === 1" :command="beforeSummary('count')">{{ $t('chart.count') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('sum')">{{ $t('chart.sum') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('avg')">{{ $t('chart.avg') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('max')">{{ $t('chart.max') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('min')">{{ $t('chart.min') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('stddev_pop')">{{ $t('chart.stddev_pop') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('var_pop')">{{ $t('chart.var_pop') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('sum')">{{ $t('chart.sum') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('avg')">{{ $t('chart.avg') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('max')">{{ $t('chart.max') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('min')">{{ $t('chart.min') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('stddev_pop')">{{ $t('chart.stddev_pop') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('var_pop')">{{ $t('chart.var_pop') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSummary('count')">{{ $t('chart.count') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSummary('count_distinct')">{{ $t('chart.count_distinct') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>

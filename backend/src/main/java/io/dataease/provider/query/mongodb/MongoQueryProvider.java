@@ -12,6 +12,7 @@ import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.constants.MongoConstants;
+import io.dataease.plugins.common.constants.MySQLConstants;
 import io.dataease.plugins.common.constants.SQLConstants;
 import io.dataease.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
@@ -915,9 +916,17 @@ public class MongoQueryProvider extends QueryProvider {
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
             fieldName = MongoConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format(MongoConstants.AGG_FIELD, y.getSummary(), originField);
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                fieldName = String.format(MongoConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else {
+                fieldName = String.format(MongoConstants.AGG_FIELD, y.getSummary(), originField);
+            }
         } else {
-            fieldName = String.format(MongoConstants.AGG_FIELD, y.getSummary(), originField);
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                fieldName = String.format(MongoConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else {
+                fieldName = String.format(MongoConstants.AGG_FIELD, y.getSummary(), originField);
+            }
         }
         return SQLObj.builder()
                 .fieldName(fieldName)

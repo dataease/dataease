@@ -974,7 +974,11 @@ public class ImpalaQueryProvider extends QueryProvider {
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
             fieldName = ImpalaConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format(ImpalaConstants.AGG_FIELD, y.getSummary(), originField);
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                fieldName = String.format(ImpalaConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else {
+                fieldName = String.format(ImpalaConstants.AGG_FIELD, y.getSummary(), originField);
+            }
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                 String cast = String.format(ImpalaConstants.CAST, originField, y.getDeType() == 2 ? ImpalaConstants.DEFAULT_INT_FORMAT : ImpalaConstants.DEFAULT_FLOAT_FORMAT);
@@ -982,7 +986,11 @@ public class ImpalaQueryProvider extends QueryProvider {
                 fieldName = String.format(ImpalaConstants.CAST, agg, ImpalaConstants.DEFAULT_FLOAT_FORMAT);
             } else {
                 String cast = String.format(ImpalaConstants.CAST, originField, y.getDeType() == 2 ? ImpalaConstants.DEFAULT_INT_FORMAT : ImpalaConstants.DEFAULT_FLOAT_FORMAT);
-                fieldName = String.format(ImpalaConstants.AGG_FIELD, y.getSummary(), cast);
+                if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                    fieldName = String.format(ImpalaConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
+                } else {
+                    fieldName = String.format(ImpalaConstants.AGG_FIELD, y.getSummary(), cast);
+                }
             }
         }
         return SQLObj.builder()

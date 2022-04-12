@@ -1067,7 +1067,11 @@ export default {
     total_pos_left: '左侧',
     total_pos_right: '右侧',
     chart_label: '文本卡',
-    drag_block_label: '标签'
+    drag_block_label: '标签',
+    count_distinct: '去重计数',
+    table_page_mode: '分页模式',
+    page_mode_page: '翻页',
+    page_mode_pull: '下拉'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

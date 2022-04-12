@@ -1064,7 +1064,11 @@ export default {
     total_pos_left: 'Left',
     total_pos_right: 'Right',
     chart_label: 'Label',
-    drag_block_label: 'Label'
+    drag_block_label: 'Label',
+    count_distinct: 'Distinct Count',
+    table_page_mode: 'Page Mode',
+    page_mode_page: 'Page',
+    page_mode_pull: 'Pull'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

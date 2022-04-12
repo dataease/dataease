@@ -13,11 +13,11 @@ import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.dto.chart.ChartViewFieldDTO;
 import io.dataease.dto.datasource.JdbcConfiguration;
 import io.dataease.dto.sqlObj.SQLObj;
+import io.dataease.plugins.common.constants.PgConstants;
 import io.dataease.plugins.common.constants.RedshiftConstants;
+import io.dataease.plugins.common.constants.SQLConstants;
 import io.dataease.plugins.common.constants.SqlServerSQLConstants;
 import io.dataease.provider.QueryProvider;
-import io.dataease.plugins.common.constants.SQLConstants;
-import io.dataease.plugins.common.constants.PgConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -927,7 +927,11 @@ public class RedshiftQueryProvider extends QueryProvider {
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
             fieldName = PgConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format(PgConstants.AGG_FIELD, y.getSummary(), originField);
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                fieldName = String.format(PgConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else {
+                fieldName = String.format(PgConstants.AGG_FIELD, y.getSummary(), originField);
+            }
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                 String cast = String.format(PgConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? PgConstants.DEFAULT_INT_FORMAT : PgConstants.DEFAULT_FLOAT_FORMAT);
@@ -935,7 +939,11 @@ public class RedshiftQueryProvider extends QueryProvider {
                 fieldName = String.format(PgConstants.CAST, agg, PgConstants.DEFAULT_FLOAT_FORMAT);
             } else {
                 String cast = String.format(PgConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? PgConstants.DEFAULT_INT_FORMAT : PgConstants.DEFAULT_FLOAT_FORMAT);
-                fieldName = String.format(PgConstants.AGG_FIELD, y.getSummary(), cast);
+                if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                    fieldName = String.format(PgConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
+                } else {
+                    fieldName = String.format(PgConstants.AGG_FIELD, y.getSummary(), cast);
+                }
             }
         }
         return SQLObj.builder()
