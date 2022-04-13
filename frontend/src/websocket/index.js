@@ -46,11 +46,12 @@ class DeWebsocket {
   }
 
   connection() {
-    const socket = new SockJS(this.ws_url)
-    /* const socket = new SockJS('http://localhost:8081' + this.ws_url) */
     if (!this.isLoginStatu()) {
       return
     }
+    const socket = new SockJS(this.ws_url + '?userId=' + store.state.user.user.userId)
+    /* const socket = new SockJS('http://localhost:8081' + this.ws_url) */
+
     this.client = Stomp.over(socket)
     const heads = {
       /* Authorization: '', */
