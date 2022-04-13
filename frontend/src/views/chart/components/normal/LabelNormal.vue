@@ -174,7 +174,7 @@ export default {
     colorThreshold(valueColor) {
       if (this.chart.senior) {
         const senior = JSON.parse(this.chart.senior)
-        if (senior.threshold.labelThreshold && senior.threshold.labelThreshold.length > 0) {
+        if (senior.threshold && senior.threshold.labelThreshold && senior.threshold.labelThreshold.length > 0) {
           const value = this.chart.data.series[0].data[0]
           for (let i = 0; i < senior.threshold.labelThreshold.length; i++) {
             let flag = false
