@@ -48,7 +48,7 @@
       </div>
     </div>
     <div slot="reference">
-      <el-badge :value="visible ? paginationConfig.total : count" :hidden="!count && !paginationConfig.total" :max="99" class="item">
+      <el-badge :value="visible && !loading ? paginationConfig.total : count" :hidden="!count && !paginationConfig.total" :max="99" class="item">
         <svg-icon class-name="notification" icon-class="notification" />
       </el-badge>
 
