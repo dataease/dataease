@@ -99,6 +99,9 @@
           <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
             <span>{{ $t('chart.filter') }}...</span>
           </el-dropdown-item>
+          <el-dropdown-item v-if="chart.render === 'antv' && chart.type.includes('table')" icon="el-icon-notebook-2" divided :command="beforeClickItem('formatter')">
+            <span>{{ $t('chart.value_formatter') }}...</span>
+          </el-dropdown-item>
           <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">
             <span>{{ $t('chart.show_name_set') }}</span>
           </el-dropdown-item>
@@ -115,6 +118,7 @@
 import { compareItem } from '@/views/chart/chart/compare'
 import { getItemType } from '@/views/chart/components/drag-item/utils'
 import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
+import { formatterItem } from '@/views/chart/chart/formatter'
 
 export default {
   name: 'QuotaItem',
@@ -149,7 +153,8 @@ export default {
     return {
       compareItem: compareItem,
       disableEditCompare: false,
-      tagType: 'success'
+      tagType: 'success',
+      formatterItem: formatterItem
     }
   },
   watch: {
@@ -171,6 +176,9 @@ export default {
     init() {
       if (!this.item.compareCalc) {
         this.item.compareCalc = JSON.parse(JSON.stringify(this.compareItem))
+      }
+      if (!this.item.formatterCfg) {
+        this.item.formatterCfg = JSON.parse(JSON.stringify(this.formatterItem))
       }
     },
     isEnableCompare() {
@@ -203,6 +211,9 @@ export default {
           break
         case 'filter':
           this.editFilter()
+          break
+        case 'formatter':
+          this.valueFormatter()
           break
         default:
           break
@@ -288,6 +299,12 @@ export default {
     },
     getItemTagType() {
       this.tagType = getItemType(this.dimensionData, this.quotaData, this.item)
+    },
+
+    valueFormatter() {
+      this.item.index = this.index
+      this.item.formatterType = 'quota'
+      this.$emit('valueFormatter', this.item)
     }
   }
 }

@@ -366,10 +366,12 @@
                             :item="item"
                             :dimension-data="dimension"
                             :quota-data="quota"
+                            :chart="chart"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
                             @onNameEdit="showRename"
+                            @valueFormatter="valueFormatter"
                           />
                         </transition-group>
                       </draggable>
@@ -445,6 +447,7 @@
                             @editItemFilter="showQuotaEditFilter"
                             @onNameEdit="showRename"
                             @editItemCompare="showQuotaEditCompare"
+                            @valueFormatter="valueFormatter"
                           />
                         </transition-group>
                       </draggable>
@@ -893,7 +896,7 @@
         <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 300px;">
           <el-row class="view-panel">
             <div
-              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge'))"
+              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge')) || view.type === 'text'"
               style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
               class="attr-style theme-border-class"
             >
@@ -913,7 +916,7 @@
                 </el-collapse>
               </el-row>
               <el-row
-                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge'))"
+                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge') || view.type === 'text')"
               >
                 <span class="padding-lr">{{ $t('chart.analyse_cfg') }}</span>
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
@@ -930,7 +933,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-if="view.type && (view.type.includes('gauge'))"
+                    v-if="view.type && (view.type.includes('gauge') || view.type === 'text')"
                     name="threshold"
                     :title="$t('chart.threshold')"
                   >
@@ -1116,6 +1119,7 @@
       </div>
     </el-dialog>
 
+    <!--同环比设置-->
     <el-dialog
       v-if="showEditQuotaCompare"
       v-dialogDrag
@@ -1129,6 +1133,23 @@
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeQuotaEditCompare">{{ $t('chart.cancel') }}</el-button>
         <el-button type="primary" size="mini" @click="saveQuotaEditCompare">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
+    <!--数值格式-->
+    <el-dialog
+      v-if="showValueFormatter"
+      v-dialogDrag
+      :title="$t('chart.value_formatter') + ' - ' + valueFormatterItem.name"
+      :visible="showValueFormatter"
+      :show-close="false"
+      width="600px"
+      class="dialog-css"
+    >
+      <value-formatter-edit :formatter-item="valueFormatterItem" :chart="chart" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeValueFormatter">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveValueFormatter">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
   </el-row>
@@ -1213,9 +1234,11 @@ import Threshold from '@/views/chart/components/senior/Threshold'
 import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { pluginTypes } from '@/api/chart/chart'
+import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
 export default {
   name: 'ChartEdit',
   components: {
+    ValueFormatterEdit,
     LabelNormalText,
     TotalCfg,
     Threshold,
@@ -1366,7 +1389,9 @@ export default {
       quotaItemCompare: {},
       showEditQuotaCompare: false,
       preChartId: '',
-      pluginRenderOptions: []
+      pluginRenderOptions: [],
+      showValueFormatter: false,
+      valueFormatterItem: {}
 
     }
   },
@@ -2273,11 +2298,11 @@ export default {
     },
     addXaxisExt(e) {
       if (this.view.type !== 'table-info') {
-        this.dragCheckType(this.view.xaxis, 'd')
+        this.dragCheckType(this.view.xaxisExt, 'd')
       }
-      this.dragMoveDuplicate(this.view.xaxis, e)
-      if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxis.length > 1) {
-        this.view.xaxis = [this.view.xaxis[0]]
+      this.dragMoveDuplicate(this.view.xaxisExt, e)
+      if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxisExt.length > 1) {
+        this.view.xaxisExt = [this.view.xaxisExt[0]]
       }
       this.calcData(true)
     },
@@ -2544,6 +2569,33 @@ export default {
           this.view.customAttr.label.position = 'middle'
         }
       }
+    },
+
+    valueFormatter(item) {
+      this.valueFormatterItem = JSON.parse(JSON.stringify(item))
+      this.showValueFormatter = true
+    },
+    closeValueFormatter() {
+      this.showValueFormatter = false
+    },
+    saveValueFormatter() {
+      const ele = this.valueFormatterItem.formatterCfg.decimalCount
+      if (ele === undefined || ele.toString().indexOf('.') > -1 || parseInt(ele).toString() === 'NaN' || parseInt(ele) < 0 || parseInt(ele) > 10) {
+        this.$message({
+          message: this.$t('chart.formatter_decimal_count_error'),
+          type: 'error',
+          showClose: true
+        })
+        return
+      }
+      // 更新指标
+      if (this.valueFormatterItem.formatterType === 'quota') {
+        this.view.yaxis[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
+      } else if (this.valueFormatterItem.formatterType === 'quotaExt') {
+        this.view.yaxisExt[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
+      }
+      this.calcData(true)
+      this.closeValueFormatter()
     }
   }
 }

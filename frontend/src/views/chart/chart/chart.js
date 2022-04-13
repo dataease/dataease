@@ -277,7 +277,8 @@ export const DEFAULT_FUNCTION_CFG = {
   sliderRange: [0, 10]
 }
 export const DEFAULT_THRESHOLD = {
-  gaugeThreshold: ''
+  gaugeThreshold: '',
+  labelThreshold: []
 }
 // chart config
 export const BASE_BAR = {
