@@ -1701,7 +1701,10 @@ export default {
     themeDark: '深色',
     themeCustom: '自定义',
     openHomePage: '显示首页',
-    mobileBG: '移动端登录页背景'
+    mobileBG: '移动端登录页背景',
+    helpLink: '帮助文档链接',
+    homeLink: '首页链接',
+    defaultHomeLink: '默认为系统内置首页'
 
   },
   auth: {
