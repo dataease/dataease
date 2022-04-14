@@ -131,6 +131,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    default_pwd: '初始密码',
     stop: '停止',
     first_login_tips: '您使用的是初始密码，记得修改密码哦',
     roger_that: '知道了',
