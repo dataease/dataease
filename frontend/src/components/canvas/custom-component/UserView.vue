@@ -609,9 +609,9 @@ export default {
         const current = this.$refs[this.element.propValue.id]
 
         if (this.chart.isPlugin) {
-          current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
+          current && current.callPluginInner && this.setDetailMapCode(null) && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
         } else {
-          current && current.registerDynamicMap && current.registerDynamicMap(null)
+          current && current.registerDynamicMap && this.setDetailMapCode(null) && current.registerDynamicMap(null)
         }
       }
     },
@@ -639,10 +639,15 @@ export default {
       this.currentAcreaNode = tempNode
       const current = this.$refs[this.element.propValue.id]
       if (this.chart.isPlugin) {
-        current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: this.currentAcreaNode.code })
+        current && current.callPluginInner && this.setDetailMapCode(this.currentAcreaNode.code) && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: this.currentAcreaNode.code })
       } else {
-        current && current.registerDynamicMap && current.registerDynamicMap(this.currentAcreaNode.code)
+        current && current.registerDynamicMap && this.setDetailMapCode(this.currentAcreaNode.code) && current.registerDynamicMap(this.currentAcreaNode.code)
       }
+    },
+
+    setDetailMapCode(code) {
+      this.element.DetailAreaCode = code
+      return true
     },
 
     // 切换下一级地图
@@ -660,9 +665,9 @@ export default {
         this.currentAcreaNode = nextNode
         const current = this.$refs[this.element.propValue.id]
         if (this.chart.isPlugin) {
-          nextNode && current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: nextNode.code })
+          nextNode && current && current.callPluginInner && this.setDetailMapCode(nextNode.code) && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: nextNode.code })
         } else {
-          nextNode && current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
+          nextNode && current && current.registerDynamicMap && this.setDetailMapCode(nextNode.code) && current.registerDynamicMap(nextNode.code)
         }
       }
     },

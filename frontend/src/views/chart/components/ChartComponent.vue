@@ -229,7 +229,7 @@ export default {
           this.myChart.clear()
           return
         }
-        const cCode = this.dynamicAreaCode || customAttr.areaCode
+        const cCode = this.chart.DetailAreaCode || this.dynamicAreaCode || customAttr.areaCode
         if (this.$store.getters.geoMap[cCode]) {
           const json = this.$store.getters.geoMap[cCode]
           this.initMapChart(json, chart)

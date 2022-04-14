@@ -273,6 +273,7 @@ export default {
       }
       const components = deepCopy(this.componentData)
       components.forEach(view => {
+        if (view.DetailAreaCode) { view.DetailAreaCode = null }
         if (view.filters && view.filters.length > 0) { view.filters = [] }
         if (view.type === 'de-tabs') {
           view.options.tabList && view.options.tabList.length > 0 && view.options.tabList.forEach(tab => {
