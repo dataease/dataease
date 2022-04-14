@@ -880,7 +880,7 @@
                       @onLegendChange="onLegendChange"
                     />
                   </el-collapse-item>
-                  <el-collapse-item v-if="chart.customStyle && view.customStyle.background" name="background" :title="$t('chart.background')">
+                  <el-collapse-item v-if="view.customStyle && view.customStyle.background" name="background" :title="$t('chart.background')">
                     <background-color-selector
                       :param="param"
                       class="attr-selector"
@@ -1493,11 +1493,11 @@ export default {
       bus.$on('plugins-calc-style', this.calcStyle)
       bus.$on('plugin-chart-click', this.chartClick)
     },
-    initTableData(id) {
+    initTableData(id, optType) {
       if (id != null) {
         post('/dataset/table/getWithPermission/' + id, null).then(response => {
           this.table = response.data
-          this.initTableField(id)
+          this.initTableField(id, optType)
         }).catch(err => {
           this.table = null
           this.resetDatasetField()
@@ -1507,7 +1507,7 @@ export default {
         })
       }
     },
-    initTableField(id) {
+    initTableField(id, optType) {
       if (this.table) {
         post('/dataset/table/getFieldsFromDE', this.table).then(response => {
           this.dimension = response.data.dimension
@@ -1515,7 +1515,15 @@ export default {
           this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
           this.quotaData = JSON.parse(JSON.stringify(this.quota))
           this.fieldFilter(this.searchField)
+          if (optType === 'change') {
+            this.resetChangeTable()
+            this.$nextTick(() => {
+              bus.$emit('reset-change-table', 'change')
+              this.calcData()
+            })
+          }
         }).catch(err => {
+          console.log(err)
           this.resetView()
           this.httpRequest.status = err.response.data.success
           this.httpRequest.msg = err.response.data.message
@@ -1524,6 +1532,35 @@ export default {
       } else {
         this.resetDatasetField()
       }
+    },
+    resetChangeTable() {
+      const compareData = {}
+      this.dimensionData.forEach(deimension => {
+        compareData[deimension.originName] = deimension
+      })
+      this.quotaData.forEach(quota => {
+        compareData[quota.originName] = quota
+      })
+      const compareCols = ['xaxis', 'xaxisExt', 'yaxis', 'yaxisExt', 'customFilter', 'extStack', 'extBubble', 'drillFields']
+      this.viewFieldChange(compareData, compareCols)
+    },
+    viewFieldChange(compareData, compareCols) {
+      const _this = this
+      compareCols.forEach(compareCol => {
+        _this.view[compareCol].forEach(function(item, index) {
+          if (compareData[item.originName]) {
+            const itemTemp = {
+              ...compareData[item.originName],
+              name: item.name,
+              deType: item.deType,
+              type: item.type,
+              groupType: item.groupType,
+              sort: item.sort
+            }
+            _this.view[compareCol][index] = itemTemp
+          }
+        })
+      })
     },
     buildParam(getData, trigger, needRefreshGroup = false, switchType = false) {
       if (!this.view.resultCount ||
@@ -2223,20 +2260,11 @@ export default {
     // 更换数据集
     changeChart() {
       this.view.dataFrom = 'dataset'
-      if (this.view.tableId !== this.changeTable.id) {
-        this.view.tableId = this.changeTable.id
-        this.view.xaxis = []
-        this.view.xaxisExt = []
-        this.view.yaxis = []
-        this.view.yaxisExt = []
-        this.view.customFilter = []
-        this.view.extStack = []
-        this.view.extBubble = []
-        this.view.drillFields = []
-      }
+      const optType = this.view.tableId === this.changeTable.id ? 'same' : 'change'
       // this.save(true, 'chart', false)
+      this.view.tableId = this.changeTable.id
       this.calcData(true, 'chart', false)
-      this.initTableData(this.view.tableId)
+      this.initTableData(this.view.tableId, optType)
       this.closeChangeChart()
     },
 

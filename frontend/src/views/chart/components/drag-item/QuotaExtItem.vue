@@ -118,6 +118,7 @@
 import { compareItem } from '@/views/chart/chart/compare'
 import { getItemType } from '@/views/chart/components/drag-item/utils'
 import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
+import bus from '@/utils/bus'
 import { formatterItem } from '@/views/chart/chart/formatter'
 
 export default {
@@ -174,6 +175,8 @@ export default {
   mounted() {
     this.init()
     this.isEnableCompare()
+    bus.$on('reset-change-table', () => this.getItemTagType())
+
   },
   methods: {
     init() {

@@ -28,6 +28,7 @@
 <script>
 import { getItemType } from '@/views/chart/components/drag-item/utils'
 import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
+import bus from '@/utils/bus'
 
 export default {
   name: 'DrillItem',
@@ -71,6 +72,7 @@ export default {
     }
   },
   mounted() {
+    bus.$on('reset-change-table', () => this.getItemTagType())
   },
   methods: {
     clickItem(param) {
