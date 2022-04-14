@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     showChartCanvas() {
-      return this.chart.type !== 'table-normal' && this.chart.type !== 'table-info'
+      return !this.chart.type.includes('table')
     },
     customStyle() {
       let style = {
