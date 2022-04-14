@@ -517,7 +517,7 @@ public class PanelGroupService {
             }
             response.setContentType("application/vnd.ms-excel");
             //文件名称
-            response.setHeader("Content-disposition", "attachment;filename=" + request.getViewName() + ".xlsx");
+            response.setHeader("Content-disposition", "attachment;filename=" + request.getViewName() + ".xls");
             wb.write(outputStream);
             outputStream.flush();
             outputStream.close();
