@@ -1,7 +1,13 @@
 <template>
   <de-container>
     <de-main-container v-if="chart.type !== 'table-normal' && chart.type !== 'table-info'" :style="customStyle" class="full-div">
-      <chart-component v-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
+      <plugin-com
+        v-if="chart.isPlugin"
+        :component-name="chart.type + '-view'"
+        :obj="{chart: mapChart || chart}"
+        class="chart-class"
+      />
+      <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="mapChart || chart" />
       <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
       <chart-component-s2 v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
       <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
@@ -44,6 +50,13 @@ export default {
     }
   },
   computed: {
+    mapChart() {
+      if (this.chart.type && (this.chart.type === 'map' || this.chart.type === 'buddle-map')) {
+        const temp = JSON.parse(JSON.stringify(this.chart))
+        return { ...temp, ...{ DetailAreaCode: this.curComponent.DetailAreaCode }}
+      }
+      return null
+    },
     customStyle() {
       let style = {
       }

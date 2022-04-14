@@ -1403,6 +1403,7 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     ...mapState([
+      'curComponent',
       'panelViewEditInfo'
     ])
     /* pluginRenderOptions() {
@@ -2469,6 +2470,7 @@ export default {
         this.backToParent(0, length)
         this.currentAcreaNode = null
         const current = this.$refs.dynamicChart
+        this.setDetailMapCode(null)
         if (this.view.isPlugin) {
           current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
         } else {
@@ -2503,13 +2505,18 @@ export default {
       // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(this.currentAcreaNode.code)
       const current = this.$refs.dynamicChart
       if (this.view.isPlugin) {
-        current && current.callPluginInner && current.callPluginInner({
+        current && current.callPluginInner && this.setDetailMapCode(this.currentAcreaNode.code) && current.callPluginInner({
           methodName: 'registerDynamicMap',
           methodParam: this.currentAcreaNode.code
         })
       } else {
-        current && current.registerDynamicMap && current.registerDynamicMap(this.currentAcreaNode.code)
+        current && current.registerDynamicMap && this.setDetailMapCode(this.currentAcreaNode.code) && current.registerDynamicMap(this.currentAcreaNode.code)
       }
+    },
+
+    setDetailMapCode(code) {
+      this.curComponent.DetailAreaCode = code
+      return true
     },
 
     // 切换下一级地图
@@ -2530,12 +2537,12 @@ export default {
         // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(nextNode.code)
         const current = this.$refs.dynamicChart
         if (this.view.isPlugin) {
-          nextNode && current && current.callPluginInner && current.callPluginInner({
+          nextNode && current && current.callPluginInner && this.setDetailMapCode(nextNode.code) && current.callPluginInner({
             methodName: 'registerDynamicMap',
             methodParam: nextNode.code
           })
         } else {
-          nextNode && current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
+          nextNode && current && current.registerDynamicMap && this.setDetailMapCode(nextNode.code) && current.registerDynamicMap(nextNode.code)
         }
         return nextNode
       }
