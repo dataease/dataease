@@ -27,7 +27,7 @@
         <lang-select class="right-menu-item hover-effect" />
         <div style="height: 100%;padding: 0 8px;" class="right-menu-item hover-effect">
           <a
-            href="https://dataease.io/docs/"
+            :href="helpLink"
             target="_blank"
             style="display: flex;height: 100%;width: 100%;justify-content: center;align-items: center;"
           >
@@ -150,6 +150,12 @@ export default {
         return this.$store.getters.uiInfo['ui.topMenuTextActiveColor'].paramValue
       }
       return this.variables.topBarMenuTextActive
+    },
+    helpLink() {
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.helpLink'] && this.$store.getters.uiInfo['ui.helpLink'].paramValue) {
+        return this.$store.getters.uiInfo['ui.helpLink'].paramValue
+      }
+      return 'https://dataease.io/docs/'
     },
     /* topMenuColor() {
         return this.$store.getters.uiInfo.topMenuColor

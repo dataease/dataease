@@ -1683,7 +1683,10 @@ export default {
     themeDark: 'Dark',
     themeCustom: 'Custom',
     openHomePage: 'Show Home Page',
-    mobileBG: 'Mobile Login page BG'
+    mobileBG: 'Mobile Login page BG',
+    helpLink: 'Help Document Link',
+    homeLink: 'Home Link',
+    defaultHomeLink: 'Default is the system built-in home page'
 
   },
   auth: {

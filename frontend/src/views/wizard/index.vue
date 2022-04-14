@@ -1,5 +1,13 @@
 <template>
-  <el-row class="main_container">
+  <div
+    v-if="loading"
+    v-loading="loading"
+    style="position:absolute;top:55px;width: 100%;height: calc(100% - 55px);"
+  />
+  <div v-else-if="homeLink">
+    <iframe id="mobsf" :src="homeLink" frameborder="0" style="position:absolute;top:55px;width: 100%;height: calc(100% - 55px);" />
+  </div>
+  <el-row v-else class="main_container">
     <el-row class="head">
       <span class="hint_head">{{ $t('wizard.welcome_title') }}</span> <br>
       <span class="hint_content">{{ $t('wizard.welcome_hint') }}</span>
@@ -73,9 +81,25 @@ export default {
           href: 'https://www.dataease.io',
           component: 'CardDetail'
         }
-      ]
+      ],
+      loading: true
+
     }
   },
+  computed: {
+    homeLink() {
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.homeLink'] && this.$store.getters.uiInfo['ui.homeLink'].paramValue) {
+        return this.$store.getters.uiInfo['ui.homeLink'].paramValue
+      }
+      return null
+    }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.loading = false
+    }, 1000)
+  },
+
   created() {
     this.init()
   },
