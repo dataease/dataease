@@ -45,7 +45,7 @@
             controls-position="right"
             size="mini"
             :min="1"
-            :max="12"
+            :max="100"
             @change="dynamicPrefixChange"
           />
         </el-form-item>
