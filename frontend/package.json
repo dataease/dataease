@@ -45,6 +45,8 @@
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "screenfull": "4.2.0",
+    "sockjs-client": "^1.6.0",
+    "stompjs": "^2.3.3",
     "svg-sprite-loader": "4.1.3",
     "svgo": "1.2.2",
     "tinymce": "^5.8.2",

@@ -30,6 +30,10 @@ public interface AuthApi {
     @PostMapping("/useInitPwd")
     Boolean useInitPwd();
 
+    @ApiOperation("用户初始密码")
+    @PostMapping("/defaultPwd")
+    String defaultPwd();
+
     @ApiOperation("登出")
     @PostMapping("/logout")
     String logout();

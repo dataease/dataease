@@ -131,6 +131,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    default_pwd: 'Default Pwd',
     stop: 'Stop',
     first_login_tips: 'Please change the initial password',
     roger_that: 'Roger That',
@@ -1064,7 +1065,28 @@ export default {
     total_pos_left: 'Left',
     total_pos_right: 'Right',
     chart_label: 'Label',
-    drag_block_label: 'Label'
+    drag_block_label: 'Label',
+    count_distinct: 'Distinct Count',
+    table_page_mode: 'Page Mode',
+    page_mode_page: 'Page',
+    page_mode_pull: 'Pull',
+    exp_can_not_empty: 'Condition can not be empty',
+    value_formatter: 'Value Formatter',
+    value_formatter_type: 'Formatter Type',
+    value_formatter_auto: 'Auto',
+    value_formatter_value: 'Value',
+    value_formatter_percent: 'Percent',
+    value_formatter_unit: 'Unit',
+    value_formatter_decimal_count: 'Decimal Count',
+    value_formatter_suffix: 'Unit Suffix',
+    value_formatter_thousand_separator: 'Thousand Separator',
+    value_formatter_example: 'Example',
+    unit_none: 'None',
+    unit_thousand: 'Thousand',
+    unit_ten_thousand: 'Ten Thousand',
+    unit_million: 'Million',
+    unit_hundred_million: 'Hundred Million',
+    formatter_decimal_count_error: 'Range 0-10'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1662,7 +1684,10 @@ export default {
     themeDark: 'Dark',
     themeCustom: 'Custom',
     openHomePage: 'Show Home Page',
-    mobileBG: 'Mobile Login page BG'
+    mobileBG: 'Mobile Login page BG',
+    helpLink: 'Help Document Link',
+    homeLink: 'Home Link',
+    defaultHomeLink: 'Default is the system built-in home page'
 
   },
   auth: {

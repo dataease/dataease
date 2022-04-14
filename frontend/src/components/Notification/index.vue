@@ -1,7 +1,6 @@
 <template>
 
   <el-popover
-
     v-model="visible"
     width="350"
     trigger="click"
@@ -9,7 +8,7 @@
     style="display: flex;align-items: center;"
     class="international"
   >
-    <div>
+    <div v-loading="loading">
       <div style="height: 30px;">
         <div style="float: left;font-size:16px;font-weight:bold;">
           <span>{{ $t('webmsg.web_msg') }}</span>
@@ -49,17 +48,10 @@
       </div>
     </div>
     <div slot="reference">
-      <el-badge :value="count || paginationConfig.total" :hidden="!count && !paginationConfig.total" :max="99" class="item">
+      <el-badge :value="visible && !loading ? paginationConfig.total : count" :hidden="!count && !paginationConfig.total" :max="99" class="item">
         <svg-icon class-name="notification" icon-class="notification" />
       </el-badge>
-      <!-- <div>
-        <svg-icon
-          class-name="notification"
-          icon-class="notification"
-        />
-        <span v-if="count || paginationConfig.total" class="msg-number">{{ count || paginationConfig.total }}</span>
-      </div>
-    </div> -->
+
     </div></el-popover>
 </template>
 
@@ -81,7 +73,8 @@ export default {
         total: 0
       },
       timer: null,
-      count: 0
+      count: 0,
+      loading: false
     }
   },
   computed: {
@@ -101,14 +94,23 @@ export default {
     // 先加载消息类型
     loadMsgTypes()
     this.queryCount()
+    // this.search()
     // 每30s定时刷新拉取消息
-    this.timer = setInterval(() => {
+    /* this.timer = setInterval(() => {
       this.queryCount()
-    }, 30000)
+    }, 30000) */
   },
   mounted() {
     bus.$on('refresh-top-notification', () => {
-      this.search()
+      if (this.visible) this.search()
+      else this.queryCount()
+    })
+
+    bus.$on('web-msg-topic-call', msg => {
+      console.log('收到websocket消息')
+      this.count = (this.count || this.paginationConfig.total) + 1
+      // this.queryCount()
+      // this.search()
     })
   },
   beforeDestroy() {
@@ -195,6 +197,7 @@ export default {
       })
     },
     search() {
+      this.loading = true
       const param = {
         status: false,
         orders: [' create_time desc ']
@@ -204,7 +207,9 @@ export default {
         this.data = response.data.listObject
         this.paginationConfig.total = response.data.itemCount
         this.count = this.paginationConfig.total
+        this.loading = false
       }).catch(() => {
+        this.loading = false
         const token = getToken()
         if (!token || token === 'null' || token === 'undefined') {
           this.timer && clearInterval(this.timer)

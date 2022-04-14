@@ -131,6 +131,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    default_pwd: '初始密码',
     stop: '停止',
     first_login_tips: '您使用的是初始密码，记得修改密码哦',
     roger_that: '知道了',
@@ -1067,7 +1068,28 @@ export default {
     total_pos_left: '左侧',
     total_pos_right: '右侧',
     chart_label: '文本卡',
-    drag_block_label: '标签'
+    drag_block_label: '标签',
+    count_distinct: '去重计数',
+    table_page_mode: '分页模式',
+    page_mode_page: '翻页',
+    page_mode_pull: '下拉',
+    exp_can_not_empty: '条件不能为空',
+    value_formatter: '数值格式',
+    value_formatter_type: '格式类型',
+    value_formatter_auto: '自动',
+    value_formatter_value: '数值',
+    value_formatter_percent: '百分比',
+    value_formatter_unit: '数量单位',
+    value_formatter_decimal_count: '小数位数',
+    value_formatter_suffix: '单位后缀',
+    value_formatter_thousand_separator: '千分符',
+    value_formatter_example: '示例',
+    unit_none: '无',
+    unit_thousand: '千',
+    unit_ten_thousand: '万',
+    unit_million: '百万',
+    unit_hundred_million: '亿',
+    formatter_decimal_count_error: '请输入0-10的整数'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1680,7 +1702,10 @@ export default {
     themeDark: '深色',
     themeCustom: '自定义',
     openHomePage: '显示首页',
-    mobileBG: '移动端登录页背景'
+    mobileBG: '移动端登录页背景',
+    helpLink: '帮助文档链接',
+    homeLink: '首页链接',
+    defaultHomeLink: '默认为系统内置首页'
 
   },
   auth: {

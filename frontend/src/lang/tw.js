@@ -131,6 +131,7 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
+    default_pwd: '初始密碼',
     stop: '停止',
     first_login_tips: '您使用的是初始密碼，記得修改密碼哦',
     roger_that: '知道了',
@@ -1064,7 +1065,28 @@ export default {
     total_pos_left: '左側',
     total_pos_right: '右側',
     chart_label: '文本卡',
-    drag_block_label: '標簽'
+    drag_block_label: '標簽',
+    count_distinct: '去重計數',
+    table_page_mode: '分頁模式',
+    page_mode_page: '翻頁',
+    page_mode_pull: '下拉',
+    exp_can_not_empty: '條件不能為空',
+    value_formatter: '數值格式',
+    value_formatter_type: '格式類型',
+    value_formatter_auto: '自動',
+    value_formatter_value: '數值',
+    value_formatter_percent: '百分比',
+    value_formatter_unit: '數量單位',
+    value_formatter_decimal_count: '小數位數',
+    value_formatter_suffix: '單位後綴',
+    value_formatter_thousand_separator: '千分符',
+    value_formatter_example: '示例',
+    unit_none: '無',
+    unit_thousand: '千',
+    unit_ten_thousand: '萬',
+    unit_million: '百萬',
+    unit_hundred_million: '億',
+    formatter_decimal_count_error: '請輸入0-10的整數'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',
@@ -1672,7 +1694,10 @@ export default {
     themeCustom: '自定義',
     openHomePage: '顯示首頁',
 
-    mobileBG: '移動端登錄頁背景'
+    mobileBG: '移動端登錄頁背景',
+    helpLink: '幫助文檔鏈接',
+    homeLink: '首頁鏈接',
+    defaultHomeLink: '默認為系統內置首頁'
 
   },
   auth: {
