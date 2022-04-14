@@ -29,6 +29,13 @@ export function needModifyPwd() {
   })
 }
 
+export function defaultPwd() {
+  return request({
+    url: '/api/auth/defaultPwd',
+    method: 'post'
+  })
+}
+
 export function validateUserName(data) {
   return request({
     url: '/api/auth/validateName',

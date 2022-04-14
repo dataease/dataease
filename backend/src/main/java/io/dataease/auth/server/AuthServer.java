@@ -155,6 +155,11 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    public String defaultPwd() {
+        return DEFAULT_PWD;
+    }
+
+    @Override
     public String logout() {
         String token = ServletUtils.getToken();
 

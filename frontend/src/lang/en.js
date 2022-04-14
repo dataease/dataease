@@ -131,6 +131,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    default_pwd: 'Default Pwd',
     stop: 'Stop',
     first_login_tips: 'Please change the initial password',
     roger_that: 'Roger That',
