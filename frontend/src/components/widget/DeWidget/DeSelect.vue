@@ -10,6 +10,7 @@
     :placeholder="$t(element.options.attrs.placeholder)"
     :popper-append-to-body="inScreen"
     :size="size"
+    :filterable="true"
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
