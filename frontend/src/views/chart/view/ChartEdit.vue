@@ -2628,6 +2628,8 @@ export default {
         this.view.yaxis[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
       } else if (this.valueFormatterItem.formatterType === 'quotaExt') {
         this.view.yaxisExt[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
+      } else if (this.valueFormatterItem.formatterType === 'dimension') {
+        this.view.xaxis[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
       }
       this.calcData(true)
       this.closeValueFormatter()

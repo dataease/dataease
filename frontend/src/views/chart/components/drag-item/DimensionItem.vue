@@ -227,7 +227,7 @@ export default {
 
     valueFormatter() {
       this.item.index = this.index
-      this.item.formatterType = 'quota'
+      this.item.formatterType = 'dimension'
       this.$emit('valueFormatter', this.item)
     }
   }
