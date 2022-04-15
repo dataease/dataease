@@ -38,7 +38,7 @@ public class CacheUtils {
         if (getCacheManager() instanceof RedisCacheManager) {
             RedisTemplate redisTemplate = (RedisTemplate) CommonBeanFactory.getBean("redisTemplate");
             ValueOperations valueOperations = redisTemplate.opsForValue();
-            valueOperations.setIfPresent(cacheName + "::" + key , value );
+            valueOperations.set(cacheName + "::" + key , value );
             return;
         }
         Element e = new Element(key, value);
