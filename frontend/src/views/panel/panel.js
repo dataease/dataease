@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { BASE_CHART, BASE_CHART_STRING } from '@/views/chart/chart/chart'
+import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
 import { deepCopy } from '@/components/canvas/utils/utils'
 
 export const DEFAULT_PANEL_STYLE = {
