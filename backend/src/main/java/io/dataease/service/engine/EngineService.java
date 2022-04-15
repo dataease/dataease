@@ -3,22 +3,19 @@ package io.dataease.service.engine;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import io.dataease.base.domain.Datasource;
-import io.dataease.base.domain.DeEngine;
-import io.dataease.base.domain.DeEngineExample;
-import io.dataease.base.mapper.DeEngineMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.HttpClientConfig;
 import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.controller.ResultHolder;
-import io.dataease.controller.request.datasource.DatasourceRequest;
-import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.datasource.DorisConfiguration;
-import io.dataease.dto.datasource.MysqlConfiguration;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.common.base.domain.Datasource;
+import io.dataease.plugins.common.base.domain.DeEngine;
+import io.dataease.plugins.common.base.domain.DeEngineExample;
+import io.dataease.plugins.common.base.mapper.DeEngineMapper;
+import io.dataease.plugins.common.request.datasource.DatasourceRequest;
+import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.provider.ProviderFactory;
-import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -79,7 +76,7 @@ public class EngineService {
             throw new Exception("未完整设置数据引擎");
         }
         try {
-            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+            Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
             datasourceProvider.checkStatus(datasourceRequest);

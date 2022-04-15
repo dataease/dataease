@@ -1,16 +1,14 @@
 package io.dataease.service.chart;
 
-import io.dataease.base.domain.*;
-import io.dataease.base.mapper.ChartGroupMapper;
-import io.dataease.base.mapper.ext.ExtChartGroupMapper;
-import io.dataease.base.mapper.ext.ExtChartViewMapper;
-import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
+import io.dataease.ext.*;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.chart.ChartGroupRequest;
 import io.dataease.dto.chart.ChartGroupDTO;
-import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.ChartGroup;
+import io.dataease.plugins.common.base.domain.ChartGroupExample;
+import io.dataease.plugins.common.base.mapper.ChartGroupMapper;
 import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -20,9 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 

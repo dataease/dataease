@@ -1,6 +1,6 @@
 package io.dataease.dto.panel.outerParams;
 
-import io.dataease.base.domain.PanelOuterParams;
+import io.dataease.plugins.common.base.domain.PanelOuterParams;
 import lombok.Data;
 
 import java.util.ArrayList;

@@ -1,12 +1,10 @@
 package io.dataease.provider.engine.doris;
 
 import com.google.gson.Gson;
-import io.dataease.base.domain.DatasetTableField;
-import io.dataease.base.domain.Datasource;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.commons.utils.TableUtils;
 import io.dataease.dto.datasource.DorisConfiguration;
-import io.dataease.dto.datasource.JdbcConfiguration;
-import io.dataease.dto.datasource.MysqlConfiguration;
 import io.dataease.provider.DDLProviderImpl;
 import org.springframework.stereotype.Service;
 

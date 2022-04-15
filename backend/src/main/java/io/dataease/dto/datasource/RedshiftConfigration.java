@@ -1,5 +1,6 @@
 package io.dataease.dto.datasource;
 
+import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 

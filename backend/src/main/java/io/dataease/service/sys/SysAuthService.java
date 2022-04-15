@@ -1,7 +1,7 @@
 package io.dataease.service.sys;
 
 
-import io.dataease.base.mapper.ext.ExtSysAuthMapper;
+import io.dataease.ext.ExtSysAuthMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.i18n.Translator;
 import org.springframework.stereotype.Service;

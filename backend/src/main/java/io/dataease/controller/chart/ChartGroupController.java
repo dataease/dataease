@@ -1,9 +1,9 @@
 package io.dataease.controller.chart;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.base.domain.ChartGroup;
 import io.dataease.controller.request.chart.ChartGroupRequest;
 import io.dataease.dto.chart.ChartGroupDTO;
+import io.dataease.plugins.common.base.domain.ChartGroup;
 import io.dataease.service.chart.ChartGroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

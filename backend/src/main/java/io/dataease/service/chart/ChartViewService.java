@@ -4,23 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.service.AuthUserService;
-import io.dataease.base.domain.*;
-import io.dataease.base.mapper.ChartViewCacheMapper;
-import io.dataease.base.mapper.ChartViewMapper;
-import io.dataease.base.mapper.PanelViewMapper;
-import io.dataease.base.mapper.ext.ExtChartGroupMapper;
-import io.dataease.base.mapper.ext.ExtChartViewMapper;
-import io.dataease.base.mapper.ext.ExtPanelGroupExtendDataMapper;
-import io.dataease.commons.constants.ColumnPermissionConstants;
+import io.dataease.ext.*;
 import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.JdbcConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
-import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.request.chart.*;
-import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.controller.response.ChartDetail;
 import io.dataease.controller.response.DataSetDetail;
 import io.dataease.dto.chart.*;
@@ -30,12 +21,21 @@ import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.common.base.domain.*;
+import io.dataease.plugins.common.base.mapper.ChartViewCacheMapper;
+import io.dataease.plugins.common.base.mapper.ChartViewMapper;
+import io.dataease.plugins.common.base.mapper.PanelViewMapper;
+import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
+import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
+import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
+import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
+import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.datasource.provider.Provider;
+import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.view.entity.*;
 import io.dataease.plugins.view.service.ViewPluginService;
 import io.dataease.provider.ProviderFactory;
-import io.dataease.provider.datasource.DatasourceProvider;
-import io.dataease.provider.QueryProvider;
 import io.dataease.service.chart.util.ChartDataBuild;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
@@ -44,7 +44,6 @@ import io.dataease.service.dataset.PermissionService;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
 import io.dataease.service.panel.PanelGroupExtendDataService;
-import io.dataease.service.panel.PanelViewService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -511,7 +510,7 @@ public class ChartViewService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         Datasource ds = table.getMode() == 0 ? datasourceService.get(table.getDataSourceId()) : engineService.getDeEngine();
         datasourceRequest.setDatasource(ds);
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         List<String[]> data = new ArrayList<>();
 
 
@@ -976,7 +975,7 @@ public class ChartViewService {
      * @return
      * @throws Exception
      */
-    public List<String[]> cacheViewData(DatasourceProvider datasourceProvider, DatasourceRequest datasourceRequest, String viewId) throws Exception {
+    public List<String[]> cacheViewData(Provider datasourceProvider, DatasourceRequest datasourceRequest, String viewId) throws Exception {
         List<String[]> result;
         Object cache = CacheUtils.get(JdbcConstants.VIEW_CACHE_KEY, viewId);
         if (cache == null) {

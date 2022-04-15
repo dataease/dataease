@@ -1,10 +1,10 @@
 package io.dataease.service.panel;
 
-import io.dataease.base.domain.PanelSubject;
-import io.dataease.base.domain.PanelSubjectExample;
-import io.dataease.base.mapper.PanelSubjectMapper;
 import io.dataease.controller.request.panel.PanelSubjectRequest;
 import io.dataease.exception.DataEaseException;
+import io.dataease.plugins.common.base.domain.PanelSubject;
+import io.dataease.plugins.common.base.domain.PanelSubjectExample;
+import io.dataease.plugins.common.base.mapper.PanelSubjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;

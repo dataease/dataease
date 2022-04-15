@@ -103,7 +103,7 @@
   </el-col>
 </template>
 <script>
-import {listDatasource, listDatasourceByType, delDs} from '@/api/system/datasource'
+import {listDatasource, listDatasourceByType, delDs, listDatasourceType} from '@/api/system/datasource'
 
 export default {
   name: 'DsTree',
@@ -117,6 +117,7 @@ export default {
     return {
       expandedArray: [],
       tData: [],
+      dsTypes: [],
       showSearchInput: false,
       key: ''
     }
@@ -128,6 +129,7 @@ export default {
   },
   mounted() {
     this.queryTreeDatas()
+    this.datasourceTypes()
   },
   methods: {
     filterNode(value, data) {
@@ -144,6 +146,11 @@ export default {
     queryTreeDatas() {
       listDatasource().then(res => {
         this.tData = this.buildTree(res.data)
+      })
+    },
+    datasourceTypes() {
+      listDatasourceType().then(res => {
+        this.dsTypes = res.data
       })
     },
     refreshType(datasource) {
@@ -186,7 +193,7 @@ export default {
           // newArr.push(...element, ...{ children: types[element.type] })
           newArr.push({
             id: element.type,
-            name: this.transTypeToName(element.type),
+            name: element.typeDesc,
             type: 'folder',
             children: types[element.type]
           })
@@ -197,47 +204,11 @@ export default {
       return newArr
     },
 
-    transTypeToName(type) {
-      if (type === 'mysql') {
-        return 'MySQL'
-      } else if (type === 'sqlServer') {
-        return 'SQL Server'
-      } else if (type === 'oracle') {
-        return 'Oracle'
-      } else if (type === 'pg') {
-        return 'PostgreSQL'
-      } else if (type === 'es') {
-        return 'Elasticsearch'
-      } else if (type === 'ck') {
-        return 'ClickHouse'
-      } else if (type === 'mariadb') {
-        return 'MariaDB'
-      } else if (type === 'ds_doris') {
-        return 'Doris'
-      } else if (type === 'mongo') {
-        return 'MongoDB'
-      } else if (type === 'redshift') {
-        return 'AWS Redshift'
-      } else if (type === 'hive') {
-        return 'Apache Hive'
-      } else if (type === 'db2') {
-        return 'Db2'
-      } else if (type === 'api') {
-        return 'API'
-      } else if (type === 'impala') {
-        return 'Apache Impala'
-      }if (type === 'TiDB') {
-        return 'TiDB'
-      }if (type === 'StarRocks') {
-        return 'StarRocks'
-      }
-    },
-
     addFolder() {
-      this.switchMain('DsForm', {}, this.tData)
+      this.switchMain('DsForm', {}, this.tData, this.dsTypes)
     },
     addFolderWithType(data) {
-      this.switchMain('DsForm', {type: data.id}, this.tData)
+      this.switchMain('DsForm', {type: data.id}, this.tData, this.dsTypes)
     },
     nodeClick(node, data) {
       if (node.type === 'folder') return
@@ -261,11 +232,11 @@ export default {
       return {optType, data, node}
     },
     edit(row) {
-      this.switchMain('DsForm', row, this.tData)
+      this.switchMain('DsForm', row, this.tData, this.dsTypes)
     },
     showInfo(row) {
       const param = {...row.data, ...{showModel: 'show'}}
-      this.switchMain('DsForm', param, this.tData)
+      this.switchMain('DsForm', param, this.tData, this.dsTypes)
     },
     _handleDelete(datasource) {
       this.$confirm(this.$t('datasource.delete_warning'), '', {
@@ -276,7 +247,7 @@ export default {
         delDs(datasource.id).then(res => {
           if(res.success){
             this.$success(this.$t('commons.delete_success'))
-            this.switchMain('DataHome', {}, this.tData)
+            this.switchMain('DataHome', {}, this.tData, this.dsTypes)
             this.refreshType(datasource)
           }else {
             this.$message({
@@ -292,11 +263,12 @@ export default {
         })
       })
     },
-    switchMain(component, componentParam, tData) {
+    switchMain(component, componentParam, tData, dsTypes) {
       this.$emit('switch-main', {
         component,
         componentParam,
-        tData
+        tData,
+        dsTypes
       })
     },
     markInvalid(msgParam) {

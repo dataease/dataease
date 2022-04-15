@@ -1,6 +1,6 @@
 package io.dataease.controller.request.dataset;
 
-import io.dataease.base.domain.DatasetGroup;
+import io.dataease.plugins.common.base.domain.DatasetGroup;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

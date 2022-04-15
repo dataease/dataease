@@ -1,16 +1,15 @@
 package io.dataease.service.system;
 
-import io.dataease.base.domain.FileMetadata;
-import io.dataease.base.domain.SystemParameter;
-import io.dataease.base.domain.SystemParameterExample;
-import io.dataease.base.mapper.SystemParameterMapper;
-import io.dataease.base.mapper.ext.ExtSystemParameterMapper;
 import io.dataease.commons.constants.ParamConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.dto.SystemParameterDTO;
+import io.dataease.plugins.common.base.domain.FileMetadata;
+import io.dataease.plugins.common.base.domain.SystemParameter;
+import io.dataease.plugins.common.base.domain.SystemParameterExample;
+import io.dataease.plugins.common.base.mapper.SystemParameterMapper;
 import io.dataease.service.FileService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +22,7 @@ import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import io.dataease.ext.*;
 
 @Service
 @Transactional(rollbackFor = Exception.class)

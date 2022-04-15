@@ -1,8 +1,8 @@
 package io.dataease.controller.background;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.base.domain.SysBackgroundImage;
 import io.dataease.controller.handler.annotation.I18n;
+import io.dataease.plugins.common.base.domain.SysBackgroundImage;
 import io.dataease.service.background.BackgroundService;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.GetMapping;

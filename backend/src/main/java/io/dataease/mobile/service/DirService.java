@@ -1,7 +1,7 @@
 package io.dataease.mobile.service;
 
 import io.dataease.auth.api.dto.CurrentUserDto;
-import io.dataease.base.mapper.ext.MobileDirMapper;
+import io.dataease.ext.MobileDirMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.mobile.dto.DirItemDTO;

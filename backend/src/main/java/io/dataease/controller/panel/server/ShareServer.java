@@ -1,6 +1,6 @@
 package io.dataease.controller.panel.server;
 
-import io.dataease.base.domain.PanelShare;
+import io.dataease.plugins.common.base.domain.PanelShare;
 import io.dataease.controller.panel.api.ShareApi;
 import io.dataease.controller.request.panel.PanelShareFineDto;
 import io.dataease.controller.request.panel.PanelShareRemoveRequest;

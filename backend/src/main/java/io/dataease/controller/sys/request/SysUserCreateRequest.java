@@ -1,6 +1,6 @@
 package io.dataease.controller.sys.request;
 
-import io.dataease.base.domain.SysUser;
+import io.dataease.plugins.common.base.domain.SysUser;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package io.dataease.controller.panel;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.base.domain.PanelTemplateWithBLOBs;
+import io.dataease.plugins.common.base.domain.PanelTemplateWithBLOBs;
 import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.controller.request.panel.PanelTemplateRequest;
 import io.dataease.dto.panel.PanelTemplateDTO;

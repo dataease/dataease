@@ -1,15 +1,15 @@
 package io.dataease.service.panel;
 
-import io.dataease.base.domain.DatasetTableField;
-import io.dataease.base.mapper.PanelLinkJumpInfoMapper;
-import io.dataease.base.mapper.PanelLinkJumpMapper;
-import io.dataease.base.mapper.PanelLinkJumpTargetViewInfoMapper;
-import io.dataease.base.mapper.ext.ExtPanelLinkJumpMapper;
-import io.dataease.base.mapper.ext.ExtPanelViewLinkageMapper;
+import io.dataease.ext.ExtPanelLinkJumpMapper;
+import io.dataease.ext.ExtPanelViewLinkageMapper;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseRequest;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseResponse;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpDTO;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpInfoDTO;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.mapper.PanelLinkJumpInfoMapper;
+import io.dataease.plugins.common.base.mapper.PanelLinkJumpMapper;
+import io.dataease.plugins.common.base.mapper.PanelLinkJumpTargetViewInfoMapper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,11 +1,7 @@
 package io.dataease.service.panel;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import io.dataease.auth.annotation.DeCleaner;
-import io.dataease.base.domain.*;
-import io.dataease.base.mapper.*;
-import io.dataease.base.mapper.ext.*;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.LogUtil;
@@ -18,23 +14,22 @@ import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
-import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseRequest;
 import io.dataease.dto.panel.po.PanelViewInsertDTO;
 import io.dataease.exception.DataEaseException;
+import io.dataease.ext.*;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.common.base.domain.*;
+import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.sys.SysAuthService;
-import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;

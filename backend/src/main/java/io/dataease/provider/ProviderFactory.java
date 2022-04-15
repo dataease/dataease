@@ -1,37 +1,66 @@
 package io.dataease.provider;
 
+import com.google.gson.Gson;
 import io.dataease.plugins.common.constants.DatasourceTypes;
-import io.dataease.provider.datasource.DatasourceProvider;
-import io.dataease.provider.query.api.ApiProvider;
-import org.springframework.beans.BeansException;
+import io.dataease.plugins.common.dto.datasource.DataSourceType;
+import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.datasource.query.QueryProvider;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import io.dataease.plugins.datasource.provider.Provider;
 
+import java.util.Map;
 
-@Component
+@Configuration
 public class ProviderFactory implements ApplicationContextAware {
 
     private static ApplicationContext context;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.context = applicationContext;
+    public void setApplicationContext(final ApplicationContext ctx) {
+        this.context =  ctx;
+        for(final DatasourceTypes d: DatasourceTypes.values()) {
+            final ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) context).getBeanFactory();
+            DataSourceType dataSourceType = new DataSourceType();
+            dataSourceType.setType(d.getType());
+            dataSourceType.setName(d.getName());
+            dataSourceType.setAliasPrefix(d.getAliasPrefix());
+            dataSourceType.setAliasSuffix(d.getAliasSuffix());
+            dataSourceType.setKeywordPrefix(d.getKeywordPrefix());
+            dataSourceType.setKeywordSuffix(d.getKeywordSuffix());
+            dataSourceType.setPlugin(false);
+            dataSourceType.setExtraParams(d.getExtraParams());
+            System.out.println(new Gson().toJson(dataSourceType));
+            beanFactory.registerSingleton(d.getType(), dataSourceType);
+        }
     }
 
-    public static DatasourceProvider getProvider(String type) {
+
+    public static Provider getProvider(String type) {
+        Map<String, DataSourceType> dataSourceTypeMap = SpringContextUtil.getApplicationContext().getBeansOfType((DataSourceType.class));
+        if(dataSourceTypeMap.get(type).isPlugin()){
+            return context.getBean(type, Provider.class);
+        }
+
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
             case es:
-                return context.getBean("es", DatasourceProvider.class);
+                return context.getBean("es", Provider.class);
             case api:
-                return context.getBean("api", DatasourceProvider.class);
+                return context.getBean("api", Provider.class);
             default:
-                return context.getBean("jdbc", DatasourceProvider.class);
+                return context.getBean("jdbc", Provider.class);
         }
     }
 
     public static QueryProvider getQueryProvider(String type) {
+        Map<String, DataSourceType> dataSourceTypeMap = SpringContextUtil.getApplicationContext().getBeansOfType((DataSourceType.class));
+        if(dataSourceTypeMap.get(type).isPlugin()){
+            return context.getBean(type, QueryProvider.class);
+        }
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
             case mysql:
@@ -61,7 +90,7 @@ public class ProviderFactory implements ApplicationContextAware {
             case db2:
                 return context.getBean("db2Query", QueryProvider.class);
             case api:
-                return context.getBean("apiQuery", ApiProvider.class);
+                return context.getBean("apiQuery", QueryProvider.class);
             case engine_doris:
                 return context.getBean("dorisEngineQuery", QueryProvider.class);
             case engine_mysql:

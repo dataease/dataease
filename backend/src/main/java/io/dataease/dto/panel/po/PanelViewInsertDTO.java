@@ -1,6 +1,7 @@
 package io.dataease.dto.panel.po;
 
-import io.dataease.base.domain.PanelView;
+
+import io.dataease.plugins.common.base.domain.PanelView;
 
 /**
  * Author: wangjiahao

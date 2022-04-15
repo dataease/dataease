@@ -1,0 +1,19 @@
+<?xml version = "1.0"?>
+
+<XSPEC xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="xspec.xsd">
+    <semanticDatabaseName></semanticDatabaseName>
+    <databaseName>mongo</databaseName>
+    <databaseSystemName>mongo</databaseSystemName>
+    <databaseSchemaName></databaseSchemaName>
+    <databaseId>80020202</databaseId>
+    <databaseProductName>MongoDB</databaseProductName>
+    <databaseProductVersion></databaseProductVersion>
+    <urlJDBC>jdbc:mongodb://39.103.230.66:27017/mongo?rebuildschema=true&amp;authSource=admin&amp;schema=41ff469e-4398-448b-ae5e-4ecec8e562ec.xml</urlJDBC>
+    <driverName>mongodb.jdbc.MongoDriver</driverName>
+    <driverClass>mongodb.jdbc.MongoDriver</driverClass>
+    <delimitId>"</delimitId>
+    <catalogsIncluded></catalogsIncluded>
+    <tablesIncluded></tablesIncluded>
+    <tablesExcluded></tablesExcluded>
+
+</XSPEC>

@@ -1,8 +1,8 @@
 package io.dataease.commons.utils;
 
-import io.dataease.dto.datasource.TableField;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.dto.datasource.TableField;
 import org.apache.poi.hssf.eventusermodel.*;
 import org.apache.poi.hssf.eventusermodel.dummyrecord.LastCellOfRowDummyRecord;
 import org.apache.poi.hssf.eventusermodel.dummyrecord.MissingCellDummyRecord;

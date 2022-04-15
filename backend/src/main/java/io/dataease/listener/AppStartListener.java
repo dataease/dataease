@@ -1,6 +1,6 @@
 package io.dataease.listener;
 
-import io.dataease.base.domain.DatasetTableTask;
+import io.dataease.plugins.common.base.domain.DatasetTableTask;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.service.ScheduleService;
 import io.dataease.service.dataset.DataSetTableTaskService;

@@ -1,6 +1,6 @@
 package io.dataease.commons.utils;
 
-import io.dataease.commons.model.ITreeBase;
+import io.dataease.plugins.common.model.ITreeBase;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -17,7 +17,7 @@ public class TreeUtils{
     /**
      * Description: rootPid 是根节点PID
      */
-    public static<T extends ITreeBase> List<T> mergeTree(List<T> tree,String ... rootPid) {
+    public static<T extends ITreeBase> List<T> mergeTree(List<T> tree, String ... rootPid) {
         Assert.notNull(rootPid, "Root Pid cannot be null");
         if(CollectionUtils.isEmpty(tree)){
             return null;

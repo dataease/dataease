@@ -1,7 +1,7 @@
 package io.dataease.dto.panel;
 
-import io.dataease.base.domain.ChartViewWithBLOBs;
-import io.dataease.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

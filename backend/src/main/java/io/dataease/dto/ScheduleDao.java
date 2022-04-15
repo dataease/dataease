@@ -1,6 +1,6 @@
 package io.dataease.dto;
 
-import io.dataease.base.domain.Schedule;
+import io.dataease.plugins.common.base.domain.Schedule;
 import lombok.Getter;
 import lombok.Setter;
 

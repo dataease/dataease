@@ -1,8 +1,8 @@
 package io.dataease.dto.panel;
 
-import io.dataease.base.domain.PanelGroupWithBLOBs;
-import io.dataease.commons.model.ITreeBase;
 import io.dataease.dto.chart.ChartViewDTO;
+import io.dataease.plugins.common.base.domain.PanelGroupWithBLOBs;
+import io.dataease.plugins.common.model.ITreeBase;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

@@ -1,10 +1,14 @@
 package io.dataease.service;
 
-import io.dataease.base.domain.*;
-import io.dataease.base.mapper.FileContentMapper;
-import io.dataease.base.mapper.FileMetadataMapper;
+
 import io.dataease.commons.constants.FileType;
 import io.dataease.commons.exception.DEException;
+import io.dataease.plugins.common.base.domain.FileContent;
+import io.dataease.plugins.common.base.domain.FileContentExample;
+import io.dataease.plugins.common.base.domain.FileMetadata;
+import io.dataease.plugins.common.base.domain.FileMetadataExample;
+import io.dataease.plugins.common.base.mapper.FileContentMapper;
+import io.dataease.plugins.common.base.mapper.FileMetadataMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;

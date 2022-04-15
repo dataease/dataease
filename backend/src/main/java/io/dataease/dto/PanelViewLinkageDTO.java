@@ -1,8 +1,8 @@
 package io.dataease.dto;
 
-import io.dataease.base.domain.DatasetTableField;
-import io.dataease.base.domain.PanelViewLinkage;
-import io.dataease.base.domain.PanelViewLinkageField;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.PanelViewLinkage;
+import io.dataease.plugins.common.base.domain.PanelViewLinkageField;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.ArrayList;
