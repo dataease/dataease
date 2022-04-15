@@ -30,10 +30,10 @@ import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
-
+import PluginCom from '@/views/system/plugin/PluginCom'
 export default {
   name: 'UserViewMobileDialog',
-  components: { ChartComponentS2, LabelNormalText, DeContainer, DeMainContainer, ChartComponentG2, ChartComponent, TableNormal, LabelNormal },
+  components: { ChartComponentS2, LabelNormalText, DeContainer, DeMainContainer, ChartComponentG2, ChartComponent, TableNormal, LabelNormal, PluginCom },
   props: {
     chart: {
       type: Object,
@@ -50,13 +50,7 @@ export default {
     }
   },
   computed: {
-    mapChart() {
-      if (this.chart.type && (this.chart.type === 'map' || this.chart.type === 'buddle-map')) {
-        const temp = JSON.parse(JSON.stringify(this.chart))
-        return { ...temp, ...{ DetailAreaCode: this.curComponent.DetailAreaCode }}
-      }
-      return null
-    },
+
     customStyle() {
       let style = {
       }
@@ -83,7 +77,18 @@ export default {
       'curComponent',
       'componentData',
       'canvasStyleData'
-    ])
+    ]),
+    mapChart() {
+      if (this.chart.type && (this.chart.type === 'map' || this.chart.type === 'buddle-map')) {
+        const temp = JSON.parse(JSON.stringify(this.chart))
+        let DetailAreaCode = null
+        if (this.curComponent && this.curComponent.DetailAreaCode && this.curComponent.DetailAreaCode.length) {
+          DetailAreaCode = this.curComponent.DetailAreaCode
+        }
+        return { ...temp, ...{ DetailAreaCode: DetailAreaCode }}
+      }
+      return null
+    }
   },
   methods: {
 

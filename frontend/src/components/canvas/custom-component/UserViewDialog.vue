@@ -41,7 +41,6 @@ import { exportDetails } from '@/api/panel/panel'
 import html2canvas from 'html2canvasde'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { deepCopy } from '@/components/canvas/utils/utils'
-import { get } from '@/api/system/dynamic'
 export default {
   name: 'UserView',
   components: { LabelNormalText, ChartComponentS2, ChartComponentG2, DeMainContainer, DeContainer, DeAsideContainer, ChartComponent, TableNormal, LabelNormal, PluginCom },
@@ -62,13 +61,7 @@ export default {
     }
   },
   computed: {
-    mapChart() {
-      if (this.chart.type && (this.chart.type === 'map' || this.chart.type === 'buddle-map')) {
-        const temp = JSON.parse(JSON.stringify(this.chart))
-        return { ...temp, ...{ DetailAreaCode: this.curComponent.DetailAreaCode }}
-      }
-      return null
-    },
+
     showChartCanvas() {
       return !this.chart.type.includes('table')
     },
@@ -117,7 +110,18 @@ export default {
       'curComponent',
       'componentData',
       'canvasStyleData'
-    ])
+    ]),
+    mapChart() {
+      if (this.chart.type && (this.chart.type === 'map' || this.chart.type === 'buddle-map')) {
+        const temp = JSON.parse(JSON.stringify(this.chart))
+        let DetailAreaCode = null
+        if (this.curComponent && this.curComponent.DetailAreaCode && this.curComponent.DetailAreaCode.length) {
+          DetailAreaCode = this.curComponent.DetailAreaCode
+        }
+        return { ...temp, ...{ DetailAreaCode: DetailAreaCode }}
+      }
+      return null
+    }
   },
   mounted() {
     this.element = deepCopy(this.curComponent)
