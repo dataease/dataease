@@ -17,6 +17,7 @@
         <el-collapse-item :title="$t('panel.panel')" name="panel">
           <el-row class="selector-div">
             <background-selector class="attr-selector" />
+            <panel-aided-design class="attr-selector" />
             <component-gap class="attr-selector" />
             <panel-refresh-time class="attr-selector" />
             <panel-view-result class="attr-selector" />
@@ -70,9 +71,11 @@ import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import bus from '@/utils/bus'
 import PanelViewResult from '@/views/panel/SubjectSetting/PanelStyle/PanelViewResult'
+import PanelAidedDesign from '@/views/panel/SubjectSetting/PanelStyle/PanelAidedDesign'
 
 export default {
   components: {
+    PanelAidedDesign,
     PanelViewResult,
     slider,
     BackgroundSelector,

@@ -8,6 +8,7 @@ import {
 } from '@/utils/ApplicationContext'
 import { uuid } from 'vue-uuid'
 import store from '@/store'
+import { AIDED_DESIGN } from '@/views/panel/panel'
 
 export function deepCopy(target) {
   if (typeof target === 'object') {
@@ -99,6 +100,7 @@ export function panelInit(componentData, componentStyle) {
   componentStyle.refreshTime = (componentStyle.refreshTime || 5)
   componentStyle.refreshViewLoading = (componentStyle.refreshViewLoading || false)
   componentStyle.refreshUnit = (componentStyle.refreshUnit || 'minute')
+  componentStyle.aidedDesign = (componentStyle.aidedDesign || deepCopy(AIDED_DESIGN))
 
   // 将data 和 style 数据设置到全局store中
   store.commit('setComponentData', resetID(componentData))
