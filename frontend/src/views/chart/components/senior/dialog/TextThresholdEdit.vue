@@ -49,6 +49,7 @@ export default {
       thresholdArr: [],
       thresholdObj: {
         term: 'eq',
+        field: '0',
         value: '0',
         color: '#ff0000ff'
       },
