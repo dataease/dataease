@@ -219,6 +219,12 @@ import { buildFilterMap } from '@/utils/conditionUtil'
 import _ from 'lodash'
 import $ from 'jquery'
 import Background from '@/views/background/index'
+import { ApplicationContext } from '@/utils/ApplicationContext'
+import {
+  BASE_MOBILE_STYLE,
+  COMMON_BACKGROUND_NONE,
+  HYPERLINKS
+} from '@/components/canvas/custom-component/component-list'
 
 let positionBox = []
 let coordinates = [] // 坐标点集合
@@ -943,7 +949,11 @@ export default {
   },
   computed: {
     showGrid() {
-      return this.canvasStyleData.aidedDesign.showGrid
+      if (this.canvasStyleData && this.canvasStyleData.aidedDesign) {
+        return this.canvasStyleData.aidedDesign.showGrid
+      } else {
+        return false
+      }
     },
     editStyle() {
       return {
@@ -1002,6 +1012,12 @@ export default {
     }
   },
   watch: {
+    matrixCount: {
+      handler(newVal, oldVal) {
+        const pointScale = newVal.x / oldVal.x
+        this.changeScale(pointScale)
+      }
+    },
     customStyle: {
       handler(newVal) {
         // 获取当前宽高（宽高改变后重新渲染画布）
@@ -1223,10 +1239,19 @@ export default {
       // 自适应画布区域 返回原值
       return value * scale / 100
     },
-    changeScale() {
-      if (this.canvasStyleData.matrixCount) {
-        this.matrixCount = this.canvasStyleData.matrixCount
-      }
+    // 修改矩阵点
+    changeComponentSizePoint(pointScale) {
+      this.componentData.forEach((item, index) => {
+        item.x = (item.x - 1) * pointScale + 1
+        item.y = (item.y - 1) * pointScale + 1
+        item.sizex = item.sizex * pointScale
+        item.sizey = item.sizey * pointScale
+        // this.componentData[index] = item
+      })
+    },
+
+    changeScale(pointScale) {
+      this.changeComponentSizePoint(pointScale)
       // 1.3 版本重新设计仪表板定位方式，基准画布宽高为 1600*900 宽度自适应当前画布获取缩放比例scaleWidth
       // 高度缩放比例scaleHeight = scaleWidth 基础矩阵为128*72 矩阵原始宽度12.5*12.5 矩阵高度可以调整
 

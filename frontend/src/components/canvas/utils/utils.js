@@ -67,7 +67,7 @@ export function mobile2MainCanvas(mainSource, mobileSource) {
 }
 
 export function panelInit(componentData, componentStyle) {
-  componentData.forEach(item => {
+  componentData.forEach((item, index) => {
     if (item.component && item.component === 'de-date') {
       if (item.options.attrs &&
         (!item.options.attrs.default || (item.serviceName === 'timeYearWidget' && item.options.attrs.default.dynamicInfill !== 'year') || (item.serviceName === 'timeMonthWidget' && item.options.attrs.default.dynamicInfill !== 'month'))) {
@@ -95,6 +95,7 @@ export function panelInit(componentData, componentStyle) {
       item.hyperlinks = (item.hyperlinks || HYPERLINKS)
     }
     item.commonBackground = item.commonBackground || deepCopy(COMMON_BACKGROUND_NONE)
+    componentData[index] = item
   })
   // style初始化
   componentStyle.refreshTime = (componentStyle.refreshTime || 5)

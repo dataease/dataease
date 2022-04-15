@@ -8,8 +8,15 @@
       >
         <el-col>
           <el-form ref="aidedForm" label-width="110px" size="mini">
-            <el-form-item :label="'显示辅助网格'" class="form-item form-item-slider">
+            <el-form-item :label="'辅助网格'" class="form-item form-item-slider">
               <el-checkbox v-model="aidedDesign.showGrid" size="mini" @change="onChangePanelStyle" />
+            </el-form-item>
+            <el-form-item :label="'矩阵密度'" class="form-item form-item-slider">
+              <el-radio-group v-model="aidedDesign.matrixBase" size="mini">
+                <el-radio-button :label="1">普通</el-radio-button>
+                <el-radio-button :label="2">适中</el-radio-button>
+                <el-radio-button :label="3">密集</el-radio-button>
+              </el-radio-group>
             </el-form-item>
           </el-form>
         </el-col>
