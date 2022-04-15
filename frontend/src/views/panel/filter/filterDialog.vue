@@ -39,7 +39,7 @@
                   :load="loadTree"
                   @node-click="handleNodeClick"
                 >
-                  <div slot-scope="{ node, data }" class="custom-tree-node">
+                  <span slot-scope="{ node, data }" style="display: flex;flex: 1;width: 0%;" class="custom-tree-node">
                     <span>
                       <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
                       <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
@@ -48,12 +48,14 @@
                       <svg-icon v-if="data.type === 'union'" icon-class="ds-union" class="ds-icon-union" />
                       <svg-icon v-if="data.type === 'api'" icon-class="ds-api" class="ds-icon-api" />
                     </span>
-                    <el-tooltip class="item" effect="dark" placement="top">
-                      <div slot="content">{{ node.label }}</div>
-                      <span class="label-span">{{ node.label }}</span>
-                    </el-tooltip>
+                    <span v-if="data.modelInnerType === 'db' || data.modelInnerType === 'sql'">
+                      <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
+                      <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
+                    </span>
 
-                  </div>
+                    <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="node.label">{{ node.label }}</span>
+
+                  </span>
                 </el-tree>
 
                 <div v-if="showDomType === 'field'">
@@ -71,9 +73,15 @@
                         :key="item.id"
                         :class="myAttrs && myAttrs.fieldId && myAttrs.fieldId.includes(item.id) ? 'filter-db-row-checked' : 'filter-db-row'"
                         class="filter-db-row"
+                        style="margin: 5px 0;"
                       >
-                        <i class="el-icon-s-data" />
-                        <span> {{ item.name }}</span>
+                        <span style="display: flex;flex: 1;">
+                          <span>
+                            <i class="el-icon-s-data" />
+                          </span>
+
+                          <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="item.name">{{ item.name }}</span>
+                        </span>
                       </div>
                     </transition-group>
                   </draggable>
@@ -122,8 +130,15 @@
                   <el-table-column prop="name" :label="$t('commons.name')">
                     <template v-if="comShowDomType === 'view'" :id="scope.row.id" slot-scope="scope">
                       <div class="filter-db-row" @click="comShowFieldDatas(scope.row)">
-                        <i class="el-icon-s-data" />
-                        <span> {{ scope.row.name }}</span>
+                        <!-- <i class="el-icon-s-data" />
+                        <span> {{ scope.row.name }}</span> -->
+                        <span style="display: flex;flex: 1;">
+                          <span>
+                            <i class="el-icon-s-data" />
+                          </span>
+
+                          <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="scope.row.name">{{ scope.row.name }}</span>
+                        </span>
                       </div>
                     </template>
                   </el-table-column>
@@ -144,9 +159,16 @@
                         :key="item.id"
                         :class="myAttrs && myAttrs.fieldId && myAttrs.fieldId.includes(item.id) ? 'filter-db-row-checked' : 'filter-db-row'"
                         class="filter-db-row"
+                        style="margin: 5px 0;"
                       >
-                        <i class="el-icon-s-data" />
-                        <span> {{ item.name }}</span>
+                        <span style="display: flex;flex: 1;">
+                          <span>
+                            <i class="el-icon-s-data" />
+                          </span>
+
+                          <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="item.name">{{ item.name }}</span>
+                        </span>
+
                       </div>
                     </transition-group>
                   </draggable>
