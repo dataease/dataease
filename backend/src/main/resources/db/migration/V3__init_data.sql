@@ -27,8 +27,8 @@ INSERT INTO `sys_menu` VALUES (52, 0, 0, 1, '关于', 'about', 'system/about/ind
 COMMIT;
 
 BEGIN;
-INSERT INTO `sys_user` VALUES (1, 0, 'admin', '管理员', '男', NULL, 'admin@fit2cloud.com', '40b8893ea9ebc2d631c4bb42bb1e8996', b'1', 1, NULL, NULL, NULL, NULL, 1615184951534, 'zh_CN');
-INSERT INTO `sys_user` VALUES (2, 1, 'demo', 'demo', '男', NULL, 'demo@fit2cloud.com', '40b8893ea9ebc2d631c4bb42bb1e8996', b'0', 1, NULL, NULL, NULL, 1619086036234, 1622533509697, 'zh_CN');
+INSERT INTO `sys_user` VALUES (1, 0, 'admin', '管理员', '男', NULL, 'admin@zhejintech.com', '36d91e269f9fb3e859af3383baae94e3', b'1', 1, NULL, NULL, NULL, NULL, 1615184951534, 'zh_CN');
+INSERT INTO `sys_user` VALUES (2, 1, 'demo', 'demo', '男', NULL, 'demo@zhejintech.com', '36d91e269f9fb3e859af3383baae94e3', b'0', 1, NULL, NULL, NULL, 1619086036234, 1622533509697, 'zh_CN');
 COMMIT;
 
 
@@ -103,7 +103,7 @@ INSERT INTO `panel_template`(`id`, `name`, `pid`, `level`, `node_type`, `create_
 INSERT INTO `panel_template`(`id`, `name`, `pid`, `level`, `node_type`, `create_by`, `create_time`, `snapshot`, `template_type`, `template_style`, `template_data`, `dynamic_data`) VALUES ('system', '系统模板', '', -1, 'folder', NULL, NULL, NULL, 'system', NULL, NULL, NULL);
 
 BEGIN;
-INSERT INTO `my_plugin` VALUES (1, 'xpakc默认插件', 'default', 0, 20000, 'xpack', '请购买正式许可', '1.0-SNAPSHOT', NULL, 'fit2cloud-chenyw', 1, 1620624387327, NULL, 'deplugin-xpack-backend', NULL);
+INSERT INTO `my_plugin` VALUES (1, 'xpakc默认插件', 'default', 0, 20000, 'xpack', '请购买正式许可', '1.0-SNAPSHOT', NULL, 'zhejin-yfl', 1, 1620624387327, NULL, 'deplugin-xpack-backend', NULL);
 COMMIT;
 -- ----------------------------
 
