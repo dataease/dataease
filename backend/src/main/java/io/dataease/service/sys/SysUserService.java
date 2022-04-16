@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 public class SysUserService {
 
 
-    @Value("${dataease.init_password:DataEase123..}")
+    @Value("${datains.init_password:DataIns123..}")
     private String DEFAULT_PWD;
 
     @Resource

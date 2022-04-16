@@ -1,10 +1,10 @@
 on: [push, pull_request, release]
 
-name: DataEase pull request handler
+name: DataIns pull request handler
 
 jobs:
   generic_handler:
-    name: Generic handler for DataEase Repos
+    name: Generic handler for DataIns Repos
     runs-on: ubuntu-latest
     steps:
       - name: Add labels

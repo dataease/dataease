@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="true">
 	<property resource="application.properties"/>
-	<property file="/opt/dataease/conf/dataease.properties"/>
+	<property file="/opt/datains/conf/datains.properties"/>
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>%d %5p %40.40c:%4L - %m%n</pattern>

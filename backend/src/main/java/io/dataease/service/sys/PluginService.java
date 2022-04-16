@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 public class PluginService {
 
-    @Value("${dataease.plugin.dir:/opt/dataease/plugins/}")
+    @Value("${dataease.plugin.dir:/opt/datains/plugins/}")
     private String pluginDir;
 
     private final static String pluginJsonName = "plugin.json";

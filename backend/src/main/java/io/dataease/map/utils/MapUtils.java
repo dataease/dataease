@@ -29,8 +29,8 @@ public class MapUtils {
         MapUtils.areaMappingMapper = areaMappingMapper;
     }
 
-    private static final String path = "/opt/dataease/data/行政区划列表2020-03.xlsx";
-    private static final String featureDir = "/opt/dataease/data/feature/";
+    private static final String path = "/opt/datains/data/行政区划列表2020-03.xlsx";
+    private static final String featureDir = "/opt/datains/data/feature/";
 
 
     public static String formatCode(String code) {

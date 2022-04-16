@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class PluginRunner implements ApplicationRunner {
 
-    @Value("${dataease.plugin.dir:/opt/dataease/plugins/}")
+    @Value("${dataease.plugin.dir:/opt/datains/plugins/}")
     private String pluginDir;
 
     @Autowired

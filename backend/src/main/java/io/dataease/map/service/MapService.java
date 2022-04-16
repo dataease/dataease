@@ -15,7 +15,7 @@ import java.util.List;
 public class MapService {
 
 
-    private static final String dirPath = "/opt/dataease/data/feature/";
+    private static final String dirPath = "/opt/datains/data/feature/";
 
     // 要不要加缓存呢？
     public String geometry(String areaCode) {

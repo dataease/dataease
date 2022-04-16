@@ -106,7 +106,7 @@ public class ExtractDataService {
     private static final String currentUpdateTime = "${__current_update_time__}";
     private static final String separator = "|DE|";
     private static final String extention = "txt";
-    private static final String root_path = "/opt/dataease/data/kettle/";
+    private static final String root_path = "/opt/datains/data/kettle/";
 
     @Value("${kettle.files.keep:false}")
     private boolean kettleFilesKeep;

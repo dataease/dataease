@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 public class JdbcProvider extends DatasourceProvider {
     private static Map<String, DruidDataSource> jdbcConnection = new HashMap<>();
     public ExtendedJdbcClassLoader extendedJdbcClassLoader;
-    static private String FILE_PATH = "/opt/dataease/drivers";
+    static private String FILE_PATH = "/opt/datains/drivers";
     private static final String REG_WITH_SQL_FRAGMENT = "((?i)WITH[\\s\\S]+(?i)AS?\\s*\\([\\s\\S]+\\))\\s*(?i)SELECT";
     public static final Pattern WITH_SQL_FRAGMENT = Pattern.compile(REG_WITH_SQL_FRAGMENT);
 

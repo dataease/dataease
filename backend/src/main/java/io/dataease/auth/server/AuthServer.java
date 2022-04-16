@@ -41,7 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class AuthServer implements AuthApi {
 
-    @Value("${dataease.init_password:DataEase123..}")
+    @Value("${datains.init_password:DataIns123..}")
     private String DEFAULT_PWD;
 
     @Autowired

@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
 <generatorConfiguration>
     <!--配置数据库连接的位置-->
-    <properties url="file:///opt/dataease/conf/dataease.properties"/>
+    <properties url="file:///opt/datains/conf/datains.properties"/>
     <!-- 设置mysql驱动路径 -->
     <!-- 此处指定生成针对MyBatis3的DAO -->
     <context id="mysql" targetRuntime="MyBatis3">

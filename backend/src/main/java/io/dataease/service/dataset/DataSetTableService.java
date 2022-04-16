@@ -270,7 +270,7 @@ public class DataSetTableService {
             CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
             sysAuthService.copyAuth(datasetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
 
-            // 添加表成功后，获取当前表字段和类型，抽象到dataease数据库
+            // 添加表成功后，获取当前表字段和类型，抽象到datains数据库
             if (insert == 1) {
                 saveTableField(datasetTable);
                 extractData(datasetTable);

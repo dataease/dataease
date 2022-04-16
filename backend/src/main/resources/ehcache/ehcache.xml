@@ -7,7 +7,7 @@
         user.dir - 用户当前工作目录
         java.io.tmpdir - 默认临时文件路径
     -->
-    <diskStore path="/opt/dataease/data/ehcache"/>
+    <diskStore path="/opt/datains/data/ehcache"/>
     <!--
         name:缓存名称。
         maxElementsInMemory:jvm缓存最大数目

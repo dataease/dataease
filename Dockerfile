@@ -2,11 +2,11 @@ FROM registry.cn-qingdao.aliyuncs.com/dataease/fabric8-java-alpine-openjdk8-jre:
 
 ARG IMAGE_TAG
 
-RUN mkdir -p /opt/apps /opt/dataease/data/feature/full /opt/dataease/drivers
+RUN mkdir -p /opt/apps /opt/datains/data/feature/full /opt/datains/drivers
 
-ADD mapFiles/* /opt/dataease/data/feature/full/
+ADD mapFiles/* /opt/datains/data/feature/full/
 
-ADD drivers/* /opt/dataease/drivers/
+ADD drivers/* /opt/datains/drivers/
 
 ADD backend/target/backend-$IMAGE_TAG.jar /opt/apps
 

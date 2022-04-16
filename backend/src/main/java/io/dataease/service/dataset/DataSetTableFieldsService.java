@@ -34,7 +34,7 @@ public class DataSetTableFieldsService {
     public DatasetTableField save(DatasetTableField datasetTableField) {
         if (StringUtils.isEmpty(datasetTableField.getId())) {
             datasetTableField.setId(UUID.randomUUID().toString());
-            // 若dataeasename为空，则用MD5(id)作为dataeasename
+            // 若datainsname为空，则用MD5(id)作为datainsname
             if (StringUtils.isEmpty(datasetTableField.getDataeaseName())) {
                 datasetTableField.setDataeaseName(TableUtils.columnName(datasetTableField.getId()));
             }
