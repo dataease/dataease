@@ -1,7 +1,7 @@
 <template>
   <div class="top-nav">
     <div v-loading="!axiosFinished" class="log">
-      <svg-icon v-if="!logoUrl && axiosFinished" icon-class="DataEase" custom-class="top-nav-logo-icon" />
+      <svg-icon v-if="!logoUrl && axiosFinished" icon-class="datains-logo" custom-class="top-nav-logo-icon" />
       <img v-if="logoUrl && axiosFinished" :src="logoUrl" width="140" alt="" style="padding-top: 10px;">
     </div>
     <el-menu
@@ -24,16 +24,8 @@
       <template>
 
         <notification class="right-menu-item hover-effect" />
-        <lang-select class="right-menu-item hover-effect" />
-        <div style="height: 100%;padding: 0 8px;" class="right-menu-item hover-effect">
-          <a
-            href="https://dataease.io/docs/"
-            target="_blank"
-            style="display: flex;height: 100%;width: 100%;justify-content: center;align-items: center;"
-          >
-            <svg-icon icon-class="docs" />
-          </a>
-        </div>
+        <!-- <lang-select class="right-menu-item hover-effect" /> -->
+
       </template>
 
       <el-dropdown
@@ -60,9 +52,9 @@
             <el-dropdown-item>{{ $t('user.change_password') }}</el-dropdown-item>
           </router-link>
 
-          <router-link to="/about/index">
-            <el-dropdown-item>{{ $t('commons.about_us') }}222</el-dropdown-item>
-          </router-link>
+          <!-- <router-link to="/about/index">
+            <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>
+          </router-link> -->
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">{{ $t('commons.exit_system') }}</span>
           </el-dropdown-item>

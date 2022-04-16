@@ -146,7 +146,7 @@ export default {
       })
     },
     support() {
-      const url = 'https://support.fit2cloud.com/'
+      const url = 'http://mivicelab.com/'
       window.open(url, '_blank')
     },
     beforeUpload(file) {

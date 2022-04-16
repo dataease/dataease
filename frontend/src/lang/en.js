@@ -1182,7 +1182,7 @@ export default {
     edit_field: 'Edit Field',
     preview_100_data: 'Show 100 lines data',
     invalid_table_check: 'Please sync data first.',
-    parse_error: 'Parse failed,please check.Reference：https://dataease.io/docs/faq/dataset_faq/',
+    parse_error: 'Parse failed,please check.',
     origin_field_type: 'Origin Type',
     edit_excel_table: 'Edit Excel Dataset',
     edit_excel: 'Edit Excel',
@@ -1942,8 +1942,8 @@ export default {
     firstOfYear: 'First month of this year'
   },
   wizard: {
-    welcome_title: 'Welcome To Use DataEase',
-    welcome_hint: 'Open source data visual analysis tool available to everyone',
+    welcome_title: 'Welcome To Use DataIns',
+    welcome_hint: 'data visual analysis tool',
     demo_video: 'Demo',
     quick_start: 'Quick Start',
     online_document: 'Online',
@@ -1951,8 +1951,8 @@ export default {
     teaching_video: 'Teaching',
     enterprise_edition: 'Enterprise',
     contact_us: 'Contact Us',
-    demo_video_hint: 'How to make a DataEase dashboard in 3 minutes and share it with others',
-    online_document_hint: 'It covers the installation steps, user manuals, tutorials, solutions to common problems, and secondary development of DataEase',
+    demo_video_hint: 'How to make a DataIns dashboard in 3 minutes and share it with others',
+    online_document_hint: 'It covers the installation steps, user manuals, tutorials, solutions to common problems, and secondary development of DataIns',
     teaching_video_bottom_hint: 'More videos',
     enterprise_edition_hint1: 'Provide enterprise application scenario X-Pack enhancement package',
     enterprise_edition_hint2: 'Provide high-level original factory service support',
@@ -1963,7 +1963,9 @@ export default {
     click_inner: 'Click To Enter',
     email: 'Email:',
     tel: 'Tel:',
-    web: 'Web:'
+    web: 'Web:',
+    add_datasource: 'Add a datasource'
+
   },
   kettle: {
     add: 'Add Kettle',

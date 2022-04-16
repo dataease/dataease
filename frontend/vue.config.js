@@ -19,7 +19,7 @@ module.exports = {
     port: port,
     proxy: {
       '^(?!/login)': {
-        target: 'http://localhost:8081/',
+        target: 'http://localhost:9528/',
         ws: false
       }
     },

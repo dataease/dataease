@@ -3,12 +3,12 @@
     class="demo_main"
   >
     <div class="demo_title">
-      <a target="_blank" :href="details.href">
+      <router-link target="_blank" :to="details.href">
         <img
           :src="require('../../../assets/DataEase-' +imgIndex + '.jpg')"
           height="100%"
         >
-      </a>
+      </router-link>
     </div>
     <div class="demo_content">
       <el-row class="head">

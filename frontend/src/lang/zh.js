@@ -1184,7 +1184,7 @@ export default {
     edit_field: '编辑字段',
     preview_100_data: '显示前100行数据',
     invalid_table_check: '非直连数据集请先完成数据同步',
-    parse_error: 'Excel解析失败，请检查格式、字段等信息。具体参考：https://dataease.io/docs/faq/dataset_faq/',
+    parse_error: 'Excel解析失败，请检查格式、字段等信息。',
     origin_field_type: '原始类型',
     edit_excel_table: '编辑Excel数据集',
     edit_excel: '编辑Excel',
@@ -1962,8 +1962,8 @@ export default {
     firstOfYear: '当年首月'
   },
   wizard: {
-    welcome_title: '欢迎使用DataEase',
-    welcome_hint: '人人可用的开源数据可视化分析工具',
+    welcome_title: '欢迎使用DataIns',
+    welcome_hint: '数据可视化自助探索分析工具',
     demo_video: '演示视频',
     quick_start: '快速入门',
     online_document: '在线文档',
@@ -1971,18 +1971,19 @@ export default {
     teaching_video: '教学视频',
     enterprise_edition: '企业版',
     contact_us: '联系我们',
-    demo_video_hint: '如何3分钟制作一个DataEase 数据看板、并分享给他人',
-    online_document_hint: '涵盖DataEase的安装步骤、用户手册、使用教程、常见问题的解决方案、以及二次开发等',
+    demo_video_hint: '如何3分钟制作一个DataIns 数据看板、并分享给他人',
+    online_document_hint: '涵盖DataIns的安装步骤、用户手册、使用教程、常见问题的解决方案、以及二次开发等',
     teaching_video_bottom_hint: '更多视频资料',
     enterprise_edition_hint1: '提供企业级应用场景 X-Pack 增强包',
     enterprise_edition_hint2: '提供高等级原厂服务支持',
-    enterprise_edition_hint3: '提供 DataEase 最佳实践建议',
+    enterprise_edition_hint3: '提供 DataIns 最佳实践建议',
     open_source_community: '开源社区',
     click_show: '点击查看',
     show_more: '查看更多',
     email: '邮箱：',
     tel: '电话：',
-    web: '网址：'
+    web: '网址：',
+    add_datasource: '添加一个数据源'
   },
   kettle: {
     add: '添加 Kettle 服务',

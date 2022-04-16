@@ -10,7 +10,7 @@
     </el-row>
     <el-row class="demo_content">
       <span class="icon iconfont icon-github" />
-      <span class="demo_git"><a href="https://github.com/dataease/dataease/issues" target="_blank">{{ $t('wizard.open_source_community') }}</a></span>
+      <span class="demo_git"><a href="" target="_blank">{{ $t('wizard.open_source_community') }}</a></span>
     </el-row>
   </el-row>
 </template>
