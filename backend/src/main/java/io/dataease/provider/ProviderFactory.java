@@ -38,9 +38,9 @@ public class ProviderFactory implements ApplicationContextAware {
             DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
             switch (datasourceType) {
                 case es:
-                    return context.getBean("es", Provider.class);
+                    return context.getBean("esProviders", Provider.class);
                 case api:
-                    return context.getBean("api", Provider.class);
+                    return context.getBean("apiProvider", Provider.class);
                 default:
                     return context.getBean("jdbc", Provider.class);
             }

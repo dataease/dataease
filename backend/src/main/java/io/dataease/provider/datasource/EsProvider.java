@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service("es")
+@Service("esProviders")
 public class EsProvider extends Provider {
 
 
