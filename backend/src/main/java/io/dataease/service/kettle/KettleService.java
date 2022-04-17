@@ -54,17 +54,12 @@ public class KettleService {
         deEngineMapper.deleteByPrimaryKey(id);
     }
 
-    public ResultHolder validate(KettleDTO kettleDTO) throws Exception {
+    public void validate(KettleDTO kettleDTO) throws Exception {
         HttpClientConfig httpClientConfig = new HttpClientConfig();
         String authValue = "Basic " + Base64.getUrlEncoder().encodeToString((kettleDTO.getUser()
                 + ":" + kettleDTO.getPasswd()).getBytes());
         httpClientConfig.addHeader("Authorization", authValue);
-        try {
-            String response = HttpClientUtil.get("http://" + kettleDTO.getCarte() + ":" + kettleDTO.getPort() + "/kettle/status/", httpClientConfig);
-            return ResultHolder.success("Kettle is valid.");
-        }catch (Exception e){
-            return ResultHolder.error("Kettle is invalid: " + e.getMessage());
-        }
+        String response = HttpClientUtil.get("http://" + kettleDTO.getCarte() + ":" + kettleDTO.getPort() + "/kettle/status/", httpClientConfig);
     }
 
     public ResultHolder validate(String id) {

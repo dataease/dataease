@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREFIX;
 
-@Service("db2Query")
+@Service("db2QueryProvider")
 public class Db2QueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;

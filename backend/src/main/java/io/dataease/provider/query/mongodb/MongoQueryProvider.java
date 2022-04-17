@@ -37,7 +37,7 @@ import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREF
  * @Author gin
  * @Date 2021/5/17 2:43 下午
  */
-@Service("mongoQuery")
+@Service("mongoQueryProvider")
 public class MongoQueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;

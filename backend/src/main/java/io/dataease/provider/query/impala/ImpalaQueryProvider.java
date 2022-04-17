@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREFIX;
 
 
-@Service("impalaQuery")
+@Service("impalaQueryProvider")
 public class ImpalaQueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;

@@ -41,7 +41,7 @@ import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREF
  * @author: Jiantao Yan
  * @date: 2021/10/11 17:12
  **/
-@Service("redshiftQuery")
+@Service("redshiftQueryProvider")
 public class RedshiftQueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;

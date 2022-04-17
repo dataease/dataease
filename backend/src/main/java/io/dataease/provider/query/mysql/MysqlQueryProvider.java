@@ -36,7 +36,7 @@ import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREF
  * @Author gin
  * @Date 2021/5/17 2:43 下午
  */
-@Service("mysqlQuery")
+@Service("mysqlQueryProvider")
 public class MysqlQueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;

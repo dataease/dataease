@@ -11,3 +11,6 @@ COMMIT;
 
 INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.helpLink', NULL, 'text', 15);
 INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.homeLink', NULL, 'text', 16);
+
+
+ALTER TABLE `my_plugin` ADD COLUMN `ds_type` VARCHAR(45) NULL COMMENT '数据源类型' AFTER `icon`;

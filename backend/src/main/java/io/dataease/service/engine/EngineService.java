@@ -153,7 +153,7 @@ public class EngineService {
         CacheUtils.remove("ENGINE", "SimpleKey []");
     }
 
-    @Cacheable(value = "ENGINE")
+//    @Cacheable(value = "ENGINE")
     public Datasource getDeEngine() throws Exception {
         Datasource datasource = new Datasource();
 

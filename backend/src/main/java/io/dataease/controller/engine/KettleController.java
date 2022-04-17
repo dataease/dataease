@@ -34,8 +34,8 @@ public class KettleController {
 
     @ApiIgnore
     @PostMapping("validate")
-    public  ResultHolder validate(@RequestBody KettleDTO kettleDTO) throws Exception{
-         return kettleService.validate(kettleDTO);
+    public  void validate(@RequestBody KettleDTO kettleDTO) throws Exception{
+        kettleService.validate(kettleDTO);
     }
 
     @RequiresPermissions("sysparam:read")

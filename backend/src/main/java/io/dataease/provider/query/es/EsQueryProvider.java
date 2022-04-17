@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREFIX;
 
-@Service("esQuery")
+@Service("esQueryProvider")
 public class EsQueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;

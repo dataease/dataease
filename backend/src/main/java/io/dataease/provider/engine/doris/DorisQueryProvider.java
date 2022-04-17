@@ -35,7 +35,7 @@ import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREF
  * @Author gin
  * @Date 2021/5/17 4:11 下午
  */
-@Service("dorisEngineQuery")
+@Service("engine_dorisQueryProvider")
 public class DorisQueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;

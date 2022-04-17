@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service("apiQuery")
+@Service("apiQueryProvider")
 public class ApiProvider extends QueryProvider {
     @Override
     public Integer transFieldType(String field) {

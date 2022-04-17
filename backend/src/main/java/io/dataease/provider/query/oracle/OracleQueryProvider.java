@@ -38,7 +38,7 @@ import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREF
  * @Author gin
  * @Date 2021/5/17 2:43 下午
  */
-@Service("oracleQuery")
+@Service("oracleQueryProvider")
 public class OracleQueryProvider extends QueryProvider {
 
     private static final Integer STRING = 0;

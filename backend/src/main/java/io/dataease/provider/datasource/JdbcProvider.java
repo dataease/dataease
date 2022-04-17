@@ -357,8 +357,6 @@ public class JdbcProvider extends DefaultJdbcProvider {
         }
 
         Driver driverClass = (Driver) extendedJdbcClassLoader.loadClass(driver).newInstance();
-        System.out.println(driverClass.getMajorVersion());
-        System.out.println(driverClass.getMinorVersion());
         if (StringUtils.isNotBlank(username)) {
             props.setProperty("user", username);
             if (StringUtils.isNotBlank(password)) {

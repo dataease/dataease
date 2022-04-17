@@ -290,7 +290,6 @@ public class EsProvider extends Provider {
         Request request = new Request();
         request.setQuery(sql);
         request.setFetch_size(datasourceRequest.getFetchSize());
-        System.out.println(new Gson().toJson(request));
         String url = esConfiguration.getUrl().endsWith("/") ? esConfiguration.getUrl() + uri : esConfiguration.getUrl() + "/" + uri;
         String response = HttpClientUtil.post(url, new Gson().toJson(request), httpClientConfig);
         return response;
