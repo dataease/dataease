@@ -13,7 +13,7 @@
         :model="form"
         :rules="rule"
         size="small"
-        :disabled="disabled"
+        :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit"
         label-width="180px"
         label-position="right"
       >
@@ -41,7 +41,10 @@
           </el-select>
         </el-form-item>
 
-      <ds-configuration :form="form" :disabled="disabled" :edit-api-item="edit_api_item"></ds-configuration>
+      <ds-configuration ref="dsConfig" v-if="!datasourceType.isPlugin" :form="form" :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit" :edit-api-item="edit_api_item"></ds-configuration>
+      <plugin-com ref="pluginDsConfig" v-if="datasourceType.isPlugin"  :component-name="datasourceType.type" :obj="{form, disabled }" />
+
+
       </el-form>
 
 
@@ -72,13 +75,15 @@ import {$confirm} from '@/utils/message'
 import i18n from '@/lang/index'
 import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
 import DsConfiguration from "@/views/system/datasource/DsConfiguration";
+import PluginCom from '@/views/system/plugin/PluginCom'
 
 export default {
   name: 'DsForm',
   components: {
     DsConfiguration,
     LayoutContent,
-    ApiHttpRequestForm
+    ApiHttpRequestForm,
+    PluginCom
   },
   props: {
     params: {
@@ -96,7 +101,7 @@ export default {
   },
   data() {
     return {
-      disabled: true,
+      disabled: false,
       form: {
         configuration: {
           initialPoolSize: 5,
@@ -110,6 +115,7 @@ export default {
         },
         apiConfiguration: []
       },
+      datasourceType: {},
       rule: {
         name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
           {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
@@ -229,10 +235,11 @@ export default {
     if (this.params && this.params.id) {
       const row = this.params
       this.edit(row)
+      this.changeType()
     } else {
       this.create()
       if (this.params && this.params.type) {
-        this.setType()
+        this.changeType()
       }
     }
     this.disabled = this.params && this.params.id && this.params.showModel && this.params.showModel === 'show' && !this.canEdit
@@ -252,13 +259,12 @@ export default {
         idleConnectionTestPeriod: 5,
         connectTimeout: 5
       }
-      this.changeType()
+
     },
     changeEdit() {
       this.canEdit = true
       this.formType = 'modify'
       this.disabled = this.params && this.params.id && this.params.showModel && this.params.showModel === 'show' && !this.canEdit
-      console.log(this.disabled)
     },
     create() {
       this.formType = 'add'
@@ -413,6 +419,15 @@ export default {
         this.$message.error(i18n.t('datasource.port_no_less_then_0'))
         return
       }
+      let status = null;
+      if(this.datasourceType.isPlugin){
+        status = this.$refs['pluginDsConfig'].callPluginInner({methodName: 'validate'})
+      }else {
+        status =  this.$refs['dsConfig'].$refs['DsConfig'].validate
+      }
+      if(!status){
+        return;
+      }
       this.$refs.dsForm.validate(valid => {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
@@ -461,6 +476,7 @@ export default {
       for (let i = 0; i < this.dsTypes.length; i++) {
         if (this.dsTypes[i].type === this.form.type) {
           this.form.configuration.extraParams = this.dsTypes[i].extraParams
+          this.datasourceType = this.dsTypes[i]
         }
       }
     },

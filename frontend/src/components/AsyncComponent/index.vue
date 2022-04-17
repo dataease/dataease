@@ -70,7 +70,7 @@ export default {
     }, */
     callPluginInner(param) {
       const { methodName, methodParam } = param
-      this.$refs[this.refId] && this.$refs[this.refId][methodName] && this.$refs[this.refId][methodName](methodParam)
+      return this.$refs[this.refId] && this.$refs[this.refId][methodName] && this.$refs[this.refId][methodName](methodParam)
     }
   }
 }

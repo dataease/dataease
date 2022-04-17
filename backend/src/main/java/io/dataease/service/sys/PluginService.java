@@ -2,6 +2,7 @@ package io.dataease.service.sys;
 
 import cn.hutool.core.io.FileUtil;
 import com.google.gson.Gson;
+import io.dataease.dto.MyPluginDTO;
 import io.dataease.ext.ExtSysPluginMapper;
 import io.dataease.ext.query.GridExample;
 import io.dataease.commons.constants.AuthConstants;
@@ -65,13 +66,13 @@ public class PluginService {
      * @param file
      * @return
      */
-    public Map<String, Object> localInstall(MultipartFile file) {
+    public Map<String, Object> localInstall(MultipartFile file) throws Exception{
         //1.上传文件到服务器pluginDir目录下
         File dest = DeFileUtils.upload(file, pluginDir + "temp/");
         //2.解压目标文件dest 得到plugin.json和jar
         String folder = pluginDir + "folder/";
         try {
-            ZipUtils.upZipFile(dest, folder);
+            ZipUtils.unzip(dest, folder);
         } catch (IOException e) {
             DeFileUtils.deleteFile(pluginDir + "temp/");
             DeFileUtils.deleteFile(folder);
@@ -90,7 +91,7 @@ public class PluginService {
             LogUtil.error(msg);
             DEException.throwException(new RuntimeException(msg));
         }
-        MyPlugin myPlugin = formatJsonFile(jsonFiles[0]);
+        MyPluginDTO myPlugin = formatJsonFile(jsonFiles[0]);
 
         if (!versionMatch(myPlugin.getRequire())) {
             String msg = "当前插件要求系统版本最低为：" + myPlugin.getRequire();
@@ -118,6 +119,9 @@ public class PluginService {
             targetDir = makeTargetDir(myPlugin);
             String jarPath;
             jarPath = DeFileUtils.copy(jarFile, targetDir);
+            if(myPlugin.getCategory().equalsIgnoreCase("datasource")){
+                DeFileUtils.copyFolder(folder + "/" + myPlugin.getDsType() + "Driver", targetDir + myPlugin.getDsType() + "Driver");
+            }
             loadJar(jarPath, myPlugin);
             myPluginMapper.insert(myPlugin);
 
@@ -192,6 +196,11 @@ public class PluginService {
         String path = pluginDir + plugin.getStore() + "/" + fileName;
         File jarFile = new File(path);
         FileUtil.del(jarFile);
+
+        if(plugin.getCategory().equalsIgnoreCase("datasource")){
+            File driverFile = new File(pluginDir + plugin.getStore() + "/" + plugin.getDsType() + "Driver");
+            FileUtil.del(driverFile);
+        }
     }
 
     /**
@@ -224,13 +233,13 @@ public class PluginService {
      *
      * @return
      */
-    private MyPlugin formatJsonFile(File file) {
+    private MyPluginDTO formatJsonFile(File file) {
         String str = DeFileUtils.readJson(file);
         Gson gson = new Gson();
         Map<String, Object> myPlugin = gson.fromJson(str, Map.class);
         myPlugin.put("free", (Double) myPlugin.get("free") > 0.0);
-        myPlugin.put("loadMybatis", (Double) myPlugin.get("loadMybatis") > 0.0);
-        MyPlugin result = new MyPlugin();
+        myPlugin.put("loadMybatis", myPlugin.get("loadMybatis") == null ? false : (Double) myPlugin.get("loadMybatis") > 0.0);
+        MyPluginDTO result = new MyPluginDTO();
         try {
             org.apache.commons.beanutils.BeanUtils.populate(result, myPlugin);
             result.setInstallTime(System.currentTimeMillis());
@@ -240,6 +249,10 @@ public class PluginService {
             e.printStackTrace();
         }
         //BeanUtils.copyBean(result, myPlugin);
+        if(result.getCategory().equalsIgnoreCase("datasource")){
+            result.setStore("thirdpart");
+        }
+
         return result;
     }
 

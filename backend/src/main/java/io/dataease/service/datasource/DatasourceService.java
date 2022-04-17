@@ -45,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -62,15 +63,19 @@ public class DatasourceService {
     private CommonThreadPool commonThreadPool;
     @Resource
     private SysAuthService sysAuthService;
-//    private static List<String> dsTypes = Arrays.asList("TiDB", "StarRocks", "excel", "mysql", "hive", "impala", "mariadb", "ds_doris", "pg", "sqlServer", "oracle", "mongo", "ck", "db2", "es", "redshift", "api");
 
     public Collection<DataSourceType>types(){
-        return SpringContextUtil.getApplicationContext().getBeansOfType((DataSourceType.class)).values();
+        Collection<DataSourceType> types =  new ArrayList<>();
+        types.addAll(SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values());
+        SpringContextUtil.getApplicationContext().getBeansOfType(io.dataease.plugins.datasource.service.DatasourceService.class).values().forEach(datasourceService -> {
+            types.add(datasourceService.getDataSourceType());
+        });
+        return types;
     }
 
     @DeCleaner(DePermissionType.DATASOURCE)
     public Datasource addDatasource(Datasource datasource) throws Exception{
-        if(!SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).keySet().contains(datasource.getType())){
+        if(!types().stream().map(DataSourceType::getType).collect(Collectors.toList()).contains(datasource.getType())){
             throw new Exception("Datasource type not supported.");
         }
         checkName(datasource.getName(),datasource.getType(), datasource.getId());
@@ -104,7 +109,12 @@ public class DatasourceService {
         request.setSort("update_time desc");
         List<DatasourceDTO> datasourceDTOS = extDataSourceMapper.queryUnion(request);
         datasourceDTOS.forEach(datasourceDTO -> {
-            datasourceDTO.setTypeDesc(SpringContextUtil.getApplicationContext().getBean(datasourceDTO.getType(), DataSourceType.class).getName());
+            types().forEach(dataSourceType -> {
+                if(dataSourceType.getType().equalsIgnoreCase(datasourceDTO.getType())){
+                    datasourceDTO.setTypeDesc(dataSourceType.getName());
+                    datasourceDTO.setCalculationMode(dataSourceType.getCalculationMode());
+                }
+            });
             if(datasourceDTO.getType().equalsIgnoreCase(DatasourceTypes.api.toString())){
                 JSONArray apiDefinitionList = JSONObject.parseArray(datasourceDTO.getConfiguration());
                 JSONArray apiDefinitionListWithStatus = new JSONArray();
@@ -165,7 +175,7 @@ public class DatasourceService {
     }
 
     public void updateDatasource(UpdataDsRequest updataDsRequest)throws Exception{
-        if(!SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).keySet().contains(updataDsRequest.getType())){
+        if(!types().stream().map(DataSourceType::getType).collect(Collectors.toList()).contains(updataDsRequest.getType())){
             throw new Exception("Datasource type not supported.");
         }
         checkName(updataDsRequest.getName(),updataDsRequest.getType(),updataDsRequest.getId());

@@ -2,7 +2,7 @@ export default {
   fu: {
     search_bar: {
       search: 'Search',
-      adv_search: 'Advanced search',
+      adv_search: 'Advarequirednced search',
       ok: 'Confirm',
       cancel: 'Cancel',
       please_select: 'Please select',
@@ -278,7 +278,7 @@ export default {
     id: 'ID',
     millisecond: 'Millisecond',
     cannot_be_null: 'Cannot be null',
-    required: '{0} is required',
+    required: 'Required',
     already_exists: 'Already Exists',
     modifier: 'Modifier',
     validate: 'Validate',

@@ -278,7 +278,7 @@ export default {
     id: 'ID',
     millisecond: '毫秒',
     cannot_be_null: '不能爲空',
-    required: '{0}是必填的',
+    required: '必填',
     already_exists: '名稱不能重複',
     modifier: '修改人',
     validate: '校驗',

@@ -34,7 +34,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
         return false;
     }
     @Override
-    public String getName(){
+    public String getType(){
     return "built-in";
     }
     /**

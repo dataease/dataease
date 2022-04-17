@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import {post, listDatasource, isKettleRunning, disabledSyncDs} from '@/api/dataset/dataset'
+import {post, listDatasource, isKettleRunning} from '@/api/dataset/dataset'
 import {codemirror} from 'vue-codemirror'
 import {getTable} from '@/api/dataset/dataset'
 // 核心样式
@@ -206,7 +206,7 @@ export default {
         if (this.options[i].id === this.dataSource) {
           this.selectedDatasource = this.options[i]
           this.mode = '0'
-          if (this.engineMode === 'simple' || (!this.kettleRunning || this.disabledSyncDs.indexOf(this.selectedDatasource.type) !== -1 )) {
+          if (this.engineMode === 'simple' || (!this.kettleRunning || this.selectedDatasource.calculationMode === 'DIRECT' )) {
             this.disabledSync = true
           } else {
             this.disabledSync = false

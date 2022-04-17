@@ -2,9 +2,8 @@
   <div>
     <el-row>
       <el-col>
-
         <el-form
-          ref="DsForm"
+          ref="DsConfig"
           :model="form"
           :rules="rule"
           size="small"
@@ -214,7 +213,7 @@ export default {
     disabled: {
       type: Boolean,
       default() {
-        return true;
+        return false;
       }
     },
     method: String,
