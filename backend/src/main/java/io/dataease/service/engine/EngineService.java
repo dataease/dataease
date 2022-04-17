@@ -151,7 +151,7 @@ public class EngineService {
     }
 
     private void setDs(DeEngine engine) {
-        CacheUtils.remove("ENGINE", "SimpleKey []");
+        CacheUtils.removeAll("ENGINE");
     }
 
     @Cacheable(value = "ENGINE")
