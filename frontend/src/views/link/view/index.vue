@@ -83,9 +83,8 @@ export default {
             }
 
             this.$message({
-              message: this.$t('panel.json_params_error'),
-              type: 'error',
-              showClose: true
+              message: this.$t('panel.outer_param_decode_error'),
+              type: 'error'
             })
             console.log('outerParams Decode error：', e)
           }
