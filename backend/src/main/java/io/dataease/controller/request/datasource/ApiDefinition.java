@@ -1,7 +1,7 @@
 package io.dataease.controller.request.datasource;
 
 import com.alibaba.fastjson.JSONObject;
-import io.dataease.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
 import lombok.Data;
 
 import java.util.ArrayList;

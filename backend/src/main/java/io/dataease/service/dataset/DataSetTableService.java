@@ -3,35 +3,35 @@ package io.dataease.service.dataset;
 import com.google.gson.Gson;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.auth.api.dto.CurrentUserDto;
-import io.dataease.base.domain.*;
-import io.dataease.base.mapper.*;
-import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
-import io.dataease.base.mapper.ext.ExtDataSetTableMapper;
-import io.dataease.base.mapper.ext.UtilMapper;
+import io.dataease.ext.ExtDataSetGroupMapper;
+import io.dataease.ext.ExtDataSetTableMapper;
+import io.dataease.ext.UtilMapper;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
-import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.controller.response.DataSetDetail;
-import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.dto.dataset.*;
 import io.dataease.dto.dataset.union.UnionDTO;
 import io.dataease.dto.dataset.union.UnionItemDTO;
 import io.dataease.dto.dataset.union.UnionParamDTO;
-import io.dataease.dto.datasource.TableField;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.common.base.domain.*;
+import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.plugins.common.constants.DatasourceTypes;
+import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
+import io.dataease.plugins.common.dto.datasource.TableField;
+import io.dataease.plugins.common.request.datasource.DatasourceRequest;
+import io.dataease.plugins.datasource.provider.Provider;
+import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.loader.ClassloaderResponsity;
 import io.dataease.provider.ProviderFactory;
-import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.provider.datasource.JdbcProvider;
 import io.dataease.provider.DDLProvider;
-import io.dataease.provider.QueryProvider;
 import io.dataease.service.engine.EngineService;
 import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -434,7 +434,7 @@ public class DataSetTableService {
 
     public List<TableField> getFields(DatasetTable datasetTable) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         datasourceRequest.setTable(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable());
@@ -533,7 +533,7 @@ public class DataSetTableService {
                 if (StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")) {
                     throw new Exception(Translator.get("i18n_invalid_ds"));
                 }
-                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+                Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
                 datasourceRequest.setDatasource(ds);
                 String table = dataTableInfoDTO.getTable();
@@ -604,7 +604,7 @@ public class DataSetTableService {
                 if (StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")) {
                     throw new Exception(Translator.get("i18n_invalid_ds"));
                 }
-                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+                Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
                 datasourceRequest.setDatasource(ds);
 
@@ -697,7 +697,7 @@ public class DataSetTableService {
                 if (ObjectUtils.isEmpty(ds)) {
                     throw new RuntimeException(Translator.get("i18n_datasource_delete"));
                 }
-                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+                Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
                 datasourceRequest.setDatasource(ds);
 
@@ -769,7 +769,7 @@ public class DataSetTableService {
                 if (ObjectUtils.isEmpty(ds)) {
                     DEException.throwException(Translator.get("i18n_datasource_delete"));
                 }
-                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+                Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
                 datasourceRequest.setDatasource(ds);
 
@@ -865,7 +865,7 @@ public class DataSetTableService {
         if (ds == null) {
             throw new Exception(Translator.get("i18n_invalid_ds"));
         }
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         String sql = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql();
@@ -923,7 +923,7 @@ public class DataSetTableService {
         // 处理结果
         try {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest.setQuery(qp.createSQLPreview(sql, null));
             Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
             List<String[]> data = result.get("dataList");
@@ -983,7 +983,7 @@ public class DataSetTableService {
         }
         Map<String, Object> res = new HashMap<>();
         try {
-            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             datasourceRequest.setQuery(qp.createSQLPreview(sql, null));
             Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
@@ -1502,7 +1502,7 @@ public class DataSetTableService {
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db") || StringUtils.equalsIgnoreCase(datasetTable.getType(), "api")) {
             fields = getFields(datasetTable);
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
-            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
@@ -1541,7 +1541,7 @@ public class DataSetTableService {
                 }
                 return;
             } else {
-                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+                Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
                 datasourceRequest.setDatasource(ds);
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
@@ -1574,7 +1574,7 @@ public class DataSetTableService {
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "union")) {
             if (datasetTable.getMode() == 1) {
                 ds = engineService.getDeEngine();
-                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+                Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
                 datasourceRequest.setDatasource(ds);
                 // save field
@@ -1601,7 +1601,7 @@ public class DataSetTableService {
                     }
                 }
             } else {
-                DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+                Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
                 datasourceRequest.setDatasource(ds);
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
@@ -1774,7 +1774,7 @@ public class DataSetTableService {
                 .collect(Collectors.toList());
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd())

@@ -1,8 +1,9 @@
 package io.dataease.service.chart.util;
 
-import io.dataease.base.domain.ChartViewWithBLOBs;
+import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.commons.constants.ColumnPermissionConstants;
 import io.dataease.dto.chart.*;
+import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;

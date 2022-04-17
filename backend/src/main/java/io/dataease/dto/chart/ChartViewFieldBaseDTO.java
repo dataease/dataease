@@ -1,5 +1,6 @@
 package io.dataease.dto.chart;
 
+import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
 import lombok.Data;
 
 import java.io.Serializable;

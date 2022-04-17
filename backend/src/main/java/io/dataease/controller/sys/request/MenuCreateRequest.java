@@ -1,6 +1,6 @@
 package io.dataease.controller.sys.request;
 
-import io.dataease.base.domain.SysMenu;
+import io.dataease.plugins.common.base.domain.SysMenu;
 import lombok.Data;
 
 @Data

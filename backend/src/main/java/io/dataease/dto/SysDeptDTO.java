@@ -1,6 +1,6 @@
 package io.dataease.dto;
 
-import io.dataease.base.domain.SysDept;
+import io.dataease.plugins.common.base.domain.SysDept;
 
 /**
  * Author: wangjiahao

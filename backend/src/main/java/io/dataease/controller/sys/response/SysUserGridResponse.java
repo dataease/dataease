@@ -1,7 +1,7 @@
 package io.dataease.controller.sys.response;
 
 
-import io.dataease.base.domain.SysUser;
+import io.dataease.plugins.common.base.domain.SysUser;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.util.List;

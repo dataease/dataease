@@ -83,7 +83,7 @@ export default {
       this.$refs[this.refId] && this.$refs[this.refId].chartResize && this.$refs[this.refId].chartResize()
     }, */
     callPluginInner(param) {
-      this.$refs[this.refId] && this.$refs[this.refId].callPluginInner && this.$refs[this.refId].callPluginInner(param)
+      return this.$refs[this.refId] && this.$refs[this.refId].callPluginInner && this.$refs[this.refId].callPluginInner(param)
     }
   }
 }

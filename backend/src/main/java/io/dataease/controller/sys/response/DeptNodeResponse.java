@@ -1,6 +1,6 @@
 package io.dataease.controller.sys.response;
 
-import io.dataease.base.domain.SysDept;
+import io.dataease.plugins.common.base.domain.SysDept;
 import lombok.Data;
 
 

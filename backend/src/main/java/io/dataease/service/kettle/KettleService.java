@@ -1,27 +1,21 @@
 package io.dataease.service.kettle;
 
 import com.google.gson.Gson;
-import io.dataease.base.domain.DeEngine;
-import io.dataease.base.domain.DeEngineExample;
-import io.dataease.base.mapper.DeEngineMapper;
 import io.dataease.commons.utils.HttpClientConfig;
 import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.controller.ResultHolder;
 import io.dataease.dto.KettleDTO;
+import io.dataease.plugins.common.base.domain.DeEngine;
+import io.dataease.plugins.common.base.domain.DeEngineExample;
+import io.dataease.plugins.common.base.mapper.DeEngineMapper;
 import io.dataease.service.engine.EngineService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.checkerframework.checker.units.qual.K;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.util.HttpClientManager;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.net.InetAddress;
 import java.util.Base64;
 import java.util.List;
 import java.util.Random;

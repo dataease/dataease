@@ -1,6 +1,6 @@
 package io.dataease.dto.dataset;
 
-import io.dataease.base.domain.DatasetTableUnion;
+import io.dataease.plugins.common.base.domain.DatasetTableUnion;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;

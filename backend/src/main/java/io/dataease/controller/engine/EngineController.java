@@ -1,6 +1,6 @@
 package io.dataease.controller.engine;
 
-import io.dataease.base.domain.DeEngine;
+import io.dataease.plugins.common.base.domain.DeEngine;
 import io.dataease.controller.ResultHolder;
 import io.dataease.dto.DatasourceDTO;
 import io.dataease.service.engine.EngineService;

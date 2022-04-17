@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.ext.ExtChartGroupMapper">
+
+    <resultMap id="BaseResultMapDTO" type="io.dataease.dto.chart.ChartGroupDTO"
+               extends="io.dataease.plugins.common.base.mapper.ChartGroupMapper.BaseResultMap">
+        <result column="label" property="label"/>
+        <result column="privileges" property="privileges"/>
+    </resultMap>
+
+
+    <select id="search" resultMap="BaseResultMapDTO">
+        select
+        id, `name`, ifnull(pid,0) as pid, `level`, `type`, create_by, create_time,`name` as label,
+        authInfo.privileges as `privileges`
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'chart') cids) t,chart_group
+        left join (
+        SELECT
+        auth_source,
+        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
+        FROM
+        (
+        `sys_auth`
+        LEFT JOIN `sys_auth_detail` ON ((
+        `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+        )))
+        WHERE
+        sys_auth_detail.privilege_value = 1
+        AND sys_auth.auth_source_type = 'chart'
+        AND (
+        (
+        sys_auth.auth_target_type = 'dept'
+        AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{userId} )
+        )
+        OR (
+        sys_auth.auth_target_type = 'user'
+        AND sys_auth.auth_target = #{userId}
+        )
+        OR (
+        sys_auth.auth_target_type = 'role'
+        AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId} )
+        )
+        )
+        GROUP BY
+        `sys_auth`.`auth_source`
+        ) authInfo
+        on chart_group.id = authInfo.auth_source
+        <where>
+            FIND_IN_SET(chart_group.id,cids)
+            <if test="id != null">
+                and chart_group.id = #{id,jdbcType=VARCHAR}
+            </if>
+            <if test="name != null and name != ''">
+                and chart_group.`name` like CONCAT('%', #{name},'%')
+            </if>
+            <if test="pid != null">
+                and chart_group.pid = #{pid,jdbcType=VARCHAR}
+            </if>
+            <if test="level != null">
+                and chart_group.`level` = #{level,jdbcType=INTEGER}
+            </if>
+            <if test="type != null and type != ''">
+                and chart_group.`type` = #{type,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null">
+                and chart_group.create_by = #{createBy,jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                and chart_group.create_time = #{createTime,jdbcType=BIGINT}
+            </if>
+            <if test="ids != null and ids.size() > 0">
+                and id in
+                <foreach collection="ids" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY CONVERT(`name` using gbk)
+
+    </select>
+</mapper>

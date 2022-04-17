@@ -1,6 +1,6 @@
 package io.dataease.dto;
 
-import io.dataease.base.domain.SysAuthDetail;
+import io.dataease.plugins.common.base.domain.SysAuthDetail;
 import lombok.Data;
 
 /**

@@ -1,6 +1,6 @@
 package io.dataease.plugins.loader;
 
-import io.dataease.base.domain.MyPlugin;
+import io.dataease.plugins.common.base.domain.MyPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

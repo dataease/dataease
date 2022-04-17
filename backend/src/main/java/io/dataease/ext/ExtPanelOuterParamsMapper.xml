@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.ext.ExtPanelOuterParamsMapper">
+
+  <resultMap id="BaseResultMapDTO" type="io.dataease.dto.panel.outerParams.PanelOuterParamsDTO"
+             extends="io.dataease.plugins.common.base.mapper.PanelOuterParamsMapper.BaseResultMap">
+    <collection property="outerParamsInfoArray" ofType="io.dataease.dto.panel.outerParams.PanelOuterParamsInfoDTO"
+                column="{panel_id=panel_id}"
+                select="getOuterParamsInfo">
+    </collection>
+  </resultMap>
+
+  <resultMap id="OuterParamsInfoMap" type="io.dataease.dto.panel.outerParams.PanelOuterParamsInfoDTO" extends="io.dataease.plugins.common.base.mapper.PanelOuterParamsInfoMapper.BaseResultMap">
+    <collection property="targetViewInfoList" ofType="io.dataease.plugins.common.base.domain.PanelOuterParamsTargetViewInfo">
+      <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId"/>
+      <result column="target_field_id" jdbcType="VARCHAR" property="targetFieldId"/>
+    </collection>
+  </resultMap>
+
+    <resultMap id="AllOuterParamsMap" type="io.dataease.dto.panel.outerParams.PanelOuterParamsInfoDTO">
+        <result column="sourceInfo" jdbcType="VARCHAR" property="sourceInfo"/>
+        <collection property="targetInfoList" ofType="String">
+            <result column="targetInfo" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+  <select id="getOuterParamsInfo" resultMap="OuterParamsInfoMap">
+        SELECT
+            pop.panel_id,
+            popi.params_info_id,
+            popi.param_name,
+            ifnull( popi.checked, 0 ) AS checked,
+            poptvi.target_view_id,
+            poptvi.target_field_id
+        FROM
+            panel_outer_params pop
+            LEFT JOIN panel_outer_params_info popi ON pop.params_id = popi.params_id
+            LEFT JOIN panel_outer_params_target_view_info poptvi ON popi.params_info_id = poptvi.params_info_id
+        WHERE
+            pop.panel_id = #{panel_id}
+        ORDER BY
+            ifnull( popi.checked, 0 ) DESC
+    </select>
+
+  <select id="queryWithPanelId"  resultMap="BaseResultMapDTO">
+    SELECT
+        #{panelId} as panel_id,
+        ifnull( panel_outer_params.checked, 0 ) AS checked
+    FROM
+        panel_group
+        LEFT JOIN panel_outer_params ON panel_group.id = panel_outer_params.panel_id
+    WHERE
+        panel_group.id = #{panelId}
+  </select>
+
+    <delete id="deleteOuterParamsTargetWithPanelId" >
+        DELETE poptvi
+        FROM
+            panel_outer_params_target_view_info poptvi,
+            panel_outer_params_info popi,
+            panel_outer_params pop
+        WHERE
+            poptvi.params_info_id = popi.params_info_id
+            AND popi.params_id = pop.params_id
+            AND pop.panel_id = #{panelId}
+	</delete>
+
+    <delete id="deleteOuterParamsInfoWithPanelId" >
+        DELETE popi
+        FROM
+            panel_outer_params_info popi,
+            panel_outer_params pop
+        WHERE
+             popi.params_id = pop.params_id
+            AND pop.panel_id = #{panelId}
+	</delete>
+
+    <delete id="deleteOuterParamsWithPanelId" >
+        DELETE pop
+        FROM
+            panel_outer_params pop
+        WHERE
+            pop.panel_id = #{panelId}
+	</delete>
+
+    <select id="getPanelOuterParamsInfo" resultMap="AllOuterParamsMap">
+        SELECT DISTINCT
+            param_name AS sourceInfo,
+            CONCAT( poptvi.target_view_id, '#', poptvi.target_field_id ) AS targetInfo
+        FROM
+            panel_outer_params pop
+            LEFT JOIN panel_outer_params_info popi ON pop.params_id = popi.params_id
+            LEFT JOIN panel_outer_params_target_view_info poptvi ON popi.params_info_id = poptvi.params_info_id
+        WHERE
+            pop.panel_id = #{panelId} and pop.checked=1
+            and popi.checked=1
+    </select>
+
+
+</mapper>

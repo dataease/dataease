@@ -7,13 +7,14 @@ import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.controller.request.datasource.es.EsReponse;
 import io.dataease.controller.request.datasource.es.Request;
 import io.dataease.controller.request.datasource.es.RequestWithCursor;
-import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.dto.datasource.EsConfiguration;
-import io.dataease.dto.datasource.TableDesc;
-import io.dataease.dto.datasource.TableField;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.constants.EsSqlLConstants;
+import io.dataease.plugins.common.dto.datasource.TableDesc;
+import io.dataease.plugins.common.dto.datasource.TableField;
+import io.dataease.plugins.common.request.datasource.DatasourceRequest;
+import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.provider.query.es.EsQueryProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -25,7 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service("es")
-public class EsProvider extends DatasourceProvider {
+public class EsProvider extends Provider {
 
 
     /**
@@ -203,10 +204,6 @@ public class EsProvider extends DatasourceProvider {
             DataEaseException.throwException(e);
         }
         return result;
-    }
-
-    @Override
-    public void handleDatasource(DatasourceRequest datasourceRequest, String type) throws Exception {
     }
 
     @Override

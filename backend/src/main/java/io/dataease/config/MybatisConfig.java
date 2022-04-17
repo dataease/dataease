@@ -1,10 +1,12 @@
 package io.dataease.config;
 
 import com.github.pagehelper.PageInterceptor;
-import io.dataease.base.domain.*;
 import io.dataease.commons.utils.CompressUtils;
 import io.dataease.commons.utils.MybatisInterceptorConfig;
 import io.dataease.interceptor.MybatisInterceptor;
+import io.dataease.plugins.common.base.domain.AuthSource;
+import io.dataease.plugins.common.base.domain.Datasource;
+import io.dataease.plugins.common.base.domain.FileContent;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.Properties;
 
 @Configuration
-@MapperScan(basePackages = {"io.dataease.base.mapper", "io.dataease.plugins"}, sqlSessionFactoryRef = "sqlSessionFactory")
+@MapperScan(basePackages = {"io.dataease.ext", "io.dataease.plugins"}, sqlSessionFactoryRef = "sqlSessionFactory")
 @EnableTransactionManagement
 public class MybatisConfig {
 

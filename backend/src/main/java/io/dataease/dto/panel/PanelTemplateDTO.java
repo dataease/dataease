@@ -1,6 +1,6 @@
 package io.dataease.dto.panel;
 
-import io.dataease.base.domain.PanelTemplateWithBLOBs;
+import io.dataease.plugins.common.base.domain.PanelTemplateWithBLOBs;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

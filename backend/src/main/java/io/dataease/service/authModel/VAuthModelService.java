@@ -1,10 +1,10 @@
 package io.dataease.service.authModel;
 
-import io.dataease.base.mapper.ext.ExtVAuthModelMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
 import io.dataease.dto.authModel.VAuthModelDTO;
+import io.dataease.ext.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 

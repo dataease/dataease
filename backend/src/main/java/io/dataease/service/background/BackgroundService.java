@@ -1,7 +1,7 @@
 package io.dataease.service.background;
 
-import io.dataease.base.domain.SysBackgroundImage;
-import io.dataease.base.mapper.SysBackgroundImageMapper;
+import io.dataease.plugins.common.base.domain.SysBackgroundImage;
+import io.dataease.plugins.common.base.mapper.SysBackgroundImageMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

@@ -1,6 +1,6 @@
 package io.dataease.controller.sys;
 
-import io.dataease.base.domain.SystemParameter;
+import io.dataease.plugins.common.base.domain.SystemParameter;
 import io.dataease.commons.constants.ParamConstants;
 import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.controller.sys.response.MailInfo;

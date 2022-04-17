@@ -1,8 +1,5 @@
 package io.dataease.service.system;
 
-import io.dataease.base.domain.SystemParameter;
-import io.dataease.base.domain.SystemParameterExample;
-import io.dataease.base.mapper.SystemParameterMapper;
 import io.dataease.commons.constants.ParamConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.CommonBeanFactory;
@@ -10,6 +7,9 @@ import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.sys.response.MailInfo;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.SystemParameter;
+import io.dataease.plugins.common.base.domain.SystemParameterExample;
+import io.dataease.plugins.common.base.mapper.SystemParameterMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -5,7 +5,7 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.impl.AuthUserServiceImpl;
 import io.dataease.auth.util.JWTUtils;
-import io.dataease.base.mapper.ext.ExtTaskMapper;
+import io.dataease.ext.ExtTaskMapper;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.CronUtils;
 import io.dataease.commons.utils.LogUtil;

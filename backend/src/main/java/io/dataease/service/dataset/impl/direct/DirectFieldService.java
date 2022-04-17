@@ -1,20 +1,20 @@
 package io.dataease.service.dataset.impl.direct;
 
 import com.google.gson.Gson;
-import io.dataease.base.domain.DatasetTable;
-import io.dataease.base.domain.DatasetTableField;
-import io.dataease.base.domain.Datasource;
+import io.dataease.plugins.common.base.domain.DatasetTable;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.commons.constants.ColumnPermissionConstants;
-import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.i18n.Translator;
-import io.dataease.provider.datasource.DatasourceProvider;
+import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
+import io.dataease.plugins.common.request.datasource.DatasourceRequest;
+import io.dataease.plugins.datasource.provider.Provider;
+import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.provider.ProviderFactory;
-import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.service.dataset.*;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
-import io.dataease.provider.QueryProvider;
 import io.dataease.service.engine.EngineService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -73,7 +73,7 @@ public class DirectFieldService implements DataSetFieldService {
         }
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        DatasourceProvider datasourceProvider = null;
+        Provider datasourceProvider = null;
         if (datasetTable.getMode() == 0) {// 直连
             if (StringUtils.isEmpty(datasetTable.getDataSourceId())) return null;
             Datasource ds = datasourceService.get(datasetTable.getDataSourceId());

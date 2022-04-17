@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.ext.ExtPanelLinkMapper">
+
+   
+
+    
+
+
+    <update id="updateOverTime"  >
+       update panel_link set over_time = #{request.overTime} where resource_id = #{request.resourceId} and user_id = #{request.userId}
+    </update>
+
+
+
+
+</mapper>

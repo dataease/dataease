@@ -1,5 +1,6 @@
 package io.dataease.dto.datasource;
 
+import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -8,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 @Setter
 public class MysqlConfiguration extends JdbcConfiguration {
 
-    private String driver = "com.mysql.jdbc.Driver";
+    private String driver = "com.mysql.cj.jdbc.Driver";
     private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull";
 
     public String getJdbc() {
