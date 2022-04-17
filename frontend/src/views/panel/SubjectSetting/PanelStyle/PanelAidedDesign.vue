@@ -6,7 +6,7 @@
         width="400"
         trigger="click"
       >
-        <el-col>
+        <el-col v-if="aidedDesign">
           <el-form ref="aidedForm" label-width="110px" size="mini">
             <el-form-item :label="'辅助网格'" class="form-item form-item-slider">
               <el-checkbox v-model="aidedDesign.showGrid" size="mini" @change="onChangePanelStyle" />

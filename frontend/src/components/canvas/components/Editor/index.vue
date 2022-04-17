@@ -16,7 +16,7 @@
     <!-- 网格线 -->
     <Grid v-if="showGrid" :matrix-style="matrixStyle" />
     <!--    positionBox:{{positionBoxInfo}}-->
-    <!--    <PGrid v-if="psDebug" :position-box="positionBoxInfoArray" :matrix-style="matrixStyle" />-->
+    <PGrid v-if="psDebug" :position-box="positionBoxInfoArray" :matrix-style="matrixStyle" />
 
     <!-- 仪表板联动清除按钮-->
     <canvas-opt-bar />
@@ -293,15 +293,20 @@ function resetPositionBox() {
    * @param {any} item
    */
 function addItemToPositionBox(item) {
-  const pb = positionBox
-  if (item.x <= 0 || item.y <= 0) return
+  try {
+    const pb = positionBox
+    if (item.x <= 0 || item.y <= 0) return
 
-  for (let i = item.x - 1; i < item.x - 1 + item.sizex; i++) {
-    for (let j = item.y - 1; j < item.y - 1 + item.sizey; j++) {
-      if (pb[j][i]) {
-        pb[j][i].el = item
+    for (let i = item.x - 1; i < item.x - 1 + item.sizex; i++) {
+      for (let j = item.y - 1; j < item.y - 1 + item.sizey; j++) {
+        if (pb[j][i]) {
+          pb[j][i].el = item
+        }
       }
     }
+  } catch (e) {
+    // igonre
+    console.log('addItemToPositionBox failed')
   }
 }
 
@@ -1014,8 +1019,10 @@ export default {
   watch: {
     matrixCount: {
       handler(newVal, oldVal) {
-        const pointScale = newVal.x / oldVal.x
-        this.changeScale(pointScale)
+        if (newVal && oldVal) {
+          this.changeComponentSizePoint(newVal.x / oldVal.x)
+        }
+        this.changeScale()
       }
     },
     customStyle: {
@@ -1241,17 +1248,17 @@ export default {
     },
     // 修改矩阵点
     changeComponentSizePoint(pointScale) {
-      this.componentData.forEach((item, index) => {
-        item.x = (item.x - 1) * pointScale + 1
-        item.y = (item.y - 1) * pointScale + 1
-        item.sizex = item.sizex * pointScale
-        item.sizey = item.sizey * pointScale
-        // this.componentData[index] = item
-      })
+      if (pointScale) {
+        this.componentData.forEach((item, index) => {
+          item.x = (item.x - 1) * pointScale + 1
+          item.y = (item.y - 1) * pointScale + 1
+          item.sizex = item.sizex * pointScale
+          item.sizey = item.sizey * pointScale
+        })
+      }
     },
 
-    changeScale(pointScale) {
-      this.changeComponentSizePoint(pointScale)
+    changeScale() {
       // 1.3 版本重新设计仪表板定位方式，基准画布宽高为 1600*900 宽度自适应当前画布获取缩放比例scaleWidth
       // 高度缩放比例scaleHeight = scaleWidth 基础矩阵为128*72 矩阵原始宽度12.5*12.5 矩阵高度可以调整
 
