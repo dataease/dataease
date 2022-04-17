@@ -1434,6 +1434,7 @@ export default {
     enable_param: 'Enable Param',
     param_name: 'Param Name',
     outer_param_set: 'Outer Param Set',
+    outer_param_decode_error: 'External Parameter Parsing Error And Does Not Take Effect, Please Check',
     input_param_name: "Please Input Param's Name",
     params_setting: 'Outer Params Setting',
     template_view_tips: "Template's Views. Please Change",

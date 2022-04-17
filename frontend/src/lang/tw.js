@@ -1435,6 +1435,7 @@ export default {
     enable_param: '启用参数',
     param_name: '参数名称',
     outer_param_set: '外部参数设置',
+    outer_param_decode_error: '外部参数解析错误未生效，请按规定编码方式传参',
     input_param_name: '请输入参数名称',
     params_setting: '外部参数设置',
     template_view_tips: '当前是模板视图,请点击更换数据集',
