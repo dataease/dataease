@@ -168,7 +168,7 @@
           @mouseup="deselectCurComponent"
           @scroll="canvasScroll"
         >
-          <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
+          <Editor ref="canvasEditor" :matrix-count="pcMatrixCountBase" :out-style="outStyle" :scroll-top="scrollTop" />
         </div>
         <!--移动端画布区域 保持宽高比2.5-->
         <el-row v-if="mobileLayoutStatus" class="mobile_canvas_main">
@@ -546,6 +546,16 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    },
+    pcMatrixCountBase() {
+      if (this.canvasStyleData.aidedDesign) {
+        return {
+          x: this.pcMatrixCount.x * this.canvasStyleData.aidedDesign.matrixBase,
+          y: this.pcMatrixCount.y * this.canvasStyleData.aidedDesign.matrixBase
+        }
+      } else {
+        return this.pcMatrixCount
+      }
     },
     ...mapState([
       'curComponent',

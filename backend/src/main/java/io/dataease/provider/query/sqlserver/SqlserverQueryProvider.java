@@ -1050,7 +1050,11 @@ public class SqlserverQueryProvider extends QueryProvider {
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
             fieldName = SqlServerSQLConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format(SqlServerSQLConstants.AGG_FIELD, y.getSummary(), originField);
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                fieldName = String.format(SqlServerSQLConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else {
+                fieldName = String.format(SqlServerSQLConstants.AGG_FIELD, y.getSummary(), originField);
+            }
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                 String convert = String.format(SqlServerSQLConstants.CONVERT, y.getDeType() == DeTypeConstants.DE_INT ? SqlServerSQLConstants.DEFAULT_INT_FORMAT : SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, originField);
@@ -1058,7 +1062,11 @@ public class SqlserverQueryProvider extends QueryProvider {
                 fieldName = String.format(SqlServerSQLConstants.CONVERT, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, agg);
             } else {
                 String convert = String.format(SqlServerSQLConstants.CONVERT, y.getDeType() == 2 ? SqlServerSQLConstants.DEFAULT_INT_FORMAT : SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, originField);
-                fieldName = String.format(SqlServerSQLConstants.AGG_FIELD, y.getSummary(), convert);
+                if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                    fieldName = String.format(SqlServerSQLConstants.AGG_FIELD, "COUNT", "DISTINCT " + convert);
+                } else {
+                    fieldName = String.format(SqlServerSQLConstants.AGG_FIELD, y.getSummary(), convert);
+                }
             }
         }
         return SQLObj.builder()

@@ -1030,7 +1030,11 @@ public class MysqlQueryProvider extends QueryProvider {
         if (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*")) {
             fieldName = MysqlConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format(MysqlConstants.AGG_FIELD, y.getSummary(), originField);
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                fieldName = String.format(MysqlConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else {
+                fieldName = String.format(MysqlConstants.AGG_FIELD, y.getSummary(), originField);
+            }
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                 String cast = String.format(MysqlConstants.CAST, originField, y.getDeType() == 2 ? MysqlConstants.DEFAULT_INT_FORMAT : MysqlConstants.DEFAULT_FLOAT_FORMAT);
@@ -1039,7 +1043,11 @@ public class MysqlQueryProvider extends QueryProvider {
                 fieldName = String.format(MysqlConstants.ROUND, cast1, "2");
             } else {
                 String cast = String.format(MysqlConstants.CAST, originField, y.getDeType() == 2 ? MysqlConstants.DEFAULT_INT_FORMAT : MysqlConstants.DEFAULT_FLOAT_FORMAT);
-                fieldName = String.format(MysqlConstants.AGG_FIELD, y.getSummary(), cast);
+                if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                    fieldName = String.format(MysqlConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
+                } else {
+                    fieldName = String.format(MysqlConstants.AGG_FIELD, y.getSummary(), cast);
+                }
             }
         }
         return SQLObj.builder()

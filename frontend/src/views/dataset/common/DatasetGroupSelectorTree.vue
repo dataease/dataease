@@ -38,6 +38,7 @@
         <div class="block" :style="treeStyle">
           <el-tree
             ref="datasetTreeRef"
+            :current-node-key="checkedTable ? checkedTable.id : ''"
             :default-expanded-keys="expandedArray"
             :data="data"
             node-key="id"
@@ -133,6 +134,11 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    checkedTable: {
+      type: Object,
+      required: false,
+      default: null
     }
   },
   data() {
@@ -197,6 +203,7 @@ export default {
   },
   mounted() {
     this.treeNode()
+    this.initExpand()
   },
   created() {
   },
@@ -216,6 +223,11 @@ export default {
       this.editTable = false
       this.tableForm = {
         name: ''
+      }
+    },
+    initExpand() {
+      if (this.checkedTable && this.checkedTable.pid) {
+        this.expandedArray.push(this.checkedTable.pid)
       }
     },
     treeNode(cache) {

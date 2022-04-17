@@ -1083,7 +1083,11 @@ public class OracleQueryProvider extends QueryProvider {
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
             fieldName = OracleConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format(OracleConstants.AGG_FIELD, y.getSummary(), originField);
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                fieldName = String.format(OracleConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else {
+                fieldName = String.format(OracleConstants.AGG_FIELD, y.getSummary(), originField);
+            }
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                 String cast = String.format(OracleConstants.CAST, originField, y.getDeType() == 2 ? OracleConstants.DEFAULT_INT_FORMAT : OracleConstants.DEFAULT_FLOAT_FORMAT);
@@ -1091,7 +1095,11 @@ public class OracleQueryProvider extends QueryProvider {
                 fieldName = String.format(OracleConstants.CAST, agg, OracleConstants.DEFAULT_FLOAT_FORMAT);
             } else {
                 String cast = String.format(OracleConstants.CAST, originField, y.getDeType() == 2 ? OracleConstants.DEFAULT_INT_FORMAT : OracleConstants.DEFAULT_FLOAT_FORMAT);
-                fieldName = String.format(OracleConstants.AGG_FIELD, y.getSummary(), cast);
+                if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                    fieldName = String.format(OracleConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
+                } else {
+                    fieldName = String.format(OracleConstants.AGG_FIELD, y.getSummary(), cast);
+                }
             }
         }
         return SQLObj.builder()

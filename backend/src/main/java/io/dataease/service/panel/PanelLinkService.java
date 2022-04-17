@@ -34,7 +34,7 @@ public class PanelLinkService {
     private static final String USERPARAM = "&user=";
     private static final String SHORT_URL_PREFIX = "/link/";
 
-    @Value("${server.servlet.context-path}")
+    @Value("${server.servlet.context-path:#{null}}")
     private String contextPath;
 
     @Resource

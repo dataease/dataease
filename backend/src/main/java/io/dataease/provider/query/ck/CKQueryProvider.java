@@ -1039,7 +1039,11 @@ public class CKQueryProvider extends QueryProvider {
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
             fieldName = CKConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format(CKConstants.AGG_FIELD, y.getSummary(), originField);
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                fieldName = String.format(CKConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else {
+                fieldName = String.format(CKConstants.AGG_FIELD, y.getSummary(), originField);
+            }
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                 String cast = y.getDeType() == 2 ? String.format(CKConstants.toInt64, originField) : String.format(CKConstants.toFloat64, originField);
@@ -1047,7 +1051,11 @@ public class CKQueryProvider extends QueryProvider {
                 fieldName = String.format(CKConstants.toDecimal, agg);
             } else {
                 String cast = y.getDeType() == 2 ? String.format(CKConstants.toInt64, originField) : String.format(CKConstants.toFloat64, originField);
-                fieldName = String.format(CKConstants.AGG_FIELD, y.getSummary(), cast);
+                if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                    fieldName = String.format(CKConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
+                } else {
+                    fieldName = String.format(CKConstants.AGG_FIELD, y.getSummary(), cast);
+                }
             }
         }
         return SQLObj.builder()

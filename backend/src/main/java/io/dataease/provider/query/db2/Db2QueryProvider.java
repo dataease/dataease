@@ -993,7 +993,11 @@ public class Db2QueryProvider extends QueryProvider {
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
             fieldName = Db2Constants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format(Db2Constants.AGG_FIELD, y.getSummary(), originField);
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                fieldName = String.format(Db2Constants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else {
+                fieldName = String.format(Db2Constants.AGG_FIELD, y.getSummary(), originField);
+            }
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                 String cast = String.format(Db2Constants.CAST, originField, y.getDeType() == 2 ? Db2Constants.DEFAULT_INT_FORMAT : Db2Constants.DEFAULT_FLOAT_FORMAT);
@@ -1001,7 +1005,11 @@ public class Db2QueryProvider extends QueryProvider {
                 fieldName = String.format(Db2Constants.CAST, agg, Db2Constants.DEFAULT_FLOAT_FORMAT);
             } else {
                 String cast = String.format(Db2Constants.CAST, originField, y.getDeType() == 2 ? Db2Constants.DEFAULT_INT_FORMAT : Db2Constants.DEFAULT_FLOAT_FORMAT);
-                fieldName = String.format(Db2Constants.AGG_FIELD, y.getSummary(), cast);
+                if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                    fieldName = String.format(Db2Constants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
+                } else {
+                    fieldName = String.format(Db2Constants.AGG_FIELD, y.getSummary(), cast);
+                }
             }
         }
         return SQLObj.builder()

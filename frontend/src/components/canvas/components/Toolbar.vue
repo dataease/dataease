@@ -273,7 +273,15 @@ export default {
       }
       const components = deepCopy(this.componentData)
       components.forEach(view => {
+        if (view.DetailAreaCode) { view.DetailAreaCode = null }
         if (view.filters && view.filters.length > 0) { view.filters = [] }
+        if (view.type === 'de-tabs') {
+          view.options.tabList && view.options.tabList.length > 0 && view.options.tabList.forEach(tab => {
+            if (tab.content && tab.content.filters && tab.content.filters.length > 0) {
+              tab.content.filters = []
+            }
+          })
+        }
       })
       // 无需保存条件
       requestInfo.panelData = JSON.stringify(components)

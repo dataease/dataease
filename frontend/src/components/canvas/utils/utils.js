@@ -8,6 +8,7 @@ import {
 } from '@/utils/ApplicationContext'
 import { uuid } from 'vue-uuid'
 import store from '@/store'
+import { AIDED_DESIGN } from '@/views/panel/panel'
 
 export function deepCopy(target) {
   if (typeof target === 'object') {
@@ -66,7 +67,7 @@ export function mobile2MainCanvas(mainSource, mobileSource) {
 }
 
 export function panelInit(componentData, componentStyle) {
-  componentData.forEach(item => {
+  componentData.forEach((item, index) => {
     if (item.component && item.component === 'de-date') {
       if (item.options.attrs &&
         (!item.options.attrs.default || (item.serviceName === 'timeYearWidget' && item.options.attrs.default.dynamicInfill !== 'year') || (item.serviceName === 'timeMonthWidget' && item.options.attrs.default.dynamicInfill !== 'month'))) {
@@ -94,11 +95,13 @@ export function panelInit(componentData, componentStyle) {
       item.hyperlinks = (item.hyperlinks || HYPERLINKS)
     }
     item.commonBackground = item.commonBackground || deepCopy(COMMON_BACKGROUND_NONE)
+    componentData[index] = item
   })
   // style初始化
   componentStyle.refreshTime = (componentStyle.refreshTime || 5)
   componentStyle.refreshViewLoading = (componentStyle.refreshViewLoading || false)
   componentStyle.refreshUnit = (componentStyle.refreshUnit || 'minute')
+  componentStyle.aidedDesign = (componentStyle.aidedDesign || deepCopy(AIDED_DESIGN))
 
   // 将data 和 style 数据设置到全局store中
   store.commit('setComponentData', resetID(componentData))

@@ -20,7 +20,7 @@ module.exports = {
     proxy: {
       '^(?!/login)': {
         target: 'http://localhost:8081/',
-        ws: false
+        ws: true
       }
     },
     open: true,
@@ -40,7 +40,7 @@ module.exports = {
   },
   configureWebpack: {
     name: name,
-    devtool: 'source-map',
+    devtool: 'cheap-module-source-map',
     resolve: {
       alias: {
         '@': resolve('src')

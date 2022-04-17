@@ -19,6 +19,8 @@ import {
 import Layout from '@/layout/index'
 // import bus from './utils/bus'
 
+import { getSocket } from '@/websocket'
+
 NProgress.configure({
   showSpinner: false
 }) // NProgress Configuration
@@ -57,6 +59,8 @@ router.beforeEach(async(to, from, next) => {
         if (store.getters.roles.length === 0) { // 判断当前用户是否已拉取完user_info信息
           // get user info
           store.dispatch('user/getInfo').then(() => {
+            const deWebsocket = getSocket()
+            deWebsocket && deWebsocket.reconnect && deWebsocket.reconnect()
             store.dispatch('lic/getLicInfo').then(() => {
               loadMenus(next, to)
             }).catch(() => {

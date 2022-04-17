@@ -77,6 +77,9 @@
             </el-dropdown>
           </el-dropdown-item>
 
+          <el-dropdown-item v-if="chart.render === 'antv' && chart.type.includes('table')" icon="el-icon-notebook-2" divided :command="beforeClickItem('formatter')">
+            <span>{{ $t('chart.value_formatter') }}...</span>
+          </el-dropdown-item>
           <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">
             <span>{{ $t('chart.show_name_set') }}</span>
           </el-dropdown-item>
@@ -92,6 +95,8 @@
 <script>
 import { getItemType } from '@/views/chart/components/drag-item/utils'
 import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
+import bus from '@/utils/bus'
+import { formatterItem } from '@/views/chart/chart/formatter'
 
 export default {
   name: 'DimensionItem',
@@ -109,6 +114,10 @@ export default {
       type: Number,
       required: true
     },
+    chart: {
+      type: Object,
+      required: true
+    },
     dimensionData: {
       type: Array,
       required: true
@@ -120,7 +129,8 @@ export default {
   },
   data() {
     return {
-      tagType: 'success'
+      tagType: 'success',
+      formatterItem: formatterItem
     }
   },
   watch: {
@@ -132,8 +142,15 @@ export default {
     }
   },
   mounted() {
+    bus.$on('reset-change-table', () => this.getItemTagType())
+    this.init()
   },
   methods: {
+    init() {
+      if (!this.item.formatterCfg) {
+        this.item.formatterCfg = JSON.parse(JSON.stringify(this.formatterItem))
+      }
+    },
     clickItem(param) {
       if (!param) {
         return
@@ -147,6 +164,9 @@ export default {
           break
         case 'filter':
           this.editFilter()
+          break
+        case 'formatter':
+          this.valueFormatter()
           break
         default:
           break
@@ -203,6 +223,12 @@ export default {
     },
     getItemTagType() {
       this.tagType = getItemType(this.dimensionData, this.quotaData, this.item)
+    },
+
+    valueFormatter() {
+      this.item.index = this.index
+      this.item.formatterType = 'dimension'
+      this.$emit('valueFormatter', this.item)
     }
   }
 }

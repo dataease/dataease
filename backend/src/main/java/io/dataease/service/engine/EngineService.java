@@ -19,6 +19,7 @@ import io.dataease.provider.ProviderFactory;
 import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -149,16 +150,12 @@ public class EngineService {
     }
 
     private void setDs(DeEngine engine) {
-        Datasource datasource = new Datasource();
-        BeanUtils.copyBean(datasource, engine);
-        CacheUtils.put("ENGINE", "engine", datasource, null, null);
+        CacheUtils.remove("ENGINE", "SimpleKey []");
     }
 
+    @Cacheable(value = "ENGINE")
     public Datasource getDeEngine() throws Exception {
-        Object catcheEngine = CacheUtils.get("ENGINE", "engine");
-        if (catcheEngine != null) {
-            return (Datasource) catcheEngine;
-        }
+        Datasource datasource = new Datasource();
 
         if (isLocalMode()) {
             JSONObject jsonObject = new JSONObject();
@@ -176,7 +173,7 @@ public class EngineService {
             engine.setDesc("doris");
             engine.setType("engine_doris");
             engine.setConfiguration(jsonObject.toJSONString());
-            setDs(engine);
+            BeanUtils.copyBean(datasource, engine);
         }
         if (isClusterMode()) {
             DeEngineExample engineExample = new DeEngineExample();
@@ -185,7 +182,7 @@ public class EngineService {
             if (CollectionUtils.isEmpty(deEngines)) {
                 throw new Exception("未设置数据引擎");
             }
-            setDs(deEngines.get(0));
+            BeanUtils.copyBean(datasource, deEngines.get(0));
         }
         if (isSimpleMode()) {
             DeEngineExample engineExample = new DeEngineExample();
@@ -194,9 +191,9 @@ public class EngineService {
             if (CollectionUtils.isEmpty(deEngines)) {
                 throw new Exception("未设置数据引擎");
             }
-            setDs(deEngines.get(0));
+            BeanUtils.copyBean(datasource, deEngines.get(0));
         }
-        return getDeEngine();
+        return datasource;
     }
 
 

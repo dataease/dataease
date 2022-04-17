@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { BASE_CHART, BASE_CHART_STRING } from '@/views/chart/chart/chart'
+import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
 import { deepCopy } from '@/components/canvas/utils/utils'
 
 export const DEFAULT_PANEL_STYLE = {
@@ -23,7 +23,13 @@ export const CANVAS_STYLE = {
   panel: DEFAULT_PANEL_STYLE,
   refreshViewLoading: true, // 仪表板视图loading提示
   refreshUnit: 'minute', // 仪表板刷新时间带外 默认 分钟
-  refreshTime: 5 // 仪表板刷新时间 默认5分钟
+  refreshTime: 5, // 仪表板刷新时间 默认5分钟
+  aidedDesign: AIDED_DESIGN // 辅助设计
+}
+
+export const AIDED_DESIGN = {
+  showGrid: false,
+  matrixBase: 1 // 当前matrix的基数 （是pcMatrixCount的几倍）
 }
 
 export const DEFAULT_COMMON_CANVAS_STYLE_STRING = {

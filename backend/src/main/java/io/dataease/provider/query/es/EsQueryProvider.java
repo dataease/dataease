@@ -1032,7 +1032,11 @@ public class EsQueryProvider extends QueryProvider {
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
             fieldName = EsSqlLConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format(EsSqlLConstants.AGG_FIELD, y.getSummary(), originField);
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                fieldName = String.format(EsSqlLConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else {
+                fieldName = String.format(EsSqlLConstants.AGG_FIELD, y.getSummary(), originField);
+            }
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                 String cast = String.format(EsSqlLConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? "bigint" : "double");
@@ -1040,7 +1044,11 @@ public class EsQueryProvider extends QueryProvider {
                 fieldName = String.format(EsSqlLConstants.ROUND, agg, "2");
             } else {
                 String cast = String.format(EsSqlLConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? "bigint" : "double");
-                fieldName = String.format(EsSqlLConstants.AGG_FIELD, y.getSummary(), cast);
+                if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                    fieldName = String.format(EsSqlLConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
+                } else {
+                    fieldName = String.format(EsSqlLConstants.AGG_FIELD, y.getSummary(), cast);
+                }
             }
         }
         return SQLObj.builder()

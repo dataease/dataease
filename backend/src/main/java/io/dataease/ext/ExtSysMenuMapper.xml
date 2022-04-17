@@ -29,7 +29,7 @@
         WHERE
         type &lt;= 1
         AND (
-        sys_menu.menu_id != 61
+        sys_menu.menu_id != 100
         OR EXISTS (
         SELECT
         1

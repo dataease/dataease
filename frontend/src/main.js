@@ -25,6 +25,7 @@ import '@/components/canvas/custom-component' // 注册自定义组件
 
 import '@/utils/DateUtil'
 import draggable from 'vuedraggable'
+import deWebsocket from '@/websocket'
 Vue.config.productionTip = false
 Vue.use(VueClipboard)
 Vue.use(widgets)
@@ -113,6 +114,7 @@ Vue.prototype.checkPermission = function(pers) {
   })
   return hasPermission
 }
+Vue.use(deWebsocket)
 new Vue({
 
   router,

@@ -1,7 +1,13 @@
 <template>
   <de-container>
     <de-main-container v-if="chart.type !== 'table-normal' && chart.type !== 'table-info'" :style="customStyle" class="full-div">
-      <chart-component v-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="chart" />
+      <plugin-com
+        v-if="chart.isPlugin"
+        :component-name="chart.type + '-view'"
+        :obj="{chart: mapChart || chart}"
+        class="chart-class"
+      />
+      <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="mapChart || chart" />
       <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
       <chart-component-s2 v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
       <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
@@ -24,10 +30,10 @@ import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
-
+import PluginCom from '@/views/system/plugin/PluginCom'
 export default {
   name: 'UserViewMobileDialog',
-  components: { ChartComponentS2, LabelNormalText, DeContainer, DeMainContainer, ChartComponentG2, ChartComponent, TableNormal, LabelNormal },
+  components: { ChartComponentS2, LabelNormalText, DeContainer, DeMainContainer, ChartComponentG2, ChartComponent, TableNormal, LabelNormal, PluginCom },
   props: {
     chart: {
       type: Object,
@@ -44,6 +50,7 @@ export default {
     }
   },
   computed: {
+
     customStyle() {
       let style = {
       }
@@ -70,7 +77,18 @@ export default {
       'curComponent',
       'componentData',
       'canvasStyleData'
-    ])
+    ]),
+    mapChart() {
+      if (this.chart.type && (this.chart.type === 'map' || this.chart.type === 'buddle-map')) {
+        const temp = JSON.parse(JSON.stringify(this.chart))
+        let DetailAreaCode = null
+        if (this.curComponent && this.curComponent.DetailAreaCode && this.curComponent.DetailAreaCode.length) {
+          DetailAreaCode = this.curComponent.DetailAreaCode
+        }
+        return { ...temp, ...{ DetailAreaCode: DetailAreaCode }}
+      }
+      return null
+    }
   },
   methods: {
 

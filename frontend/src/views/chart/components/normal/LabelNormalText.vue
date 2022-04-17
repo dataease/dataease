@@ -1,5 +1,6 @@
 <template>
   <div ref="tableContainer" :style="bg_class" style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
+    <view-track-bar ref="viewTrack" :track-menu="trackMenu" class="track-bar" :style="trackBarStyleTime" @trackClick="trackClick" />
     <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
     <div
       v-if="chart.data && chart.data.series && chart.data.series.length > 0"
@@ -7,7 +8,7 @@
       :style="content_class"
     >
       <span :style="label_class">
-        <p v-if="chart.data.series[0].data && chart.data.series[0].data.length > 0" :style="label_content_class">
+        <p v-if="chart.data.series[0].data && chart.data.series[0].data.length > 0" ref="textData" :style="label_content_class" @click="textClick">
           {{ chart.data.series[0].data[0] }}
         </p>
       </span>
@@ -23,9 +24,11 @@
 <script>
 import { hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
+import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 
 export default {
   name: 'LabelNormalText',
+  components: { ViewTrackBar },
   props: {
     chart: {
       type: Object,
@@ -36,6 +39,13 @@ export default {
       required: false,
       default: function() {
         return {}
+      }
+    },
+    trackMenu: {
+      type: Array,
+      required: false,
+      default: function() {
+        return []
       }
     }
   },
@@ -66,7 +76,8 @@ export default {
         margin: 0
       },
       label_content_class: {
-        margin: 0
+        margin: 0,
+        cursor: 'pointer'
       },
       label_space: {
         marginTop: '10px',
@@ -76,10 +87,19 @@ export default {
         background: hexColorToRGBA('#ffffff', 0)
       },
       title_show: true,
-      borderRadius: '0px'
+      borderRadius: '0px',
+      trackBarStyle: {
+        position: 'absolute',
+        left: '0px',
+        top: '0px'
+      },
+      pointParam: null
     }
   },
   computed: {
+    trackBarStyleTime() {
+      return this.trackBarStyle
+    }
     // bg_class() {
     //   return {
     //     background: hexColorToRGBA('#ffffff', 0),
@@ -167,6 +187,63 @@ export default {
     chartResize() {
       // 指定图表的配置项和数据
       this.calcHeight()
+    },
+    trackClick(trackAction) {
+      const param = this.pointParam
+      if (!param || !param.data || !param.data.dimensionList) {
+        // 地图提示没有关联字段 其他没有维度信息的 直接返回
+        if (this.chart.type === 'map') {
+          this.$warning(this.$t('panel.no_drill_field'))
+        }
+        return
+      }
+      const linkageParam = {
+        option: 'linkage',
+        viewId: this.chart.id,
+        dimensionList: this.pointParam.data.dimensionList,
+        quotaList: this.pointParam.data.quotaList
+      }
+      const jumpParam = {
+        option: 'jump',
+        viewId: this.chart.id,
+        dimensionList: this.pointParam.data.dimensionList,
+        quotaList: this.pointParam.data.quotaList
+      }
+      switch (trackAction) {
+        case 'drill':
+          this.$emit('onChartClick', this.pointParam)
+          break
+        case 'linkage':
+          this.$store.commit('addViewTrackFilter', linkageParam)
+          break
+        case 'jump':
+          this.$emit('onJumpClick', jumpParam)
+          break
+        default:
+          break
+      }
+    },
+    textClick() {
+      this.pointParam = {
+        data: {
+          category: this.chart.data.series[0].name,
+          dimensionList: [{ id: this.chart.data.fields[0].id, value: this.chart.data.series[0].data[0] }],
+          field: this.chart.data.series[0].data[0],
+          name: this.chart.data.series[0].data[0],
+          popSize: 0,
+          quotaList: [],
+          value: 0
+        }
+      }
+      console.log(this.pointParam)
+      this.$refs['textData'].offsetTop
+      if (this.trackMenu.length < 2) { // 只有一个事件直接调用
+        this.trackClick(this.trackMenu[0])
+      } else { // 视图关联多个事件
+        this.trackBarStyle.left = (this.$refs['textData'].offsetLeft + this.$refs['textData'].offsetWidth / 2) + 'px'
+        this.trackBarStyle.top = (this.$refs['textData'].offsetTop + this.$refs['textData'].offsetHeight + 10) + 'px'
+        this.$refs.viewTrack.trackButtonClick()
+      }
     }
   }
 }
