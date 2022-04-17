@@ -345,8 +345,13 @@ const data = {
 
           // 外部参数 可能会包含多个参数
           Object.keys(params).forEach(function(sourceInfo) {
-            // 获取外部参数的值 sourceInfo 是外部参数名称
-            const paramValue = params[sourceInfo]
+            // 获取外部参数的值 sourceInfo 是外部参数名称 支持数组传入
+            let paramValue = params[sourceInfo]
+            const operator = 'eq'
+            if (paramValue && !Array.isArray(paramValue)) {
+              paramValue = [paramValue]
+              operator = 'in'
+            }
             // 获取所有目标联动信息
             const targetInfoList = trackInfo[sourceInfo] || []
 
@@ -355,7 +360,7 @@ const data = {
               const targetViewId = targetInfoArray[0] // 目标视图
               if (element.propValue.viewId === targetViewId) { // 如果目标视图 和 当前循环组件id相等 则进行条件增减
                 const targetFieldId = targetInfoArray[1] // 目标视图列ID
-                const condition = new Condition('', targetFieldId, 'eq', [paramValue], [targetViewId])
+                const condition = new Condition('', targetFieldId, operator, paramValue, [targetViewId])
                 let j = currentFilters.length
                 while (j--) {
                   const filter = currentFilters[j]
