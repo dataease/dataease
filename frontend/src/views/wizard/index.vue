@@ -35,7 +35,7 @@ export default {
           head: this.$t('wizard.quick_start'),
           content: this.$t('wizard.demo_video_hint'),
           bottom: '',
-          href: 'https://www.bilibili.com/video/BV1UB4y1K7jA',
+          href: 'https://www.bilibili.com/video/BV1i34y1v7hq/',
           component: 'CardDetail'
         },
         {
