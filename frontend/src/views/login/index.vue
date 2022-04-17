@@ -2,7 +2,7 @@
   <div v-show="contentShow" class="login-background">
     <div class="login-container">
       <el-row v-loading="loading" type="flex">
-        <el-col :span="12">
+        <el-col :span="9" :offset="9">
           <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
             <div class="login-logo">
               <svg-icon v-if="!loginLogoUrl && axiosFinished" icon-class="datains" custom-class="login-logo-icon" />
@@ -51,10 +51,10 @@
             </div>
           </el-form>
         </el-col>
-        <el-col v-loading="!axiosFinished" :span="12">
+        <!-- <el-col v-loading="!axiosFinished" :span="12">
           <div v-if="!loginImageUrl && axiosFinished" class="login-image" />
           <div v-if="loginImageUrl && axiosFinished" class="login-image-de" :style="{background:'url(' + loginImageUrl + ') no-repeat', 'backgroundSize':'contain'}" />
-        </el-col>
+        </el-col> -->
       </el-row>
     </div>
     <plugin-com v-if="loginTypes.includes(2) && loginForm.loginType === 2" ref="SSOComponent" component-name="SSOComponent" />
@@ -235,16 +235,17 @@ export default {
 }
 
 .login-background {
-  background-color: var(--MainBG, $--background-color-base);
+  // background-color: var(--MainBG, $--background-color-base);
   height: 100vh;
-  @include login-center;
+  // @include login-center;
+  background: url(../../assets/login-background.png) no-repeat;
 }
 
 .login-container {
   min-width: 900px;
   width: 1280px;
   height: 520px;
-  background-color: var(--ContentBG, #FFFFFF);
+  // background-color: var(--ContentBG, #FFFFFF);
   @media only screen and (max-width: 1280px) {
     width: 900px;
     height: 380px;
@@ -293,8 +294,9 @@ export default {
 
   .login-welcome {
     margin-top: 20px;
-    font-size: 14px;
-    color: $--color-primary;
+    font-size: 25px;
+    // color: $--color-primary;
+    color: white;
     letter-spacing: 0;
     line-height: 18px;
     text-align: center;
@@ -324,9 +326,10 @@ export default {
     }
 
     & ::v-deep .el-input__inner {
-      border-radius: 20px;
+      border-radius: 8px;
       border: 1px solid transparent;
       background: $colorBg;
+      color: white;
     }
     & :focus {
       border: 1px solid $--color-primary;
@@ -342,7 +345,9 @@ export default {
 
     .submit {
       width: 100%;
-      border-radius: 20px;
+      border-radius: 8px;
+      background-color: rgba(10, 123, 224, 0.3);
+      border: 1px solid transparent;
     }
   }
 
