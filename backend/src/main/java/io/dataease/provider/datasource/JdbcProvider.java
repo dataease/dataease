@@ -31,7 +31,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
 
     @Override
     public boolean isUseDatasourcePool(){
-        return false;
+        return true;
     }
     @Override
     public String getType(){

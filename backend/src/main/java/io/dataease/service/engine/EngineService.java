@@ -150,10 +150,10 @@ public class EngineService {
     }
 
     private void setDs(DeEngine engine) {
-        CacheUtils.remove("ENGINE", "SimpleKey []");
+        CacheUtils.removeAll("ENGINE");
     }
 
-//    @Cacheable(value = "ENGINE")
+    @Cacheable(value = "ENGINE")
     public Datasource getDeEngine() throws Exception {
         Datasource datasource = new Datasource();
 
