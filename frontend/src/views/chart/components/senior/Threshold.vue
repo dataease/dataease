@@ -9,7 +9,7 @@
           <span>,100</span>
           <el-tooltip class="item" effect="dark" placement="bottom">
             <div slot="content">
-              阈值设置，决定仪表盘区间颜色，为空则不开启阈值，范围(0-100)，仅限整数，且逐级递增
+              阈值设置，决定仪表盘区间颜色，为空则不开启阈值，范围(0-100)，逐级递增
               <br>
               例如：输入 30,70；表示：分为3段，分别为[0,30],(30,70],(70,100]
             </div>
@@ -129,7 +129,7 @@ export default {
         const arr = this.thresholdForm.gaugeThreshold.split(',')
         for (let i = 0; i < arr.length; i++) {
           const ele = arr[i]
-          if (ele.indexOf('.') > -1 || parseInt(ele).toString() === 'NaN' || parseInt(ele) < 1 || parseInt(ele) > 99) {
+          if (parseFloat(ele).toString() === 'NaN' || parseFloat(ele) < 1 || parseFloat(ele) > 99) {
             this.$message({
               message: this.$t('chart.gauge_threshold_format_error'),
               type: 'error',

@@ -48,7 +48,7 @@ export function baseGaugeOptionAntV(plot, container, chart, action) {
       const arr = threshold.gaugeThreshold.split(',')
       for (let i = 0; i < arr.length; i++) {
         const ele = arr[i]
-        const p = parseInt(ele) / 100
+        const p = parseFloat(ele) / 100
         range.push(p)
         if (!flag && per <= p) {
           flag = true
