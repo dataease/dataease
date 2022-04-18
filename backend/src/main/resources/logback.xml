@@ -157,7 +157,7 @@
 		<appender-ref ref="console"/>
 	</logger>
 
-	<logger name="io.dataease.Application" additivity="false" level="${logger.level:INFO}">
+	<logger name="io.datains.Application" additivity="false" level="${logger.level:INFO}">
 		<appender-ref ref="infoAsyncAppender"/>
 	</logger>
 
