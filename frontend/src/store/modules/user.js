@@ -125,6 +125,8 @@ const actions = {
     return new Promise((resolve, reject) => {
       getUIinfo().then(response => {
         const { data } = response
+        console.log('response: ', response)
+        console.log('data: ', data)
         const uiInfo = format(data)
         commit('SET_UI_INFO', uiInfo)
         setSysUI(uiInfo)
