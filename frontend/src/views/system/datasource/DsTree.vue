@@ -127,10 +127,14 @@ export default {
       this.$refs.myDsTree.filter(val)
     }
   },
-  mounted() {
+  created() {
     this.queryTreeDatas()
     this.datasourceTypes()
   },
+  // mounted() {
+  //   this.queryTreeDatas()
+  //   this.datasourceTypes()
+  // },
   methods: {
     filterNode(value, data) {
       if (!value) return true

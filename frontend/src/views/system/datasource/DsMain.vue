@@ -34,7 +34,7 @@ export default {
       datasource: {},
       param: null,
       tData: null,
-      dsTypes: null
+      dsTypes: []
     }
   },
   computed: {},
