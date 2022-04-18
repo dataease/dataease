@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREFIX;
 
-@Service("sqlserverQueryProvider")
+@Service("sqlServerQueryProvider")
 public class SqlserverQueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;
