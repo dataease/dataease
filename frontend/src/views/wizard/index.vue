@@ -4,11 +4,11 @@
       <span class="hint_head">{{ $t('wizard.welcome_title') }}</span> <br>
       <span class="hint_content">{{ $t('wizard.welcome_hint') }}</span>
     </el-row>
-    <el-row class="card_container">
+    <!-- <el-row class="card_container">
       <info-card v-for="(cardDetail,index) in cardList" :key="index">
         <component :is="cardDetail.component" :img-index="index" :details="cardDetail" />
       </info-card>
-    </el-row>
+    </el-row> -->
   </el-row>
 </template>
 
@@ -59,6 +59,8 @@ export default {
 
 <style lang="scss" scoped>
   .main_container {
+    background-image: url('../../assets/welcome-background.png');
+    height: 100%;
   }
   .head {
     text-align: center;
@@ -66,7 +68,7 @@ export default {
     padding: 10px;
     margin-top: 35px;
     background-size: 100% 100% !important;
-    background-image: url('../../assets/banner.png');
+    // background-image: url('../../assets/banner.png');
   }
   .hint_head {
     line-height: 50px;

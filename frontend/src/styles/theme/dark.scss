@@ -26,11 +26,15 @@ $--background-color-base: #171b22;
 // 与CSS原生变量映射
 #app {
   --Main:#2681ff;
-  --MainBG: #171b22;
+  // --MainBG: #171b22;
+  --MainBG: #0a7be0;
   --ContentBG: #1b2a32;
   --TextActive: #FFFFFF;
-  --TextPrimary: #F2F6FC;
-  --border-color-input: #303640;
+  // --TextPrimary: #F2F6FC;
+  --TextPrimary: #808fa3;
+  
+  // --border-color-input: #303640;
+  --border-color-input: #54688e;
 
   --TopBG: #00364d;
 

@@ -311,7 +311,7 @@ export default {
               document.body.className = ''
             }
           } */
-
+        // document.body.className = 'blackTheme'
         this.axiosFinished = true
       })
     },
