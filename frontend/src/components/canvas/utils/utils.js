@@ -67,6 +67,15 @@ export function mobile2MainCanvas(mainSource, mobileSource) {
 }
 
 export function panelInit(componentData, componentStyle) {
+  // style初始化
+  componentStyle.refreshTime = (componentStyle.refreshTime || 5)
+  componentStyle.refreshViewLoading = (componentStyle.refreshViewLoading || false)
+  componentStyle.refreshUnit = (componentStyle.refreshUnit || 'minute')
+  componentStyle.aidedDesign = (componentStyle.aidedDesign || deepCopy(AIDED_DESIGN))
+  // // // 初始化密度为最高密度
+  // const matrixChange = 2 / componentStyle.aidedDesign.matrixBase
+  // componentStyle.aidedDesign.matrixBase = 2
+
   componentData.forEach((item, index) => {
     if (item.component && item.component === 'de-date') {
       if (item.options.attrs &&
@@ -96,12 +105,6 @@ export function panelInit(componentData, componentStyle) {
     }
     item.commonBackground = item.commonBackground || deepCopy(COMMON_BACKGROUND_NONE)
   })
-  // style初始化
-  componentStyle.refreshTime = (componentStyle.refreshTime || 5)
-  componentStyle.refreshViewLoading = (componentStyle.refreshViewLoading || false)
-  componentStyle.refreshUnit = (componentStyle.refreshUnit || 'minute')
-  componentStyle.aidedDesign = (componentStyle.aidedDesign || deepCopy(AIDED_DESIGN))
-
   // 将data 和 style 数据设置到全局store中
   store.commit('setComponentData', resetID(componentData))
   store.commit('setCanvasStyle', componentStyle)
@@ -115,3 +118,15 @@ export function resetID(data) {
   }
   return data
 }
+
+export function matrixBaseChange(component) {
+  const matrixBase = store.state.canvasStyleData.aidedDesign.matrixBase
+  if (component) {
+    component.x = (component.x - 1) * matrixBase
+    component.y = (component.y - 1) * matrixBase
+    component.sizex = component.sizex * matrixBase
+    component.sizey = component.sizey * matrixBase
+  }
+  return component
+}
+

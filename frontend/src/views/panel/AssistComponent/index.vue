@@ -83,7 +83,7 @@ import componentList, { assistList, pictureList, otherList } from '@/components/
 import toast from '@/components/canvas/utils/toast'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
-import { deepCopy } from '@/components/canvas/utils/utils'
+import { deepCopy, matrixBaseChange } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
 
@@ -163,7 +163,7 @@ export default {
       let component
       componentList.forEach(componentTemp => {
         if (id === componentTemp.id) {
-          component = deepCopy(componentTemp)
+          component = matrixBaseChange(deepCopy(componentTemp))
         }
       })
       // 图片移入是 不支持矩阵 暂时无法监听窗口取消事件

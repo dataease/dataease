@@ -39,6 +39,10 @@
                 {{ $t('detabs.selectview') }}
               </el-dropdown-item>
 
+              <el-dropdown-item :command="beforeHandleCommond('selectOthers', item)">
+                添加其他组件
+              </el-dropdown-item>
+
               <el-dropdown-item v-if=" element.options.tabList.length > 1" :command="beforeHandleCommond('deleteCur', item)">
                 {{ $t('table.delete') }}
               </el-dropdown-item>

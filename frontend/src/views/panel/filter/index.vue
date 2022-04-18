@@ -30,7 +30,7 @@
 
 <script>
 import { ApplicationContext } from '@/utils/ApplicationContext'
-import { deepCopy } from '@/components/canvas/utils/utils'
+import { deepCopy, matrixBaseChange } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
 export default {

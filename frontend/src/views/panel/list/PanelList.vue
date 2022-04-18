@@ -419,6 +419,7 @@ export default {
       this.editPanel.optType = param.optType
       this.editPanel.panelInfo.nodeType = param.type
       this.editPanel.visible = true
+      const temp = DEFAULT_COMMON_CANVAS_STYLE_STRING
       switch (param.optType) {
         case 'new':
           this.editPanel.titlePre = this.$t('commons.create')

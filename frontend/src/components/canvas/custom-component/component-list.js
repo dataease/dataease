@@ -317,7 +317,7 @@ const list = [
     },
     x: 1,
     y: 36,
-    sizex: 10,
+    sizex: 12,
     sizey: 6,
     auxiliaryMatrix: true,
     miniSizex: 1,
@@ -347,7 +347,7 @@ const list = [
     },
     x: 1,
     y: 1,
-    sizex: 10,
+    sizex: 12,
     sizey: 10,
     miniSizex: 1,
     miniSizey: 1
