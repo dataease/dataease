@@ -6,6 +6,8 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
 
+import java.util.Optional;
+
 public class DeWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
 
 
@@ -16,17 +18,22 @@ public class DeWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        String name = session.getPrincipal().getName();
-        Long userId = Long.parseLong(name);
-        WsUtil.onLine(userId);
+        Optional.ofNullable(session.getPrincipal()).ifPresent(principal -> {
+            String name = principal.getName();
+            Long userId = Long.parseLong(name);
+            WsUtil.onLine(userId);
+        });
         super.afterConnectionEstablished(session);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-        String name = session.getPrincipal().getName();
-        Long userId = Long.parseLong(name);
-        WsUtil.offLine(userId);
+        Optional.ofNullable(session.getPrincipal()).ifPresent(principal -> {
+            String name = principal.getName();
+            Long userId = Long.parseLong(name);
+            WsUtil.offLine(userId);
+        });
+
         super.afterConnectionClosed(session, closeStatus);
     }
 
