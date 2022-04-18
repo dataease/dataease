@@ -95,7 +95,6 @@ export function panelInit(componentData, componentStyle) {
       item.hyperlinks = (item.hyperlinks || HYPERLINKS)
     }
     item.commonBackground = item.commonBackground || deepCopy(COMMON_BACKGROUND_NONE)
-    componentData[index] = item
   })
   // style初始化
   componentStyle.refreshTime = (componentStyle.refreshTime || 5)

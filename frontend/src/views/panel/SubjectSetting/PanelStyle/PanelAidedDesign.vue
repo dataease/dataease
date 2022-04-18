@@ -15,7 +15,7 @@
               <el-radio-group v-model="aidedDesign.matrixBase" size="mini">
                 <el-radio-button :label="1">普通</el-radio-button>
                 <el-radio-button :label="2">适中</el-radio-button>
-                <el-radio-button :label="3">密集</el-radio-button>
+                <el-radio-button :label="4">密集</el-radio-button>
               </el-radio-group>
             </el-form-item>
           </el-form>

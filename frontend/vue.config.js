@@ -40,7 +40,7 @@ module.exports = {
   },
   configureWebpack: {
     name: name,
-    devtool: 'cheap-module-source-map',
+    devtool: 'source-map',
     resolve: {
       alias: {
         '@': resolve('src')
