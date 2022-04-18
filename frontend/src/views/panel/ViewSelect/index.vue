@@ -75,6 +75,7 @@ import { mapState } from 'vuex'
 import { queryPanelViewTree } from '@/api/panel/panel'
 import { deleteCircle } from '@/api/chart/chart'
 import { pluginTypes } from '@/api/chart/chart'
+import { matrixBaseChange } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'ViewSelect',
@@ -201,7 +202,7 @@ export default {
       // 用户视图设置 复制一个模板
       componentList.forEach(componentTemp => {
         if (componentTemp.type === 'view') {
-          component = deepCopy(componentTemp)
+          component = matrixBaseChange(deepCopy(componentTemp))
         }
       })
       component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix

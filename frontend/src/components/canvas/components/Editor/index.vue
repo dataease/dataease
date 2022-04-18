@@ -1011,12 +1011,12 @@ export default {
     }
   },
   watch: {
-    'canvasStyleData.aidedDesign.matrixBase': {
-      handler(newVal, oldVal) {
-        this.changeComponentSizePoint(newVal / oldVal)
-      },
-      deep: true
-    },
+    // 'canvasStyleData.aidedDesign.matrixBase': {
+    //   handler(newVal, oldVal) {
+    //     this.changeComponentSizePoint(newVal / oldVal)
+    //   },
+    //   deep: true
+    // },
     customStyle: {
       handler(newVal) {
         // 获取当前宽高（宽高改变后重新渲染画布）

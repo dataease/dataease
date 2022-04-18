@@ -338,7 +338,7 @@ import ViewSelect from '../ViewSelect'
 import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
-import { deepCopy, panelInit } from '@/components/canvas/utils/utils'
+import { deepCopy, matrixBaseChange, panelInit } from '@/components/canvas/utils/utils'
 import componentList, {
   BASE_MOBILE_STYLE,
   COMMON_BACKGROUND,
@@ -992,7 +992,7 @@ export default {
       // 用户视图设置 复制一个模板
       componentList.forEach(componentTemp => {
         if (componentTemp.type === 'view') {
-          component = deepCopy(componentTemp)
+          component = matrixBaseChange(deepCopy(componentTemp))
           const propValue = {
             id: newComponentId,
             viewId: newViewInfo.id

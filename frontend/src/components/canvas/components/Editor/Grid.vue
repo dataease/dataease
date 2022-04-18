@@ -5,16 +5,25 @@
         <path
           :d="smallGridPathD"
           fill="none"
-          stroke="rgba(207, 207, 207, 0.6)"
+          stroke="rgba(207, 207, 207, 0.5)"
           stroke-width="1"
         />
       </pattern>
+      <pattern id="middleGrid" :width="middleGridW" :height="middleGridH" patternUnits="userSpaceOnUse">
+        <rect :width="middleGridW" :height="middleGridH" fill="url(#smallGrid)" />
+        <path
+          :d="middleGridPathD"
+          fill="none"
+          stroke="rgba(207, 207, 207, 0.7)"
+          stroke-width="1.5"
+        />
+      </pattern>
       <pattern id="grid" :width="gridW" :height="gridH" patternUnits="userSpaceOnUse">
-        <rect :width="gridW" :height="gridH" fill="url(#smallGrid)" />
+        <rect :width="gridW" :height="gridH" fill="url(#middleGrid)" />
         <path
           :d="pathD"
           fill="none"
-          stroke="rgba(64,158,255,0.6)"
+          stroke="rgba(64,158,255,0.8)"
           stroke-width="1"
         />
       </pattern>
@@ -44,6 +53,9 @@ export default {
     pathD: function() {
       return 'M ' + this.gridW + ' 0 L 0 0 0 ' + this.gridH
     },
+    middleGridPathD: function() {
+      return 'M ' + this.middleGridW + ' 0 L 0 0 0 ' + this.middleGridH
+    },
     smallGridPathD: function() {
       return 'M ' + this.smallGridW + ' 0 L 0 0 0 ' + this.smallGridH
     },
@@ -52,6 +64,12 @@ export default {
     },
     gridH: function() {
       return this.matrixStyle.height * 2 * this.matrixBase
+    },
+    middleGridW: function() {
+      return this.matrixStyle.width * this.matrixBase
+    },
+    middleGridH: function() {
+      return this.matrixStyle.height * this.matrixBase
     },
     smallGridW: function() {
       return this.matrixStyle.width
