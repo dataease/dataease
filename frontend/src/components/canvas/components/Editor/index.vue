@@ -866,14 +866,8 @@ export default {
       }
     },
     matrixCount: {
-      required: false,
-      type: Object,
-      default: () => {
-        return {
-          x: 36,
-          y: 18
-        }
-      }
+      required: true,
+      type: Object
     },
     scrollTop: {
       type: Number,
@@ -1017,13 +1011,11 @@ export default {
     }
   },
   watch: {
-    matrixCount: {
+    'canvasStyleData.aidedDesign.matrixBase': {
       handler(newVal, oldVal) {
-        if (newVal && oldVal) {
-          this.changeComponentSizePoint(newVal.x / oldVal.x)
-        }
-        this.changeScale()
-      }
+        this.changeComponentSizePoint(newVal / oldVal)
+      },
+      deep: true
     },
     customStyle: {
       handler(newVal) {
@@ -1065,10 +1057,7 @@ export default {
   },
 
   mounted() {
-    setTimeout(() => {
-      this.changeScale()
-      this.editShow = true
-    }, 500)
+    this.canvasInit()
     // 获取编辑器元素
     this.$store.commit('getEditor')
     const _this = this
@@ -1089,6 +1078,13 @@ export default {
   created() {
   },
   methods: {
+    canvasInit() {
+      this.editShow = false
+      setTimeout(() => {
+        this.changeScale()
+        this.editShow = true
+      }, 500)
+    },
     backgroundSetClose() {
       this.boardSetVisible = false
     },
@@ -1255,6 +1251,7 @@ export default {
           item.sizex = item.sizex * pointScale
           item.sizey = item.sizey * pointScale
         })
+        this.changeScale()
       }
     },
 

@@ -9,12 +9,12 @@
           stroke-width="1"
         />
       </pattern>
-      <pattern id="grid" :width="matrixStyle.width" :height="matrixStyle.height" patternUnits="userSpaceOnUse">
-        <rect :width="matrixStyle.width" :height="matrixStyle.height" fill="url(#smallGrid)" />
+      <pattern id="grid" :width="gridW" :height="gridH" patternUnits="userSpaceOnUse">
+        <rect :width="gridW" :height="gridH" fill="url(#smallGrid)" />
         <path
           :d="pathD"
           fill="none"
-          stroke="rgba(64,158,255,0.8)"
+          stroke="rgba(64,158,255,0.6)"
           stroke-width="1"
         />
       </pattern>
@@ -24,6 +24,8 @@
 </template>
 
 <script>
+
+import { mapState } from 'vuex'
 
 export default {
   props: {
@@ -40,17 +42,30 @@ export default {
 
   computed: {
     pathD: function() {
-      return 'M ' + this.matrixStyle.width + ' 0 L 0 0 0 ' + this.matrixStyle.height
+      return 'M ' + this.gridW + ' 0 L 0 0 0 ' + this.gridH
     },
     smallGridPathD: function() {
       return 'M ' + this.smallGridW + ' 0 L 0 0 0 ' + this.smallGridH
     },
+    gridW: function() {
+      return this.matrixStyle.width * 2 * this.matrixBase
+    },
+    gridH: function() {
+      return this.matrixStyle.height * 2 * this.matrixBase
+    },
     smallGridW: function() {
-      return this.matrixStyle.width / 3
+      return this.matrixStyle.width
     },
     smallGridH: function() {
-      return this.matrixStyle.height / 3
-    }
+      return this.matrixStyle.height
+    },
+    matrixBase: function() {
+      // return this.canvasStyleData.aidedDesign ? this.canvasStyleData.aidedDesign.matrixBase : 1
+      return this.canvasStyleData.aidedDesign.matrixBase
+    },
+    ...mapState([
+      'canvasStyleData'
+    ])
   }
 }
 </script>
