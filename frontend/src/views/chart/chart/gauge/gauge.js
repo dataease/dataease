@@ -62,7 +62,7 @@ export function baseGaugeOption(chart_option, chart) {
           const per = parseFloat(chart.data.series[0].data[0]) / parseFloat(chart_option.series[0].max)
           for (let i = 0; i < arr.length; i++) {
             const ele = arr[i]
-            const p = parseInt(ele) / 100
+            const p = parseFloat(ele) / 100
             range.push([p, hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)])
             if (!flag && per <= p) {
               flag = true
