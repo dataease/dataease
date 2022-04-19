@@ -64,10 +64,10 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
               } else {
                 if (f.formatterCfg) {
                   const v = valueFormatter(value, f.formatterCfg)
-                  return v === 'NaN' ? value : v
+                  return v.includes('NaN') ? value : v
                 } else {
                   const v = valueFormatter(value, formatterItem)
-                  return v === 'NaN' ? value : v
+                  return v.includes('NaN') ? value : v
                 }
               }
             }
@@ -91,10 +91,10 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
           } else {
             if (f.formatterCfg) {
               const v = valueFormatter(value, f.formatterCfg)
-              return v === 'NaN' ? value : v
+              return v.includes('NaN') ? value : v
             } else {
               const v = valueFormatter(value, formatterItem)
-              return v === 'NaN' ? value : v
+              return v.includes('NaN') ? value : v
             }
           }
         }
