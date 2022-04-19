@@ -58,6 +58,12 @@ export default {
     linkInfo: {
       type: Object,
       required: true
+    },
+    // 属性所属组件位置
+    attrPosition: {
+      type: String,
+      required: false,
+      default: 'panel'
     }
   },
   data() {
@@ -86,7 +92,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'curComponent'
+      'curComponent',
+      'curActiveTabInner'
     ])
   },
   methods: {
@@ -95,7 +102,11 @@ export default {
     },
     onSubmit() {
       this.streamMediaInfoTemp[this.streamMediaInfoTemp.videoType].url = checkAddHttp(this.streamMediaInfoTemp[this.streamMediaInfoTemp.videoType].url)
-      this.curComponent.streamMediaLinks = this.streamMediaInfoTemp
+      if (this.attrPosition === 'panel') {
+        this.curComponent.streamMediaLinks = this.streamMediaInfoTemp
+      } else {
+        this.curActiveTabInner.streamMediaLinks = this.streamMediaInfoTemp
+      }
       this.$store.state.styleChangeTimes++
       bus.$emit('streamMediaLinksChange-' + this.curComponent.id)
       this.popoverClose()

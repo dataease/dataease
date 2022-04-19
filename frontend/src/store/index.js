@@ -105,7 +105,9 @@ const data = {
     // 视图是否编辑记录
     panelViewEditInfo: {},
     // 仪表板视图明细
-    panelViewDetailsInfo: {}
+    panelViewDetailsInfo: {},
+    // 当前tab页内组件
+    curActiveTabInner: null
   },
   mutations: {
     ...animation.mutations,
@@ -143,6 +145,10 @@ const data = {
       state.styleChangeTimes = 0
       state.curComponent = component
       state.curComponentIndex = index
+    },
+
+    setCurActiveTabInner(state, curActiveTabInner) {
+      state.curActiveTabInner = curActiveTabInner
     },
 
     setCurCanvasScale(state, curCanvasScale) {

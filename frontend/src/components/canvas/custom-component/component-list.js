@@ -171,6 +171,33 @@ export const pictureList = [
   }
 ]
 
+export const tabUseList = [
+  {
+    id: '20002',
+    component: 'video',
+    type: 'video',
+    label: '视频',
+    icon: 'iconfont icon-video',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '20003',
+    component: 'stream-media',
+    type: 'stream-media',
+    label: '流媒体',
+    icon: 'iconfont icon-a-liumeitimeitiliebiao',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '30002',
+    component: 'de-frame',
+    type: 'de-frame',
+    label: '网页',
+    icon: 'iconfont icon-iframe',
+    defaultClass: 'text-filter'
+  }
+]
+
 export const otherList = [
   {
     id: '30001',
