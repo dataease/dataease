@@ -213,13 +213,13 @@
         <!--由于暂时插件接口未注册到公司仓库，请先down下代码安装到本地仓库
         https://github.com/dataease/dataease-plugins-->
         <dependency>
-            <groupId>io.dataease</groupId>
-            <artifactId>dataease-plugin-interface</artifactId>
+            <groupId>io.datains</groupId>
+            <artifactId>datains-plugin-interface</artifactId>
             <version>1.9.0</version>
         </dependency>
         <dependency>
-            <groupId>io.dataease</groupId>
-            <artifactId>dataease-plugin-view</artifactId>
+            <groupId>io.datains</groupId>
+            <artifactId>datains-plugin-view</artifactId>
             <version>1.9.0</version>
         </dependency>
 
