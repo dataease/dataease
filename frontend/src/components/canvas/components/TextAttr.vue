@@ -122,12 +122,6 @@
           <el-color-picker ref="backgroundColorPicker" v-model="styleInfo.backgroundColor" style="margin-top: 7px;height: 0px" :predefine="predefineColors" size="mini" @change="styleChange" />
         </div>
       </div>
-
-      <div v-if="attrShow('hyperlinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-tooltip v-if="curComponent.hyperlinks" content="超链接">
-          <Hyperlinks :link-info="curComponent.hyperlinks" />
-        </el-tooltip>
-      </div>
       <div v-if="attrShow('videoLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
         <el-tooltip content="视频信息">
           <VideoLinks :link-info="curComponent.videoLinks" />
