@@ -10,7 +10,7 @@ import com.auth0.jwt.interfaces.Verification;
 import io.datains.auth.entity.TokenInfo;
 import io.datains.auth.entity.TokenInfo.TokenInfoBuilder;
 import io.datains.commons.utils.CommonBeanFactory;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
@@ -59,7 +59,7 @@ public class JWTUtils {
         String username = jwt.getClaim("username").asString();
         Long userId = jwt.getClaim("userId").asLong();
         if (StringUtils.isEmpty(username) || ObjectUtils.isEmpty(userId)) {
-            DataEaseException.throwException("token格式错误！");
+            DataInsException.throwException("token格式错误！");
         }
         TokenInfoBuilder tokenInfoBuilder = TokenInfo.builder().username(username).userId(userId);
         return tokenInfoBuilder.build();

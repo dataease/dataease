@@ -5,7 +5,7 @@ package io.datains.controller.sys;
 import io.datains.commons.license.DefaultLicenseService;
 import io.datains.commons.license.F2CLicenseResponse;
 import io.datains.controller.ResultHolder;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,11 +38,11 @@ public class LicenseController {
                 return ResultHolder.success(null);
             case expired:
                 String expired = f2CLicenseResponse.getLicense().getExpired();
-                DataEaseException.throwException("License has expired since " + expired + ", please update license.");
+                DataInsException.throwException("License has expired since " + expired + ", please update license.");
             case invalid:
-                DataEaseException.throwException(f2CLicenseResponse.getMessage());
+                DataInsException.throwException(f2CLicenseResponse.getMessage());
             default:
-                DataEaseException.throwException("Invalid License.");
+                DataInsException.throwException("Invalid License.");
         }
         return new ResultHolder();
     }

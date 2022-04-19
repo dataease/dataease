@@ -7,12 +7,11 @@ import com.alibaba.druid.wall.WallFilter;
 import com.google.gson.Gson;
 import io.datains.controller.request.datasource.DatasourceRequest;
 import io.datains.dto.datasource.*;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.datains.provider.ProviderFactory;
 import io.datains.provider.QueryProvider;
-import io.datains.dto.datasource.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -82,9 +81,9 @@ public class JdbcProvider extends DatasourceProvider {
             }
 
         } catch (SQLException e) {
-            DataEaseException.throwException(Translator.get("i18n_sql_error") + e.getMessage());
+            DataInsException.throwException(Translator.get("i18n_sql_error") + e.getMessage());
         } catch (Exception e) {
-            DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
+            DataInsException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
         }
         return list;
     }
@@ -93,9 +92,9 @@ public class JdbcProvider extends DatasourceProvider {
         try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement()) {
             Boolean result = stat.execute(datasourceRequest.getQuery());
         } catch (SQLException e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         }
     }
 
@@ -104,9 +103,9 @@ public class JdbcProvider extends DatasourceProvider {
         try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
             return fetchResult(rs);
         } catch (SQLException e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         }
         return new ArrayList<>();
     }
@@ -174,13 +173,13 @@ public class JdbcProvider extends DatasourceProvider {
             }
             resultSet.close();
         } catch (SQLException e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         } catch (Exception e) {
             if(datasourceRequest.getDatasource().getType().equalsIgnoreCase("ds_doris")){
                 datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
                 return fetchResultField(datasourceRequest);
             }else {
-                DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
+                DataInsException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
             }
 
         }
@@ -251,10 +250,10 @@ public class JdbcProvider extends DatasourceProvider {
         try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
             return fetchResultField(rs, datasourceRequest);
         } catch (SQLException e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         } catch (Exception e) {
             e.printStackTrace();
-            DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
+            DataInsException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
         }
         return new ArrayList<>();
     }
@@ -271,9 +270,9 @@ public class JdbcProvider extends DatasourceProvider {
             result.put("dataList", dataList);
             return result;
         } catch (SQLException e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         }
         return new HashMap<>();
     }
@@ -320,7 +319,7 @@ public class JdbcProvider extends DatasourceProvider {
                 tables.add(getTableDesc(datasourceRequest, resultSet));
             }
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         }
 
         String queryView = getViewSql(datasourceRequest);
@@ -330,7 +329,7 @@ public class JdbcProvider extends DatasourceProvider {
                     tables.add(getTableDesc(datasourceRequest, resultSet));
                 }
             } catch (Exception e) {
-                DataEaseException.throwException(e);
+                DataInsException.throwException(e);
             }
         }
 
@@ -360,7 +359,7 @@ public class JdbcProvider extends DatasourceProvider {
             }
             return schemas;
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         }
         return new ArrayList<>();
     }
@@ -370,7 +369,7 @@ public class JdbcProvider extends DatasourceProvider {
         String queryStr = getTablesSql(datasourceRequest);
         try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)) {
         } catch (Exception e) {
-            DataEaseException.throwException(e.getMessage());
+            DataInsException.throwException(e.getMessage());
         }
         return "Success";
     }

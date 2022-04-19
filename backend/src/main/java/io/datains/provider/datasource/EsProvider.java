@@ -11,7 +11,7 @@ import io.datains.controller.request.datasource.DatasourceRequest;
 import io.datains.dto.datasource.EsConfiguration;
 import io.datains.dto.datasource.TableDesc;
 import io.datains.dto.datasource.TableField;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
 import io.dataease.plugins.common.constants.EsSqlLConstants;
 import io.datains.provider.query.es.EsQueryProvider;
@@ -79,7 +79,7 @@ public class EsProvider extends DatasourceProvider {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         }
         return list;
     }
@@ -91,7 +91,7 @@ public class EsProvider extends DatasourceProvider {
             String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "?format=json");
             list = fetchResult(response);
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         }
         return list;
     }
@@ -104,7 +104,7 @@ public class EsProvider extends DatasourceProvider {
             String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "?format=json");
             tableFields = fetchResultField4Table(response);
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         }
         return tableFields;
     }
@@ -131,7 +131,7 @@ public class EsProvider extends DatasourceProvider {
             String response = exexQuery(datasourceRequest, datasourceRequest.getQuery(), "?format=json");
             tableFields = fetchResultField4Sql(response);
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         }
         return tableFields;
     }
@@ -200,7 +200,7 @@ public class EsProvider extends DatasourceProvider {
             result.put("dataList", fetchResult(response));
             result.put("fieldList", fetchResultField4Sql(response));
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         }
         return result;
     }
@@ -217,7 +217,7 @@ public class EsProvider extends DatasourceProvider {
             tables = fetchTables(response);
             tables = tables.stream().filter(table -> !table.getName().startsWith(".")).collect(Collectors.toList());
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         }
         return tables;
     }

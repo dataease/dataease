@@ -4,7 +4,7 @@ import io.datains.base.domain.PanelSubject;
 import io.datains.base.domain.PanelSubjectExample;
 import io.datains.base.mapper.PanelSubjectMapper;
 import io.datains.controller.request.panel.PanelSubjectRequest;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -64,7 +64,7 @@ public class PanelSubjectService {
                 request.setUpdateTime(System.currentTimeMillis());
                 panelSubjectMapper.updateByPrimaryKeySelective(request);
             } else {
-                DataEaseException.throwException("名称已经存在");
+                DataInsException.throwException("名称已经存在");
             }
         }
     }

@@ -5,7 +5,7 @@ import io.datains.base.domain.PanelGroupExtendData;
 import io.datains.base.domain.PanelGroupExtendDataExample;
 import io.datains.base.mapper.PanelGroupExtendDataMapper;
 import io.datains.dto.chart.ChartViewDTO;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +31,7 @@ public class PanelGroupExtendDataService {
             ChartViewDTO chartViewTemplate = JSONObject.parseObject(extendDataList.get(0).getViewDetails(),ChartViewDTO.class);
             view.setData(chartViewTemplate.getData());
         }else{
-            DataEaseException.throwException("模板缓存数据中未获取指定视图数据："+viewId);
+            DataInsException.throwException("模板缓存数据中未获取指定视图数据："+viewId);
         }
         return view;
     }

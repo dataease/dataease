@@ -8,9 +8,7 @@ import io.datains.base.mapper.DatasetTableTaskMapper;
 import io.datains.base.mapper.DatasourceMapper;
 import io.datains.base.mapper.ext.ExtChartViewMapper;
 import io.datains.commons.constants.*;
-import io.datains.commons.constants.*;
 import io.datains.commons.model.AuthURD;
-import io.datains.commons.utils.*;
 import io.datains.commons.utils.*;
 import io.datains.controller.request.datasource.ApiDefinition;
 import io.dataease.plugins.common.constants.DatasourceTypes;
@@ -23,14 +21,12 @@ import io.datains.dto.datasource.*;
 import io.datains.service.datasource.DatasourceService;
 import io.datains.dto.dataset.DataTableInfoDTO;
 import io.datains.dto.dataset.ExcelSheetData;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import io.datains.listener.util.CacheUtils;
 import io.datains.provider.QueryProvider;
 import io.datains.service.engine.EngineService;
 import io.datains.service.kettle.KettleService;
 import io.datains.service.message.DeMsgutil;
-import io.datains.base.domain.*;
-import io.datains.dto.datasource.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -743,7 +739,7 @@ public class ExtractDataService {
             Thread.sleep(1000);
         }
         if (!transStatus.getStatusDescription().equals("Finished")) {
-            DataEaseException.throwException(transStatus.getLoggingString());
+            DataInsException.throwException(transStatus.getLoggingString());
             return;
         }
 
@@ -761,7 +757,7 @@ public class ExtractDataService {
         if (jobStatus.getStatusDescription().equals("Finished")) {
             return;
         } else {
-            DataEaseException.throwException((jobStatus.getLoggingString()));
+            DataInsException.throwException((jobStatus.getLoggingString()));
         }
     }
 

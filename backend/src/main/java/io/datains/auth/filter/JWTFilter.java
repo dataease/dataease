@@ -10,7 +10,7 @@ import io.datains.auth.service.AuthUserService;
 import io.datains.auth.util.JWTUtils;
 import io.datains.commons.utils.CommonBeanFactory;
 import io.datains.commons.utils.LogUtil;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -113,7 +113,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         AuthUserService authUserService = CommonBeanFactory.getBean(AuthUserService.class);
         SysUserEntity user = authUserService.getUserById(tokenInfo.getUserId());
         if (user == null) {
-            DataEaseException.throwException(Translator.get("i18n_not_find_user"));
+            DataInsException.throwException(Translator.get("i18n_not_find_user"));
         }
         String password = user.getPassword();
         Algorithm algorithm = Algorithm.HMAC256(password);

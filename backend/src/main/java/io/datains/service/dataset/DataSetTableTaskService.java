@@ -14,10 +14,9 @@ import io.datains.controller.request.dataset.DataSetTaskRequest;
 import io.datains.controller.sys.base.BaseGridRequest;
 import io.datains.controller.sys.base.ConditionEntity;
 import io.datains.dto.dataset.DataSetTaskDTO;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
 import io.datains.service.ScheduleService;
-import io.datains.base.domain.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -106,11 +105,11 @@ public class DataSetTableTaskService {
         if (datasetTableTask.getType().equalsIgnoreCase("add_scope")) {
             DatasetTable datasetTable = dataSetTableService.get(datasetTableTask.getTableId());
             if (datasetTable.getLastUpdateTime() == null || datasetTable.getLastUpdateTime() == 0) {
-                DataEaseException.throwException(Translator.get("i18n_not_exec_add_sync"));
+                DataInsException.throwException(Translator.get("i18n_not_exec_add_sync"));
             }
         }
         if (existSyncTask(dataSetTableService.get(datasetTableTask.getTableId()), datasetTableTask)) {
-            DataEaseException.throwException(Translator.get("i18n_sync_job_exists"));
+            DataInsException.throwException(Translator.get("i18n_sync_job_exists"));
         }
     }
 

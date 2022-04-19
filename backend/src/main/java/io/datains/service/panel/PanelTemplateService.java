@@ -1,6 +1,5 @@
 package io.datains.service.panel;
 
-import io.datains.base.domain.*;
 import io.datains.base.mapper.PanelTemplateMapper;
 import io.datains.base.mapper.ext.ExtPanelTemplateMapper;
 import io.datains.commons.constants.CommonConstants;
@@ -8,7 +7,7 @@ import io.datains.commons.utils.AuthUtils;
 import io.datains.commons.utils.BeanUtils;
 import io.datains.controller.request.panel.PanelTemplateRequest;
 import io.datains.dto.panel.PanelTemplateDTO;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
 import io.datains.base.domain.PanelTemplate;
 import io.datains.base.domain.PanelTemplateExample;
@@ -69,7 +68,7 @@ public class PanelTemplateService {
                 request.setPid(request.getTemplateType());
                 String nameCheckResult = this.nameCheck(CommonConstants.OPT_TYPE.INSERT, request.getName(), request.getPid(), null);
                 if (CommonConstants.CHECK_RESULT.EXIST_ALL.equals(nameCheckResult)) {
-                    DataEaseException.throwException(Translator.get("i18n_same_folder_can_not_repeat"));
+                    DataInsException.throwException(Translator.get("i18n_same_folder_can_not_repeat"));
                 }
             } else {//模板插入 相同文件夹同名的模板进行覆盖(先删除)
                 PanelTemplateExample exampleDelete = new PanelTemplateExample();
@@ -80,7 +79,7 @@ public class PanelTemplateService {
         } else {
             String nameCheckResult = this.nameCheck(CommonConstants.OPT_TYPE.UPDATE, request.getName(), request.getPid(), request.getId());
             if (CommonConstants.CHECK_RESULT.EXIST_ALL.equals(nameCheckResult)) {
-                DataEaseException.throwException(Translator.get("i18n_same_folder_can_not_repeat"));
+                DataInsException.throwException(Translator.get("i18n_same_folder_can_not_repeat"));
             }
             panelTemplateMapper.updateByPrimaryKeySelective(request);
         }

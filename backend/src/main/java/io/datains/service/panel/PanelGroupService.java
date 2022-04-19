@@ -6,7 +6,6 @@ import io.datains.base.domain.*;
 import io.datains.base.mapper.*;
 import io.datains.base.mapper.ext.*;
 import io.datains.commons.constants.*;
-import io.datains.commons.constants.*;
 import io.datains.commons.utils.AuthUtils;
 import io.datains.commons.utils.LogUtil;
 import io.datains.commons.utils.TreeUtils;
@@ -19,15 +18,12 @@ import io.datains.dto.chart.ChartViewDTO;
 import io.datains.dto.dataset.DataSetTableDTO;
 import io.datains.dto.panel.PanelGroupDTO;
 import io.datains.dto.panel.po.PanelViewInsertDTO;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
 import io.datains.listener.util.CacheUtils;
 import io.datains.service.chart.ChartViewService;
 import io.datains.service.dataset.DataSetTableService;
 import io.datains.service.sys.SysAuthService;
-import io.datains.base.domain.*;
-import io.datains.base.mapper.*;
-import io.datains.base.mapper.ext.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
@@ -143,7 +139,7 @@ public class PanelGroupService {
         } else if ("move".equals(request.getOptType())) {
             PanelGroupWithBLOBs panelInfo = panelGroupMapper.selectByPrimaryKey(request.getId());
             if (panelInfo.getPid().equalsIgnoreCase(request.getPid())) {
-                DataEaseException.throwException(Translator.get("i18n_select_diff_folder"));
+                DataInsException.throwException(Translator.get("i18n_select_diff_folder"));
             }
             // 移动校验
             if (StringUtils.isNotEmpty(request.getName())) {
@@ -169,7 +165,7 @@ public class PanelGroupService {
         authRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupList(authRequest);
         if (!CollectionUtils.isNotEmpty(panelGroupDTOList)) {
-            DataEaseException.throwException("未查询到用户对应的资源权限，请尝试刷新重新保存");
+            DataInsException.throwException("未查询到用户对应的资源权限，请尝试刷新重新保存");
         }
         return panelGroupDTOList.get(0);
     }
@@ -185,7 +181,7 @@ public class PanelGroupService {
 
         List<PanelGroup> checkResult = panelGroupMapper.selectByExample(groupExample);
         if (CollectionUtils.isNotEmpty(checkResult)) {
-            DataEaseException.throwException(Translator.get("i18n_same_folder_can_not_repeat"));
+            DataInsException.throwException(Translator.get("i18n_same_folder_can_not_repeat"));
         }
     }
 

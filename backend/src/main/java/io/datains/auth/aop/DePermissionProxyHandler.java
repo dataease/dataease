@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import io.datains.commons.utils.AuthUtils;
 import io.datains.commons.utils.LogUtil;
 import io.datains.dto.PermissionProxy;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 
 @Aspect
 @Component
@@ -53,7 +53,7 @@ public class DePermissionProxyHandler {
         } catch (Throwable throwable) {
             LogUtil.error(throwable.getMessage(), throwable);
             /* throw new RuntimeException(throwable.getMessage()); */
-            DataEaseException.throwException(throwable);
+            DataInsException.throwException(throwable);
         } finally {
             AuthUtils.cleanProxyUser();
         }

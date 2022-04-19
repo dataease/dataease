@@ -6,7 +6,7 @@ import com.alibaba.fastjson.serializer.ObjectSerializer;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import io.datains.commons.utils.BeanUtils;
 import io.datains.commons.utils.LogUtil;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.MessageSource;
@@ -131,7 +131,7 @@ public class Translator {
                         }
                     }
                 } catch (Exception e) {
-                    DataEaseException.throwException(e);
+                    DataInsException.throwException(e);
                 }
             }
 

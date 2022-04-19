@@ -9,9 +9,7 @@ import io.datains.base.mapper.ext.ExtDataSetGroupMapper;
 import io.datains.base.mapper.ext.ExtDataSetTableMapper;
 import io.datains.base.mapper.ext.UtilMapper;
 import io.datains.commons.constants.*;
-import io.datains.commons.constants.*;
 import io.datains.commons.exception.DEException;
-import io.datains.commons.utils.*;
 import io.datains.commons.utils.*;
 import io.datains.controller.request.dataset.DataSetGroupRequest;
 import io.datains.controller.request.dataset.DataSetTableRequest;
@@ -24,7 +22,7 @@ import io.datains.dto.dataset.union.UnionDTO;
 import io.datains.dto.dataset.union.UnionItemDTO;
 import io.datains.dto.dataset.union.UnionParamDTO;
 import io.datains.dto.datasource.TableField;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
 import io.datains.listener.util.CacheUtils;
 import io.dataease.plugins.common.constants.DatasourceTypes;
@@ -36,9 +34,6 @@ import io.datains.provider.DDLProvider;
 import io.datains.provider.QueryProvider;
 import io.datains.service.engine.EngineService;
 import io.datains.service.sys.SysAuthService;
-import io.datains.base.domain.*;
-import io.datains.base.mapper.*;
-import io.datains.dto.dataset.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -169,7 +164,7 @@ public class DataSetTableService {
                         String[] fieldArray = excelSheetData.getFields().stream().map(TableField::getFieldName)
                                 .toArray(String[]::new);
                         if (checkIsRepeat(fieldArray)) {
-                            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
+                            DataInsException.throwException(Translator.get("i18n_excel_field_repeat"));
                         }
                         excelSheetData.setData(null);
                         excelSheetData.setJsonArray(null);
@@ -191,7 +186,7 @@ public class DataSetTableService {
                     String[] fieldArray = sheet.getFields().stream().map(TableField::getFieldName)
                             .toArray(String[]::new);
                     if (checkIsRepeat(fieldArray)) {
-                        DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
+                        DataInsException.throwException(Translator.get("i18n_excel_field_repeat"));
                     }
                     DataSetTableRequest sheetTable = new DataSetTableRequest();
                     BeanUtils.copyBean(sheetTable, datasetTable);
@@ -230,14 +225,14 @@ public class DataSetTableService {
                 List<String> newFields = sheet.getFields().stream().map(TableField::getRemarks)
                         .collect(Collectors.toList());
                 if (!oldFields.equals(newFields)) {
-                    DataEaseException.throwException(Translator.get("i18n_excel_column_inconsistent"));
+                    DataInsException.throwException(Translator.get("i18n_excel_column_inconsistent"));
                 }
                 oldFields = newFields;
             }
 
             String[] fieldArray = sheet.getFields().stream().map(TableField::getFieldName).toArray(String[]::new);
             if (checkIsRepeat(fieldArray)) {
-                DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
+                DataInsException.throwException(Translator.get("i18n_excel_field_repeat"));
             }
             sheet.setData(null);
             sheet.setJsonArray(null);
@@ -876,7 +871,7 @@ public class DataSetTableService {
         String sql = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql();
 
         if (StringUtils.isEmpty(sql)) {
-            DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
+            DataInsException.throwException(Translator.get("i18n_sql_not_empty"));
         }
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         String sqlAsTable = qp.createSQLPreview(sql, null);
@@ -886,7 +881,7 @@ public class DataSetTableService {
         List<TableField> fields = result.get("fieldList");
         String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
         if (checkIsRepeat(fieldArray)) {
-            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
+            DataInsException.throwException(Translator.get("i18n_excel_field_repeat"));
         }
         List<Map<String, Object>> jsonArray = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(data)) {
@@ -1795,11 +1790,11 @@ public class DataSetTableService {
                             sqlFileds.add(filed);
                         });
             } catch (Exception e) {
-                DataEaseException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
+                DataInsException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
             }
 
             if (!originNameFileds.equals(sqlFileds)) {
-                DataEaseException.throwException(Translator.get("i18n_sql_add_not_matching") + sqlFileds.toString());
+                DataInsException.throwException(Translator.get("i18n_sql_add_not_matching") + sqlFileds.toString());
             }
         }
         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete())
@@ -1813,11 +1808,11 @@ public class DataSetTableService {
                 datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableField::getFieldName)
                         .forEach(filed -> sqlFileds.add(filed));
             } catch (Exception e) {
-                DataEaseException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
+                DataInsException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
             }
 
             if (!originNameFileds.equals(sqlFileds)) {
-                DataEaseException.throwException(Translator.get("i18n_sql_delete_not_matching") + sqlFileds.toString());
+                DataInsException.throwException(Translator.get("i18n_sql_delete_not_matching") + sqlFileds.toString());
             }
         }
     }
@@ -1882,7 +1877,7 @@ public class DataSetTableService {
             }
 
             if (retrunSheetDataList.size() == 0) {
-                DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
+                DataInsException.throwException(Translator.get("i18n_excel_column_change"));
             }
         } else {
             retrunSheetDataList = excelSheetDataList;
@@ -2062,7 +2057,7 @@ public class DataSetTableService {
 
         // 校验excel字段是否重名
         if (checkIsRepeat(fieldArray)) {
-            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
+            DataInsException.throwException(Translator.get("i18n_excel_field_repeat"));
         }
 
         if (CollectionUtils.isNotEmpty(data)) {

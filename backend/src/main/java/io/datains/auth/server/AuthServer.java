@@ -11,9 +11,8 @@ import io.datains.auth.service.AuthUserService;
 import io.datains.auth.util.JWTUtils;
 import io.datains.auth.util.RsaUtil;
 import io.datains.commons.utils.*;
-import io.datains.commons.utils.*;
 import io.datains.controller.sys.request.LdapAddRequest;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
 import io.dataease.plugins.common.entity.XpackLdapUserEntity;
 import io.datains.plugins.config.SpringContextUtil;
@@ -64,7 +63,7 @@ public class AuthServer implements AuthApi {
             LdapValidateRequest request = LdapValidateRequest.builder().userName(username).password(pwd).build();
             ValidateResult<XpackLdapUserEntity> validateResult = ldapXpackService.login(request);
             if (!validateResult.isSuccess()) {
-                DataEaseException.throwException(validateResult.getMsg());
+                DataInsException.throwException(validateResult.getMsg());
             }
             XpackLdapUserEntity ldapUserEntity = validateResult.getData();
             SysUserEntity user = authUserService.getLdapUserByName(username);
@@ -93,16 +92,16 @@ public class AuthServer implements AuthApi {
         SysUserEntity user = authUserService.getUserByName(username);
 
         if (ObjectUtils.isEmpty(user)) {
-            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+            DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
 
         // 验证登录类型是否与用户类型相同
         if (!sysUserService.validateLoginType(user.getFrom(), loginType)) {
-            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+            DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
 
         if (user.getEnabled() == 0) {
-            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+            DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
         String realPwd = user.getPassword();
 
@@ -114,7 +113,7 @@ public class AuthServer implements AuthApi {
             pwd = CodingUtil.md5(pwd);
 
             if (!StringUtils.equals(pwd, realPwd)) {
-                DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+                DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
             }
         }
 

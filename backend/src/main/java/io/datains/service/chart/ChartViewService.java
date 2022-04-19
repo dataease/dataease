@@ -25,7 +25,7 @@ import io.datains.dto.chart.*;
 import io.datains.dto.dataset.DataSetTableDTO;
 import io.datains.dto.dataset.DataSetTableUnionDTO;
 import io.datains.dto.dataset.DataTableInfoDTO;
-import io.datains.exception.DataEaseException;
+import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
 import io.datains.listener.util.CacheUtils;
 import io.datains.plugins.config.SpringContextUtil;
@@ -42,9 +42,6 @@ import io.datains.service.dataset.PermissionService;
 import io.datains.service.datasource.DatasourceService;
 import io.datains.service.engine.EngineService;
 import io.datains.service.panel.PanelGroupExtendDataService;
-import io.datains.base.domain.*;
-import io.datains.controller.request.chart.*;
-import io.datains.dto.chart.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -266,12 +263,12 @@ public class ChartViewService {
                 result = extChartViewMapper.searchOne(id);
             }
             if(result==null){
-                DataEaseException.throwException(Translator.get("i18n_chart_delete"));
+                DataInsException.throwException(Translator.get("i18n_chart_delete"));
             }
             return result;
         }catch (Exception e){
             e.printStackTrace();
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         }
         return null;
 
@@ -304,7 +301,7 @@ public class ChartViewService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            DataEaseException.throwException(e);
+            DataInsException.throwException(e);
         }
         return null;
 
