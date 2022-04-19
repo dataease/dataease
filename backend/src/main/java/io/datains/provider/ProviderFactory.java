@@ -1,6 +1,6 @@
 package io.datains.provider;
 
-import io.dataease.plugins.common.constants.DatasourceTypes;
+import io.datains.plugins.common.constants.DatasourceTypes;
 import io.datains.provider.datasource.DatasourceProvider;
 import io.datains.provider.query.api.ApiProvider;
 import org.springframework.beans.BeansException;

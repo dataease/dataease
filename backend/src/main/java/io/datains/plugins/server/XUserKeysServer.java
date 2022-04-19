@@ -2,8 +2,8 @@ package io.datains.plugins.server;
 
 import io.datains.commons.utils.AuthUtils;
 import io.datains.plugins.config.SpringContextUtil;
-import io.dataease.plugins.xpack.ukey.dto.request.XpackUkeyDto;
-import io.dataease.plugins.xpack.ukey.service.UkeyXpackService;
+import io.datains.plugins.xpack.ukey.dto.request.XpackUkeyDto;
+import io.datains.plugins.xpack.ukey.service.UkeyXpackService;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 

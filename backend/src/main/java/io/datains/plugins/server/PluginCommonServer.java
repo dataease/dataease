@@ -1,10 +1,10 @@
 package io.datains.plugins.server;
 
 import io.datains.commons.utils.ServletUtils;
-import io.dataease.plugins.common.dto.PluginSysMenu;
-import io.dataease.plugins.common.dto.StaticResource;
-import io.dataease.plugins.common.service.PluginComponentService;
-import io.dataease.plugins.common.service.PluginMenuService;
+import io.datains.plugins.common.dto.PluginSysMenu;
+import io.datains.plugins.common.dto.StaticResource;
+import io.datains.plugins.common.service.PluginComponentService;
+import io.datains.plugins.common.service.PluginMenuService;
 import io.datains.plugins.config.SpringContextUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

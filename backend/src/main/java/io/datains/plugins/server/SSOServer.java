@@ -26,10 +26,10 @@ import io.datains.commons.utils.CodingUtil;
 import io.datains.commons.utils.LogUtil;
 import io.datains.commons.utils.ServletUtils;
 import io.datains.plugins.config.SpringContextUtil;
-import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
-import io.dataease.plugins.xpack.oidc.dto.SSOToken;
-import io.dataease.plugins.xpack.oidc.dto.SSOUserInfo;
-import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
+import io.datains.plugins.xpack.display.dto.response.SysSettingDto;
+import io.datains.plugins.xpack.oidc.dto.SSOToken;
+import io.datains.plugins.xpack.oidc.dto.SSOUserInfo;
+import io.datains.plugins.xpack.oidc.service.OidcXpackService;
 import springfox.documentation.annotations.ApiIgnore;
 
 @ApiIgnore

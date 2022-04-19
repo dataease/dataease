@@ -22,8 +22,8 @@ import io.datains.controller.sys.request.SysUserStateRequest;
 import io.datains.controller.sys.response.SysUserGridResponse;
 import io.datains.controller.sys.response.SysUserRole;
 import io.datains.i18n.Translator;
-import io.dataease.plugins.common.entity.XpackLdapUserEntity;
-import io.dataease.plugins.xpack.oidc.dto.SSOUserInfo;
+import io.datains.plugins.common.entity.XpackLdapUserEntity;
+import io.datains.plugins.xpack.oidc.dto.SSOUserInfo;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;

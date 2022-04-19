@@ -11,7 +11,7 @@ import io.datains.commons.constants.*;
 import io.datains.commons.model.AuthURD;
 import io.datains.commons.utils.*;
 import io.datains.controller.request.datasource.ApiDefinition;
-import io.dataease.plugins.common.constants.DatasourceTypes;
+import io.datains.plugins.common.constants.DatasourceTypes;
 import io.datains.provider.DDLProvider;
 import io.datains.provider.datasource.DatasourceProvider;
 import io.datains.provider.datasource.JdbcProvider;

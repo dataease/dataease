@@ -2,8 +2,8 @@ package io.datains.plugins.server;
 
 
 import io.datains.plugins.config.SpringContextUtil;
-import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
-import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
+import io.datains.plugins.xpack.display.dto.response.SysSettingDto;
+import io.datains.plugins.xpack.oidc.service.OidcXpackService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;

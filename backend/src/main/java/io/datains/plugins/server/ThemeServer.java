@@ -15,10 +15,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import io.datains.commons.exception.DEException;
 import io.datains.commons.utils.LogUtil;
-import io.dataease.plugins.xpack.theme.dto.ThemeDto;
-import io.dataease.plugins.xpack.theme.dto.ThemeItem;
-import io.dataease.plugins.xpack.theme.dto.ThemeRequest;
-import io.dataease.plugins.xpack.theme.service.ThemeXpackService;
+import io.datains.plugins.xpack.theme.dto.ThemeDto;
+import io.datains.plugins.xpack.theme.dto.ThemeItem;
+import io.datains.plugins.xpack.theme.dto.ThemeRequest;
+import io.datains.plugins.xpack.theme.service.ThemeXpackService;
 import springfox.documentation.annotations.ApiIgnore;
 
 @ApiIgnore

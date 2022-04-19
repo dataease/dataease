@@ -6,7 +6,7 @@ import io.datains.job.sechedule.ExtractDataJob;
 import io.datains.job.sechedule.ScheduleManager;
 import io.datains.job.sechedule.strategy.TaskHandler;
 import io.datains.job.sechedule.strategy.TaskStrategyFactory;
-import io.dataease.plugins.common.entity.GlobalTaskEntity;
+import io.datains.plugins.common.entity.GlobalTaskEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;

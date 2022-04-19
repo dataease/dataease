@@ -3,8 +3,8 @@ package io.datains.auth.handler;
 import io.datains.auth.entity.ASKToken;
 import io.datains.commons.utils.CodingUtil;
 import io.datains.plugins.config.SpringContextUtil;
-import io.dataease.plugins.xpack.ukey.dto.request.XpackUkeyDto;
-import io.dataease.plugins.xpack.ukey.service.UkeyXpackService;
+import io.datains.plugins.xpack.ukey.dto.request.XpackUkeyDto;
+import io.datains.plugins.xpack.ukey.service.UkeyXpackService;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;

@@ -2,8 +2,8 @@ package io.datains.plugins.util;
 
 import io.datains.commons.license.DefaultLicenseService;
 import io.datains.commons.license.F2CLicenseResponse;
-import io.dataease.plugins.common.dto.PluginSysMenu;
-import io.dataease.plugins.common.service.PluginMenuService;
+import io.datains.plugins.common.dto.PluginSysMenu;
+import io.datains.plugins.common.service.PluginMenuService;
 import io.datains.plugins.config.SpringContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;

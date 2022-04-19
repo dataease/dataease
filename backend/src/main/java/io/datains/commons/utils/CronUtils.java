@@ -1,6 +1,6 @@
 package io.datains.commons.utils;
 
-import io.dataease.plugins.common.entity.GlobalTaskEntity;
+import io.datains.plugins.common.entity.GlobalTaskEntity;
 import org.apache.commons.lang3.ObjectUtils;
 import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;

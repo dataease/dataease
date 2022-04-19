@@ -1,11 +1,11 @@
 package io.datains.plugins.server;
 
 
-import io.dataease.plugins.common.entity.XpackLdapUserEntity;
+import io.datains.plugins.common.entity.XpackLdapUserEntity;
 import io.datains.plugins.config.SpringContextUtil;
-import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
-import io.dataease.plugins.xpack.ldap.dto.response.LdapInfo;
-import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
+import io.datains.plugins.xpack.display.dto.response.SysSettingDto;
+import io.datains.plugins.xpack.ldap.dto.response.LdapInfo;
+import io.datains.plugins.xpack.ldap.service.LdapXpackService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;

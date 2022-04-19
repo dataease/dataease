@@ -7,7 +7,7 @@ import io.datains.base.domain.SysMenu;
 import io.datains.base.mapper.SysMenuMapper;
 import io.datains.base.mapper.ext.ExtPluginSysMenuMapper;
 import io.datains.base.mapper.ext.ExtSysMenuMapper;
-import io.dataease.plugins.common.dto.PluginSysMenu;
+import io.datains.plugins.common.dto.PluginSysMenu;
 import io.datains.plugins.util.PluginUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;

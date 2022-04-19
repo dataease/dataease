@@ -41,40 +41,40 @@ public class Knife4jConfiguration implements BeanPostProcessor{
 
     @Bean(value = "authApi")
     public Docket authApi() {
-        return defaultApi("权限管理", "io.dataease.auth");
+        return defaultApi("权限管理", "io.datains.auth");
     }
 
     @Bean(value = "chartApi")
     public Docket chartApi() {
-        return defaultApi("视图管理", "io.dataease.controller.chart");
+        return defaultApi("视图管理", "io.datains.controller.chart");
     }
 
     @Bean(value = "datasetApi")
     public Docket datasetApi() {
-        return defaultApi("数据集管理", "io.dataease.controller.dataset");
+        return defaultApi("数据集管理", "io.datains.controller.dataset");
     }
 
     @Bean(value = "panelApi")
     public Docket panelApi() {
-        return defaultApi("仪表板管理", "io.dataease.controller.panel");
+        return defaultApi("仪表板管理", "io.datains.controller.panel");
     }
 
     @Bean(value = "datasourceApi")
     public Docket datasourceApi() {
-        return defaultApi("数据源管理", "io.dataease.controller.datasource");
+        return defaultApi("数据源管理", "io.datains.controller.datasource");
     }
 
     @Bean(value = "sysApi")
     public Docket sysApi() {
-        return defaultApi("系统管理", "io.dataease.controller.sys,io.dataease.plugins.server");
+        return defaultApi("系统管理", "io.datains.controller.sys,io.datains.plugins.server");
     }
 
     private ApiInfo apiInfo(){
         return new ApiInfoBuilder()
-                .title("DataEase")
-                .description("人人可用的开源数据可视化分析工具")
-                .termsOfServiceUrl("https://dataease.io")
-                .contact(new Contact("Dataease","https://www.fit2cloud.com/dataease/index.html","dataease@fit2cloud.com"))
+                .title("DataIns")
+                .description("数据可视化自助分析工具")
+                .termsOfServiceUrl("http://mivicelab.com/")
+                .contact(new Contact("DataIns","http://mivicelab.com/","falinyang@qq.com"))
                 .version(version)
                 .build();
     }

@@ -27,7 +27,7 @@ import io.datains.dto.DatasourceDTO;
 import io.datains.dto.dataset.DataTableInfoDTO;
 import io.datains.dto.datasource.*;
 import io.datains.i18n.Translator;
-import io.dataease.plugins.common.constants.DatasourceTypes;
+import io.datains.plugins.common.constants.DatasourceTypes;
 import io.datains.provider.ProviderFactory;
 import io.datains.provider.datasource.ApiProvider;
 import io.datains.provider.datasource.DatasourceProvider;

@@ -8,10 +8,10 @@ import io.datains.base.mapper.ext.AuthMapper;
 import io.datains.auth.service.AuthUserService;
 import io.datains.commons.constants.AuthConstants;
 import io.datains.commons.utils.LogUtil;
-import io.dataease.plugins.common.service.PluginCommonService;
+import io.datains.plugins.common.service.PluginCommonService;
 import io.datains.plugins.config.SpringContextUtil;
-import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
-import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
+import io.datains.plugins.xpack.ldap.service.LdapXpackService;
+import io.datains.plugins.xpack.oidc.service.OidcXpackService;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;

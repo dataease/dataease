@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.datains.plugins.config.SpringContextUtil;
-import io.dataease.plugins.view.entity.PluginViewType;
-import io.dataease.plugins.view.service.ViewPluginService;
+import io.datains.plugins.view.entity.PluginViewType;
+import io.datains.plugins.view.service.ViewPluginService;
 import springfox.documentation.annotations.ApiIgnore;
 
 @ApiIgnore

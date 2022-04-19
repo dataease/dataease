@@ -2,7 +2,7 @@ package io.datains.job.sechedule.strategy;
 
 import io.datains.commons.utils.CronUtils;
 import io.datains.job.sechedule.ScheduleManager;
-import io.dataease.plugins.common.entity.GlobalTaskEntity;
+import io.datains.plugins.common.entity.GlobalTaskEntity;
 import org.apache.commons.lang3.ObjectUtils;
 import org.quartz.*;
 import org.springframework.beans.factory.InitializingBean;

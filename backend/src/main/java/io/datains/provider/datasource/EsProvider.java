@@ -13,7 +13,7 @@ import io.datains.dto.datasource.TableDesc;
 import io.datains.dto.datasource.TableField;
 import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
-import io.dataease.plugins.common.constants.EsSqlLConstants;
+import io.datains.plugins.common.constants.EsSqlLConstants;
 import io.datains.provider.query.es.EsQueryProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;

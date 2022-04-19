@@ -10,11 +10,11 @@ import io.datains.dto.chart.ChartViewFieldDTO;
 import io.datains.dto.dataset.DataSetTableUnionDTO;
 import io.datains.dto.dataset.DataTableInfoDTO;
 import io.datains.dto.sqlObj.SQLObj;
-import io.dataease.plugins.common.constants.SQLConstants;
-import io.dataease.plugins.common.util.BeanUtils;
-import io.dataease.plugins.common.util.ConstantsUtil;
-import io.dataease.plugins.view.entity.*;
-import io.dataease.plugins.view.service.ViewPluginBaseService;
+import io.datains.plugins.common.constants.SQLConstants;
+import io.datains.plugins.common.util.BeanUtils;
+import io.datains.plugins.common.util.ConstantsUtil;
+import io.datains.plugins.view.entity.*;
+import io.datains.plugins.view.service.ViewPluginBaseService;
 import io.datains.provider.ProviderFactory;
 import io.datains.provider.QueryProvider;
 import io.datains.service.dataset.DataSetTableService;
@@ -28,7 +28,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREFIX;
+import static io.datains.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREFIX;
 
 @Service
 public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {

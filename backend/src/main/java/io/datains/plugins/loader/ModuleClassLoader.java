@@ -1,6 +1,6 @@
 package io.datains.plugins.loader;
 
-import io.dataease.plugins.common.annotation.PluginResultMap;
+import io.datains.plugins.common.annotation.PluginResultMap;
 import io.datains.plugins.config.SpringContextUtil;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;

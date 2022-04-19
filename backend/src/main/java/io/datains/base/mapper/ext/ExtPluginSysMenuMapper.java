@@ -1,6 +1,6 @@
 package io.datains.base.mapper.ext;
 
-import io.dataease.plugins.common.dto.PluginSysMenu;
+import io.datains.plugins.common.dto.PluginSysMenu;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

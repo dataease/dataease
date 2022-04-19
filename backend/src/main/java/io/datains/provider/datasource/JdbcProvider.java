@@ -9,7 +9,7 @@ import io.datains.controller.request.datasource.DatasourceRequest;
 import io.datains.dto.datasource.*;
 import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
-import io.dataease.plugins.common.constants.DatasourceTypes;
+import io.datains.plugins.common.constants.DatasourceTypes;
 import io.datains.provider.ProviderFactory;
 import io.datains.provider.QueryProvider;
 import org.apache.commons.lang3.StringUtils;

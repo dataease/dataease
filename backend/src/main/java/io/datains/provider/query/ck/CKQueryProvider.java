@@ -11,9 +11,9 @@ import io.datains.dto.chart.ChartCustomFilterItemDTO;
 import io.datains.dto.chart.ChartFieldCustomFilterDTO;
 import io.datains.dto.chart.ChartViewFieldDTO;
 import io.datains.dto.sqlObj.SQLObj;
-import io.dataease.plugins.common.constants.CKConstants;
+import io.datains.plugins.common.constants.CKConstants;
 import io.datains.provider.QueryProvider;
-import io.dataease.plugins.common.constants.SQLConstants;
+import io.datains.plugins.common.constants.SQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREFIX;
+import static io.datains.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREFIX;
 
 /**
  * @Author gin

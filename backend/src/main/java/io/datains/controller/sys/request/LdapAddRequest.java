@@ -1,6 +1,6 @@
 package io.datains.controller.sys.request;
 
-import io.dataease.plugins.common.entity.XpackLdapUserEntity;
+import io.datains.plugins.common.entity.XpackLdapUserEntity;
 import lombok.Data;
 
 import java.io.Serializable;

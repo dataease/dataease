@@ -14,13 +14,13 @@ import io.datains.commons.utils.*;
 import io.datains.controller.sys.request.LdapAddRequest;
 import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
-import io.dataease.plugins.common.entity.XpackLdapUserEntity;
+import io.datains.plugins.common.entity.XpackLdapUserEntity;
 import io.datains.plugins.config.SpringContextUtil;
 import io.datains.plugins.util.PluginUtils;
-import io.dataease.plugins.xpack.ldap.dto.request.LdapValidateRequest;
-import io.dataease.plugins.xpack.ldap.dto.response.ValidateResult;
-import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
-import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
+import io.datains.plugins.xpack.ldap.dto.request.LdapValidateRequest;
+import io.datains.plugins.xpack.ldap.dto.response.ValidateResult;
+import io.datains.plugins.xpack.ldap.service.LdapXpackService;
+import io.datains.plugins.xpack.oidc.service.OidcXpackService;
 import io.datains.service.sys.SysUserService;
 
 import org.apache.commons.lang3.ObjectUtils;

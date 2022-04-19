@@ -25,7 +25,7 @@ import io.datains.dto.datasource.TableField;
 import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
 import io.datains.listener.util.CacheUtils;
-import io.dataease.plugins.common.constants.DatasourceTypes;
+import io.datains.plugins.common.constants.DatasourceTypes;
 import io.datains.plugins.loader.ClassloaderResponsity;
 import io.datains.provider.ProviderFactory;
 import io.datains.provider.datasource.DatasourceProvider;
