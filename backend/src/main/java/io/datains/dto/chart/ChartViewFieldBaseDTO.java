@@ -16,7 +16,7 @@ public class ChartViewFieldBaseDTO implements Serializable {
 
     private String originName;
 
-    private String dataeaseName;
+    private String datainsName;
 
     private String name;
 

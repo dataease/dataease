@@ -6,7 +6,7 @@
     <result column="table_id" jdbcType="VARCHAR" property="tableId" />
     <result column="origin_name" jdbcType="VARCHAR" property="originName" />
     <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="dataease_name" jdbcType="VARCHAR" property="dataeaseName" />
+    <result column="datains_name" jdbcType="VARCHAR" property="datainsName" />
     <result column="group_type" jdbcType="VARCHAR" property="groupType" />
     <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="size" jdbcType="INTEGER" property="size" />
@@ -77,7 +77,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, table_id, origin_name, `name`, dataease_name, group_type, `type`, `size`, de_type, 
+    id, table_id, origin_name, `name`, datains_name, group_type, `type`, `size`, de_type,
     de_type_format, de_extract_type, ext_field, `checked`, column_index, last_sync_time
   </sql>
   <select id="selectByExample" parameterType="io.datains.base.domain.DatasetTableFieldExample" resultMap="BaseResultMap">
@@ -112,13 +112,13 @@
   </delete>
   <insert id="insert" parameterType="io.datains.base.domain.DatasetTableField">
     insert into dataset_table_field (id, table_id, origin_name, 
-      `name`, dataease_name, group_type, 
+      `name`, datains_name, group_type,
       `type`, `size`, de_type, 
       de_type_format, de_extract_type, ext_field, 
       `checked`, column_index, last_sync_time
       )
     values (#{id,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{originName,jdbcType=VARCHAR}, 
-      #{name,jdbcType=VARCHAR}, #{dataeaseName,jdbcType=VARCHAR}, #{groupType,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{datainsName,jdbcType=VARCHAR}, #{groupType,jdbcType=VARCHAR},
       #{type,jdbcType=VARCHAR}, #{size,jdbcType=INTEGER}, #{deType,jdbcType=INTEGER}, 
       #{deTypeFormat,jdbcType=INTEGER}, #{deExtractType,jdbcType=INTEGER}, #{extField,jdbcType=INTEGER}, 
       #{checked,jdbcType=BIT}, #{columnIndex,jdbcType=INTEGER}, #{lastSyncTime,jdbcType=BIGINT}
@@ -139,8 +139,8 @@
       <if test="name != null">
         `name`,
       </if>
-      <if test="dataeaseName != null">
-        dataease_name,
+      <if test="datainsName != null">
+        datains_name,
       </if>
       <if test="groupType != null">
         group_type,
@@ -186,8 +186,8 @@
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>
-      <if test="dataeaseName != null">
-        #{dataeaseName,jdbcType=VARCHAR},
+      <if test="datainsName != null">
+        #{datainsName,jdbcType=VARCHAR},
       </if>
       <if test="groupType != null">
         #{groupType,jdbcType=VARCHAR},
@@ -242,8 +242,8 @@
       <if test="record.name != null">
         `name` = #{record.name,jdbcType=VARCHAR},
       </if>
-      <if test="record.dataeaseName != null">
-        dataease_name = #{record.dataeaseName,jdbcType=VARCHAR},
+      <if test="record.datainsName != null">
+        datains_name = #{record.datainsName,jdbcType=VARCHAR},
       </if>
       <if test="record.groupType != null">
         group_type = #{record.groupType,jdbcType=VARCHAR},
@@ -286,7 +286,7 @@
       table_id = #{record.tableId,jdbcType=VARCHAR},
       origin_name = #{record.originName,jdbcType=VARCHAR},
       `name` = #{record.name,jdbcType=VARCHAR},
-      dataease_name = #{record.dataeaseName,jdbcType=VARCHAR},
+      datains_name = #{record.datainsName,jdbcType=VARCHAR},
       group_type = #{record.groupType,jdbcType=VARCHAR},
       `type` = #{record.type,jdbcType=VARCHAR},
       `size` = #{record.size,jdbcType=INTEGER},
@@ -313,8 +313,8 @@
       <if test="name != null">
         `name` = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="dataeaseName != null">
-        dataease_name = #{dataeaseName,jdbcType=VARCHAR},
+      <if test="datainsName != null">
+        datains_name = #{datainsName,jdbcType=VARCHAR},
       </if>
       <if test="groupType != null">
         group_type = #{groupType,jdbcType=VARCHAR},
@@ -354,7 +354,7 @@
     set table_id = #{tableId,jdbcType=VARCHAR},
       origin_name = #{originName,jdbcType=VARCHAR},
       `name` = #{name,jdbcType=VARCHAR},
-      dataease_name = #{dataeaseName,jdbcType=VARCHAR},
+      datains_name = #{datainsName,jdbcType=VARCHAR},
       group_type = #{groupType,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
       `size` = #{size,jdbcType=INTEGER},

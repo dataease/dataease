@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS `dataset_table_field` (
    `table_id` varchar(50) NOT NULL COMMENT '表ID',
    `origin_name` varchar(255) NOT NULL COMMENT '原始名',
    `name` varchar(255) NOT NULL COMMENT '字段名',
-   `dataease_name` varchar(255) NOT NULL COMMENT '字段名',
+   `datains_name` varchar(255) NOT NULL COMMENT '字段名',
    `type` varchar(50) NOT NULL COMMENT '原始字段类型',
    `size` int(11) DEFAULT NULL,
    `de_type` int(10) NOT NULL COMMENT 'dataease字段类型：0-文本，1-时间，2-整型数值，3-浮点数值...',

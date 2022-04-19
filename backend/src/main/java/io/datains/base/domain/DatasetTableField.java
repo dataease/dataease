@@ -22,7 +22,7 @@ public class DatasetTableField implements Serializable {
     @ApiModelProperty("名称")
     private String name;
     @ApiModelProperty("DE名称")
-    private String dataeaseName;
+    private String datainsName;
     @ApiModelProperty("分组类型")
     private String groupType;
     @ApiModelProperty("类型")

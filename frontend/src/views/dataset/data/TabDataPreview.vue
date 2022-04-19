@@ -24,7 +24,7 @@
         v-for="field in fields"
         :key="field.id"
         min-width="200px"
-        :field="field.dataeaseName"
+        :field="field.datainsName"
         :resizable="true"
       >
         <template slot="header">

@@ -738,7 +738,7 @@ public class EsQueryProvider extends QueryProvider {
     public String createRawQuerySQL(String table, List<DatasetTableField> fields, Datasource ds) {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("\"").append(f.getOriginName()).append("\" AS ").append(f.getDataeaseName());
+            stringBuilder.append("\"").append(f.getOriginName()).append("\" AS ").append(f.getDatainsName());
             return stringBuilder.toString();
         }).toArray(String[]::new);
         return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), table);

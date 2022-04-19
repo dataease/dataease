@@ -671,9 +671,9 @@ public class HiveQueryProvider extends QueryProvider {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
             if (f.getDeExtractType() == 4) { // 处理 tinyint
-                stringBuilder.append("concat(`").append(f.getOriginName()).append("`,'') AS ").append(f.getDataeaseName());
+                stringBuilder.append("concat(`").append(f.getOriginName()).append("`,'') AS ").append(f.getDatainsName());
             } else {
-                stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
+                stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDatainsName());
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);

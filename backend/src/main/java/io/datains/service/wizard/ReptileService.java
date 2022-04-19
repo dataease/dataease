@@ -42,8 +42,8 @@ public class ReptileService {
             e.printStackTrace();
             //ignore
             Map<String, String> infoMap = new HashMap();
-            infoMap.put("title","支持移动端展示，数据源新增对DB2的支持，DataEase开源数据可视化分析平台v1.6.0发布");
-            infoMap.put("href","https://blog.fit2cloud.com/?p=3200");
+            infoMap.put("title","支持移动端展示，数据源新增对DB2的支持，数据可视化分析平台");
+            infoMap.put("href","http://mivicelab.com/");
             infoMap.put("time","2022年1月10日");
             result.add(infoMap);
         }

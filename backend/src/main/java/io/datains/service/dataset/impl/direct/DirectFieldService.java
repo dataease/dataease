@@ -64,7 +64,7 @@ public class DirectFieldService implements DataSetFieldService {
             if(!fields.stream().map(DatasetTableField::getId).collect(Collectors.toList()).contains(fieldId)){
                 return new ArrayList<>();
             }
-            if (CollectionUtils.isNotEmpty(desensitizationList) && desensitizationList.contains(field.getDataeaseName())) {
+            if (CollectionUtils.isNotEmpty(desensitizationList) && desensitizationList.contains(field.getDatainsName())) {
                 List<Object> results = new ArrayList<>();
                 results.add(ColumnPermissionConstants.Desensitization_desc);
                 return results;

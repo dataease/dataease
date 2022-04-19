@@ -1,7 +1,7 @@
 package io.datains.listener;
 
-import io.datains.base.domain.DataeaseCodeVersion;
-import io.datains.base.mapper.DataeaseCodeVersionMapper;
+import io.datains.base.domain.DatainsCodeVersion;
+import io.datains.base.mapper.DatainsCodeVersionMapper;
 import io.datains.base.mapper.ext.DEVersionMapper;
 import io.datains.plugins.loader.ClassloaderResponsity;
 import io.datains.service.panel.PanelGroupService;
@@ -25,18 +25,18 @@ public class SystemInitListener implements ApplicationListener<ApplicationReadyE
     @Resource
     private PanelGroupService panelGroupService;
     @Resource
-    private DataeaseCodeVersionMapper codeVersionMapper;
+    private DatainsCodeVersionMapper codeVersionMapper;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         System.out.println("=====initSystem from code [Start]=====");
         logger.info("=====initSystem from code [Start]=====");
-        Integer dataeseVersion = versionMapper.lastSuccessDataEaseVersion();
-        Integer dataeseCodeVersion = versionMapper.lastDataEaseCodeVersion();
+        Integer dataeseVersion = versionMapper.lastSuccessDataInsVersion();
+        Integer dataeseCodeVersion = versionMapper.lastDataInsCodeVersion();
 
         // v1.8 初始化程序 1 是1.8 初始化程序的执行记录 32 是1.8版本flayway的执行记录
         if(dataeseCodeVersion<1 && dataeseVersion>=32){
-            DataeaseCodeVersion codeVersion = new DataeaseCodeVersion();
+            DatainsCodeVersion codeVersion = new DatainsCodeVersion();
             codeVersion.setDescription("v1.8 初始化");
             codeVersion.setInstalledOn(new Date());
             codeVersion.setInstalledRank(1);

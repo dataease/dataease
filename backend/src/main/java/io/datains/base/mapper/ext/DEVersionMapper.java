@@ -2,9 +2,9 @@ package io.datains.base.mapper.ext;
 
 public interface DEVersionMapper {
 
-    Integer lastSuccessDataEaseVersion();
+    Integer lastSuccessDataInsVersion();
 
-    Integer lastDataEaseCodeVersion();
+    Integer lastDataInsCodeVersion();
 
 
 }

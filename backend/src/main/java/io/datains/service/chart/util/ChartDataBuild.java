@@ -874,16 +874,16 @@ public class ChartDataBuild {
         data.forEach(ele -> {
             Map<String, Object> d = new HashMap<>();
             for (int i = 0; i < fields.size(); i++) {
-                if (CollectionUtils.isNotEmpty(desensitizationList) && desensitizationList.contains(fields.get(i).getDataeaseName())) {
-                    d.put(fields.get(i).getDataeaseName(), ColumnPermissionConstants.Desensitization_desc);
+                if (CollectionUtils.isNotEmpty(desensitizationList) && desensitizationList.contains(fields.get(i).getDatainsName())) {
+                    d.put(fields.get(i).getDatainsName(), ColumnPermissionConstants.Desensitization_desc);
                     continue;
                 }
 
                 ChartViewFieldDTO chartViewFieldDTO = fields.get(i);
                 if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1) {
-                    d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
+                    d.put(fields.get(i).getDatainsName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
                 } else if (chartViewFieldDTO.getDeType() == 2 || chartViewFieldDTO.getDeType() == 3) {
-                    d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? null : new BigDecimal(ele[i]).setScale(2, RoundingMode.HALF_UP));
+                    d.put(fields.get(i).getDatainsName(), StringUtils.isEmpty(ele[i]) ? null : new BigDecimal(ele[i]).setScale(2, RoundingMode.HALF_UP));
                 }
             }
             tableRow.add(d);

@@ -84,7 +84,7 @@ export default {
   methods: {
     exportExcel() {
       const excelHeader = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.name)
-      const excelHeaderKeys = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.dataeaseName)
+      const excelHeaderKeys = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.datainsName)
       const excelData = JSON.parse(JSON.stringify(this.chart.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       const excelName = this.chart.name
       export_json_to_excel(excelHeader, excelData, excelName)

@@ -55,7 +55,7 @@ public class DorisDDLProvider extends DDLProviderImpl {
     private String createDorisTableColumnSql(final List<DatasetTableField> datasetTableFields) {
         StringBuilder Column_Fields = new StringBuilder("dataease_uuid  varchar(50), `");
         for (DatasetTableField datasetTableField : datasetTableFields) {
-            Column_Fields.append(datasetTableField.getDataeaseName()).append("` ");
+            Column_Fields.append(datasetTableField.getDatainsName()).append("` ");
             Integer size = datasetTableField.getSize() * 3;
             if (datasetTableField.getSize() == 0 || datasetTableField.getSize() > 65533 || datasetTableField.getSize() * 3 > 65533) {
                 size = 65533;

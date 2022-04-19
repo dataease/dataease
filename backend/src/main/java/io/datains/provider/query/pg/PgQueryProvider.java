@@ -699,7 +699,7 @@ public class PgQueryProvider extends QueryProvider {
     public String createRawQuerySQL(String table, List<DatasetTableField> fields, Datasource ds) {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("\"").append(f.getOriginName()).append("\" AS ").append(f.getDataeaseName());
+            stringBuilder.append("\"").append(f.getOriginName()).append("\" AS ").append(f.getDatainsName());
             return stringBuilder.toString();
         }).toArray(String[]::new);
         if (ds != null) {

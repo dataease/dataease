@@ -35,8 +35,8 @@ public class DataSetTableFieldsService {
         if (StringUtils.isEmpty(datasetTableField.getId())) {
             datasetTableField.setId(UUID.randomUUID().toString());
             // 若datainsname为空，则用MD5(id)作为datainsname
-            if (StringUtils.isEmpty(datasetTableField.getDataeaseName())) {
-                datasetTableField.setDataeaseName(TableUtils.columnName(datasetTableField.getId()));
+            if (StringUtils.isEmpty(datasetTableField.getDatainsName())) {
+                datasetTableField.setDatainsName(TableUtils.columnName(datasetTableField.getId()));
             }
             if (ObjectUtils.isEmpty(datasetTableField.getLastSyncTime())) {
                 datasetTableField.setLastSyncTime(System.currentTimeMillis());

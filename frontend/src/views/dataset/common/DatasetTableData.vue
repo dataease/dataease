@@ -12,9 +12,9 @@
     >
       <ux-table-column
         v-for="field in fields"
-        :key="field.dataeaseName"
+        :key="field.datainsName"
         min-width="200px"
-        :field="field.dataeaseName"
+        :field="field.datainsName"
         :resizable="true"
       >
         <template slot="header">

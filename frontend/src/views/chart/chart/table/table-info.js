@@ -35,23 +35,23 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
     const removeField = []
     for (let i = 0; i < chart.drillFilters.length; i++) {
       const ele = chart.drillFilters[i].datasetTableField
-      removeField.push(ele.dataeaseName)
+      removeField.push(ele.datainsName)
     }
 
     // build field
     fields.forEach(ele => {
-      if (removeField.indexOf(ele.dataeaseName) < 0) {
+      if (removeField.indexOf(ele.datainsName) < 0) {
         // 用下钻字段替换当前字段
-        if (drillExp.dataeaseName === ele.dataeaseName) {
-          columns.push(drillField.dataeaseName)
+        if (drillExp.datainsName === ele.datainsName) {
+          columns.push(drillField.datainsName)
           meta.push({
-            field: drillField.dataeaseName,
+            field: drillField.datainsName,
             name: drillField.name
           })
         } else {
-          columns.push(ele.dataeaseName)
+          columns.push(ele.datainsName)
           meta.push({
-            field: ele.dataeaseName,
+            field: ele.datainsName,
             name: ele.name
           })
         }
@@ -59,9 +59,9 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
     })
   } else {
     fields.forEach(ele => {
-      columns.push(ele.dataeaseName)
+      columns.push(ele.datainsName)
       meta.push({
-        field: ele.dataeaseName,
+        field: ele.datainsName,
         name: ele.name
       })
     })
@@ -132,23 +132,23 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
     const removeField = []
     for (let i = 0; i < chart.drillFilters.length; i++) {
       const ele = chart.drillFilters[i].datasetTableField
-      removeField.push(ele.dataeaseName)
+      removeField.push(ele.datainsName)
     }
 
     // build field
     fields.forEach(ele => {
-      if (removeField.indexOf(ele.dataeaseName) < 0) {
+      if (removeField.indexOf(ele.datainsName) < 0) {
         // 用下钻字段替换当前字段
-        if (drillExp.dataeaseName === ele.dataeaseName) {
-          columns.push(drillField.dataeaseName)
+        if (drillExp.datainsName === ele.datainsName) {
+          columns.push(drillField.datainsName)
           meta.push({
-            field: drillField.dataeaseName,
+            field: drillField.datainsName,
             name: drillField.name
           })
         } else {
-          columns.push(ele.dataeaseName)
+          columns.push(ele.datainsName)
           meta.push({
-            field: ele.dataeaseName,
+            field: ele.datainsName,
             name: ele.name
           })
         }
@@ -156,9 +156,9 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
     })
   } else {
     fields.forEach(ele => {
-      columns.push(ele.dataeaseName)
+      columns.push(ele.datainsName)
       meta.push({
-        field: ele.dataeaseName,
+        field: ele.datainsName,
         name: ele.name
       })
     })
@@ -206,13 +206,13 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
   const valueFields = JSON.parse(chart.yaxis)
   const c = []; const r = []; const v = []
   columnFields.forEach(ele => {
-    c.push(ele.dataeaseName)
+    c.push(ele.datainsName)
   })
   rowFields.forEach(ele => {
-    r.push(ele.dataeaseName)
+    r.push(ele.datainsName)
   })
   valueFields.forEach(ele => {
-    v.push(ele.dataeaseName)
+    v.push(ele.datainsName)
   })
 
   // fields
@@ -239,23 +239,23 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
     const removeField = []
     for (let i = 0; i < chart.drillFilters.length; i++) {
       const ele = chart.drillFilters[i].datasetTableField
-      removeField.push(ele.dataeaseName)
+      removeField.push(ele.datainsName)
     }
 
     // build field
     fields.forEach(ele => {
-      if (removeField.indexOf(ele.dataeaseName) < 0) {
+      if (removeField.indexOf(ele.datainsName) < 0) {
         // 用下钻字段替换当前字段
-        if (drillExp.dataeaseName === ele.dataeaseName) {
-          columns.push(drillField.dataeaseName)
+        if (drillExp.datainsName === ele.datainsName) {
+          columns.push(drillField.datainsName)
           meta.push({
-            field: drillField.dataeaseName,
+            field: drillField.datainsName,
             name: drillField.name
           })
         } else {
-          columns.push(ele.dataeaseName)
+          columns.push(ele.datainsName)
           meta.push({
-            field: ele.dataeaseName,
+            field: ele.datainsName,
             name: ele.name
           })
         }
@@ -263,9 +263,9 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
     })
   } else {
     fields.forEach(ele => {
-      columns.push(ele.dataeaseName)
+      columns.push(ele.datainsName)
       meta.push({
-        field: ele.dataeaseName,
+        field: ele.datainsName,
         name: ele.name
       })
     })

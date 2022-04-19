@@ -173,7 +173,7 @@ public class ExtractDataService {
                     Long execTime = System.currentTimeMillis();
                     if (!engineService.isSimpleMode()) {
                         generateTransFile("all_scope", datasetTable, datasource, datasetTableFields, null);
-                        generateJobFile("all_scope", datasetTable, datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(",")));
+                        generateJobFile("all_scope", datasetTable, datasetTableFields.stream().map(DatasetTableField::getDatainsName).collect(Collectors.joining(",")));
                         extractData(datasetTable, "all_scope");
                     } else {
                         extractExcelDataForSimpleMode(datasetTable, "all_scope");
@@ -188,7 +188,7 @@ public class ExtractDataService {
                         for (DatasetTableField oldFiled : oldFileds) {
                             boolean delete = true;
                             for (DatasetTableField datasetTableField : datasetTableFields) {
-                                if (oldFiled.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldFiled.getDeExtractType().equals(datasetTableField.getDeExtractType())) {
+                                if (oldFiled.getDatainsName().equalsIgnoreCase(datasetTableField.getDatainsName()) && oldFiled.getDeExtractType().equals(datasetTableField.getDeExtractType())) {
                                     delete = false;
                                 }
                             }
@@ -200,7 +200,7 @@ public class ExtractDataService {
                         for (DatasetTableField datasetTableField : datasetTableFields) {
                             boolean add = true;
                             for (DatasetTableField oldFiled : oldFileds) {
-                                if (oldFiled.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldFiled.getDeExtractType().equals(datasetTableField.getDeExtractType())) {
+                                if (oldFiled.getDatainsName().equalsIgnoreCase(datasetTableField.getDatainsName()) && oldFiled.getDeExtractType().equals(datasetTableField.getDeExtractType())) {
                                     add = false;
                                 }
                             }
@@ -226,7 +226,7 @@ public class ExtractDataService {
                     Long execTime = System.currentTimeMillis();
                     if (!engineService.isSimpleMode()) {
                         generateTransFile("incremental_add", datasetTable, datasource, datasetTableFields, null);
-                        generateJobFile("incremental_add", datasetTable, datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(",")));
+                        generateJobFile("incremental_add", datasetTable, datasetTableFields.stream().map(DatasetTableField::getDatainsName).collect(Collectors.joining(",")));
                         extractData(datasetTable, "incremental_add");
                     } else {
                         extractExcelDataForSimpleMode(datasetTable, "incremental_add");
@@ -439,7 +439,7 @@ public class ExtractDataService {
 
         Datasource engine = engineService.getDeEngine();
         DorisConfiguration dorisConfiguration = new Gson().fromJson(engine.getConfiguration(), DorisConfiguration.class);
-        String columns = datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(",")) + ",dataease_uuid";
+        String columns = datasetTableFields.stream().map(DatasetTableField::getDatainsName).collect(Collectors.joining(",")) + ",dataease_uuid";
 
         String dataFile = null;
         String script = null;
@@ -534,7 +534,7 @@ public class ExtractDataService {
 
     private void extractDataByKettle(DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String extractType, String selectSQL) throws Exception {
         generateTransFile(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
-        generateJobFile(extractType, datasetTable, datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(",")));
+        generateJobFile(extractType, datasetTable, datasetTableFields.stream().map(DatasetTableField::getDatainsName).collect(Collectors.joining(",")));
         extractData(datasetTable, extractType);
     }
 
@@ -1036,7 +1036,7 @@ public class ExtractDataService {
         ExcelInputField[] fields = new ExcelInputField[datasetTableFields.size()];
         for (int i = 0; i < datasetTableFields.size(); i++) {
             ExcelInputField field = new ExcelInputField();
-            field.setName(datasetTableFields.get(i).getDataeaseName());
+            field.setName(datasetTableFields.get(i).getDatainsName());
             if (datasetTableFields.get(i).getDeExtractType() == 1) {
                 field.setType("String");
                 field.setFormat("yyyy-MM-dd HH:mm:ss");
@@ -1079,7 +1079,7 @@ public class ExtractDataService {
             TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
             for (int i = 0; i < datasetTableFields.size(); i++) {
                 TextFileField textFileField = new TextFileField();
-                textFileField.setName(datasetTableFields.get(i).getDataeaseName());
+                textFileField.setName(datasetTableFields.get(i).getDatainsName());
                 if (datasetTableFields.get(i).getDeExtractType().equals(DeTypeConstants.DE_TIME)) {
                     textFileField.setType("String");
                     textFileField.setFormat("yyyy-MM-dd HH:mm:ss");
@@ -1099,7 +1099,7 @@ public class ExtractDataService {
             TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
             for (int i = 0; i < datasetTableFields.size(); i++) {
                 TextFileField textFileField = new TextFileField();
-                textFileField.setName(datasetTableFields.get(i).getDataeaseName());
+                textFileField.setName(datasetTableFields.get(i).getDatainsName());
                 if (datasetTableFields.get(i).getDeExtractType().equals(DeTypeConstants.DE_INT)) {
                     textFileField.setType("Integer");
                     textFileField.setFormat("0");
@@ -1131,7 +1131,7 @@ public class ExtractDataService {
 
         for (DatasetTableField datasetTableField : datasetTableFields) {
             if (datasetTableField.getDeExtractType().equals(DeTypeConstants.DE_BINARY)) {
-                handleBinaryTypeCode.append("\n").append(handleBinaryType.replace("FIELD", datasetTableField.getDataeaseName()));
+                handleBinaryTypeCode.append("\n").append(handleBinaryType.replace("FIELD", datasetTableField.getDatainsName()));
             }
         }
 
@@ -1147,7 +1147,7 @@ public class ExtractDataService {
         if (datasourceType.equals(DatasourceTypes.oracle) || datasourceType.equals(DatasourceTypes.db2)) {
             Column_Fields = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.joining(","));
         } else {
-            Column_Fields = datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(","));
+            Column_Fields = datasetTableFields.stream().map(DatasetTableField::getDatainsName).collect(Collectors.joining(","));
         }
 
         if (datasourceType.equals(DatasourceTypes.excel)) {

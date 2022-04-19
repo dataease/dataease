@@ -232,7 +232,7 @@ export default {
       if (this.chart.drill) {
         field = drillFields[this.chart.drillFilters.length]
         // check click field is drill?
-        if (field.dataeaseName !== meta.valueField) {
+        if (field.datainsName !== meta.valueField) {
           return
         }
       } else {

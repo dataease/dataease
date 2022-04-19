@@ -215,7 +215,7 @@ public class EmailService {
             try {
                 helper = new MimeMessageHelper(mimeMessage, true);
                 helper.setFrom(javaMailSender.getUsername());
-                helper.setSubject("DataEase测试邮件 ");
+                helper.setSubject("DataIns测试邮件 ");
                 helper.setText("这是一封测试邮件，邮件发送成功", true);
                 helper.setTo(recipients);
                 javaMailSender.send(mimeMessage);

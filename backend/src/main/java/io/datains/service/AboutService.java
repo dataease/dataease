@@ -20,7 +20,7 @@ import java.util.Optional;
 @Service
 public class AboutService {
     private static final String BUILD_VERSION = "/opt/datains/conf/version";
-    private static final String product = "DataEase";
+    private static final String product = "DataIns";
 
     @Resource
     private DefaultLicenseService defaultLicenseService;

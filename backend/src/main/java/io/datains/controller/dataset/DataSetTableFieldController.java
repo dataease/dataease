@@ -75,7 +75,7 @@ public class DataSetTableFieldController {
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
         List<String> desensitizationList = new ArrayList<>();
         fields = permissionService.filterColumnPermissons(fields, desensitizationList, tableId, null);
-        fields = fields.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName())).collect(Collectors.toList());
+        fields = fields.stream().filter(item -> !desensitizationList.contains(item.getDatainsName())).collect(Collectors.toList());
         return fields;
     }
 

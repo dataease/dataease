@@ -384,73 +384,73 @@ public class DatasetTableFieldExample {
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameIsNull() {
-            addCriterion("dataease_name is null");
+        public Criteria andDatainsNameIsNull() {
+            addCriterion("datains_name is null");
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameIsNotNull() {
-            addCriterion("dataease_name is not null");
+        public Criteria andDatainsNameIsNotNull() {
+            addCriterion("datains_name is not null");
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameEqualTo(String value) {
-            addCriterion("dataease_name =", value, "dataeaseName");
+        public Criteria andDatainsNameEqualTo(String value) {
+            addCriterion("datains_name =", value, "datainsName");
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameNotEqualTo(String value) {
-            addCriterion("dataease_name <>", value, "dataeaseName");
+        public Criteria andDatainsNameNotEqualTo(String value) {
+            addCriterion("datains_name <>", value, "datainsName");
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameGreaterThan(String value) {
-            addCriterion("dataease_name >", value, "dataeaseName");
+        public Criteria andDatainsNameGreaterThan(String value) {
+            addCriterion("datains_name >", value, "datainsName");
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameGreaterThanOrEqualTo(String value) {
-            addCriterion("dataease_name >=", value, "dataeaseName");
+        public Criteria andDatainsNameGreaterThanOrEqualTo(String value) {
+            addCriterion("datains_name >=", value, "datainsName");
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameLessThan(String value) {
-            addCriterion("dataease_name <", value, "dataeaseName");
+        public Criteria andDatainsNameLessThan(String value) {
+            addCriterion("datains_name <", value, "datainsName");
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameLessThanOrEqualTo(String value) {
-            addCriterion("dataease_name <=", value, "dataeaseName");
+        public Criteria andDatainsNameLessThanOrEqualTo(String value) {
+            addCriterion("datains_name <=", value, "datainsName");
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameLike(String value) {
-            addCriterion("dataease_name like", value, "dataeaseName");
+        public Criteria andDatainsNameLike(String value) {
+            addCriterion("datains_name like", value, "datainsName");
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameNotLike(String value) {
-            addCriterion("dataease_name not like", value, "dataeaseName");
+        public Criteria andDatainsNameNotLike(String value) {
+            addCriterion("datains_name not like", value, "datainsName");
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameIn(List<String> values) {
-            addCriterion("dataease_name in", values, "dataeaseName");
+        public Criteria andDatainsNameIn(List<String> values) {
+            addCriterion("datains_name in", values, "datainsName");
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameNotIn(List<String> values) {
-            addCriterion("dataease_name not in", values, "dataeaseName");
+        public Criteria andDatainsNameNotIn(List<String> values) {
+            addCriterion("datains_name not in", values, "datainsName");
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameBetween(String value1, String value2) {
-            addCriterion("dataease_name between", value1, value2, "dataeaseName");
+        public Criteria andDatainsNameBetween(String value1, String value2) {
+            addCriterion("datains_name between", value1, value2, "datainsName");
             return (Criteria) this;
         }
 
-        public Criteria andDataeaseNameNotBetween(String value1, String value2) {
-            addCriterion("dataease_name not between", value1, value2, "dataeaseName");
+        public Criteria andDatainsNameNotBetween(String value1, String value2) {
+            addCriterion("datains_name not between", value1, value2, "datainsName");
             return (Criteria) this;
         }
 

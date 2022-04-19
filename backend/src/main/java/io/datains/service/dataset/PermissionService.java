@@ -87,7 +87,7 @@ public class PermissionService {
                 result.add(field);
             }else {
                 if(!permissions.contains(ColumnPermissionConstants.Prohibit)){
-                    desensitizationList.add(field.getDataeaseName());
+                    desensitizationList.add(field.getDatainsName());
                     result.add(field);
                 }
             }

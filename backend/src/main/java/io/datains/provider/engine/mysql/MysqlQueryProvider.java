@@ -96,9 +96,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(f.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDatainsName());
                 } else {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDatainsName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 String fieldName = "";
@@ -192,9 +192,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDatainsName());
                 } else {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDatainsName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -221,9 +221,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDatainsName());
                 } else {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDatainsName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -295,12 +295,12 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDatainsName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(MysqlConstants.CAST, String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName()), MysqlConstants.DEFAULT_FLOAT_FORMAT);
+                        originField = String.format(MysqlConstants.CAST, String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDatainsName()), MysqlConstants.DEFAULT_FLOAT_FORMAT);
                     } else {
-                        originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
+                        originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDatainsName());
                     }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
@@ -381,9 +381,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDatainsName());
                 } else {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDatainsName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -410,9 +410,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDatainsName());
                 } else {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDatainsName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -489,9 +489,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDatainsName());
                 } else {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDatainsName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
@@ -521,9 +521,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDatainsName());
                 } else {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDatainsName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -607,9 +607,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDatainsName());
                 } else {
-                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDataeaseName());
+                    originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getDatainsName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -680,7 +680,7 @@ public class MysqlQueryProvider extends QueryProvider {
     public String createRawQuerySQL(String table, List<DatasetTableField> fields, Datasource ds) {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("`").append(f.getDataeaseName()).append("` AS ").append(f.getDataeaseName());
+            stringBuilder.append("`").append(f.getDatainsName()).append("` AS ").append(f.getDatainsName());
             return stringBuilder.toString();
         }).toArray(String[]::new);
         return MessageFormat.format("SELECT {0} FROM {1} ORDER BY null", StringUtils.join(array, ","), table);
@@ -759,9 +759,9 @@ public class MysqlQueryProvider extends QueryProvider {
                 // 解析origin name中有关联的字段生成sql表达式
                 originName = calcFieldRegex(field.getOriginName(), tableObj);
             } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDataeaseName());
+                originName = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDatainsName());
             } else {
-                originName = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDataeaseName());
+                originName = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDatainsName());
             }
 
             if (field.getDeType() == 1) {
@@ -837,7 +837,7 @@ public class MysqlQueryProvider extends QueryProvider {
     }
 
     private String reflectFieldName(DatasetTableField field) {
-        return field.getDataeaseName();
+        return field.getDatainsName();
     }
 
     public String transExtFilterList(SQLObj tableObj, List<ChartExtFilterRequest> requestList) {
@@ -860,9 +860,9 @@ public class MysqlQueryProvider extends QueryProvider {
                 // 解析origin name中有关联的字段生成sql表达式
                 originName = calcFieldRegex(field.getOriginName(), tableObj);
             } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDataeaseName());
+                originName = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDatainsName());
             } else {
-                originName = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDataeaseName());
+                originName = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getDatainsName());
             }
 
             if (field.getDeType() == 1) {
@@ -1027,7 +1027,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
     private SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {
         String fieldName = "";
-        if (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*")) {
+        if (StringUtils.equalsIgnoreCase(y.getDatainsName(), "*")) {
             fieldName = MysqlConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             fieldName = String.format(MysqlConstants.AGG_FIELD, y.getSummary(), originField);
@@ -1101,7 +1101,7 @@ public class MysqlQueryProvider extends QueryProvider {
         List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
         for (DatasetTableField ele : calcFields) {
             originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                    String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getDataeaseName()));
+                    String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getDatainsName()));
         }
         return originField;
     }

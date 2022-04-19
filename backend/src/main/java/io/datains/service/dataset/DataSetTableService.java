@@ -464,7 +464,7 @@ public class DataSetTableService {
                 .tableId(dataSetTableRequest.getId())
                 .originName("*")
                 .name(Translator.get("i18n_chart_count"))
-                .dataeaseName("*")
+                .datainsName("*")
                 .type("INT")
                 .checked(true)
                 .columnIndex(999)
@@ -509,7 +509,7 @@ public class DataSetTableService {
             return map;
         }
 
-        String[] fieldArray = fields.stream().map(DatasetTableField::getDataeaseName).toArray(String[]::new);
+        String[] fieldArray = fields.stream().map(DatasetTableField::getDatainsName).toArray(String[]::new);
 
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
 
@@ -946,7 +946,7 @@ public class DataSetTableService {
                 for (TableField tableField : fields) {
                     if (StringUtils.equalsIgnoreCase(tableField.getFieldName(),
                             TableUtils.fieldName(
-                                    datasetTableField.getTableId() + "_" + datasetTableField.getDataeaseName()))
+                                    datasetTableField.getTableId() + "_" + datasetTableField.getDatainsName()))
                             || StringUtils.equalsIgnoreCase(tableField.getFieldName(),
                             TableUtils.fieldNameShort(datasetTableField.getTableId() + "_"
                                     + datasetTableField.getOriginName()))) {
@@ -1010,7 +1010,7 @@ public class DataSetTableService {
                 for (TableField tableField : fields) {
                     if (StringUtils.equalsIgnoreCase(tableField.getFieldName(),
                             TableUtils.fieldName(
-                                    datasetTableField.getTableId() + "_" + datasetTableField.getDataeaseName()))
+                                    datasetTableField.getTableId() + "_" + datasetTableField.getDatainsName()))
                             || StringUtils.equalsIgnoreCase(tableField.getFieldName(), TableUtils.fieldName(
                             datasetTableField.getTableId() + "_" + datasetTableField.getOriginName()))) {
                         tableField.setRemarks(datasetTableField.getName());
@@ -1041,8 +1041,8 @@ public class DataSetTableService {
                 throw new RuntimeException(Translator.get("i18n_cst_ds_tb_or_field_deleted"));
             }
             String[] array = fields.stream()
-                    .map(f -> table + "." + f.getDataeaseName() + " AS "
-                            + TableUtils.fieldName(ele.getTableId() + "_" + f.getDataeaseName()))
+                    .map(f -> table + "." + f.getDatainsName() + " AS "
+                            + TableUtils.fieldName(ele.getTableId() + "_" + f.getDatainsName()))
                     .toArray(String[]::new);
             customInfo.put(table, array);
         });
@@ -1071,10 +1071,10 @@ public class DataSetTableService {
                                 .append(TableUtils.tableName(dto.getTargetTableId()))
                                 .append(" ON ")
                                 .append(TableUtils.tableName(dto.getSourceTableId())).append(".")
-                                .append(sourceField.getDataeaseName())
+                                .append(sourceField.getDatainsName())
                                 .append(" = ")
                                 .append(TableUtils.tableName(dto.getTargetTableId())).append(".")
-                                .append(targetField.getDataeaseName());
+                                .append(targetField.getDatainsName());
                     }
                 }
             }
@@ -1214,8 +1214,8 @@ public class DataSetTableService {
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(unionDTO.getCurrentDsField());
 
             String[] array = fields.stream()
-                    .map(f -> table + "." + f.getDataeaseName() + " AS "
-                            + TableUtils.fieldName(tableId + "_" + f.getDataeaseName()))
+                    .map(f -> table + "." + f.getDatainsName() + " AS "
+                            + TableUtils.fieldName(tableId + "_" + f.getDatainsName()))
                     .toArray(String[]::new);
             checkedInfo.put(table, array);
             checkedFields.addAll(fields);
@@ -1258,10 +1258,10 @@ public class DataSetTableService {
                             .get(unionItemDTO.getCurrentField().getId());
 
                     join.append(TableUtils.tableName(parentTable.getId())).append(".")
-                            .append(parentField.getDataeaseName())
+                            .append(parentField.getDatainsName())
                             .append(" = ")
                             .append(TableUtils.tableName(currentTable.getId())).append(".")
-                            .append(currentField.getDataeaseName());
+                            .append(currentField.getDatainsName());
                     if (i < unionParamDTO.getUnionFields().size() - 1) {
                         join.append(" AND ");
                     }
@@ -1303,8 +1303,8 @@ public class DataSetTableService {
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(unionDTO.getCurrentDsField());
 
             String[] array = fields.stream()
-                    .map(f -> table + "." + f.getDataeaseName() + " AS "
-                            + TableUtils.fieldName(tableId + "_" + f.getDataeaseName()))
+                    .map(f -> table + "." + f.getDatainsName() + " AS "
+                            + TableUtils.fieldName(tableId + "_" + f.getDatainsName()))
                     .toArray(String[]::new);
             checkedInfo.put(table, array);
             checkedFields.addAll(fields);
@@ -1473,7 +1473,7 @@ public class DataSetTableService {
                 datasetTableField.setTableId(datasetTableId);
                 datasetTableField.setOriginName(filed.getFieldName());
                 datasetTableField.setName(filed.getRemarks());
-                datasetTableField.setDataeaseName(TableUtils.columnName(filed.getFieldName()));
+                datasetTableField.setDatainsName(TableUtils.columnName(filed.getFieldName()));
                 datasetTableField.setType(filed.getFieldType());
                 datasetTableField.setDeType(transFieldType(filed.getFieldType()));
                 datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
@@ -1522,8 +1522,8 @@ public class DataSetTableService {
                 list.forEach(ele -> {
                     List<DatasetTableField> listByIds = dataSetTableFieldsService
                             .getListByIdsEach(ele.getCheckedFields());
-                    listByIds.forEach(f -> f.setDataeaseName(
-                            TableUtils.fieldName(ele.getTableId() + "_" + f.getDataeaseName())));
+                    listByIds.forEach(f -> f.setDatainsName(
+                            TableUtils.fieldName(ele.getTableId() + "_" + f.getDatainsName())));
                     fieldList.addAll(listByIds);
                 });
                 for (int i = 0; i < fieldList.size(); i++) {
@@ -1593,7 +1593,7 @@ public class DataSetTableService {
                 for (DatasetTableField field : fieldList) {
                     for (TableField tableField : fields) {
                         if (StringUtils.equalsIgnoreCase(
-                                TableUtils.fieldName(field.getTableId() + "_" + field.getDataeaseName()),
+                                TableUtils.fieldName(field.getTableId() + "_" + field.getDatainsName()),
                                 tableField.getFieldName())) {
                             tableField.setRemarks(field.getName());
                             break;
@@ -1657,9 +1657,9 @@ public class DataSetTableService {
                     datasetTableField.setOriginName(filed.getFieldName());
                     datasetTableField.setName(filed.getRemarks());
                     if (datasetTable.getMode() == 1 && StringUtils.equalsIgnoreCase("union", datasetTable.getType())) {
-                        datasetTableField.setDataeaseName(filed.getFieldName());
+                        datasetTableField.setDatainsName(filed.getFieldName());
                     } else {
-                        datasetTableField.setDataeaseName(TableUtils.columnName(filed.getFieldName()));
+                        datasetTableField.setDatainsName(TableUtils.columnName(filed.getFieldName()));
                     }
                     datasetTableField.setType(filed.getFieldType());
                     if (ObjectUtils.isEmpty(ds)) {

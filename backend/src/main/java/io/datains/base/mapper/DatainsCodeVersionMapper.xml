@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.datains.base.mapper.DataeaseCodeVersionMapper">
-  <resultMap id="BaseResultMap" type="io.datains.base.domain.DataeaseCodeVersion">
+<mapper namespace="io.datains.base.mapper.DatainsCodeVersionMapper">
+  <resultMap id="BaseResultMap" type="io.datains.base.domain.DatainsCodeVersion">
     <id column="installed_rank" jdbcType="INTEGER" property="installedRank" />
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="installed_on" jdbcType="TIMESTAMP" property="installedOn" />
@@ -68,7 +68,7 @@
   <sql id="Base_Column_List">
     installed_rank, description, installed_on, success
   </sql>
-  <select id="selectByExample" parameterType="io.datains.base.domain.DataeaseCodeVersionExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="io.datains.base.domain.DatainsCodeVersionExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -92,19 +92,19 @@
     delete from dataease_code_version
     where installed_rank = #{installedRank,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="io.datains.base.domain.DataeaseCodeVersionExample">
+  <delete id="deleteByExample" parameterType="io.datains.base.domain.DatainsCodeVersionExample">
     delete from dataease_code_version
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="io.datains.base.domain.DataeaseCodeVersion">
+  <insert id="insert" parameterType="io.datains.base.domain.DatainsCodeVersion">
     insert into dataease_code_version (installed_rank, description, installed_on, 
       success)
     values (#{installedRank,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}, #{installedOn,jdbcType=TIMESTAMP}, 
       #{success,jdbcType=BIT})
   </insert>
-  <insert id="insertSelective" parameterType="io.datains.base.domain.DataeaseCodeVersion">
+  <insert id="insertSelective" parameterType="io.datains.base.domain.DatainsCodeVersion">
     insert into dataease_code_version
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="installedRank != null">
@@ -135,7 +135,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="io.datains.base.domain.DataeaseCodeVersionExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="io.datains.base.domain.DatainsCodeVersionExample" resultType="java.lang.Long">
     select count(*) from dataease_code_version
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -171,7 +171,7 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="io.datains.base.domain.DataeaseCodeVersion">
+  <update id="updateByPrimaryKeySelective" parameterType="io.datains.base.domain.DatainsCodeVersion">
     update dataease_code_version
     <set>
       <if test="description != null">
@@ -186,7 +186,7 @@
     </set>
     where installed_rank = #{installedRank,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="io.datains.base.domain.DataeaseCodeVersion">
+  <update id="updateByPrimaryKey" parameterType="io.datains.base.domain.DatainsCodeVersion">
     update dataease_code_version
     set description = #{description,jdbcType=VARCHAR},
       installed_on = #{installedOn,jdbcType=TIMESTAMP},

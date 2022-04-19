@@ -5,7 +5,7 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class DataeaseCodeVersion implements Serializable {
+public class DatainsCodeVersion implements Serializable {
     private Integer installedRank;
 
     private String description;
