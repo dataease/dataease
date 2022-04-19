@@ -100,9 +100,7 @@ export function panelInit(componentData, componentStyle) {
     item.sizey = (item.sizey || 5)
     item.mobileSelected = (item.mobileSelected || false)
     item.mobileStyle = (item.mobileStyle || deepCopy(BASE_MOBILE_STYLE))
-    if (item.type === 'picture-add') {
-      item.hyperlinks = (item.hyperlinks || HYPERLINKS)
-    }
+    item.hyperlinks = (item.hyperlinks || deepCopy(HYPERLINKS))
     item.commonBackground = item.commonBackground || deepCopy(COMMON_BACKGROUND_NONE)
   })
   // 将data 和 style 数据设置到全局store中

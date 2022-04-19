@@ -379,6 +379,7 @@ export default {
       this.canvasStyleData.auxiliaryMatrix = !this.canvasStyleData.auxiliaryMatrix
     },
     showGridChange() {
+      this.$store.state.styleChangeTimes++
       this.canvasStyleData.aidedDesign.showGrid = !this.canvasStyleData.aidedDesign.showGrid
     },
     // 启用移动端布局

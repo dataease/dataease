@@ -29,6 +29,11 @@
       <span :title="$t('panel.switch_picture')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='picture-add'" class="icon iconfont icon-genghuan" @click.stop="goFile" />
       </span>
+      <span :title="$t('panel.jump')">
+        <a v-if="showJumpFlag" :title="curComponent.hyperlinks.content " :target="curComponent.hyperlinks.openMode " :href="curComponent.hyperlinks.content ">
+          <i class="icon iconfont icon-com-jump" />
+        </a>
+      </span>
     </div>
   </div>
 </template>
@@ -39,9 +44,10 @@ import bus from '@/utils/bus'
 import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 import LinkageField from '@/components/canvas/components/Editor/LinkageField'
 import toast from '@/components/canvas/utils/toast'
+import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
 
 export default {
-  components: { SettingMenu, LinkageField },
+  components: { Hyperlinks, SettingMenu, LinkageField },
 
   props: {
     element: {
@@ -78,6 +84,9 @@ export default {
   mounted() {
   },
   computed: {
+    showJumpFlag() {
+      return this.curComponent && this.curComponent.hyperlinks && this.curComponent.hyperlinks.enable
+    },
     // 联动区域按钮显示
     linkageAreaShow() {
       return this.linkageSettingStatus && this.element !== this.curLinkageView && this.element.type === 'view'
@@ -146,6 +155,10 @@ export default {
     },
     showViewDetails() {
       this.$emit('showViewDetails')
+    },
+    componentJump() {
+      window.open(url, '_blank')
+      // this.$emit('showViewDetails')
     },
     auxiliaryMatrixChange() {
       if (this.curComponent.auxiliaryMatrix) {
