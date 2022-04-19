@@ -1417,6 +1417,7 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    hyperlinks: 'Hyperlinks',
     is_live: 'Is Live',
     yes: 'Yes',
     no: 'No',

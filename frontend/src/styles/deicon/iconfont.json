@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "6156146",
+      "name": "超链接",
+      "font_class": "chaolianjie1",
+      "unicode": "e6e4",
+      "unicode_decimal": 59108
+    },
+    {
+      "icon_id": "11839649",
+      "name": "跳转",
+      "font_class": "com-jump",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
+      "icon_id": "9595900",
+      "name": "跳转",
+      "font_class": "component-tiaozhuan",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
       "icon_id": "4674763",
       "name": "网格\表格",
       "font_class": "wangge-open",

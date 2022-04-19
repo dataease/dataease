@@ -1,35 +1,27 @@
 <template>
-
-  <el-popover
-    ref="popover"
-    width="340"
-    trigger="click"
-  >
-    <el-row>
-      <el-form ref="form" size="mini" label-width="70px">
-        <el-form-item :label="$t('panel.enable_jump')">
-          <el-switch v-model="linkInfo.enable" size="mini" />
-          <span v-show="linkInfo.enable" style="color: #909399; font-size: 8px;margin-left: 3px">
-            Tips:{{ $t('panel.link_open_tips') }}
-          </span>
-        </el-form-item>
-        <el-form-item :label="$t('panel.open_mode')">
-          <el-radio-group v-model="linkInfo.openMode" :disabled="!linkInfo.enable">
-            <el-radio label="_blank">{{ $t('panel.new_window') }}</el-radio>
-            <el-radio label="_self">{{ $t('panel.now_window') }}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item :label="$t('panel.hyperLinks')">
-          <el-input v-model="linkInfo.content" :disabled="!linkInfo.enable" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSubmit">{{ $t('panel.confirm') }}</el-button>
-          <el-button @click="onClose">{{ $t('panel.cancel') }}</el-button>
-        </el-form-item>
-      </el-form>
-    </el-row>
-    <i slot="reference" class="icon iconfont icon-font icon-chaolianjie1" />
-  </el-popover>
+  <el-row>
+    <el-form ref="form" size="mini" label-width="70px">
+      <el-form-item :label="$t('panel.enable_jump')">
+        <el-switch v-model="linkInfo.enable" size="mini" />
+        <span v-show="linkInfo.enable" style="color: #909399; font-size: 8px;margin-left: 3px">
+          Tips:{{ $t('panel.link_open_tips') }}
+        </span>
+      </el-form-item>
+      <el-form-item :label="$t('panel.open_mode')">
+        <el-radio-group v-model="linkInfo.openMode" :disabled="!linkInfo.enable">
+          <el-radio label="_blank">{{ $t('panel.new_window') }}</el-radio>
+          <el-radio label="_self">{{ $t('panel.now_window') }}</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item :label="$t('panel.hyperLinks')">
+        <el-input v-model="linkInfo.content" :disabled="!linkInfo.enable" />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="onSubmit">{{ $t('panel.confirm') }}</el-button>
+        <el-button @click="onClose">{{ $t('panel.cancel') }}</el-button>
+      </el-form-item>
+    </el-form>
+  </el-row>
 </template>
 
 <script>
@@ -47,12 +39,11 @@ export default {
   data() {
     return {
       componentType: null,
-      linkageActiveStatus: false,
-      editFilter: [
-        'view',
-        'custom'
-      ]
+      linkageActiveStatus: false
     }
+  },
+  mounted() {
+    this.linkInfo = { ...this.linkInfo }
   },
   computed: {
     ...mapState([
@@ -64,14 +55,10 @@ export default {
       this.linkInfo.content = checkAddHttp(this.linkInfo.content)
       this.curComponent.hyperlinks = deepCopy(this.linkInfo)
       this.$store.state.styleChangeTimes++
-      this.popoverClose()
+      this.onClose()
     },
     onClose() {
-      this.$emit('close')
-      this.popoverClose()
-    },
-    popoverClose() {
-      this.$refs.popover.showPopper = false
+      this.$emit('onClose')
     }
   }
 }

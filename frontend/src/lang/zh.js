@@ -1426,6 +1426,7 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    hyperlinks: '超链接',
     is_live: '是否直播',
     yes: '是',
     no: '否',
