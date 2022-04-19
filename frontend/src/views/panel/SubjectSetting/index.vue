@@ -17,7 +17,7 @@
         <el-collapse-item :title="$t('panel.panel')" name="panel">
           <el-row class="selector-div">
             <background-selector class="attr-selector" />
-            <panel-aided-design class="attr-selector" />
+<!--            <panel-aided-design class="attr-selector" />-->
             <component-gap class="attr-selector" />
             <panel-refresh-time class="attr-selector" />
             <panel-view-result class="attr-selector" />
