@@ -74,7 +74,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from dataease_code_version
+    from datains_code_version
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -85,27 +85,27 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from dataease_code_version
+    from datains_code_version
     where installed_rank = #{installedRank,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from dataease_code_version
+    delete from datains_code_version
     where installed_rank = #{installedRank,jdbcType=INTEGER}
   </delete>
   <delete id="deleteByExample" parameterType="io.datains.base.domain.DatainsCodeVersionExample">
-    delete from dataease_code_version
+    delete from datains_code_version
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="io.datains.base.domain.DatainsCodeVersion">
-    insert into dataease_code_version (installed_rank, description, installed_on, 
+    insert into datains_code_version (installed_rank, description, installed_on,
       success)
     values (#{installedRank,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}, #{installedOn,jdbcType=TIMESTAMP}, 
       #{success,jdbcType=BIT})
   </insert>
   <insert id="insertSelective" parameterType="io.datains.base.domain.DatainsCodeVersion">
-    insert into dataease_code_version
+    insert into datains_code_version
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="installedRank != null">
         installed_rank,
@@ -136,13 +136,13 @@
     </trim>
   </insert>
   <select id="countByExample" parameterType="io.datains.base.domain.DatainsCodeVersionExample" resultType="java.lang.Long">
-    select count(*) from dataease_code_version
+    select count(*) from datains_code_version
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update dataease_code_version
+    update datains_code_version
     <set>
       <if test="record.installedRank != null">
         installed_rank = #{record.installedRank,jdbcType=INTEGER},
@@ -162,7 +162,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update dataease_code_version
+    update datains_code_version
     set installed_rank = #{record.installedRank,jdbcType=INTEGER},
       description = #{record.description,jdbcType=VARCHAR},
       installed_on = #{record.installedOn,jdbcType=TIMESTAMP},
@@ -172,7 +172,7 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="io.datains.base.domain.DatainsCodeVersion">
-    update dataease_code_version
+    update datains_code_version
     <set>
       <if test="description != null">
         description = #{description,jdbcType=VARCHAR},
@@ -187,7 +187,7 @@
     where installed_rank = #{installedRank,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="io.datains.base.domain.DatainsCodeVersion">
-    update dataease_code_version
+    update datains_code_version
     set description = #{description,jdbcType=VARCHAR},
       installed_on = #{installedOn,jdbcType=TIMESTAMP},
       success = #{success,jdbcType=BIT}

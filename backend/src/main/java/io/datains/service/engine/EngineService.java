@@ -164,7 +164,7 @@ public class EngineService {
             jsonObject.put("dataSourceType", "jdbc");
             jsonObject.put("dataBase", env.getProperty("doris.db", "doris"));
             jsonObject.put("username", env.getProperty("doris.user", "root"));
-            jsonObject.put("password", env.getProperty("doris.password", "dataease"));
+            jsonObject.put("password", env.getProperty("doris.password", "datains"));
             jsonObject.put("host", env.getProperty("doris.host", "doris"));
             jsonObject.put("port", env.getProperty("doris.port", "9030"));
             jsonObject.put("httpPort", env.getProperty("doris.httpPort", "8030"));

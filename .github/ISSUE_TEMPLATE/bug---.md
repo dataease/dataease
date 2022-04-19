@@ -7,7 +7,7 @@ assignees: tjlygdx
 
 ---
 
-**DataEase 版本**
+**DataIns 版本**
 
 
 **浏览器版本**

@@ -396,21 +396,21 @@ ALTER TABLE `panel_link_jump_target_view_info`
 ADD COLUMN `copy_from` varchar(255) NULL AFTER `target_field_id`,
 ADD COLUMN `copy_id` varchar(255) NULL AFTER `copy_from`;
 
-DROP TABLE IF EXISTS `dataease_code_version`;
-CREATE TABLE `dataease_code_version` (
+DROP TABLE IF EXISTS `datains_code_version`;
+CREATE TABLE `datains_code_version` (
   `installed_rank` int(11) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   `installed_on` timestamp NULL DEFAULT NULL,
   `success` tinyint(1) NOT NULL,
   PRIMARY KEY (`installed_rank`),
-  KEY `dataease_version_s_idx` (`success`)
+  KEY `datains_version_s_idx` (`success`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of dataease_code_version
+-- Records of datains_code_version
 -- ----------------------------
 BEGIN;
-INSERT INTO `dataease_code_version` VALUES (0, 'init', NULL, 1);
+INSERT INTO `datains_code_version` VALUES (0, 'init', NULL, 1);
 COMMIT;
 
 DELETE FROM `sys_menu` WHERE pid=34;

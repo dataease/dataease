@@ -3,10 +3,10 @@
 <mapper namespace="io.datains.base.mapper.ext.DEVersionMapper">
 
     <select id="lastSuccessDataInsVersion" resultType="Integer">
-		select installed_rank from dataease_version where success = 1  order by installed_rank desc limit 1
+		select installed_rank from datains_version where success = 1  order by installed_rank desc limit 1
     </select>
 
     <select id="lastDataInsCodeVersion" resultType="Integer">
-		select installed_rank from dataease_code_version  order by installed_rank desc limit 1
+		select installed_rank from datains_code_version  order by installed_rank desc limit 1
     </select>
 </mapper>

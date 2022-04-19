@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `dataset_table_field` (
    `datains_name` varchar(255) NOT NULL COMMENT '字段名',
    `type` varchar(50) NOT NULL COMMENT '原始字段类型',
    `size` int(11) DEFAULT NULL,
-   `de_type` int(10) NOT NULL COMMENT 'dataease字段类型：0-文本，1-时间，2-整型数值，3-浮点数值...',
+   `de_type` int(10) NOT NULL COMMENT 'datains字段类型：0-文本，1-时间，2-整型数值，3-浮点数值...',
    `de_extract_type` int(10) NOT NULL,
    `checked` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否选中',
    `column_index` int(10) NOT NULL COMMENT '列位置',
