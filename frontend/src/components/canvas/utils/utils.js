@@ -72,10 +72,6 @@ export function panelInit(componentData, componentStyle) {
   componentStyle.refreshViewLoading = (componentStyle.refreshViewLoading || false)
   componentStyle.refreshUnit = (componentStyle.refreshUnit || 'minute')
   componentStyle.aidedDesign = (componentStyle.aidedDesign || deepCopy(AIDED_DESIGN))
-  // // // 初始化密度为最高密度
-  // const matrixChange = 2 / componentStyle.aidedDesign.matrixBase
-  // componentStyle.aidedDesign.matrixBase = 2
-
   componentData.forEach((item, index) => {
     if (item.component && item.component === 'de-date') {
       if (item.options.attrs &&
@@ -98,11 +94,20 @@ export function panelInit(componentData, componentStyle) {
     item.y = (item.y || 1)
     item.sizex = (item.sizex || 5)
     item.sizey = (item.sizey || 5)
+    // 初始化密度为最高密度
+    if (componentStyle.aidedDesign.matrixBase !== 4) {
+      item.x = (item.x - 1) * componentStyle.aidedDesign.matrixBase + 1
+      item.y = (item.y - 1) * componentStyle.aidedDesign.matrixBase + 1
+      item.sizex = item.sizex * componentStyle.aidedDesign.matrixBase
+      item.sizey = item.sizey * componentStyle.aidedDesign.matrixBase
+    }
     item.mobileSelected = (item.mobileSelected || false)
     item.mobileStyle = (item.mobileStyle || deepCopy(BASE_MOBILE_STYLE))
     item.hyperlinks = (item.hyperlinks || deepCopy(HYPERLINKS))
     item.commonBackground = item.commonBackground || deepCopy(COMMON_BACKGROUND_NONE)
   })
+  // 初始化密度为最高密度
+  componentStyle.aidedDesign.matrixBase = 4
   // 将data 和 style 数据设置到全局store中
   store.commit('setComponentData', resetID(componentData))
   store.commit('setCanvasStyle', componentStyle)
