@@ -23,8 +23,8 @@
         <path
           :d="pathD"
           fill="none"
-          stroke="rgba(64,158,255,0.8)"
-          stroke-width="1"
+          stroke="rgba(64,158,255,0.5)"
+          stroke-width="2"
         />
       </pattern>
     </defs>
