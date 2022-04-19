@@ -63,9 +63,11 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
                 return value
               } else {
                 if (f.formatterCfg) {
-                  return valueFormatter(value, f.formatterCfg)
+                  const v = valueFormatter(value, f.formatterCfg)
+                  return v === 'NaN' ? value : v
                 } else {
-                  return valueFormatter(value, formatterItem)
+                  const v = valueFormatter(value, formatterItem)
+                  return v === 'NaN' ? value : v
                 }
               }
             }
@@ -88,9 +90,11 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
             return value
           } else {
             if (f.formatterCfg) {
-              return valueFormatter(value, f.formatterCfg)
+              const v = valueFormatter(value, f.formatterCfg)
+              return v === 'NaN' ? value : v
             } else {
-              return valueFormatter(value, formatterItem)
+              const v = valueFormatter(value, formatterItem)
+              return v === 'NaN' ? value : v
             }
           }
         }

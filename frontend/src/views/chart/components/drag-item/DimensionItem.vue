@@ -77,7 +77,7 @@
             </el-dropdown>
           </el-dropdown-item>
 
-          <el-dropdown-item v-if="chart.render === 'antv' && chart.type.includes('table')" icon="el-icon-notebook-2" divided :command="beforeClickItem('formatter')">
+          <el-dropdown-item v-if="chart.render === 'antv' && chart.type.includes('table') && item.groupType === 'q'" icon="el-icon-notebook-2" divided :command="beforeClickItem('formatter')">
             <span>{{ $t('chart.value_formatter') }}...</span>
           </el-dropdown-item>
           <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">
