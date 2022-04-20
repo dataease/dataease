@@ -1,10 +1,10 @@
 <template>
-	<view class="uni-flex uni-column dataease-container uni-container">
+	<view class="uni-flex uni-column datains-container uni-container">
 
-        <view class="text dataease-head">
+        <view class="text datains-head">
             <slot name="header"></slot>
         </view>
-        <view class="text dataease-main">
+        <view class="text datains-main">
             <slot></slot>
         </view>
         		
@@ -30,7 +30,7 @@
 		},
 		onShareAppMessage() {
 			return {
-				title: '欢迎体验dataease-mobile',
+				title: '欢迎体验datains-mobile',
 				path: '/pages/tabBar/home/index'
 			}
 		},
@@ -50,11 +50,11 @@
 	}
 </script>
 <style>
-.dataease-container {
+.datains-container {
     position: relative;
     height: 100%;
 }
-.dataease-head {
+.datains-head {
     width: 100%;
     height: 45px;
     left: var(--window-left);
@@ -62,7 +62,7 @@
     padding: 5px 5px 0;
     border-radius: 6px;
 }
-.dataease-main {
+.datains-main {
     position: fixed;
     left: var(--window-left);
     right: var(--window-right);

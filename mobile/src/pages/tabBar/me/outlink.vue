@@ -11,8 +11,8 @@ export default {
     data() {
         return {
         urls: [
-            'https://github.com/dataease/dataease',
-            'https://dataease.io/docs/user_manual/general/'
+            'http://mivicelab.com',
+            'http://mivicelab.com'
         ],
         banner: {}
         }

@@ -1,5 +1,5 @@
 <template>
-<view class="page dataease-main">
+<view class="page datains-main">
     <uni-list>
         <uni-list-item class="person-title" :title="$t('navigate.language')" />
     </uni-list>
@@ -69,7 +69,7 @@ export default {
 
 <style  scoped>
 
-.dataease-main {
+.datains-main {
     
     position: fixed;
     left: var(--window-left);

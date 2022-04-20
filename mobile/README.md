@@ -1,4 +1,4 @@
-# dataease-mobile
+# datains-mobile
 
 ## Project setup
 ```

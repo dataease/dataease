@@ -3,7 +3,7 @@ module.exports = {
     TokenKey: 'Authorization',
     RefreshTokenKey: 'refreshauthorization',
     LinkTokenKey: 'LINK-PWD-TOKEN',
-    title: 'DataEase',
+    title: 'DataIns',
     WHITE_LIST: [
         '/api/auth/login',
         '/api/auth/getPublicKey',

@@ -1,5 +1,5 @@
 <template>
-<view class="page dataease-main">
+<view class="page datains-main">
     <uni-list>
         <uni-list-item class="person-title" :title="$t('navigate.about')" />
     </uni-list>
@@ -41,7 +41,7 @@ export default {
     methods: {
         toGithub() {
             
-            window.location.href = 'https://github.com/dataease/dataease'
+            window.location.href = 'http://mivicelab.com'
         },
         toUserManual() {
             const param = {linkIndex: 1}
@@ -79,7 +79,7 @@ export default {
 
 <style  scoped>
 
-.dataease-main {
+.datains-main {
     
     position: fixed;
     left: var(--window-left);

@@ -1,5 +1,5 @@
 <template>
-    <view class="page dataease-main">
+    <view class="page datains-main">
         
         <view>
             <uni-card  >
@@ -96,7 +96,7 @@ export default {
 </script>
 
 <style scoped>
-.dataease-main {
+.datains-main {
     
     position: fixed;
     left: var(--window-left);

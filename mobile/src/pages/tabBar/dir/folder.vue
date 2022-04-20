@@ -1,5 +1,5 @@
 <template>
-	<view class="page dataease-main">
+	<view class="page datains-main">
         <view>
             <uni-list-item class="person-title" :title="banner.title" />
         </view>
@@ -105,7 +105,7 @@ swiper,
 	margin-top: 50rpx;
 }
 
-.dataease-main {
+.datains-main {
     
     position: fixed;
     left: var(--window-left);
