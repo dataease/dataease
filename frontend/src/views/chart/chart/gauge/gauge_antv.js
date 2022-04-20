@@ -77,20 +77,20 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
     axis: {
       label: {
         style: {
-          fontSize: getScaleValue(14, scale) // TODO 刻度值字体大小
+          fontSize: getScaleValue(14, scale) // 刻度值字体大小
         }
       },
       tickLine: {
-        length: getScaleValue(12, scale) * -1, // TODO 刻度线长度
+        length: getScaleValue(12, scale) * -1, // 刻度线长度
         style: {
-          lineWidth: getScaleValue(1, scale)// TODO 刻度线宽度
+          lineWidth: getScaleValue(1, scale)// 刻度线宽度
         }
       },
       subTickLine: {
         count: 4, // TODO 子刻度数
-        length: getScaleValue(6, scale) * -1, // TODO 子刻度线长度
+        length: getScaleValue(6, scale) * -1, // 子刻度线长度
         style: {
-          lineWidth: getScaleValue(1, scale)// TODO 子刻度线宽度
+          lineWidth: getScaleValue(1, scale)// 子刻度线宽度
         }
       }
     }
@@ -114,11 +114,21 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
       },
       pin: {
         style: {
-          stroke: theme.styleSheet.paletteQualitative10[index % theme.styleSheet.paletteQualitative10.length]
+          stroke: theme.styleSheet.paletteQualitative10[index % theme.styleSheet.paletteQualitative10.length],
+          r: getScaleValue(10, scale)
+        }
+      }
+    }
+  } else {
+    options.indicator = {
+      pin: {
+        style: {
+          r: getScaleValue(10, scale)
         }
       }
     }
   }
+  console.log(options.indicator.pin)
 
   // 开始渲染
   if (plot) {
