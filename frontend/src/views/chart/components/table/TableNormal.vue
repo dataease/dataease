@@ -30,7 +30,7 @@
         </ux-table-column>
       </ux-grid>
 
-      <el-row v-show="chart.type === 'table-info'" class="table-page">
+      <el-row v-show="showPage" class="table-page">
         <span class="total-style">
           {{ $t('chart.total') }}
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
@@ -118,7 +118,8 @@ export default {
         page: 1,
         pageSize: 20,
         show: 0
-      }
+      },
+      showPage: false
     }
   },
   computed: {
@@ -162,17 +163,19 @@ export default {
     initData() {
       const that = this
       let datas = []
+      this.showPage = false
       if (this.chart.data) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
         this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
         datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        if (this.chart.type === 'table-info') {
+        if (this.chart.type === 'table-info' && attr.size.tablePageMode === 'page' && datas.length > this.currentPage.pageSize) {
           // 计算分页
           this.currentPage.show = datas.length
           const pageStart = (this.currentPage.page - 1) * this.currentPage.pageSize
           const pageEnd = pageStart + this.currentPage.pageSize
           datas = datas.slice(pageStart, pageEnd)
+          this.showPage = true
         }
       } else {
         this.fields = []
@@ -191,7 +194,7 @@ export default {
       this.$nextTick(() => {
         if (this.$refs.tableContainer) {
           let pageHeight = 0
-          if (this.chart.type === 'table-info') {
+          if (this.showPage) {
             pageHeight = 36
           }
           const currentHeight = this.$refs.tableContainer.offsetHeight
@@ -377,5 +380,11 @@ export default {
   }
   .page-style >>> .el-input__inner{
     height: 24px;
+  }
+  .page-style >>> button{
+    background: transparent!important;
+  }
+  .page-style >>> li{
+    background: transparent!important;
   }
 </style>
