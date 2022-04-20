@@ -49,6 +49,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -104,23 +105,23 @@ public class ChartViewService {
     private ReentrantLock lock = new ReentrantLock();
 
     // 直接保存统一到缓存表
-    public ChartViewDTO save(ChartViewCacheRequest chartView) {
+    public ChartViewDTO save(ChartViewRequest chartView) {
         long timestamp = System.currentTimeMillis();
         chartView.setUpdateTime(timestamp);
-        chartViewCacheMapper.updateByPrimaryKeySelective(chartView);
+        chartViewMapper.updateByPrimaryKeySelective(chartView);
         Optional.ofNullable(chartView.getId()).ifPresent(id -> {
             CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
         });
         return getOne(chartView.getId(), "panel_edit");
     }
 
-    public String checkTitle(ChartViewCacheRequest chartView){
+    public String checkTitle(ChartViewCacheRequest chartView) {
         ChartViewCacheExample example = new ChartViewCacheExample();
         example.createCriteria().andTitleEqualTo(chartView.getTitle()).andSceneIdEqualTo(chartView.getSceneId()).andIdNotEqualTo(chartView.getId());
-        List<ChartViewCache>  result =  chartViewCacheMapper.selectByExample(example);
-        if(CollectionUtils.isNotEmpty(result)){
-           return "fail";
-        }else{
+        List<ChartViewCache> result = chartViewCacheMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(result)) {
+            return "fail";
+        } else {
             return "success";
         }
     }
@@ -130,8 +131,8 @@ public class ChartViewService {
         // 校验名称
         ChartViewExample queryExample = new ChartViewExample();
         queryExample.createCriteria().andSceneIdEqualTo(chartView.getSceneId()).andNameEqualTo(chartView.getName());
-        List<ChartView>  result =  chartViewMapper.selectByExample(queryExample);
-        if(CollectionUtils.isNotEmpty(result)){
+        List<ChartView> result = chartViewMapper.selectByExample(queryExample);
+        if (CollectionUtils.isNotEmpty(result)) {
             DEException.throwException(Translator.get("theme_name_repeat"));
         }
         chartView.setUpdateTime(timestamp);
@@ -155,11 +156,14 @@ public class ChartViewService {
     }
 
 
-    // 直接保存统一到缓存表
-    public void save2Cache(ChartViewCacheWithBLOBs chartView) {
+    /**
+     * @Description 保存编辑的视图信息
+     * @param chartView
+     */
+    public void viewEditSave(ChartViewWithBLOBs chartView) {
         long timestamp = System.currentTimeMillis();
         chartView.setUpdateTime(timestamp);
-        chartViewCacheMapper.updateByPrimaryKeySelective(chartView);
+        chartViewMapper.updateByPrimaryKeySelective(chartView);
         Optional.ofNullable(chartView.getId()).ifPresent(id -> {
             CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
         });
@@ -250,25 +254,14 @@ public class ChartViewService {
     }
 
 
-    @Transactional
     public ChartViewDTO getOne(String id, String queryFrom) {
-        try{
-            ChartViewDTO result;
-            if(CommonConstants.VIEW_QUERY_FROM.PANEL_EDIT.equals(queryFrom)) {
-                //仪表板编辑页面 从缓存表中取数据 缓存表中没有数据则进行插入
-                result = extChartViewMapper.searchOneFromCache(id);
-                if (result == null) {
-                    chartViewCacheService.refreshCache(id);
-                    result = extChartViewMapper.searchOneFromCache(id);
-                }
-            } else {
-                result = extChartViewMapper.searchOne(id);
-            }
-            if(result==null){
+        try {
+            ChartViewDTO result = extChartViewMapper.searchOne(id);
+            if (result == null) {
                 DataEaseException.throwException(Translator.get("i18n_chart_delete"));
             }
             return result;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             DataEaseException.throwException(e);
         }
@@ -437,12 +430,12 @@ public class ChartViewService {
 
         List<ChartExtFilterRequest> filters = new ArrayList<>();
         // 联动条件
-        if(ObjectUtils.isNotEmpty(requestList.getLinkageFilters())){
+        if (ObjectUtils.isNotEmpty(requestList.getLinkageFilters())) {
             filters.addAll(requestList.getLinkageFilters());
         }
 
         // 外部参数条件
-        if(ObjectUtils.isNotEmpty(requestList.getOuterParamsFilters())){
+        if (ObjectUtils.isNotEmpty(requestList.getOuterParamsFilters())) {
             filters.addAll(requestList.getOuterParamsFilters());
         }
 
@@ -517,10 +510,10 @@ public class ChartViewService {
         // 如果是插件视图 走插件内部的逻辑
         if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
             Map<String, List<ChartViewFieldDTO>> fieldMap = new HashMap<>();
-            fieldMap.put("xAxis",xAxis);
-            fieldMap.put("yAxis",yAxis);
-            fieldMap.put("extStack",extStack);
-            fieldMap.put("extBubble",extBubble);
+            fieldMap.put("xAxis", xAxis);
+            fieldMap.put("yAxis", yAxis);
+            fieldMap.put("extStack", extStack);
+            fieldMap.put("extBubble", extBubble);
             PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view);
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
@@ -532,7 +525,7 @@ public class ChartViewService {
             Map<String, Object> mapChart = pluginViewResult(pluginViewParam, view, data, isDrill);
             Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
 
-            return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal,view, isDrill, drillFilters);
+            return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters);
             // 如果是插件到此结束
         }
 
@@ -771,7 +764,7 @@ public class ChartViewService {
         }
         // table组件，明细表，也用于导出数据
         Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
-        return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal,view, isDrill, drillFilters);
+        return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters);
     }
 
     public ChartViewDTO uniteViewResult(String sql, Map<String, Object> chartData, Map<String, Object> tabelData, ChartViewDTO view, Boolean isDrill, List<ChartExtFilterRequest> drillFilters) {
@@ -798,8 +791,6 @@ public class ChartViewService {
         pluginViewSet.setDsType(ds.getType());
         pluginViewSet.setTabelId(table.getId());
         PluginViewLimit pluginViewLimit = BeanUtils.copyBean(new PluginViewLimit(), view);
-
-
 
 
         List<PluginChartFieldCustomFilter> fieldFilters = customFilters.stream().map(filter -> gson.fromJson(gson.toJson(filter), PluginChartFieldCustomFilter.class)).collect(Collectors.toList());
@@ -1040,8 +1031,8 @@ public class ChartViewService {
     public String chartCopy(String id, String panelId) {
         String newChartId = UUID.randomUUID().toString();
         extChartViewMapper.chartCopy(newChartId, id, panelId);
-        extChartViewMapper.copyCache(id,newChartId);
-        extPanelGroupExtendDataMapper.copyExtendData(id,newChartId,panelId);
+        extChartViewMapper.copyCache(id, newChartId);
+        extPanelGroupExtendDataMapper.copyExtendData(id, newChartId, panelId);
         chartViewCacheService.refreshCache(newChartId);
         return newChartId;
     }
@@ -1072,8 +1063,14 @@ public class ChartViewService {
         }
     }
 
+    /**
+     * @param panelId
+     * @Description 初始化仪表板内部视图的cache表
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void initViewCache(String panelId) {
-        extChartViewMapper.deleteCacheWithPanel(null,panelId);
+        extChartViewMapper.deleteCacheWithPanel(null, panelId);
+        extChartViewMapper.initPanelChartViewCache(panelId);
     }
 
 }

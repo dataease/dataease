@@ -125,7 +125,7 @@ public class PanelViewService {
                 extPanelViewMapper.savePanelView(panelViewInsertDTOList);
                 //将视图从cache表中更新到正式表中
                 viewIds = panelViewInsertDTOList.stream().map(panelView ->panelView.getChartViewId()).collect(Collectors.toList());
-                extChartViewMapper.copyCacheToView(viewIds);
+//                extChartViewMapper.copyCacheToView(viewIds);
             }
             extChartViewMapper.deleteCacheWithPanel(viewIds,panelId);
             extChartViewMapper.deleteNoUseView(viewIds,panelId);

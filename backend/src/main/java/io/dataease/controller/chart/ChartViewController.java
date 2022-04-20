@@ -42,7 +42,7 @@ public class ChartViewController {
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("/save/{panelId}")
-    public ChartViewDTO save(@PathVariable String panelId, @RequestBody ChartViewCacheRequest request) {
+    public ChartViewDTO save(@PathVariable String panelId, @RequestBody ChartViewRequest request) {
         return chartViewService.save(request);
     }
 
@@ -54,10 +54,10 @@ public class ChartViewController {
     }
 
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
-    @ApiOperation("保存到缓存表")
-    @PostMapping("/save2Cache/{panelId}")
-    public void save2Cache(@PathVariable String panelId, @RequestBody ChartViewCacheWithBLOBs chartViewWithBLOBs) {
-        chartViewService.save2Cache(chartViewWithBLOBs);
+    @ApiOperation("保存编辑的视图信息")
+    @PostMapping("/viewEditSave/{panelId}")
+    public void viewEditSave(@PathVariable String panelId, @RequestBody ChartViewWithBLOBs chartViewWithBLOBs) {
+        chartViewService.viewEditSave(chartViewWithBLOBs);
     }
 
     @ApiIgnore
@@ -147,12 +147,11 @@ public class ChartViewController {
         chartViewService.initViewCache(panelId);
     }
 
-
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW, paramIndex = 1)
-    @ApiOperation("重置视图缓存")
+    @ApiOperation("重置视图")
     @PostMapping("/resetViewCache/{id}/{panelId}")
     public void resetViewCache(@PathVariable String id, @PathVariable String panelId) {
-        chartViewCacheService.refreshCache(id);
+        chartViewCacheService.resetView(id);
     }
 
     @ApiOperation("校验视图Title")
