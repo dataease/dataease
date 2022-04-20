@@ -10,9 +10,9 @@
 </template>
 
 <script>
-import DeMainContainer from '@/components/dataease/DeMainContainer'
-import DeContainer from '@/components/dataease/DeContainer'
-import DeAsideContainer from '@/components/dataease/DeAsideContainer'
+import DeMainContainer from '@/components/datains/DeMainContainer'
+import DeContainer from '@/components/datains/DeContainer'
+import DeAsideContainer from '@/components/datains/DeAsideContainer'
 
 import DatasetGroupSelectorTree from '../../dataset/common/DatasetGroupSelectorTree'
 import DatasetTableData from '../../dataset/common/DatasetTableData'

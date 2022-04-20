@@ -1,7 +1,7 @@
 {
-  "name": "dataease",
+  "name": "datains",
   "version": "1.9.0",
-  "description": "dataease front",
+  "description": "datains front",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

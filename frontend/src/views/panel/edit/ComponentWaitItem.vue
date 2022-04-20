@@ -31,7 +31,7 @@
 import { mapState } from 'vuex'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 import { getStyle } from '@/components/canvas/utils/style'
-import DeOutWidget from '@/components/dataease/DeOutWidget'
+import DeOutWidget from '@/components/datains/DeOutWidget'
 
 export default {
   name: 'ComponentWaitItem',

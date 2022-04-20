@@ -1,4 +1,4 @@
-const styleId = 'dataease-wggznb'
+const styleId = 'datains-wggznb'
 
 export function initTheme() {
   const json = localStorage.getItem('theme-css-text')

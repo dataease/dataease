@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import DeMainContainer from '@/components/dataease/DeMainContainer'
-import DeContainer from '@/components/dataease/DeContainer'
+import DeMainContainer from '@/components/datains/DeMainContainer'
+import DeContainer from '@/components/datains/DeContainer'
 import DsMain from './DsMain'
 import bus from '@/utils/bus'
 

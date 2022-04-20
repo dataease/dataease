@@ -1,7 +1,7 @@
 <template>
-  <div v-show="contentShow" class="login-background">
+  <div v-show="contentShow" v-loading="loading" class="login-background">
     <div class="login-container">
-      <el-row v-loading="loading" type="flex">
+      <el-row type="flex">
         <el-col :span="9" :offset="9">
           <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
             <div class="login-logo">

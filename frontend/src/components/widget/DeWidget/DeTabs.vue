@@ -12,7 +12,7 @@
       :border-active-color="borderActiveColor"
       @tab-click="handleClick"
     >
-      <!--  <plugin-com ref="dataease-tabs" v-model="activeTabName" type="card" class="de-tabs" component-name="dataease-tabs" @tab-click="handleClick"> -->
+      <!--  <plugin-com ref="datains-tabs" v-model="activeTabName" type="card" class="de-tabs" component-name="datains-tabs" @tab-click="handleClick"> -->
       <!-- <el-tabs v-model="activeTabName" type="card" class="de-tabs" @tab-click="handleClick"> -->
       <el-tab-pane
         v-for="(item, index) in element.options.tabList"
@@ -165,7 +165,7 @@ export default {
       textarea: '',
       curItem: null,
       viewDialogVisible: false,
-      url: '/api/pluginCommon/component/dataease-tabs'
+      url: '/api/pluginCommon/component/datains-tabs'
       /* fontColor: '#999999',
       activeColor: '#f18406',
 

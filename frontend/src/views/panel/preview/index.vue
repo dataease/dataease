@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import DeMainContainer from '@/components/dataease/DeMainContainer'
-import DeContainer from '@/components/dataease/DeContainer'
+import DeMainContainer from '@/components/datains/DeMainContainer'
+import DeContainer from '@/components/datains/DeContainer'
 // import DrawingBoard from '../DrawingBoard'
 export default {
   components: {

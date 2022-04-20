@@ -13,8 +13,8 @@
   </de-main-container>
 </template>
 <script>
-import DeMainContainer from '@/components/dataease/DeMainContainer'
-import DeContainer from '@/components/dataease/DeContainer'
+import DeMainContainer from '@/components/datains/DeMainContainer'
+import DeContainer from '@/components/datains/DeContainer'
 import AuthConfig from './authConfig'
 import AuthQuickConfig from './authQuickConfig'
 

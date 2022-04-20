@@ -13,7 +13,7 @@ const data = Mock.mock({
 
 export default [
   {
-    url: '/dataease/table/list',
+    url: '/datains/table/list',
     type: 'get',
     response: config => {
       const items = data.items

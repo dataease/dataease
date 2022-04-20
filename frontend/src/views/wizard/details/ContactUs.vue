@@ -2,7 +2,7 @@
   <el-row class="demo_main">
     <el-row style="margin-top: 5%" class="demo_content">
       <span class="icon iconfont icon-fasongyoujian" />
-      <span style="margin-left: 10px">dataease@fit2cloud.com</span>
+      <span style="margin-left: 10px">datains@zhejintech.com</span>
     </el-row>
     <el-row class="demo_content">
       <span class="icon iconfont icon-dianhua" />

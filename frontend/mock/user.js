@@ -26,7 +26,7 @@ const users = {
 export default [
   // user login
   {
-    url: '/dataease/user/login',
+    url: '/datains/user/login',
     type: 'post',
     response: config => {
       const { username } = config.body
@@ -49,7 +49,7 @@ export default [
 
   // get user info
   {
-    url: '/dataease/user/info\.*',
+    url: '/datains/user/info\.*',
     type: 'get',
     response: config => {
       const { token } = config.query
@@ -72,7 +72,7 @@ export default [
 
   // user logout
   {
-    url: '/dataease/user/logout',
+    url: '/datains/user/logout',
     type: 'post',
     response: _ => {
       return {

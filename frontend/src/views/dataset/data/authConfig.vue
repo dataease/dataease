@@ -48,9 +48,9 @@
 </template>
 
 <script>
-import DeContainer from '@/components/dataease/DeContainer'
-import DeAsideContainer from '@/components/dataease/DeAsideContainer'
-import DeMainContainer from '@/components/dataease/DeMainContainer'
+import DeContainer from '@/components/datains/DeContainer'
+import DeAsideContainer from '@/components/datains/DeAsideContainer'
+import DeMainContainer from '@/components/datains/DeMainContainer'
 import LazyTree from './components/LazyTree'
 
 export default {

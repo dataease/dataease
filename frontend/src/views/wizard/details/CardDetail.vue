@@ -5,7 +5,7 @@
     <div class="demo_title">
       <router-link target="_blank" :to="details.href">
         <img
-          :src="require('../../../assets/DataEase-' +imgIndex + '.jpg')"
+          :src="require('../../../assets/DataIns-' +imgIndex + '.jpg')"
           height="100%"
         >
       </router-link>

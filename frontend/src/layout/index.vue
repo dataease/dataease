@@ -26,9 +26,9 @@
 <script>
 import { Sidebar, AppMain, Topbar, Licbar } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
-import DeMainContainer from '@/components/dataease/DeMainContainer'
-import DeContainer from '@/components/dataease/DeContainer'
-import DeAsideContainer from '@/components/dataease/DeAsideContainer'
+import DeMainContainer from '@/components/datains/DeMainContainer'
+import DeContainer from '@/components/datains/DeContainer'
+import DeAsideContainer from '@/components/datains/DeAsideContainer'
 import bus from '@/utils/bus'
 
 import { needModifyPwd } from '@/api/user'

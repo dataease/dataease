@@ -2,11 +2,11 @@
   <el-row class="demo_main">
     <el-row class="demo_content">
       <span class="title">
-        <a href="https://live.vhall.com/v3/lives/subscribe/533874762" target="_blank">40分钟带你玩转 DataEase </a>
+        <a href="https://live.vhall.com/v3/lives/subscribe/533874762" target="_blank">40分钟带你玩转 DataIns </a>
       </span>
       <br>
       <span class="title">
-        <a href="https://live.vhall.com/v3/lives/subscribe/903960272" target="_blank">用DataEase开源工具可视化 ClickHouse数据 </a>
+        <a href="https://live.vhall.com/v3/lives/subscribe/903960272" target="_blank">用DataIns工具可视化 ClickHouse数据 </a>
       </span>
     </el-row>
     <el-row class="demo_bottom">
