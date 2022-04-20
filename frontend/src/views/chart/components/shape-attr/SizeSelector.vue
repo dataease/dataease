@@ -116,6 +116,9 @@
         <el-form-item :label="$t('chart.table_item_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableItemHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
+        <el-form-item :label="$t('chart.table_column_width_config')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.tableColumnWidth" :min="10" :max="1000" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+        </el-form-item>
       </el-form>
 
       <el-form v-show="chart.type && chart.type.includes('gauge')" ref="sizeFormGauge" :model="sizeForm" label-width="100px" size="mini">

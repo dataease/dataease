@@ -23,6 +23,7 @@
           :resizable="true"
           sortable
           :title="field.name"
+          :width="columnWidth"
         >
           <!--        <template slot="header">-->
           <!--          <span>{{ field.name }}</span>-->
@@ -56,6 +57,7 @@
 <script>
 import { hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
+import { DEFAULT_SIZE } from '@/views/chart/chart/chart'
 
 export default {
   name: 'TableNormal',
@@ -168,8 +170,18 @@ export default {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
         this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
+
+        // column width
+        const containerWidth = this.$refs.tableContainer.offsetWidth
+        const columnWidth = attr.size.tableColumnWidth ? attr.size.tableColumnWidth : this.columnWidth
+        if (columnWidth < (containerWidth / this.fields.length)) {
+          this.columnWidth = containerWidth / this.fields
+        } else {
+          this.columnWidth = columnWidth
+        }
+
         datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        if (this.chart.type === 'table-info' && attr.size.tablePageMode === 'page' && datas.length > this.currentPage.pageSize) {
+        if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && datas.length > this.currentPage.pageSize) {
           // 计算分页
           this.currentPage.show = datas.length
           const pageStart = (this.currentPage.page - 1) * this.currentPage.pageSize
@@ -346,7 +358,8 @@ export default {
         page: 1,
         pageSize: 20,
         show: 0
-      }
+      },
+      columnWidth: DEFAULT_SIZE.tableColumnWidth
     }
   }
 }
