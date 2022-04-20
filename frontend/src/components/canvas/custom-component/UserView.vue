@@ -61,8 +61,22 @@
       :chart="chart"
       class="table-class"
     />
-    <label-normal v-else-if="labelShowFlag" :ref="element.propValue.id" :chart="chart" class="table-class" />
-    <label-normal-text v-else-if="labelTextShowFlag" :ref="element.propValue.id" :chart="chart" class="table-class" />
+    <label-normal
+      v-else-if="labelShowFlag"
+      :ref="element.propValue.id"
+      :chart="chart"
+      class="table-class"
+    />
+    <label-normal-text
+      v-else-if="labelTextShowFlag"
+      :ref="element.propValue.id"
+      :chart="chart"
+      class="table-class"
+      :track-menu="trackMenu"
+      :search-count="searchCount"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
+    />
     <div style="position: absolute;left: 8px;bottom:8px;">
       <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
     </div>
