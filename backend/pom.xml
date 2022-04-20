@@ -222,6 +222,16 @@
             <artifactId>datains-plugin-view</artifactId>
             <version>1.9.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.dataease</groupId>
+            <artifactId>dataease-plugin-interface</artifactId>
+            <version>1.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.dataease</groupId>
+            <artifactId>dataease-plugin-view</artifactId>
+            <version>1.9.0</version>
+        </dependency>
 
         <!-- kettle及数据源依赖 -->
         <dependency>

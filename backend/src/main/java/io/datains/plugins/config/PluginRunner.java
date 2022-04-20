@@ -34,9 +34,8 @@ public class PluginRunner implements ApplicationRunner {
             String moduleName = plugin.getModuleName();
             String fileName = moduleName + "-" + version + ".jar";
             String path = pluginDir + store + "/" + fileName;
-
+            LogUtil.error("插件路径: {} ", path);
             File jarFile = new File(path);
-
 
             String jarPath = jarFile.getAbsolutePath();
             try {

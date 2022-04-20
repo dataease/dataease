@@ -26,9 +26,9 @@ public class PluginUtils {
     }
 
     public static List<PluginSysMenu> pluginMenus() {
-        F2CLicenseResponse f2CLicenseResponse = currentLic();
-        if (f2CLicenseResponse.getStatus() != F2CLicenseResponse.Status.valid)
-            return new ArrayList<>();
+//        F2CLicenseResponse f2CLicenseResponse = currentLic();
+//        if (f2CLicenseResponse.getStatus() != F2CLicenseResponse.Status.valid)
+//            return new ArrayList<>();
         Map<String, PluginMenuService> pluginMenuServiceMap = SpringContextUtil.getApplicationContext().getBeansOfType(PluginMenuService.class);
         List<PluginSysMenu> menus = pluginMenuServiceMap.values().stream().flatMap(item -> item.menus().stream()).collect(Collectors.toList());
         return menus;
