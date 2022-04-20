@@ -43,7 +43,7 @@
             </el-col>
           </el-form-item>
 
-          <el-dialog :title="api_table_title" :visible="editApiItem" :before-close="closeEditItem" width="60%"
+          <el-dialog :title="api_table_title" :visible="edit_api_item" :before-close="closeEditItem" width="60%"
                      class="dialog-css" append-to-body>
             <el-steps :active="active" align-center>
               <el-step title="步骤 1"></el-step>
@@ -204,10 +204,14 @@
 
 import i18n from "@/lang";
 import {checkApiDatasource} from "@/api/system/datasource";
+import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
+import LayoutContent from '@/components/business/LayoutContent'
 
 export default {
   name: "DsConfiguration",
   components: {
+    ApiHttpRequestForm,
+    LayoutContent
   },
   props: {
     disabled: {
@@ -219,12 +223,6 @@ export default {
     method: String,
     request: {},
     response: {},
-    editApiItem: {
-      type: Boolean,
-      default() {
-        return false;
-      }
-    },
     showScript: {
       type: Boolean,
       default: true,

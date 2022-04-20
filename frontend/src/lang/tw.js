@@ -1378,7 +1378,7 @@ export default {
     priority: '高級設置',
     extra_params: '額外的JDBC連接字符串',
     please_input_dataPath: '請輸入 JsonPath 數據路徑',
-    warning: '包含無效數據機',
+    warning: '包含無效數據表',
     data_table: '數據表',
     data_table_name: '數據表名稱',
     method: '請求方式',

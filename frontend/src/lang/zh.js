@@ -1386,7 +1386,7 @@ export default {
     all_compute_mode: '直连、抽取模式',
     extra_params: '额外的JDBC连接字符串',
     please_input_dataPath: '请输入 JsonPath 数据路径',
-    warning: '包含无效数据集',
+    warning: '包含无效数据表',
     data_table: '数据表',
     data_table_name: '数据表名称',
     method: '请求方式',
