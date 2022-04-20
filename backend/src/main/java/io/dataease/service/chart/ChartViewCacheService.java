@@ -24,4 +24,8 @@ public class ChartViewCacheService {
         }
     }
 
+    public void resetView(String viewId){
+        extChartViewMapper.updateToViewFromCache(viewId);
+    }
+
 }

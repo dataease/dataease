@@ -86,9 +86,9 @@ export function getChartDetails(id, panelId, data) {
   })
 }
 
-export function save2Cache(panelId, data) {
+export function viewEditSave(panelId, data) {
   return request({
-    url: '/chart/view/save2Cache/' + panelId,
+    url: '/chart/view/viewEditSave/' + panelId,
     method: 'post',
     loading: false,
     data
