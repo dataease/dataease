@@ -96,10 +96,10 @@ export function panelInit(componentData, componentStyle) {
     item.sizey = (item.sizey || 5)
     // 初始化密度为最高密度
     if (componentStyle.aidedDesign.matrixBase !== 4) {
-      item.x = (item.x - 1) * componentStyle.aidedDesign.matrixBase + 1
-      item.y = (item.y - 1) * componentStyle.aidedDesign.matrixBase + 1
-      item.sizex = item.sizex * componentStyle.aidedDesign.matrixBase
-      item.sizey = item.sizey * componentStyle.aidedDesign.matrixBase
+      item.x = (item.x - 1) * 4 + 1
+      item.y = (item.y - 1) * 4 + 1
+      item.sizex = item.sizex * 4
+      item.sizey = item.sizey * 4
     }
     item.mobileSelected = (item.mobileSelected || false)
     item.mobileStyle = (item.mobileStyle || deepCopy(BASE_MOBILE_STYLE))

@@ -31,6 +31,7 @@
       :track-menu="trackMenu"
       :search-count="searchCount"
       :terminal-type="scaleCoefficientType"
+      :scale="scale"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -41,6 +42,7 @@
       :chart="chart"
       :track-menu="trackMenu"
       :search-count="searchCount"
+      :scale="scale"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -177,7 +179,8 @@ export default {
       pre: null,
       preCanvasPanel: null,
       sourceCustomAttrStr: null,
-      sourceCustomStyleStr: null
+      sourceCustomStyleStr: null,
+      scale: 1
     }
   },
 
@@ -412,11 +415,11 @@ export default {
     },
     // 根据仪表板的缩放比例，修改视图内部参数
     mergeScale() {
-      const scale = Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient
+      this.scale = Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient
       const customAttrChart = JSON.parse(this.sourceCustomAttrStr)
       const customStyleChart = JSON.parse(this.sourceCustomStyleStr)
-      recursionTransObj(customAttrTrans, customAttrChart, scale, this.scaleCoefficientType)
-      recursionTransObj(customStyleTrans, customStyleChart, scale, this.scaleCoefficientType)
+      recursionTransObj(customAttrTrans, customAttrChart, this.scale, this.scaleCoefficientType)
+      recursionTransObj(customStyleTrans, customStyleChart, this.scale, this.scaleCoefficientType)
 
       // 移动端地图标签不显示
       if (this.chart.type === 'map' && this.scaleCoefficientType === 'mobile') {

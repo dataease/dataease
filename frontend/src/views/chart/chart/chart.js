@@ -55,7 +55,8 @@ export const DEFAULT_SIZE = {
   liquidOutlineDistance: 8,
   liquidWaveLength: 128,
   liquidWaveCount: 3,
-  liquidShape: 'circle'
+  liquidShape: 'circle',
+  tablePageMode: 'page'
 }
 export const DEFAULT_LABEL = {
   show: false,
