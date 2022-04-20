@@ -353,10 +353,10 @@ const data = {
           Object.keys(params).forEach(function(sourceInfo) {
             // 获取外部参数的值 sourceInfo 是外部参数名称 支持数组传入
             let paramValue = params[sourceInfo]
-            const operator = 'eq'
+            let operator = 'in'
             if (paramValue && !Array.isArray(paramValue)) {
               paramValue = [paramValue]
-              operator = 'in'
+              operator = 'eq'
             }
             // 获取所有目标联动信息
             const targetInfoList = trackInfo[sourceInfo] || []
