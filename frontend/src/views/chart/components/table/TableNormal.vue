@@ -121,7 +121,8 @@ export default {
         pageSize: 20,
         show: 0
       },
-      showPage: false
+      showPage: false,
+      columnWidth: DEFAULT_SIZE.tableColumnWidth
     }
   },
   computed: {
@@ -358,8 +359,7 @@ export default {
         page: 1,
         pageSize: 20,
         show: 0
-      },
-      columnWidth: DEFAULT_SIZE.tableColumnWidth
+      }
     }
   }
 }
