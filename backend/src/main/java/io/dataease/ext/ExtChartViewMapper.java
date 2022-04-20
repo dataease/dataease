@@ -35,7 +35,7 @@ public interface ExtChartViewMapper {
 
     List<ChartViewDTO> searchViewsWithPanelId(@Param("panelId") String panelId);
 
-    ChartViewDTO searchOneFromCache(@Param("id") String id );
+//    ChartViewDTO searchOneFromCache(@Param("id") String id );
 
     void copyToCache(@Param("id") String id );
 
@@ -47,7 +47,11 @@ public interface ExtChartViewMapper {
 
     int updateToCache(@Param("viewId") String viewId );
 
+    int updateToViewFromCache(@Param("viewId") String viewId );
+
     void copyCache(@Param("sourceViewId") String sourceViewId,@Param("newViewId") String newViewId);
 
     void deleteNoUseView(@Param("viewIds") List<String> viewIds,@Param("panelId") String panelId );
+
+    void initPanelChartViewCache(@Param("panelId") String panelId);
 }

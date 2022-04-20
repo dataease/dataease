@@ -1160,7 +1160,7 @@ import {
   ajaxGetDataOnly,
   post,
   getChartDetails,
-  save2Cache,
+  viewEditSave,
   resetViewCacheCallBack
 } from '@/api/chart/chart'
 import DimensionItem from '../components/drag-item/DimensionItem'
@@ -1792,7 +1792,7 @@ export default {
       this.changeEditStatus(true)
       const view = this.buildParam(true, 'chart', false, switchType)
       if (!view) return
-      save2Cache(this.panelInfo.id, view).then(() => {
+      viewEditSave(this.panelInfo.id, view).then(() => {
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
     },
@@ -1819,7 +1819,7 @@ export default {
       // 保存到缓存表
       const viewSave = this.buildParam(true, 'chart', false, false)
       if (!viewSave) return
-      save2Cache(this.panelInfo.id, viewSave)
+      viewEditSave(this.panelInfo.id, viewSave)
 
       bus.$emit('view-in-cache', { type: 'styleChange', viewId: this.param.id, viewInfo: view })
     },
@@ -2565,10 +2565,10 @@ export default {
     },
 
     reset() {
-      this.changeEditStatus(false)
-      this.getChart(this.param.id, 'panel')
       const _this = this
-      resetViewCacheCallBack(this.param.id, this.panelInfo.id, function(rsp) {
+      resetViewCacheCallBack(_this.param.id, _this.panelInfo.id, function(rsp) {
+        _this.changeEditStatus(false)
+        _this.getChart(_this.param.id, 'panel')
         bus.$emit('view-in-cache', { type: 'propChange', viewId: _this.param.id })
       })
     },

@@ -133,3 +133,26 @@ export function matrixBaseChange(component) {
   return component
 }
 
+export function checkViewTitle(opt, id, tile) {
+  try {
+    const curPanelViewsData = store.state.componentViewsData
+    const curComponentViewNames = []
+    store.state.componentData.forEach(item => {
+      if (item.type === 'view' && item.propValue && item.propValue.viewId) {
+        // 更新时自己的title不加入比较
+        if ((opt === 'update' && id !== item.propValue.viewId) || opt === 'new') {
+          curComponentViewNames.push(curPanelViewsData[item.propValue.viewId].title)
+        }
+      }
+    })
+    if (curComponentViewNames.includes(tile)) {
+      return true
+    } else {
+      return false
+    }
+  } catch (e) {
+    console.log('checkViewTitle error', e)
+    return false
+  }
+}
+

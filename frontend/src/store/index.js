@@ -50,6 +50,8 @@ const data = {
     componentDataCache: null,
     // 当前展示画布组件数据
     componentData: [],
+    // 当前展示画布视图信息
+    componentViewsData: {},
     // PC布局画布组件数据
     pcComponentData: [],
     // 移动端布局画布组件数据
@@ -178,6 +180,10 @@ const data = {
 
     setComponentData(state, componentData = []) {
       Vue.set(state, 'componentData', componentData)
+    },
+
+    setComponentViewsData(state, componentViewsData = {}) {
+      Vue.set(state, 'componentViewsData', componentViewsData)
     },
 
     setPcComponentData(state, pcComponentData = []) {

@@ -8,6 +8,7 @@ import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
+import io.dataease.controller.request.panel.PanelGroupQueryRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.controller.request.panel.PanelViewDetailsRequest;
 import io.dataease.dto.PanelGroupExtendDataDTO;
@@ -131,7 +132,7 @@ public class PanelGroupService {
         } else if ("toDefaultPanel".equals(request.getOptType())) { // 转存为默认仪表板
             panelId = UUID.randomUUID().toString();
             PanelGroupWithBLOBs newDefaultPanel = panelGroupMapper.selectByPrimaryKey(request.getId());
-            newDefaultPanel.setPanelType(PanelConstants.PANEL_TYPE_SYSTEM);
+            newDefaultPanel.setPanelType(PanelConstants.PANEL_TYPE.SYSTEM);
             newDefaultPanel.setNodeType(PanelConstants.PANEL_NODE_TYPE_PANEL);
             newDefaultPanel.setName(request.getName());
             newDefaultPanel.setId(panelId);
@@ -221,7 +222,13 @@ public class PanelGroupService {
     }
 
 
+    /**
+     * @Description 查询仪表板信息
+     * @param panelId
+     * @return
+     */
     public PanelGroupDTO findOne(String panelId) {
+        Assert.notNull(panelId,"Method findOne panelId can not be null");
         PanelGroupDTO panelGroup = extPanelGroupMapper.findOneWithPrivileges(panelId, String.valueOf(AuthUtils.getUser().getUserId()));
         // 默认仪表板取源仪表板样式
         if (panelGroup != null && StringUtils.isNotEmpty(panelGroup.getSource())) {
