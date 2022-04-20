@@ -36,7 +36,7 @@ public class PluginUtils {
 
     public static F2CLicenseResponse currentLic() {
         Environment environment = SpringContextUtil.getBean(Environment.class);
-        Boolean need_validate_lic = environment.getProperty("dataease.need_validate_lic", Boolean.class, true);
+        Boolean need_validate_lic = environment.getProperty("datains.need_validate_lic", Boolean.class, true);
         if (!need_validate_lic) {
             F2CLicenseResponse f2CLicenseResponse = new F2CLicenseResponse();
             f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.valid);

@@ -6,7 +6,7 @@
     <swiper  class="swiper-box" style="flex: 1;" :duration="300" >
         <swiper-item class="swiper-item" >
             <view class="uni-center" style=" font-size:0;padding: 40px 40px 20px;">
-                <image class="image" mode="widthFix"  src="../../../static/DataIns-01.png" />
+                <!-- <image class="image" mode="widthFix"  src="../../../static/DataIns-01.png" />-->
             </view>
             <view class="person-lic">
                   

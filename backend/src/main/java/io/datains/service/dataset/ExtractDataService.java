@@ -439,7 +439,7 @@ public class ExtractDataService {
 
         Datasource engine = engineService.getDeEngine();
         DorisConfiguration dorisConfiguration = new Gson().fromJson(engine.getConfiguration(), DorisConfiguration.class);
-        String columns = datasetTableFields.stream().map(DatasetTableField::getDatainsName).collect(Collectors.joining(",")) + ",dataease_uuid";
+        String columns = datasetTableFields.stream().map(DatasetTableField::getDatainsName).collect(Collectors.joining(",")) + ",datains_uuid";
 
         String dataFile = null;
         String script = null;
@@ -770,7 +770,7 @@ public class ExtractDataService {
         String script = null;
         Datasource dorisDatasource = engineService.getDeEngine();
         DorisConfiguration dorisConfiguration = new Gson().fromJson(dorisDatasource.getConfiguration(), DorisConfiguration.class);
-        String columns = columnFields + ",dataease_uuid";
+        String columns = columnFields + ",datains_uuid";
         switch (extractType) {
             case "all_scope":
                 outFile = TableUtils.tmpName(TableUtils.tableName(datasetTable.getId()));
@@ -1070,7 +1070,7 @@ public class ExtractDataService {
                 outputFields[i] = textFileField;
             }
             TextFileField textFileField = new TextFileField();
-            textFileField.setName("dataease_uuid");
+            textFileField.setName("datains_uuid");
             textFileField.setType("String");
             outputFields[datasetTableFields.size()] = textFileField;
 
@@ -1090,7 +1090,7 @@ public class ExtractDataService {
                 outputFields[i] = textFileField;
             }
             TextFileField textFileField = new TextFileField();
-            textFileField.setName("dataease_uuid");
+            textFileField.setName("datains_uuid");
             textFileField.setType("String");
             outputFields[datasetTableFields.size()] = textFileField;
 
@@ -1110,7 +1110,7 @@ public class ExtractDataService {
                 outputFields[i] = textFileField;
             }
             TextFileField textFileField = new TextFileField();
-            textFileField.setName("dataease_uuid");
+            textFileField.setName("datains_uuid");
             textFileField.setType("String");
             outputFields[datasetTableFields.size()] = textFileField;
 
@@ -1137,7 +1137,7 @@ public class ExtractDataService {
 
         UserDefinedJavaClassMeta userDefinedJavaClassMeta = new UserDefinedJavaClassMeta();
         List<UserDefinedJavaClassMeta.FieldInfo> fields = new ArrayList<>();
-        UserDefinedJavaClassMeta.FieldInfo fieldInfo = new UserDefinedJavaClassMeta.FieldInfo("dataease_uuid", ValueMetaInterface.TYPE_STRING, -1, -1);
+        UserDefinedJavaClassMeta.FieldInfo fieldInfo = new UserDefinedJavaClassMeta.FieldInfo("datains_uuid", ValueMetaInterface.TYPE_STRING, -1, -1);
         fields.add(fieldInfo);
         userDefinedJavaClassMeta.setFieldInfo(fields);
         List<UserDefinedJavaClassDef> definitions = new ArrayList<>();
@@ -1295,7 +1295,7 @@ public class ExtractDataService {
             "    }\n" +
             "\n" +
             "  String md5 = md5(str);\n" +
-            "  get(Fields.Out, \"dataease_uuid\").setValue(r, md5);\n" +
+            "  get(Fields.Out, \"datains_uuid\").setValue(r, md5);\n" +
             "\n" +
             "  putRow(data.outputRowMeta, r);\n" +
             "\n" +

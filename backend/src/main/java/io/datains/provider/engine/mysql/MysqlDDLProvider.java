@@ -50,7 +50,7 @@ public class MysqlDDLProvider extends DDLProviderImpl {
     }
 
     private String createDorisTableColumnSql(final List<DatasetTableField> datasetTableFields) {
-        StringBuilder Column_Fields = new StringBuilder("dataease_uuid  varchar(50), `");
+        StringBuilder Column_Fields = new StringBuilder("datains_uuid  varchar(50), `");
         for (DatasetTableField datasetTableField : datasetTableFields) {
             Column_Fields.append(datasetTableField.getDatainsName()).append("` ");
             Integer size = datasetTableField.getSize() * 4;
@@ -89,7 +89,7 @@ public class MysqlDDLProvider extends DDLProviderImpl {
             }
         }
 
-        Column_Fields = new StringBuilder(Column_Fields.substring(0, Column_Fields.length() - 1)).append("PRIMARY KEY(dataease_uuid)");
+        Column_Fields = new StringBuilder(Column_Fields.substring(0, Column_Fields.length() - 1)).append("PRIMARY KEY(datains_uuid)");
         Column_Fields = new StringBuilder("(" + Column_Fields + ")\n");
         return Column_Fields.toString();
     }

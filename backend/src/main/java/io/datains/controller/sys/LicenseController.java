@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 @RequestMapping(headers = "Accept=application/json")
 public class LicenseController {
 
-    @Value("${dataease.need_validate_lic:true}")
+    @Value("${datains.need_validate_lic:true}")
     private Boolean need_validate_lic;
 
     @Resource

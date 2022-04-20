@@ -18,8 +18,8 @@ import java.util.List;
 public class DorisDDLProvider extends DDLProviderImpl {
     private static final String creatTableSql = "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
             "Column_Fields" +
-            "UNIQUE KEY(dataease_uuid)\n" +
-            "DISTRIBUTED BY HASH(dataease_uuid) BUCKETS BUCKETS_NUM\n" +
+            "UNIQUE KEY(datains_uuid)\n" +
+            "DISTRIBUTED BY HASH(datains_uuid) BUCKETS BUCKETS_NUM\n" +
             "PROPERTIES(\"replication_num\" = \"ReplicationNum\");";
 
     @Override
@@ -53,7 +53,7 @@ public class DorisDDLProvider extends DDLProviderImpl {
     }
 
     private String createDorisTableColumnSql(final List<DatasetTableField> datasetTableFields) {
-        StringBuilder Column_Fields = new StringBuilder("dataease_uuid  varchar(50), `");
+        StringBuilder Column_Fields = new StringBuilder("datains_uuid  varchar(50), `");
         for (DatasetTableField datasetTableField : datasetTableFields) {
             Column_Fields.append(datasetTableField.getDatainsName()).append("` ");
             Integer size = datasetTableField.getSize() * 3;

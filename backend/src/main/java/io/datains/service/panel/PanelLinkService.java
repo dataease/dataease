@@ -182,7 +182,7 @@ public class PanelLinkService {
         if (!panelLink.getEnablePwd() || StringUtils.isEmpty(token) || StringUtils.equals("undefined", token)
                 || StringUtils.equals("null", token)) {
             String resourceId = panelLink.getResourceId();
-            String pwd = "dataease";
+            String pwd = "datains";
             String tk = JWTUtils.signLink(resourceId, panelLink.getUserId(), pwd);
             HttpServletResponse httpServletResponse = ServletUtils.response();
             httpServletResponse.addHeader("Access-Control-Expose-Headers", "LINK-PWD-TOKEN");
