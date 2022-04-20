@@ -14,7 +14,7 @@
         <relativePath/>
     </parent>
 
-    <name>dataease</name>
+    <name>datains</name>
     <modules>
         <module>frontend</module>
         <module>mobile</module>

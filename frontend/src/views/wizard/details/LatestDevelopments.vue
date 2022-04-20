@@ -5,7 +5,7 @@
     <div class="demo_title">
       <a target="_blank" :href="details.href">
         <img
-          :src="require('../../../assets/DataEase-' +imgIndex + '.jpg')"
+          :src="require('../../../assets/DataIns-' +imgIndex + '.jpg')"
           height="100%"
         >
       </a>
@@ -43,7 +43,7 @@ export default {
   data() {
     return {
       blogsInfo: {},
-      imgSrc: '../../../assets/DataEase-' + this.imgIndex + '.jpg'
+      imgSrc: '../../../assets/DataIns-' + this.imgIndex + '.jpg'
     }
   },
   computed: {

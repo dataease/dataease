@@ -40,7 +40,7 @@ export default {
   },
   data() {
     return {
-      imgSrc: '../../../assets/DataEase-' + this.imgIndex + '.jpg'
+      imgSrc: '../../../assets/DataIns-' + this.imgIndex + '.jpg'
     }
   },
   computed: {

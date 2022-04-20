@@ -222,7 +222,7 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
 
         if (StringUtils.isEmpty(orders)) return false;
 
-        String whiteLists = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.sqlinjection.whitelists", String.class, null);
+        String whiteLists = CommonBeanFactory.getBean(Environment.class).getProperty("datains.sqlinjection.whitelists", String.class, null);
         if (StringUtils.isNotEmpty(whiteLists)) {
             // 命中白名单 无需检测sql注入
             if (Arrays.stream(whiteLists.split(",")).anyMatch(item -> url.indexOf(item) != -1)) return false;

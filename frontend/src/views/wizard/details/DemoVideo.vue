@@ -34,7 +34,7 @@ export default {
     height: 100%;
     width: 50%;
     background-size: 100% 100% !important;
-    background-image: url('../../../assets/deV.png');
+    // background-image: url('../../../assets/deV.png');
   }
   .demo_content{
     margin: auto;

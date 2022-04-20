@@ -211,7 +211,7 @@
         </dependency>
 
         <!--由于暂时插件接口未注册到公司仓库，请先down下代码安装到本地仓库
-        https://github.com/dataease/dataease-plugins-->
+        https://github.com/xxxx/datains-plugins-->
         <dependency>
             <groupId>io.datains</groupId>
             <artifactId>datains-plugin-interface</artifactId>

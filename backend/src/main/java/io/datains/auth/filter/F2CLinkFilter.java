@@ -29,7 +29,7 @@ public class F2CLinkFilter extends AnonymousFilter {
             if (ObjectUtil.isEmpty(panelLink)) return false;
             String pwd;
             if (!panelLink.getEnablePwd()) {
-                panelLink.setPwd("dataease");
+                panelLink.setPwd("datains");
                 pwd = panelLink.getPwd();
             } else {
                 pwd = panelLink.getPwd();

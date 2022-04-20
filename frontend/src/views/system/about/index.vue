@@ -2,7 +2,7 @@
   <div style="width: 100%;display: flex;justify-content: center;">
     <el-card class="box-card about-card">
       <div slot="header" class="clearfix license-header">
-        <img src="@/assets/DataIns-white.png" alt="" width="300">
+        <!-- <img src="@/assets/DataIns-white.png" alt="" width="300"> -->
       </div>
       <div class="license-content">
         <div v-if="license.status === 'Fail'">{{ $t('about.invalid_license') }}</div>
