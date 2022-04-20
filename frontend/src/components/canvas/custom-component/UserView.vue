@@ -291,7 +291,8 @@ export default {
       'previewCanvasScale',
       'mobileLayoutStatus',
       'componentData',
-      'panelViewDetailsInfo'
+      'panelViewDetailsInfo',
+      'componentViewsData'
     ])
   },
 
@@ -478,6 +479,11 @@ export default {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
+            if (this.isEdit) {
+              this.componentViewsData[this.chart.id] = {
+                'title': this.chart.title
+              }
+            }
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
             // 记录当前数据
             this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)

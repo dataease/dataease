@@ -128,13 +128,6 @@ public class ChartViewService {
 
     public ChartViewWithBLOBs newOne(ChartViewWithBLOBs chartView) {
         long timestamp = System.currentTimeMillis();
-        // 校验名称
-        ChartViewExample queryExample = new ChartViewExample();
-        queryExample.createCriteria().andSceneIdEqualTo(chartView.getSceneId()).andNameEqualTo(chartView.getName());
-        List<ChartView> result = chartViewMapper.selectByExample(queryExample);
-        if (CollectionUtils.isNotEmpty(result)) {
-            DEException.throwException(Translator.get("theme_name_repeat"));
-        }
         chartView.setUpdateTime(timestamp);
         chartView.setId(UUID.randomUUID().toString());
         chartView.setCreateBy(AuthUtils.getUser().getUsername());

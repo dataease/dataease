@@ -314,6 +314,7 @@ import {
   DEFAULT_THRESHOLD,
   DEFAULT_TOTAL
 } from '../chart/chart'
+import { checkViewTitle } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'Group',
@@ -768,6 +769,15 @@ export default {
         this.$message({
           showClose: true,
           message: this.$t('commons.char_can_not_more_50'),
+          type: 'error'
+        })
+        return
+      }
+
+      if (checkViewTitle('new', null, this.chartName)) {
+        this.$message({
+          showClose: true,
+          message: this.$t('chart.title_repeat'),
           type: 'error'
         })
         return

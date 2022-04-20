@@ -661,6 +661,8 @@ export default {
         initPanelData(panelId, function() {
           // 初始化视图缓存
           initViewCache(panelId)
+          // 初始化记录的视图信息
+          _this.$store.commit('setComponentViewsData')
           // 初始化保存状态
           setTimeout(() => {
             _this.$store.commit('refreshSaveStatus')
