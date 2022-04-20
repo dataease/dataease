@@ -50,7 +50,7 @@
 
 <script>
 import { COLOR_PANEL, DEFAULT_TITLE_STYLE } from '../../chart/chart'
-import { checkTitle } from '@/api/chart/chart'
+import { checkViewTitle } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'TitleSelector',
@@ -115,18 +115,15 @@ export default {
         this.titleForm.title = this.chart.title
         return
       }
-      checkTitle({ id: this.chart.id, title: this.titleForm.title, sceneId: this.chart.sceneId }).then((rsp) => {
-        if (rsp.data === 'success') {
-          if (!this.titleForm.show) {
-            this.isSetting = false
-          }
-          this.$emit('onTextChange', this.titleForm)
-        } else {
-          this.$error(this.$t('chart.title_repeat'))
-          this.titleForm.title = this.chart.title
-          return
-        }
-      })
+      if (checkViewTitle('update', this.chart.id, this.titleForm.title)) {
+        this.$error(this.$t('chart.title_repeat'))
+        this.titleForm.title = this.chart.title
+        return
+      }
+      if (!this.titleForm.show) {
+        this.isSetting = false
+      }
+      this.$emit('onTextChange', this.titleForm)
     },
     inputOnInput: function(e) {
       this.$forceUpdate()
