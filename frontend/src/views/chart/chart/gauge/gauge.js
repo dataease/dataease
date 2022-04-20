@@ -51,6 +51,25 @@ export function baseGaugeOption(chart_option, chart, scale = 1) {
         value: chart.data.series[0].data[0]
       }
       chart_option.series[0].data.push(y)
+
+      chart_option.series[0].axisTick = {
+        splitNumber: getScaleValue(5, scale), // 刻度间隔数
+        length: getScaleValue(10, scale), // 子刻度线长度
+        lineStyle: {
+          width: getScaleValue(2, scale) // 子刻度线宽度
+        }
+      }
+      chart_option.series[0].splitLine = {
+        length: getScaleValue(18, scale), // 刻度线长度
+        lineStyle: {
+          width: getScaleValue(2, scale) // 刻度线宽度
+        }
+      }
+      chart_option.series[0].axisLabel = {
+        distance: getScaleValue(20, scale), // 刻度值文字里刻度线距离
+        fontSize: getScaleValue(20, scale)// 刻度值字体大小
+      }
+
       // threshold
       if (chart.senior) {
         const range = []
@@ -107,42 +126,6 @@ export function baseGaugeOption(chart_option, chart, scale = 1) {
             distance: getScaleValue(20, scale), // 刻度值文字里刻度线距离
             fontSize: getScaleValue(20, scale)// 刻度值字体大小
           }
-        } else {
-          chart_option.series[0].axisTick = {
-            splitNumber: getScaleValue(5, scale), // 刻度间隔数
-            length: getScaleValue(10, scale), // 子刻度线长度
-            lineStyle: {
-              width: getScaleValue(2, scale) // 子刻度线宽度
-            }
-          }
-          chart_option.series[0].splitLine = {
-            length: getScaleValue(18, scale), // 刻度线长度
-            lineStyle: {
-              width: getScaleValue(2, scale) // 刻度线宽度
-            }
-          }
-          chart_option.series[0].axisLabel = {
-            distance: getScaleValue(20, scale), // 刻度值文字里刻度线距离
-            fontSize: getScaleValue(20, scale)// 刻度值字体大小
-          }
-        }
-      } else {
-        chart_option.series[0].axisTick = {
-          splitNumber: getScaleValue(5, scale), // 刻度间隔数
-          length: getScaleValue(10, scale), // 子刻度线长度
-          lineStyle: {
-            width: getScaleValue(2, scale) // 子刻度线宽度
-          }
-        }
-        chart_option.series[0].splitLine = {
-          length: getScaleValue(18, scale), // 刻度线长度
-          lineStyle: {
-            width: getScaleValue(2, scale) // 刻度线宽度
-          }
-        }
-        chart_option.series[0].axisLabel = {
-          distance: getScaleValue(20, scale), // 刻度值文字里刻度线距离
-          fontSize: getScaleValue(12, scale)// 刻度值字体大小
         }
       }
     }

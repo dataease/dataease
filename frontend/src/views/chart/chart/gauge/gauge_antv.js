@@ -87,7 +87,7 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
         }
       },
       subTickLine: {
-        count: 4, // TODO 子刻度数
+        count: 4, // 子刻度数
         length: getScaleValue(6, scale) * -1, // 子刻度线长度
         style: {
           lineWidth: getScaleValue(1, scale)// 子刻度线宽度
