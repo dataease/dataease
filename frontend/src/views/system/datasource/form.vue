@@ -41,7 +41,7 @@
           </el-select>
         </el-form-item>
 
-      <ds-configuration ref="dsConfig" v-if="!datasourceType.isPlugin" :form="form" :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit" :edit-api-item="edit_api_item"></ds-configuration>
+      <ds-configuration ref="dsConfig" v-if="!datasourceType.isPlugin" :form="form" :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit"></ds-configuration>
       <plugin-com ref="pluginDsConfig" v-if="datasourceType.isPlugin"  :component-name="datasourceType.type" :obj="{form, disabled }" />
 
 
@@ -239,6 +239,7 @@ export default {
     } else {
       this.create()
       if (this.params && this.params.type) {
+        this.setType()
         this.changeType()
       }
     }
@@ -347,6 +348,18 @@ export default {
         }
       })
 
+      let status = null;
+      if(this.datasourceType.isPlugin){
+        status = this.$refs['pluginDsConfig'].callPluginInner({methodName: 'validate'})
+      }else {
+        status =  this.$refs['dsConfig'].$refs['DsConfig'].validate(valid => {
+          status = valid
+        })
+      }
+      if(!status){
+        return;
+      }
+
       this.$refs.dsForm.validate(valid => {
         if (!valid) {
           return false
@@ -411,6 +424,7 @@ export default {
       })
     },
     validaDatasource() {
+      console.log(this.$refs)
       if (!this.form.configuration.schema && this.form.type === 'oracle') {
         this.$message.error(i18n.t('datasource.please_choose_schema'))
         return
@@ -423,7 +437,12 @@ export default {
       if(this.datasourceType.isPlugin){
         status = this.$refs['pluginDsConfig'].callPluginInner({methodName: 'validate'})
       }else {
-        status =  this.$refs['dsConfig'].$refs['DsConfig'].validate
+        this.$refs['dsConfig'].$refs['DsConfig'].validate(valid => {
+          status = valid
+          if(!valid){
+            return
+          }
+        })
       }
       if(!status){
         return;

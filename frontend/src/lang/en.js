@@ -1377,7 +1377,7 @@ export default {
     priority: 'Advanced setting',
     extra_params: 'Extra JDBC connection string',
     please_input_dataPath: 'Please enter the JsonPath data path',
-    warning: 'Contains invalid datasets',
+    warning: 'Contains invalid table',
     data_table: 'Dataset Table',
     data_table_name: 'Dataset Table name',
     method: 'Request mode',
