@@ -8,6 +8,7 @@ import io.dataease.commons.utils.HttpClientConfig;
 import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.controller.ResultHolder;
 import io.dataease.dto.datasource.DorisConfiguration;
+import io.dataease.dto.datasource.MysqlConfiguration;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.domain.DeEngine;
@@ -25,14 +26,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.sql.Array;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class EngineService {
     @Resource
-    private Environment env;
+        private Environment env;
     @Resource
     private DeEngineMapper deEngineMapper;
     @Resource
@@ -194,6 +196,35 @@ public class EngineService {
             BeanUtils.copyBean(datasource, deEngines.get(0));
         }
         return datasource;
+    }
+
+    public void initSimpleEngine(){
+        if (!isSimpleMode()) {
+            return;
+        }
+        DeEngineExample engineExample = new DeEngineExample();
+        engineExample.createCriteria().andTypeEqualTo("engine_mysql");
+        List<DeEngine> deEngines = deEngineMapper.selectByExampleWithBLOBs(engineExample);
+        if (CollectionUtils.isNotEmpty(deEngines)) {
+            return;
+        }
+        DeEngine engine = new DeEngine();
+        engine.setId(UUID.randomUUID().toString());
+        engine.setType("engine_mysql");
+        MysqlConfiguration mysqlConfiguration = new MysqlConfiguration();
+        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+        Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
+        if(!matcher.find()){
+           return;
+        };
+        mysqlConfiguration.setHost(matcher.group(1));
+        mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
+        mysqlConfiguration.setDataBase(matcher.group(3).split("\\?")[0]);
+        mysqlConfiguration.setExtraParams(matcher.group(3).split("\\?")[1]);
+        mysqlConfiguration.setUsername(env.getProperty("spring.datasource.username"));
+        mysqlConfiguration.setPassword(env.getProperty("spring.datasource.password"));
+        engine.setConfiguration(new Gson().toJson(mysqlConfiguration));
+        deEngineMapper.insert(engine);
     }
 
 
