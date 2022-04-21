@@ -161,7 +161,6 @@ export default {
       selectedDatasource: {},
       engineMode: 'local',
       disabledSync: true,
-      disabledSyncDs: disabledSyncDs
     }
   },
   computed: {
