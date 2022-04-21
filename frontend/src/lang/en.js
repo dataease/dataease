@@ -1103,6 +1103,7 @@ export default {
     rename: 'Rename',
     tips: 'Tips',
     confirm_delete: 'confirm_delete',
+    confirm_delete_msg: 'Deleting a dataset will affect its related user-defined dataset, associated dataset and dashboard. Confirm the delete？',
     delete_success: 'delete_success',
     confirm: 'confirm',
     cancel: 'cancel',

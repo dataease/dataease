@@ -1106,6 +1106,7 @@ export default {
     rename: '重命名',
     tips: '提示',
     confirm_delete: '确认删除',
+    confirm_delete_msg: '数据集删除，会影响与其相关的自定义数据集、关联数据集、仪表板，确认删除？',
     delete_success: '删除成功',
     confirm: '确认',
     cancel: '取消',

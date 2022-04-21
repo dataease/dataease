@@ -1103,6 +1103,7 @@ export default {
     rename: '重命名',
     tips: '提示',
     confirm_delete: '確認刪除',
+    confirm_delete_msg: '刪除數據機，會影響與其相關的自定義數據機、 關聯數據機、儀表板，確認刪除',
     delete_success: '刪除成功',
     confirm: '確認',
     cancel: '取消',
