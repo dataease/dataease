@@ -40,7 +40,7 @@ import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { exportDetails } from '@/api/panel/panel'
 import html2canvas from 'html2canvasde'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { deepCopy } from '@/components/canvas/utils/utils'
+import { deepCopy, exportImg } from '@/components/canvas/utils/utils'
 export default {
   name: 'UserView',
   components: { LabelNormalText, ChartComponentS2, ChartComponentG2, DeMainContainer, DeContainer, DeAsideContainer, ChartComponent, TableNormal, LabelNormal, PluginCom },
@@ -137,6 +137,9 @@ export default {
       } else {
         _this.exportExcelDownload()
       }
+    },
+    exportViewImg() {
+      exportImg(this.chart.name)
     },
     exportExcelDownload(snapshot, width, height) {
       const excelHeader = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.name)

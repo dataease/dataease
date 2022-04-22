@@ -9,6 +9,7 @@ import {
 import { uuid } from 'vue-uuid'
 import store from '@/store'
 import { AIDED_DESIGN } from '@/views/panel/panel'
+import html2canvas from 'html2canvasde'
 
 export function deepCopy(target) {
   if (typeof target === 'object') {
@@ -156,3 +157,29 @@ export function checkViewTitle(opt, id, tile) {
   }
 }
 
+export function exportImg(imgName) {
+  const canvasID = document.getElementById('chartCanvas')
+  const a = document.createElement('a')
+  html2canvas(canvasID).then(canvas => {
+    const dom = document.body.appendChild(canvas)
+    dom.style.display = 'none'
+    a.style.display = 'none'
+    document.body.removeChild(dom)
+    const blob = dataURLToBlob(dom.toDataURL('image/png', 1))
+    a.setAttribute('href', URL.createObjectURL(blob))
+    a.setAttribute('download', imgName + '.png')
+    document.body.appendChild(a)
+    a.click()
+    URL.revokeObjectURL(blob)
+    document.body.removeChild(a)
+  })
+}
+
+export function dataURLToBlob(dataurl) { // ie 图片转格式
+  const arr = dataurl.split(','); const mime = arr[0].match(/:(.*?);/)[1]
+  const bstr = atob(arr[1]); let n = bstr.length; const u8arr = new Uint8Array(n)
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n)
+  }
+  return new Blob([u8arr], { type: mime })
+}
