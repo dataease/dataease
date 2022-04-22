@@ -1088,7 +1088,8 @@ export default {
     unit_ten_thousand: '萬',
     unit_million: '百萬',
     unit_hundred_million: '億',
-    formatter_decimal_count_error: '請輸入0-10的整數'
+    formatter_decimal_count_error: '請輸入0-10的整數',
+    gauge_threshold_compare_error: '阈值範圍需逐級遞增'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

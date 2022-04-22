@@ -1088,7 +1088,8 @@ export default {
     unit_ten_thousand: 'Ten Thousand',
     unit_million: 'Million',
     unit_hundred_million: 'Hundred Million',
-    formatter_decimal_count_error: 'Range 0-10'
+    formatter_decimal_count_error: 'Range 0-10',
+    gauge_threshold_compare_error: 'Range must added'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

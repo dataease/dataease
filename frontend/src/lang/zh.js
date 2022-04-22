@@ -1091,7 +1091,8 @@ export default {
     unit_ten_thousand: '万',
     unit_million: '百万',
     unit_hundred_million: '亿',
-    formatter_decimal_count_error: '请输入0-10的整数'
+    formatter_decimal_count_error: '请输入0-10的整数',
+    gauge_threshold_compare_error: '阈值范围需逐级递增'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
