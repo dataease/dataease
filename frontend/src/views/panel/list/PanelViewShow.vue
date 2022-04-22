@@ -35,14 +35,14 @@
               </el-tooltip>
             </span>
             <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
-              <el-tooltip :content="$t('panel.export_to_panel')">
-                <el-button class="el-icon-download" size="mini" circle @click="downloadToTemplate" />
-              </el-tooltip>
-            </span>
-            <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
-              <el-tooltip :content="$t('panel.export_to_pdf')">
-                <el-button class="el-icon-notebook-2" size="mini" circle @click="downloadAsPDF" />
-              </el-tooltip>
+              <el-dropdown>
+                <el-button size="mini" class="el-icon-download" circle />
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item icon="el-icon-copy-document" @click.native="downloadToTemplate">{{ $t('panel.export_to_panel') }}</el-dropdown-item>
+                  <el-dropdown-item icon="el-icon-notebook-2" @click.native="downloadAsPDF">{{ $t('panel.export_to_pdf') }}</el-dropdown-item>
+                  <el-dropdown-item icon="el-icon-picture-outline" @click.native="downloadAsImage">{{ $t('panel.export_to_img') }}</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
             </span>
             <span style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.fullscreen_preview')">
@@ -138,6 +138,7 @@ import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
 import { initPanelData } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
+import { dataURLToBlob } from '@/components/canvas/utils/utils'
 export default {
   name: 'PanelViewShow',
   components: { Preview, SaveToTemplate, PDFPreExport, ShareHead },
@@ -280,6 +281,34 @@ export default {
           }
         })
       }, 50)
+    },
+
+    downloadAsImage() {
+      this.dataLoading = true
+      setTimeout(() => {
+        this.exporting = true
+        setTimeout(() => {
+          const canvasID = document.getElementById('canvasInfoTemp')
+          const a = document.createElement('a')
+          html2canvas(canvasID).then(canvas => {
+            this.exporting = false
+            const dom = document.body.appendChild(canvas)
+            dom.style.display = 'none'
+            a.style.display = 'none'
+            document.body.removeChild(dom)
+            const blob = dataURLToBlob(dom.toDataURL('image/png', 1))
+            a.setAttribute('href', URL.createObjectURL(blob))
+            a.setAttribute('download', this.$store.state.panel.panelInfo.name + '.png')
+            document.body.appendChild(a)
+            a.click()
+            URL.revokeObjectURL(blob)
+            document.body.removeChild(a)
+            setTimeout(() => {
+              this.dataLoading = false
+            }, 300)
+          })
+        }, 500)
+      }, 0)
     },
 
     downloadAsPDF() {

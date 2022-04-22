@@ -1514,6 +1514,7 @@ export default {
     save_to_panel: 'Save to template',
     export_to_panel: 'Export to template',
     export_to_pdf: 'Export to PDF',
+    export_to_img: 'Export to Image',
     preview: 'Preview',
     fullscreen_preview: 'Fullscreen Preview',
     new_tab_preview: 'New Tab Preview',
