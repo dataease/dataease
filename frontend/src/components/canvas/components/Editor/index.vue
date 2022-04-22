@@ -153,7 +153,7 @@
       :destroy-on-close="true"
       :show-close="true"
     >
-      <span style="position: absolute;right: 70px;top:15px">
+      <span  v-if="chartDetailsVisible" style="position: absolute;right: 70px;top:15px">
         <el-dropdown>
               <el-button size="mini">
                 {{ $t('chart.export') }}<i class="el-icon-download" />

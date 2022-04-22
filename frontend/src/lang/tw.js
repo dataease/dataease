@@ -1513,6 +1513,7 @@ export default {
     save_to_panel: '保存爲模闆',
     export_to_panel: '導出爲模闆',
     export_to_pdf: '導出爲PDF',
+    export_to_img: '導出爲图片',
     preview: '預覽',
     fullscreen_preview: '全屏預覽',
     new_tab_preview: '新Tab頁預覽',
