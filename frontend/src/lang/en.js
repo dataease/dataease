@@ -1350,6 +1350,8 @@ export default {
     get_schema: 'Get Schema',
     schema: 'Database Schema',
     please_choose_schema: 'Please select Schema',
+    charset: 'Charset',
+    please_choose_charset: 'Please select Charset',
     edit_datasource_msg: 'Modifying the data source information may make the data set under the modified data source unavailable. Confirm the modification？',
     repeat_datasource_msg: 'Data source information with the same configuration already exists, ',
     confirm_save: 'Confirm save?',

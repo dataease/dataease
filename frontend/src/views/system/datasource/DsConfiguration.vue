@@ -177,6 +177,13 @@
             </el-select>
           </el-form-item>
 
+          <el-form-item v-if="form.type=='oracle'" :label="$t('datasource.charset')">
+            <el-select v-model="form.configuration.charset" filterable :placeholder="$t('datasource.please_choose_charset')"
+                       class="select-width">
+              <el-option v-for="item in datasourceType.charset" :key="item" :label="item" :value="item"/>
+            </el-select>
+          </el-form-item>
+
           <el-collapse v-if="form.type !=='es' && form.type !== 'api' && form.type !== 'mongo'">
             <el-collapse-item :title="$t('datasource.priority')" name="1">
               <el-form-item :label="$t('datasource.initial_pool_size')" prop="configuration.initialPoolSize">
@@ -203,7 +210,7 @@
 
 
 import i18n from "@/lang";
-import {checkApiDatasource} from "@/api/system/datasource";
+import {checkApiDatasource, getSchema} from "@/api/system/datasource";
 import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
 import LayoutContent from '@/components/business/LayoutContent'
 
@@ -223,6 +230,7 @@ export default {
     method: String,
     request: {},
     response: {},
+    datasourceType: {},
     showScript: {
       type: Boolean,
       default: true,
@@ -369,7 +377,20 @@ export default {
 
   },
   methods: {
-
+    getSchema() {
+      this.$refs.DsConfig.validate(valid => {
+        if (valid) {
+          const data = JSON.parse(JSON.stringify(this.form))
+          data.configuration = JSON.stringify(data.configuration)
+          getSchema(data).then(res => {
+            this.schemas = res.data
+            this.$success(i18n.t('commons.success'))
+          })
+        } else {
+          return false
+        }
+      })
+    },
     next() {
       if (this.active === 1) {
         let hasRepeatName = false

@@ -26,6 +26,9 @@ public class ProviderFactory implements ApplicationContextAware {
             final ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) context).getBeanFactory();
             if(d.isDatasource()){
                 DataSourceType dataSourceType = new DataSourceType(d.getType(), d.getName(), false, d.getExtraParams(), d.getCalculationMode());
+                if(dataSourceType.getType().equalsIgnoreCase("oracle")){
+                    dataSourceType.setCharset(d.getCharset());
+                }
                 beanFactory.registerSingleton(d.getType(), dataSourceType);
             }
         }

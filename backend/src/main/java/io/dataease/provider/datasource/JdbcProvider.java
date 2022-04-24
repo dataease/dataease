@@ -195,7 +195,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
         try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(datasourceRequest.getQuery())) {
             fieldList = fetchResultField(rs, datasourceRequest);
             result.put("fieldList", fieldList);
-            dataList = getDataResult(rs);
+            dataList = getDataResult(rs, datasourceRequest);
             result.put("dataList", dataList);
             return result;
         } catch (SQLException e) {
@@ -206,7 +206,14 @@ public class JdbcProvider extends DefaultJdbcProvider {
         return new HashMap<>();
     }
 
-    private List<String[]> getDataResult(ResultSet rs) throws Exception {
+    private List<String[]> getDataResult(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
+        String charset = null;
+        if(datasourceRequest != null && datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")){
+            JdbcConfiguration JdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
+            if(StringUtils.isNotEmpty(JdbcConfiguration.getCharset()) && !JdbcConfiguration.getCharset().equalsIgnoreCase("Default") ){
+                charset = JdbcConfiguration.getCharset();
+            }
+        }
         List<String[]> list = new LinkedList<>();
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
@@ -224,7 +231,11 @@ public class JdbcProvider extends DefaultJdbcProvider {
                         row[j] = rs.getBoolean(j + 1) ? "1" : "0";
                         break;
                     default:
-                        row[j] = rs.getString(j + 1);
+                        if(charset != null && StringUtils.isNotEmpty(rs.getString(j + 1))){
+                            row[j] = new String(rs.getString(j + 1).getBytes(charset), "UTF-8");
+                        }else {
+                            row[j] = rs.getString(j + 1);
+                        }
                         break;
                 }
             }
@@ -264,6 +275,23 @@ public class JdbcProvider extends DefaultJdbcProvider {
             fieldList.add(field);
         }
         return fieldList;
+    }
+    @Override
+    public List<String[]> getData(DatasourceRequest dsr) throws Exception {
+        List<String[]> list = new LinkedList<>();
+        try (Connection connection = getConnectionFromPool(dsr); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(dsr.getQuery())) {
+            list = getDataResult(rs, dsr);
+            if (dsr.isPageable() && (dsr.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name()) || dsr.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.db2.name()))) {
+                Integer realSize = dsr.getPage() * dsr.getPageSize() < list.size() ? dsr.getPage() * dsr.getPageSize() : list.size();
+                list = list.subList((dsr.getPage() - 1) * dsr.getPageSize(), realSize);
+            }
+
+        } catch (SQLException e) {
+            io.dataease.plugins.common.exception.DataEaseException.throwException("SQL ERROR" + e.getMessage());
+        } catch (Exception e) {
+            io.dataease.plugins.common.exception.DataEaseException.throwException("Data source connection exception: " + e.getMessage());
+        }
+        return list;
     }
 
     @Override
@@ -398,7 +426,12 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 dataSource.setDriverClassName(oracleConfiguration.getDriver());
                 dataSource.setUrl(oracleConfiguration.getJdbc());
                 dataSource.setValidationQuery("select 1 from dual");
-                jdbcConfiguration = oracleConfiguration;
+                if(StringUtils.isNotEmpty(oracleConfiguration.getCharset()) && !oracleConfiguration.getCharset().equalsIgnoreCase("Default")){
+                    Properties props = new Properties();
+                    props.put("serverEncoding", oracleConfiguration.getCharset());
+                    props.put("clientEncoding", "UTF-8");
+                    jdbcConfiguration = oracleConfiguration;
+                }
                 break;
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);

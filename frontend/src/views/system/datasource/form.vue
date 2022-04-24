@@ -41,7 +41,7 @@
           </el-select>
         </el-form-item>
 
-      <ds-configuration ref="dsConfig" v-if="!datasourceType.isPlugin" :form="form" :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit"></ds-configuration>
+      <ds-configuration ref="dsConfig" v-if="!datasourceType.isPlugin" :datasource-type='datasourceType' :form="form" :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit"></ds-configuration>
       <plugin-com ref="pluginDsConfig" v-if="datasourceType.isPlugin"  :component-name="datasourceType.type" :obj="{form, disabled }" />
 
 
@@ -352,7 +352,7 @@ export default {
       if(this.datasourceType.isPlugin){
         status = this.$refs['pluginDsConfig'].callPluginInner({methodName: 'validate'})
       }else {
-        status =  this.$refs['dsConfig'].$refs['DsConfig'].validate(valid => {
+        this.$refs['dsConfig'].$refs['DsConfig'].validate(valid => {
           status = valid
         })
       }
@@ -424,7 +424,6 @@ export default {
       })
     },
     validaDatasource() {
-      console.log(this.$refs)
       if (!this.form.configuration.schema && this.form.type === 'oracle') {
         this.$message.error(i18n.t('datasource.please_choose_schema'))
         return

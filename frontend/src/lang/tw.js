@@ -1351,6 +1351,8 @@ export default {
     get_schema: '獲取 Schema',
     schema: '數據庫 Schema',
     please_choose_schema: '請選擇數據庫 Schema',
+    charset: '字符集',
+    please_choose_charset: '請選擇數據庫字符集',
     edit_datasource_msg: '修改數據源信息，可能會導致改數據源下的數據集不可用，確認修改？',
     repeat_datasource_msg: '已經存在相同配置的數據源信息，',
     confirm_save: '確認保存?',
