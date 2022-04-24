@@ -34,4 +34,6 @@ public interface PanelGroupMapper {
     int updateByPrimaryKeyWithBLOBs(PanelGroupWithBLOBs record);
 
     int updateByPrimaryKey(PanelGroup record);
+
+    List<PanelGroup> selectByPid(String pid);
 }

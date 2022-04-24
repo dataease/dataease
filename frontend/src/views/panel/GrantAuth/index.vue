@@ -26,12 +26,16 @@
 import GrantDept from './dept'
 import GrantRole from './role'
 import GrantUser from './user'
-import { fineSave } from '@/api/panel/share'
+import { fineSave, shareFolder } from '@/api/panel/share'
 export default {
   name: 'GrantAuth',
   components: { GrantDept, GrantRole, GrantUser },
   props: {
     resourceId: {
+      type: String,
+      default: null
+    },
+    resourceType: {
       type: String,
       default: null
     }
@@ -74,10 +78,18 @@ export default {
         resourceId,
         authURD: targetDto
       }
-      fineSave(param).then(res => {
-        this.$success(this.$t('commons.share_success'))
-        this.$emit('close-grant', 0)
-      })
+      // 判断分享文件的类并发起对应请求
+      if (this.resourceType === 'folder') {
+        shareFolder(param).then(res => {
+          this.$success(this.$t('commons.share_success'))
+          this.$emit('close-grant', 0)
+        })
+      } else {
+        fineSave(param).then(res => {
+          this.$success(this.$t('commons.share_success'))
+          this.$emit('close-grant', 0)
+        })
+      }
     },
     cancel() {
       this.$refs[this.activeName].cancel()

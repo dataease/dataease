@@ -142,7 +142,7 @@
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-edit" :command="beforeClickMore('edit',data,node)">
                         {{ $t('panel.edit') }}
                       </el-dropdown-item>
-                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-share" :command="beforeClickMore('share',data,node)">
+                      <el-dropdown-item icon="el-icon-share" :command="beforeClickMore('share',data,node)">
                         {{ $t('panel.share') }}
                       </el-dropdown-item>
                       <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-document-copy" :command="beforeClickMore('copy',data,node)">
@@ -192,7 +192,8 @@
         width="800px"
         class="dialog-css"
       >
-        <grant-auth v-if="authVisible" :resource-id="authResourceId" @close-grant="closeGrant" />
+        <!--将分享的type传入，判断是文件夹还是仪表板-->
+        <grant-auth v-if="authVisible" :resource-id="authResourceId" :resource-type="authResourceType" @close-grant="closeGrant" />
       </el-dialog>
 
       <el-dialog
@@ -289,6 +290,7 @@ export default {
       linkResourceId: null,
       authTitle: null,
       authResourceId: null,
+      authResourceType: null,
       authVisible: false,
       defaultData: [],
       dialogTitle: '',
@@ -676,6 +678,7 @@ export default {
 
     share(data) {
       this.authResourceId = data.id
+      this.authResourceType = data.nodeType
       this.authTitle = '把[' + data.label + ']分享给'
       this.authVisible = true
     },

@@ -8,16 +8,15 @@ import io.dataease.base.domain.PanelShare;
 import io.dataease.base.domain.PanelShareExample;
 import io.dataease.base.mapper.PanelGroupMapper;
 import io.dataease.base.mapper.PanelShareMapper;
+import io.dataease.base.mapper.ext.ExtPanelGroupMapper;
 import io.dataease.base.mapper.ext.ExtPanelShareMapper;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
-import io.dataease.controller.request.panel.PanelShareFineDto;
-import io.dataease.controller.request.panel.PanelShareRemoveRequest;
-import io.dataease.controller.request.panel.PanelShareRequest;
-import io.dataease.controller.request.panel.PanelShareSearchRequest;
+import io.dataease.controller.request.panel.*;
 import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.dto.panel.PanelShareDto;
 import io.dataease.dto.panel.PanelShareOutDTO;
 import io.dataease.dto.panel.PanelSharePo;
@@ -151,6 +150,26 @@ public class ShareService {
         });
 
     }
+
+    /**
+     * 遍历文件夹下的所有文件，依次分享
+     * @param panelShareFineDto
+     */
+    @Transactional
+    public void bulkSave(PanelShareFineDto panelShareFineDto) {
+        List<PanelGroup> panelGroupList = panelGroupMapper.selectByPid(panelShareFineDto.getResourceId());
+        while (panelGroupList.size() > 0) {
+            PanelGroup item = panelGroupList.remove(0);
+            if (item.getNodeType().equals("folder")) {
+                panelGroupList.addAll(panelGroupMapper.selectByPid(item.getId()));
+            }
+            else {
+                panelShareFineDto.setResourceId(item.getId());
+                fineSave(panelShareFineDto);
+            }
+        }
+    }
+
 
     private void buildRedAuthURD(Integer type, List<Long> redIds, AuthURD authURD) {
         if (type == 0) {

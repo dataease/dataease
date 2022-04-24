@@ -49,6 +49,11 @@ public class ShareServer implements ShareApi {
     }
 
     @Override
+    public void bulkSave(@RequestBody PanelShareFineDto panelShareFineDto) {
+        shareService.bulkSave(panelShareFineDto);
+    }
+
+    @Override
     public void removeShares(@RequestBody PanelShareRemoveRequest request) {
         shareService.removeShares(request);
     }

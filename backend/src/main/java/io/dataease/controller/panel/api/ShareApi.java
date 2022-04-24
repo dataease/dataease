@@ -50,6 +50,11 @@ public interface ShareApi {
     @PostMapping("/fineSave")
     void fineSave(PanelShareFineDto panelShareFineDto);
 
+    @DePermission(type = DePermissionType.PANEL, value = "resourceId")
+    @ApiOperation("批量分享")
+    @PostMapping("/bulkShare")
+    void bulkSave(PanelShareFineDto panelShareFineDto);
+
     @ApiOperation("删除分享")
     @PostMapping("/removeShares")
     void removeShares(PanelShareRemoveRequest request);

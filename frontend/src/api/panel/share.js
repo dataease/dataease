@@ -8,6 +8,14 @@ import request from '@/utils/request'
     data
   })
 } */
+// 分享文件夹
+export function shareFolder(data) {
+  return request({
+    url: '/api/share/bulkShare',
+    method: 'post',
+    data
+  })
+}
 
 export function shareTargets(panelId) {
   return request({

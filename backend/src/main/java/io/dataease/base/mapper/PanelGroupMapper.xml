@@ -115,6 +115,15 @@
       order by ${orderByClause}
     </if>
   </select>
+  <select id="selectByPid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from panel_group
+    where pid = #{pid,jdbcType=VARCHAR}
+  </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
