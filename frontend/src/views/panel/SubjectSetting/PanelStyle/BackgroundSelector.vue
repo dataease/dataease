@@ -21,16 +21,16 @@
             </el-col>
             <el-col :span="18">
               <el-upload
-                action=""
+                action="/static/resource/upload"
                 accept=".jpeg,.jpg,.png,.gif"
                 class="avatar-uploader"
                 list-type="picture-card"
                 :class="{disabled:uploadDisabled}"
                 :on-preview="handlePictureCardPreview"
                 :on-remove="handleRemove"
-                :http-request="upload"
                 :file-list="fileList"
                 :on-change="onChange"
+                :before-upload="beforeUpload"
               >
                 <i class="el-icon-plus" />
               </el-upload>
@@ -51,6 +51,7 @@
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
+import { uuid } from 'vue-uuid'
 
 export default {
   name: 'BackgroundSelector',
@@ -66,7 +67,8 @@ export default {
     }
   },
   computed: mapState([
-    'canvasStyleData'
+    'canvasStyleData',
+    'staticResourcePath'
   ]),
   watch: {
     // deep监听panel 如果改变 提交到 store
@@ -99,16 +101,24 @@ export default {
       this.dialogVisible = true
     },
     onChange(file, fileList) {
-      var _this = this
-      _this.uploadDisabled = true
-      const reader = new FileReader()
-      reader.onload = function() {
-        _this.panel.imageUrl = reader.result
-        this.commitStyle()
-      }
       this.$store.state.styleChangeTimes++
-      reader.readAsDataURL(file.raw)
     },
+    beforeUpload(file) {
+      file.name = uuid.v1() + '-' + file.name
+      this.panel.imageUrl = this.staticResourcePath + '/' + file.name
+    },
+    // onChange(file, fileList) {
+    //   const newName = uuidV1().
+    //   var _this = this
+    //   _this.uploadDisabled = true
+    //   const reader = new FileReader()
+    //   reader.onload = function() {
+    //     _this.panel.imageUrl = reader.result
+    //     this.commitStyle()
+    //   }
+    //   this.$store.state.styleChangeTimes++
+    //   reader.readAsDataURL(file.raw)
+    // },
     upload(file) {
       // console.log('this is upload')
     }

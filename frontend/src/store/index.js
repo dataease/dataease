@@ -109,7 +109,9 @@ const data = {
     // 仪表板视图明细
     panelViewDetailsInfo: {},
     // 当前tab页内组件
-    curActiveTabInner: null
+    curActiveTabInner: null,
+    // static resource local path
+    staticResourcePath: 'static-resource'
   },
   mutations: {
     ...animation.mutations,
