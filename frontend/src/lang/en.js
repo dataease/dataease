@@ -903,7 +903,10 @@ export default {
     filter_in: 'IN',
     filter_not_in: 'NOT IN',
     chart_details: 'Chart Details',
+    details: 'Details',
+    image: 'Image',
     export_details: 'Export Details',
+    export: 'Export',
     color_light: 'Light',
     color_classical: 'Classical',
     color_fresh: 'Fresh',
@@ -1088,7 +1091,8 @@ export default {
     unit_ten_thousand: 'Ten Thousand',
     unit_million: 'Million',
     unit_hundred_million: 'Hundred Million',
-    formatter_decimal_count_error: 'Range 0-10'
+    formatter_decimal_count_error: 'Range 0-10',
+    gauge_threshold_compare_error: 'Range must added'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1512,6 +1516,7 @@ export default {
     save_to_panel: 'Save to template',
     export_to_panel: 'Export to template',
     export_to_pdf: 'Export to PDF',
+    export_to_img: 'Export to Image',
     preview: 'Preview',
     fullscreen_preview: 'Fullscreen Preview',
     new_tab_preview: 'New Tab Preview',

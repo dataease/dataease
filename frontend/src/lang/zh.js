@@ -913,7 +913,9 @@ export default {
     color_fast: '轻快',
     color_spiritual: '灵动',
     chart_details: '视图明细',
-    export_details: '导出明细',
+    export: '导出',
+    details: '明细',
+    image: '图片',
     chart_data: '数据',
     chart_style: '样式',
     drag_block_type_axis: '类别轴',
@@ -1091,7 +1093,8 @@ export default {
     unit_ten_thousand: '万',
     unit_million: '百万',
     unit_hundred_million: '亿',
-    formatter_decimal_count_error: '请输入0-10的整数'
+    formatter_decimal_count_error: '请输入0-10的整数',
+    gauge_threshold_compare_error: '阈值范围需逐级递增'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
@@ -1521,6 +1524,7 @@ export default {
     save_to_panel: '保存为模板',
     export_to_panel: '导出为模板',
     export_to_pdf: '导出为PDF',
+    export_to_img: '导出为图片',
     preview: '预览',
     fullscreen_preview: '全屏预览',
     new_tab_preview: '新Tab页预览',

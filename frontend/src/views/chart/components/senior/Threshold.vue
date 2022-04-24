@@ -137,6 +137,16 @@ export default {
             })
             return
           }
+          if (i > 0) {
+            if (parseFloat(ele) <= parseFloat(arr[i - 1])) {
+              this.$message({
+                message: this.$t('chart.gauge_threshold_compare_error'),
+                type: 'error',
+                showClose: true
+              })
+              return
+            }
+          }
         }
       }
       this.changeThreshold()
