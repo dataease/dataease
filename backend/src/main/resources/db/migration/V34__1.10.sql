@@ -15,4 +15,4 @@ INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUE
 
 ALTER TABLE `my_plugin` ADD COLUMN `ds_type` VARCHAR(45) NULL COMMENT '数据源类型' AFTER `icon`;
 
-INSERT INTO `my_plugin` (`plugin_id`, `name`, `store`, `free`, `cost`, `category`, `descript`, `version`, `creator`, `load_mybatis`, `install_time`, `module_name`, `ds_type`) VALUES ('5', 'Maxcompute 数据源插件', 'thirdpart', '0', '0', 'datasource', 'Maxcompute 插件', '1.0-SNAPSHOT', 'DATAEASE', '0', '1650765903630', 'maxcompute-backend', 'maxcompute');
+INSERT INTO `my_plugin` (`plugin_id`, `name`, `store`, `free`, `cost`, `category`, `descript`, `version`, `creator`, `load_mybatis`, `install_time`, `module_name`, `ds_type`) VALUES ('5', 'Maxcompute 数据源插件', 'default', '0', '0', 'datasource', 'Maxcompute 插件', '1.0-SNAPSHOT', 'DATAEASE', '0', '1650765903630', 'maxcompute-backend', 'maxcompute');
