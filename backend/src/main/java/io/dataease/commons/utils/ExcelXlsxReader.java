@@ -344,9 +344,18 @@ public class ExcelXlsxReader extends DefaultHandler {
             XSSFCellStyle style = this.stylesTable.getStyleAt(styleIndex);
             formatIndex = style.getDataFormat();
             formatString = style.getDataFormatString();
+            if (formatIndex == 58) {
+                /*
+                尝试复现issue 1248, formatIndex正常获取，但是formatString无法匹配
+                因此从index 58对应的style中找出了理应匹配的formatString进行特判。
+                经测试，提到的两处bug可以正常识别。
+                 */
+                formatString = "m月d日;@";
+            }
             short format = this.formatIndex;
+            // format为180时也应为时间类型
             if ( (14 <= format && format <= 17) || format == 20 || format == 22 || format == 31 || format == 35 || format == 45 || format == 46 || format == 47 || (57 <= format && format <= 59)
-                    || (175 < format && format < 178) || (182 <= format && format <= 196) || (210 <= format && format <= 213) || (208 == format))
+                    || (175 < format && format < 178) || (182 <= format && format <= 196) || (210 <= format && format <= 213) || (208 == format) || format == 180)
             { // 日期
                 isDateFormat = true;
             }
