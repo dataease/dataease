@@ -784,7 +784,8 @@ export default {
     filter: 'Filter',
     none: 'None',
     background: 'Background',
-
+    canvasSize: 'canvas size',
+    canvasWith: 'canvas width',
     border: 'Corner',
     border_width: 'Border width',
     border_radius: 'Border radius',

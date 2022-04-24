@@ -788,6 +788,8 @@ export default {
     filter: '过滤',
     none: '无',
     background: '背景',
+    canvasSize: '画布尺寸',
+    canvasWith: '画布宽度',
     border: '边角',
     border_width: '边框宽度',
     border_radius: '边框半径',

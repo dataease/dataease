@@ -80,7 +80,9 @@
       <!-- 仪表板预览区域-->
       <el-row class="panel-design-preview">
         <!--        <div id="imageWrapper" ref="imageWrapper" style="width: 4096px;height: 2160px">-->
+        <!-- <div>12321312</div> -->
         <div id="imageWrapper" ref="imageWrapper" :style="imageWrapperStyle">
+          <!-- <div>12321</div> -->
           <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
             <Preview v-if="showMainFlag" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
           </fullscreen>
@@ -408,6 +410,11 @@ export default {
     overflow-x: hidden;
     overflow-y: auto;
     /*padding: 5px;*/
+
+  }
+   ::-webkit-scrollbar {
+    width: 0px!important;
+    height: 8px!important;
   }
 
   .custom-position {

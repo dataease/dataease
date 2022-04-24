@@ -192,6 +192,7 @@ export default {
     },
 
     handleLogin() {
+      console.log('111111')
       this.initCache()
       this.clearOidcMsg()
       this.$refs.loginForm.validate(valid => {
@@ -202,11 +203,14 @@ export default {
             password: encrypt(this.loginForm.password),
             loginType: this.loginForm.loginType
           }
+          console.log('2222222')
           const publicKey = localStorage.getItem('publicKey')
           this.$store.dispatch('user/login', user).then(() => {
+            console.log('33333')
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {
+            console.log('44444')
             this.loading = false
           })
         } else {

@@ -138,6 +138,7 @@
 
       <!--画布区域-->
       <de-main-container id="canvasInfo-main">
+        <!-- <div>2121</div> -->
         <!--左侧抽屉-->
         <el-drawer
           :visible.sync="show"
@@ -157,19 +158,27 @@
         </el-drawer>
 
         <!--PC端画布区域-->
-        <div
-          v-if="!previewVisible&&!mobileLayoutStatus"
-          id="canvasInfo"
-          class="this_canvas"
-          :style="customCanvasStyle"
-          @drop="handleDrop"
-          @dragover="handleDragOver"
-          @mousedown="handleMouseDown"
-          @mouseup="deselectCurComponent"
-          @scroll="canvasScroll"
+        <vue-ruler-tool
+          :content-layout="{left:0,top:0}"
+          :is-scale-revise="false"
+          :v-model="presetLine"
+          class="ruler_class"
+          :parent="true"
         >
-          <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
-        </div>
+          <div
+            v-if="!previewVisible&&!mobileLayoutStatus"
+            id="canvasInfo"
+            class="this_canvas"
+            :style="customCanvasStyle"
+            @drop="handleDrop"
+            @dragover="handleDragOver"
+            @mousedown="handleMouseDown"
+            @mouseup="deselectCurComponent"
+            @scroll="canvasScroll"
+          >
+            <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
+          </div>
+        </vue-ruler-tool>
         <!--移动端画布区域 保持宽高比2.5-->
         <el-row v-if="mobileLayoutStatus" class="mobile_canvas_main">
           <el-col :span="8" class="this_mobile_canvas_cell">
@@ -329,6 +338,7 @@
 </template>
 
 <script>
+import VueRulerTool from 'vue-ruler-tool'
 import DeMainContainer from '@/components/datains/DeMainContainer'
 import DeContainer from '@/components/datains/DeContainer'
 import DeAsideContainer from '@/components/datains/DeAsideContainer'
@@ -372,6 +382,7 @@ import OuterParamsSet from '@/views/panel/OuterParamsSet/index'
 export default {
   name: 'PanelEdit',
   components: {
+    VueRulerTool,
     OuterParamsSet,
     ComponentWait,
     DeMainContainer,
@@ -393,6 +404,7 @@ export default {
   },
   data() {
     return {
+      presetLine: [{ type: 'l', site: 100 }, { type: 'v', site: 200 }],
       asideToolType: 'none',
       outerParamsSetVisible: false,
       autoMoveOffSet: 15,
@@ -542,6 +554,9 @@ export default {
           }
         }
       }
+
+      style.width = this.canvasStyleData.width + 'px'
+      console.log('shezhi===', style, this.canvasStyleData)
       return style
     },
     panelInfo() {
@@ -1090,7 +1105,12 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss"  scoped>
+    .ruler_class{
+      .vue-ruler-h{
+        color: #f99;
+      }
+    }
   .ms-aside-container {
     height: calc(100vh - 35px);
     max-width: 60px;
@@ -1231,9 +1251,16 @@ export default {
   .this_canvas {
     width: 100%;
     height: calc(100vh - 35px);
-    overflow-x: hidden;
+    overflow-x: scroll;
     overflow-y: auto;
+    // overflow: scroll;
+    // overflow-y: auto;
+    white-space: nowrap;
     background-size: 100% 100% !important;
+      ::-webkit-scrollbar {
+      width:4px;
+      height: 20px;
+    }
   }
 
   .el-main {
@@ -1324,7 +1351,7 @@ export default {
 
   ::-webkit-scrollbar {
     width: 2px !important;
-    height: 2px !important;
+    height: 10px !important;
   }
 
   .tools-window-main {

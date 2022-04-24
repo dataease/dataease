@@ -14,7 +14,7 @@
       </span>
     </div>
     <div v-show="!editControlButton" class="toolbar">
-      <el-tooltip :content="$t('panel.mobile_layout')">
+      <el-tooltip :content="$t('panel.mobile_layout')+'121'">
         <el-button class="icon iconfont-tb icon-yidongduan" size="mini" circle @click="openMobileLayout" />
       </el-tooltip>
       <el-tooltip v-if="!canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.suspension')">
