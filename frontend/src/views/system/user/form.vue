@@ -13,6 +13,10 @@
       <el-form-item :label="$t('commons.email')" prop="email">
         <el-input v-model="form.email" />
       </el-form-item>
+      <!--显示初始密码，并支持修改-->
+      <el-form-item v-if="formType=='add'" :label="$t('commons.defaultPassword')" prop="password">
+        <el-input v-model="form.password" />
+      </el-form-item>
       <!-- <el-form-item v-if="formType !== 'modify'" :label="$t('commons.password')" prop="password">
         <el-input v-model="form.password" autocomplete="off" show-password />
       </el-form-item>
@@ -78,7 +82,7 @@
 import LayoutContent from '@/components/business/LayoutContent'
 import { PHONE_REGEX } from '@/utils/validate'
 import { getDeptTree, treeByDeptId } from '@/api/system/dept'
-import { addUser, editUser, allRoles } from '@/api/system/user'
+import { addUser, editUser, allRoles, getDefaultPassword } from '@/api/system/user'
 import { pluginLoaded } from '@/api/user'
 export default {
 
@@ -154,13 +158,14 @@ export default {
         enable: []
 
       },
-      defaultForm: { id: null, username: null, nickName: null, gender: '男', email: null, enabled: 1, deptId: null, phone: null, roleIds: [2] },
+      defaultForm: { id: null, username: null, nickName: null, gender: '男', email: null, enabled: 1, deptId: null, phone: null, roleIds: [2], password: '123' },
       depts: null,
       roles: [],
       roleDatas: [],
       userRoles: [],
       formType: 'add',
-      isPluginLoaded: false
+      isPluginLoaded: false,
+      defaultPassword: '123'
     }
   },
 
@@ -208,6 +213,11 @@ export default {
       this.depts = null
       this.formType = 'add'
       this.form = Object.assign({}, this.defaultForm)
+      // 获取初始密码
+      getDefaultPassword().then(res => {
+        this.defaultPassword = res.data
+        this.form.password = this.defaultPassword
+      })
       // console.log(this.form)
     },
     edit(row) {

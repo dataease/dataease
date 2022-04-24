@@ -4,10 +4,12 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.auth.util.JWTUtils;
 import io.dataease.base.domain.SysRole;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
+import io.dataease.commons.utils.ServletUtils;
 import io.dataease.controller.response.ExistLdapUser;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.request.SysUserCreateRequest;
@@ -24,6 +26,7 @@ import io.swagger.annotations.ApiOperation;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -68,7 +71,18 @@ public class SysUserController {
     @RequiresPermissions("user:add")
     @PostMapping("/create")
     public void create(@RequestBody SysUserCreateRequest request) {
+        // 后端验证，防止绕过前端发送请求
+        if (!request.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,30}$")) {
+            throw new RuntimeException("密码格式错误");
+        }
         sysUserService.save(request);
+    }
+
+    @ApiOperation("获取默认密码")
+    @RequiresPermissions("user:add")
+    @PostMapping("/defaultPassword")
+    public String getDefaultPassword() {
+        return sysUserService.defaultPWD();
     }
 
     @ApiOperation("更新用户")
@@ -119,7 +133,22 @@ public class SysUserController {
     @ApiOperation("更新个人信息")
     @PostMapping("/updatePersonInfo")
     public void updatePersonInfo(@RequestBody SysUserCreateRequest request) {
-        sysUserService.updatePersonInfo(request);
+        Long userId = AuthUtils.getUser().getUserId();
+        // 防止修改他人信息， 防止必填内容留空
+        if (!request.getUserId().equals(userId) || request.getEmail() == null || request.getNickName() == null) {
+            throw new RuntimeException("内容不合法");
+        }
+        // 再次验证，匹配格式
+        if (!request.getPhone().isEmpty() && !request.getPhone().matches("^1[3|4|5|7|8][0-9]{9}$")) {
+            throw new RuntimeException("电话格式错误");
+        }
+        if (!request.getEmail().matches("^[a-zA-Z0-9_._-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$")) {
+            throw new RuntimeException("邮箱格式错误");
+        }
+        if (!(2 <= request.getNickName().length() && request.getNickName().length() <= 50)) {
+            throw new RuntimeException("姓名格式错误");
+        }
+        sysUserService.updatePersonBasicInfo(request);
     }
 
     @ApiOperation("设置语言")

@@ -9,8 +9,17 @@ const pathMap = {
   createPath: '/api/user/create',
   updatePath: '/api/user/update',
   editPasswordPath: '/api/user/adminUpdatePwd',
-  editStatusPath: '/api/user/updateStatus'
+  editStatusPath: '/api/user/updateStatus',
+  getDefaultPassword: '/api/user/defaultPassword'
 }
+// 获取初始密码
+export function getDefaultPassword() {
+  return request({
+    url: pathMap.getDefaultPassword,
+    method: 'post'
+  })
+}
+
 export function userLists(page, size, data) {
   return request({
     url: pathMap.queryPath + page + '/' + size,
@@ -67,8 +76,8 @@ export const editStatus = (data) => {
     data
   })
 }
-
-export const persionInfo = () => {
+// 修改拼写错误
+export const personInfo = () => {
   return request({
     url: pathMap.personInfoPath,
     method: 'post'
@@ -133,4 +142,4 @@ export function existLdapUsers() {
   })
 }
 
-export default { editPassword, delUser, editUser, addUser, userLists, editStatus, persionInfo, updatePerson, updatePersonPwd, allRoles, roleGrid, ldapUsers, saveLdapUser, existLdapUsers }
+export default { editPassword, delUser, editUser, addUser, userLists, editStatus, personInfo, updatePerson, updatePersonPwd, allRoles, roleGrid, ldapUsers, saveLdapUser, existLdapUsers, getDefaultPassword }

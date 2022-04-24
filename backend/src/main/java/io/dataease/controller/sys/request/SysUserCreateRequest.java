@@ -13,5 +13,5 @@ public class SysUserCreateRequest extends SysUser {
 
     @ApiModelProperty(value = "角色ID集合", required = true, position = 7)
     private List<Long> roleIds;
-
+    private String password;
 }
