@@ -249,7 +249,7 @@ public class PluginService {
             e.printStackTrace();
         }
         //BeanUtils.copyBean(result, myPlugin);
-        if(result.getCategory().equalsIgnoreCase("datasource")){
+        if(result.getCategory().equalsIgnoreCase("datasource") && (StringUtils.isEmpty(result.getStore()) || !result.getStore().equalsIgnoreCase("default"))){
             result.setStore("thirdpart");
         }
 
