@@ -1954,6 +1954,10 @@ export default {
   },
   wizard: {
     welcome_title: '歡迎使用DataIns',
+    data_connection: '数据连接',
+    data_preparation: '数据准备',
+    analysis_display: '分析展现',
+    resource_publishing: '资源发布',
     welcome_hint: '數據可視化自助探索分析工具',
     demo_video: '演示視頻',
     quick_start: '快速入門',

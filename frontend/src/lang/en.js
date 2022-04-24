@@ -1944,6 +1944,10 @@ export default {
   },
   wizard: {
     welcome_title: 'Welcome To Use DataIns',
+    data_connection: 'data connection',
+    data_preparation: 'data preparation',
+    analysis_display: 'analysis display',
+    resource_publishing: 'resource publishing',
     welcome_hint: 'data visual analysis tool',
     demo_video: 'Demo',
     quick_start: 'Quick Start',
