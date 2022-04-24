@@ -175,7 +175,12 @@ public class ApiProvider extends Provider{
         }
         List<LinkedHashMap> datas = new ArrayList<>();
         try {
-            datas = JsonPath.read(response,apiDefinition.getDataPath());
+            Object object = JsonPath.read(response,apiDefinition.getDataPath());
+            if(object instanceof List){
+                datas = (List<LinkedHashMap>)object;
+            }else {
+                datas.add((LinkedHashMap)object);
+            }
         }catch (Exception e){
             throw new Exception("jsonPath 路径错误：" + e.getMessage());
         }
@@ -215,7 +220,14 @@ public class ApiProvider extends Provider{
 
     private List<String[]> fetchResult(String result, ApiDefinition apiDefinition){
         List<String[]> dataList = new LinkedList<>();
-        List<LinkedHashMap> datas = JsonPath.read(result, apiDefinition.getDataPath());
+        List<LinkedHashMap> datas = new ArrayList<>();
+
+        Object object = JsonPath.read(result,apiDefinition.getDataPath());
+        if(object instanceof List){
+            datas = (List<LinkedHashMap>)object;
+        }else {
+            datas.add((LinkedHashMap)object);
+        }
         for (LinkedHashMap data : datas) {
             String[] row = new String[apiDefinition.getFields().size()];
             int i = 0;
