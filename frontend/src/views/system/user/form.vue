@@ -70,7 +70,7 @@
         <el-button @click="reset">{{ $t('commons.reset') }}</el-button>
       </el-form-item>
 
-      <el-form-item>
+      <el-form-item v-if="formType === 'add'">
         <!-- <el-link class="pwd-tips" type="danger" :underline="false">{{ $t('commons.default_pwd') + '：' + defaultPWD }}</el-link> -->
         <el-button class="pwd-tips" type="text">{{ $t('commons.default_pwd') + '：' + defaultPWD }}</el-button>
         <el-button
