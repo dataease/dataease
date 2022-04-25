@@ -47,7 +47,8 @@ export default {
   },
   data() {
     return {
-      refId: null
+      refId: null,
+      lastMapChart: null
     }
   },
   computed: {
@@ -86,7 +87,12 @@ export default {
         if (this.curComponent && this.curComponent.DetailAreaCode && this.curComponent.DetailAreaCode.length) {
           DetailAreaCode = this.curComponent.DetailAreaCode
         }
-        return { ...temp, ...{ DetailAreaCode: DetailAreaCode }}
+        if (!this.curComponent && this.lastMapChart) {
+          return this.lastMapChart
+        }
+        const result = { ...temp, ...{ DetailAreaCode: DetailAreaCode }}
+        this.setLastMapChart(result)
+        return result
       }
       return null
     }
@@ -95,6 +101,9 @@ export default {
 
     renderComponent() {
       return this.chart.render
+    },
+    setLastMapChart(data) {
+      this.lastMapChart = JSON.parse(JSON.stringify(data))
     }
   }
 }
