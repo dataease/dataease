@@ -113,7 +113,7 @@ export default {
         border-left: none;
         color: #9ea6b2;
         border: 1px solid var(--TableBorderColor, #E6E6E6);
-        width: auto;
+        width: 100%;
         // max-width: 0%;
         position: relative;
         display: inherit;
