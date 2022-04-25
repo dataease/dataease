@@ -23,7 +23,7 @@
           </el-link> -->
         </el-col>
       </el-row>
-      <el-row style="display: flex;border-bottom: 1px solid;border-bottom-color:#E6E6E6;">
+      <el-row style="display: flex;">
         <el-col style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px; width: 90px;">
           <span>{{ $t('panel.share_to') }}</span>
         </el-col>
