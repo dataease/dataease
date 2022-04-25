@@ -21,16 +21,15 @@
             </el-col>
             <el-col :span="18">
               <el-upload
-                action="/static/resource/upload"
+                action=""
                 accept=".jpeg,.jpg,.png,.gif"
                 class="avatar-uploader"
                 list-type="picture-card"
+                :http-request="upload"
                 :class="{disabled:uploadDisabled}"
                 :on-preview="handlePictureCardPreview"
                 :on-remove="handleRemove"
                 :file-list="fileList"
-                :on-change="onChange"
-                :before-upload="beforeUpload"
               >
                 <i class="el-icon-plus" />
               </el-upload>
@@ -51,7 +50,7 @@
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
-import { uuid } from 'vue-uuid'
+import { uploadFileResult } from '@/api/staticResource/staticResource'
 
 export default {
   name: 'BackgroundSelector',
@@ -67,8 +66,7 @@ export default {
     }
   },
   computed: mapState([
-    'canvasStyleData',
-    'staticResourcePath'
+    'canvasStyleData'
   ]),
   watch: {
     // deep监听panel 如果改变 提交到 store
@@ -100,27 +98,13 @@ export default {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
-    onChange(file, fileList) {
-      this.$store.state.styleChangeTimes++
-    },
-    beforeUpload(file) {
-      file.name = uuid.v1() + '-' + file.name
-      this.panel.imageUrl = this.staticResourcePath + '/' + file.name
-    },
-    // onChange(file, fileList) {
-    //   const newName = uuidV1().
-    //   var _this = this
-    //   _this.uploadDisabled = true
-    //   const reader = new FileReader()
-    //   reader.onload = function() {
-    //     _this.panel.imageUrl = reader.result
-    //     this.commitStyle()
-    //   }
-    //   this.$store.state.styleChangeTimes++
-    //   reader.readAsDataURL(file.raw)
-    // },
     upload(file) {
-      // console.log('this is upload')
+      const _this = this
+      uploadFileResult(file, (fileUrl) => {
+        _this.$store.state.styleChangeTimes++
+        _this.panel.imageUrl = fileUrl
+        _this.commitStyle()
+      })
     }
   }
 }

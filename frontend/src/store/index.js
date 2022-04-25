@@ -111,7 +111,7 @@ const data = {
     // 当前tab页内组件
     curActiveTabInner: null,
     // static resource local path
-    staticResourcePath: 'static-resource'
+    staticResourcePath: '/static-resource/'
   },
   mutations: {
     ...animation.mutations,
