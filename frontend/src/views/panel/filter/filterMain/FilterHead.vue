@@ -114,7 +114,7 @@ export default {
         color: #9ea6b2;
         border: 1px solid var(--TableBorderColor, #E6E6E6);
         width: auto;
-        max-width: 0%;
+        // max-width: 0%;
         position: relative;
         display: inherit;
         vertical-align: middle;
