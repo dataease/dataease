@@ -64,7 +64,6 @@
               :on-remove="handleRemove"
               :http-request="upload"
               :file-list="fileList"
-              :on-change="onChange"
             >
               <i class="el-icon-plus" />
             </el-upload>
@@ -108,9 +107,9 @@
 import { queryBackground } from '@/api/background/background'
 import BackgroundItem from '@/views/background/BackgroundItem'
 import { mapState } from 'vuex'
-import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
+import { uploadFileResult } from '@/api/staticResource/staticResource'
 
 export default {
   name: 'Background',
@@ -179,7 +178,7 @@ export default {
     },
     handleRemove(file, fileList) {
       this.uploadDisabled = false
-      this.panel.imageUrl = null
+      this.curComponent.commonBackground.outerImage = null
       this.fileList = []
       this.commitStyle()
     },
@@ -187,16 +186,11 @@ export default {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
-    onChange(file, fileList) {
-      var _this = this
-      _this.uploadDisabled = true
-      const reader = new FileReader()
-      reader.onload = function() {
-        _this.curComponent.commonBackground.outerImage = reader.result
-      }
-      reader.readAsDataURL(file.raw)
-    },
     upload(file) {
+      const _this = this
+      uploadFileResult(file, (fileUrl) => {
+        _this.curComponent.commonBackground.outerImage = fileUrl
+      })
       // console.log('this is upload')
     }
 

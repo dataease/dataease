@@ -962,7 +962,10 @@
               ref="dynamicChart"
               :component-name="chart.type + '-view'"
               :obj="{chart}"
+              :chart-id="chart.id"
+              :chart="chart"
               class="chart-class"
+              @onChartClick="chartClick"
             />
             <chart-component
               v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'echarts'"
