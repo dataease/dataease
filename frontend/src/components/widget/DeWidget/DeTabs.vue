@@ -436,9 +436,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  ::v-deep .el-tabs__content {
-    height: calc(100% - 15px) !important;
-  }
 
   .de-tabs-div {
     height: 100%;
