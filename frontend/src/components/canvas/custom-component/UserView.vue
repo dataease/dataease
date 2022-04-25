@@ -21,7 +21,14 @@
       :ref="element.propValue.id"
       :component-name="chart.type + '-view'"
       :obj="{chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
+      :chart="chart"
+      :track-menu="trackMenu"
+      :search-count="searchCount"
+      :terminal-type="scaleCoefficientType"
+      :scale="scale"
       class="chart-class"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
     />
     <chart-component
       v-else-if="charViewShowFlag"

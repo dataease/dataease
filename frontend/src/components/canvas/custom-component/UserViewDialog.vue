@@ -7,6 +7,7 @@
             v-if="chart.isPlugin"
             :component-name="chart.type + '-view'"
             :obj="{chart: mapChart || chart}"
+            :chart="mapChart || chart"
             class="chart-class"
           />
           <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="mapChart || chart" />

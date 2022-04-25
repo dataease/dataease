@@ -1,6 +1,7 @@
 package io.dataease.service.sys;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.ZipUtil;
 import com.google.gson.Gson;
 import io.dataease.dto.MyPluginDTO;
 import io.dataease.ext.ExtSysPluginMapper;
@@ -72,8 +73,9 @@ public class PluginService {
         //2.解压目标文件dest 得到plugin.json和jar
         String folder = pluginDir + "folder/";
         try {
-            ZipUtils.unzip(dest, folder);
-        } catch (IOException e) {
+            ZipUtil.unzip(dest.getAbsolutePath(), folder);
+            // ZipUtils.unzip(dest, folder);
+        } catch (Exception e) {
             DeFileUtils.deleteFile(pluginDir + "temp/");
             DeFileUtils.deleteFile(folder);
             // 需要删除文件
