@@ -114,7 +114,7 @@ public class SysMsgService {
         return buildTree(sysMsgTypes);
     }
 
-    @Cacheable(SysMsgConstants.SYS_MSG_TYPE)
+    /*@Cacheable(SysMsgConstants.SYS_MSG_TYPE)*/
     public List<SysMsgType> queryMsgTypes() {
         SysMsgTypeExample example = new SysMsgTypeExample();
         return sysMsgTypeMapper.selectByExample(example);
