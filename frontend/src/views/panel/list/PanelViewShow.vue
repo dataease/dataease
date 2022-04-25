@@ -307,8 +307,8 @@ export default {
               this.dataLoading = false
             }, 300)
           })
-        }, 500)
-      }, 0)
+        }, 1500)
+      }, 500)
     },
 
     downloadAsPDF() {
