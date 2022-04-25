@@ -227,6 +227,7 @@ const list = [
     icon: 'wenben',
     type: 'v-text',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 400,
       height: 100,
@@ -238,7 +239,6 @@ const list = [
       color: '#000000',
       verticalAlign: 'middle'
     },
-    hyperlinks: HYPERLINKS,
     x: 1,
     y: 1,
     sizex: 10,
@@ -279,6 +279,7 @@ const list = [
     type: 'Picture',
     propValue: require('@/components/canvas/assets/title.jpg'),
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 300,
       height: 200
@@ -298,6 +299,7 @@ const list = [
     type: 'Picture',
     propValue: require('@/components/canvas/assets/bg-kj-1.jpg'),
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       borderStyle: 'solid',
       borderWidth: 0,
@@ -316,6 +318,7 @@ const list = [
     icon: 'juxing',
     type: 'rect-shape',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 300,
       height: 200,
@@ -338,6 +341,7 @@ const list = [
     icon: 'juxing',
     type: 'view',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 300,
       height: 200
@@ -358,6 +362,7 @@ const list = [
     icon: 'tabs',
     type: 'de-tabs',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 200,
       height: 200,
@@ -387,6 +392,7 @@ const list = [
     icon: 'shijian',
     type: 'de-show-date',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 250,
       height: 100,
@@ -424,6 +430,7 @@ const list = [
     icon: 'iconfont icon-iframe',
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 400,
       height: 200
@@ -464,6 +471,7 @@ const list = [
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 400,
       height: 200
@@ -484,6 +492,7 @@ const list = [
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 400,
       height: 200
