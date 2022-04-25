@@ -503,6 +503,9 @@ public class ChartViewService {
         // 如果是插件视图 走插件内部的逻辑
         if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
             Map<String, List<ChartViewFieldDTO>> fieldMap = new HashMap<>();
+            List<ChartViewFieldDTO> xAxisExt = new Gson().fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
+            }.getType());
+            fieldMap.put("xAxisExt",xAxisExt);
             fieldMap.put("xAxis", xAxis);
             fieldMap.put("yAxis", yAxis);
             fieldMap.put("extStack", extStack);

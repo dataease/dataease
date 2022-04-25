@@ -31,14 +31,14 @@
           class="dialog-css"
           :destroy-on-close="true"
         >
-          <span  v-if="chartDetailsVisible"  style="position: absolute;right: 70px;top:15px">
+          <span v-if="chartDetailsVisible" style="position: absolute;right: 70px;top:15px">
             <el-dropdown>
               <el-button size="mini">
                 {{ $t('chart.export') }}<i class="el-icon-download" />
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="exportExcel"><svg-icon icon-class="ds-excel" class="ds-icon-excel" />Excle</el-dropdown-item>
-                <el-dropdown-item icon="el-icon-picture-outline" @click.native="exportViewImg">{{ $t('chart.image') }}</el-dropdown-item>
+                <el-dropdown-item v-if="showExportImgButton" icon="el-icon-picture-outline" @click.native="exportViewImg">{{ $t('chart.image') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </span>
@@ -137,6 +137,9 @@ export default {
   created() {
   },
   computed: {
+    showExportImgButton() {
+      return this.showChartInfo.type && !this.showChartInfo.type.includes('table')
+    },
     canvasInfoMainStyle() {
       if (this.backScreenShot) {
         return {
