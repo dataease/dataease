@@ -426,12 +426,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 dataSource.setDriverClassName(oracleConfiguration.getDriver());
                 dataSource.setUrl(oracleConfiguration.getJdbc());
                 dataSource.setValidationQuery("select 1 from dual");
-                if(StringUtils.isNotEmpty(oracleConfiguration.getCharset()) && !oracleConfiguration.getCharset().equalsIgnoreCase("Default")){
-                    Properties props = new Properties();
-                    props.put("serverEncoding", oracleConfiguration.getCharset());
-                    props.put("clientEncoding", "UTF-8");
-                    jdbcConfiguration = oracleConfiguration;
-                }
+                jdbcConfiguration = oracleConfiguration;
                 break;
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
