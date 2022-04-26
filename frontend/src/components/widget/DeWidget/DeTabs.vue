@@ -6,7 +6,7 @@
       type="card"
       style-type="radioGroup"
       class="de-tabs-height"
-      :class="isEdit ? 'de-tabs-edit' : ''"
+      :class="isCurrentEdit ? 'de-tabs-edit' : ''"
       :font-color="fontColor"
       :active-color="activeColor"
       :border-color="borderColor"
@@ -249,6 +249,9 @@ export default {
     },
     titleValid() {
       return !!this.textarea && !!this.textarea.trim()
+    },
+    isCurrentEdit() {
+      return this.isEdit && this.curComponent && this.curComponent.id === this.element.id
     }
   },
   watch: {
