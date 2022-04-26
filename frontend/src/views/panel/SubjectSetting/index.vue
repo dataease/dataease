@@ -23,16 +23,16 @@
             <panel-view-result class="attr-selector" />
           </el-row>
         </el-collapse-item>
-        <el-collapse-item :title="$t('chart.module_style')" name="component">
-          <el-row class="selector-div">
-            <panel-background-color-selector
-              v-if="chart"
-              class="attr-selector"
-              :chart="chart"
-              @onChangeBackgroundForm="onChangeBackgroundForm"
-            />
-          </el-row>
-        </el-collapse-item>
+<!--        <el-collapse-item :title="$t('chart.module_style')" name="component">-->
+<!--          <el-row class="selector-div">-->
+<!--            <panel-background-color-selector-->
+<!--              v-if="chart"-->
+<!--              class="attr-selector"-->
+<!--              :chart="chart"-->
+<!--              @onChangeBackgroundForm="onChangeBackgroundForm"-->
+<!--            />-->
+<!--          </el-row>-->
+<!--        </el-collapse-item>-->
         <el-collapse-item :title="$t('chart.shape_attr')" name="graphical">
           <el-row class="selector-div">
             <panel-color-selector

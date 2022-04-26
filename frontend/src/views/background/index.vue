@@ -110,6 +110,7 @@ import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
+import { COMMON_BACKGROUND_NONE } from '@/components/canvas/custom-component/component-list'
 
 export default {
   name: 'Background',
@@ -144,7 +145,7 @@ export default {
       if (this.curComponent && this.curComponent.commonBackground && this.curComponent.commonBackground.outerImage && typeof (this.curComponent.commonBackground.outerImage) === 'string') {
         this.fileList.push({ url: this.curComponent.commonBackground.outerImage })
       }
-      this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
+      this.backgroundOrigin = deepCopy(this.curComponent.commonBackground ? this.curComponent.commonBackground : COMMON_BACKGROUND_NONE)
       this.queryBackground()
     },
     queryBackground() {

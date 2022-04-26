@@ -277,6 +277,7 @@ export default {
       this.form = JSON.parse(JSON.stringify(row))
       this.originConfiguration = this.form.configuration
       if (row.type === 'api') {
+
       } else {
         this.form.configuration = JSON.parse(this.form.configuration)
       }
@@ -320,6 +321,7 @@ export default {
               case 'ck':
               case 'mongo':
               case 'mariadb':
+              case 'impala':
                 if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port) {
                   repeat = true
                   repeatDsName.push(child.name)
@@ -493,7 +495,9 @@ export default {
     changeType() {
       for (let i = 0; i < this.dsTypes.length; i++) {
         if (this.dsTypes[i].type === this.form.type) {
-          this.form.configuration.extraParams = this.dsTypes[i].extraParams
+          if(row.type !== 'api'){
+            this.form.configuration.extraParams = this.dsTypes[i].extraParams
+          }
           this.datasourceType = this.dsTypes[i]
         }
       }

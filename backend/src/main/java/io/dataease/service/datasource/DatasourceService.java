@@ -115,6 +115,9 @@ public class DatasourceService {
                     datasourceDTO.setCalculationMode(dataSourceType.getCalculationMode());
                 }
             });
+            if(datasourceDTO.getType().equalsIgnoreCase(DatasourceTypes.mysql.toString())){
+                datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), MysqlConfiguration.class)) );
+            }
             if(datasourceDTO.getType().equalsIgnoreCase(DatasourceTypes.api.toString())){
                 JSONArray apiDefinitionList = JSONObject.parseArray(datasourceDTO.getConfiguration());
                 JSONArray apiDefinitionListWithStatus = new JSONArray();
