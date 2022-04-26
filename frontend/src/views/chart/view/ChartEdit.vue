@@ -1178,7 +1178,6 @@ import bus from '@/utils/bus'
 import DatasetChartDetail from '../../dataset/common/DatasetChartDetail'
 // shape attr,component style
 import {
-  DEFAULT_BACKGROUND_COLOR,
   DEFAULT_COLOR_CASE,
   DEFAULT_FUNCTION_CFG,
   DEFAULT_LABEL,
@@ -1333,7 +1332,6 @@ export default {
           xAxis: DEFAULT_XAXIS_STYLE,
           yAxis: DEFAULT_YAXIS_STYLE,
           yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
-          background: DEFAULT_BACKGROUND_COLOR,
           split: DEFAULT_SPLIT
         },
         senior: {
