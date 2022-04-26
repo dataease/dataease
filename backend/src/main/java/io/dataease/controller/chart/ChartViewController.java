@@ -5,10 +5,7 @@ import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.annotation.DePermissionProxy;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
-import io.dataease.controller.request.chart.ChartCalRequest;
-import io.dataease.controller.request.chart.ChartExtRequest;
-import io.dataease.controller.request.chart.ChartViewCacheRequest;
-import io.dataease.controller.request.chart.ChartViewRequest;
+import io.dataease.controller.request.chart.*;
 import io.dataease.controller.response.ChartDetail;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.plugins.common.base.domain.ChartViewCacheWithBLOBs;
@@ -23,6 +20,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author gin
@@ -110,6 +108,13 @@ public class ChartViewController {
     @PostMapping("chartCopy/{id}/{panelId}")
     public String chartCopy(@PathVariable String id, @PathVariable String panelId) {
         return chartViewService.chartCopy(id, panelId);
+    }
+
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE, paramIndex = 1)
+    @ApiOperation("批量复制")
+    @PostMapping("chartBatchCopy/{panelId}")
+    public Map<String,String> chartBatchCopy(@RequestBody ChartCopyBatchRequest request, @PathVariable String panelId) {
+        return chartViewService.chartBatchCopy(request,panelId);
     }
 
     @ApiIgnore
