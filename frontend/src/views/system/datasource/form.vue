@@ -277,6 +277,7 @@ export default {
       this.form = JSON.parse(JSON.stringify(row))
       this.originConfiguration = this.form.configuration
       if (row.type === 'api') {
+
       } else {
         this.form.configuration = JSON.parse(this.form.configuration)
       }
@@ -494,7 +495,9 @@ export default {
     changeType() {
       for (let i = 0; i < this.dsTypes.length; i++) {
         if (this.dsTypes[i].type === this.form.type) {
-          this.form.configuration.extraParams = this.dsTypes[i].extraParams
+          if(row.type !== 'api'){
+            this.form.configuration.extraParams = this.dsTypes[i].extraParams
+          }
           this.datasourceType = this.dsTypes[i]
         }
       }
