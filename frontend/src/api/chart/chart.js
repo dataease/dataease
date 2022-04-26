@@ -27,6 +27,14 @@ export function chartCopy(id, panelId) {
     loading: false
   })
 }
+export function chartBatchCopy(params, panelId) {
+  return request({
+    url: '/chart/view/chartBatchCopy/' + panelId,
+    method: 'post',
+    data: params,
+    loading: false
+  })
+}
 export function chartGroupTree(data) {
   return request({
     url: '/chart/group/tree',

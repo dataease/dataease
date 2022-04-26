@@ -1,5 +1,6 @@
 package io.dataease.service.chart;
 
+import cn.hutool.core.lang.Assert;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.entity.SysUserEntity;
@@ -1024,13 +1025,35 @@ public class ChartViewService {
         return chartViewMapper.selectByPrimaryKey(id);
     }
 
-    public String chartCopy(String id, String panelId) {
+    public String chartCopy(String sourceViewId,String newViewId, String panelId) {
+        extChartViewMapper.chartCopy(newViewId, sourceViewId, panelId);
+        extChartViewMapper.copyCache(sourceViewId, newViewId);
+        extPanelGroupExtendDataMapper.copyExtendData(sourceViewId, newViewId, panelId);
+        chartViewCacheService.refreshCache(newViewId);
+        return newViewId;
+    }
+
+    public String chartCopy(String sourceViewId, String panelId) {
         String newChartId = UUID.randomUUID().toString();
-        extChartViewMapper.chartCopy(newChartId, id, panelId);
-        extChartViewMapper.copyCache(id, newChartId);
-        extPanelGroupExtendDataMapper.copyExtendData(id, newChartId, panelId);
-        chartViewCacheService.refreshCache(newChartId);
-        return newChartId;
+       return chartCopy(sourceViewId,newChartId,panelId);
+    }
+
+
+    /**
+     * @Description Copy a set of views with a given source ID and target ID
+     * @param request
+     * @param panelId
+     * @return
+     */
+    public Map<String,String> chartBatchCopy(ChartCopyBatchRequest request,String panelId){
+        Assert.notNull(panelId,"panelId should not be null");
+        Map<String,String> sourceAndTargetIds = request.getSourceAndTargetIds();
+        if(sourceAndTargetIds != null && !sourceAndTargetIds.isEmpty()){
+            for(Map.Entry<String,String> entry:sourceAndTargetIds.entrySet()){
+                chartCopy(entry.getKey(),entry.getValue(),panelId);
+            }
+        }
+        return request.getSourceAndTargetIds();
     }
 
     public String searchAdviceSceneId(String panelId) {
