@@ -6,10 +6,13 @@
       type="card"
       style-type="radioGroup"
       class="de-tabs-height"
+      :class="isEdit ? 'de-tabs-edit' : ''"
       :font-color="fontColor"
       :active-color="activeColor"
       :border-color="borderColor"
       :border-active-color="borderActiveColor"
+      :addable="isEdit"
+      @tab-add="addTab"
       @tab-click="handleClick"
     >
       <!--  <plugin-com ref="dataease-tabs" v-model="activeTabName" type="card" class="de-tabs" component-name="dataease-tabs" @tab-click="handleClick"> -->
@@ -399,6 +402,9 @@ export default {
       }
       this.$store.dispatch('chart/setViewId', null)
       this.styleChange()
+    },
+    addTab() {
+      this.addNewTab(this.element.id)
     },
 
     addNewTab(componentId) {
