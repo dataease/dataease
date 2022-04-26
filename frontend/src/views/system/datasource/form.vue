@@ -320,6 +320,7 @@ export default {
               case 'ck':
               case 'mongo':
               case 'mariadb':
+              case 'impala':
                 if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port) {
                   repeat = true
                   repeatDsName.push(child.name)
