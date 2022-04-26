@@ -1472,7 +1472,8 @@ export default {
       })
       this.pluginRenderOptions = [...this.renderOptions, ...pluginOptions]
     },
-    emptyTableData() {
+    emptyTableData(id) {
+      console.log('emptyTableData:' + id)
       this.table = {}
       this.dimension = []
       this.quota = []
@@ -1500,8 +1501,11 @@ export default {
     initTableData(id, optType) {
       if (id != null) {
         post('/dataset/table/getWithPermission/' + id, null).then(response => {
-          this.table = response.data
-          this.initTableField(id, optType)
+          // If click too fast on the panel, the data here may be inconsistent, so make a verification
+          if (this.view.tableId === id) {
+            this.table = response.data
+            this.initTableField(id, optType)
+          }
         }).catch(err => {
           this.table = null
           this.resetDatasetField()
@@ -1514,17 +1518,20 @@ export default {
     initTableField(id, optType) {
       if (this.table) {
         post('/dataset/table/getFieldsFromDE', this.table).then(response => {
-          this.dimension = response.data.dimension
-          this.quota = response.data.quota
-          this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
-          this.quotaData = JSON.parse(JSON.stringify(this.quota))
-          this.fieldFilter(this.searchField)
-          if (optType === 'change') {
-            this.resetChangeTable()
-            this.$nextTick(() => {
-              bus.$emit('reset-change-table', 'change')
-              this.calcData()
-            })
+          // If click too fast on the panel, the data here may be inconsistent, so make a verification
+          if (this.view.tableId === id) {
+            this.dimension = response.data.dimension
+            this.quota = response.data.quota
+            this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
+            this.quotaData = JSON.parse(JSON.stringify(this.quota))
+            this.fieldFilter(this.searchField)
+            if (optType === 'change') {
+              this.resetChangeTable()
+              this.$nextTick(() => {
+                bus.$emit('reset-change-table', 'change')
+                this.calcData()
+              })
+            }
           }
         }).catch(err => {
           console.log(err)
@@ -1911,27 +1918,30 @@ export default {
     getChart(id, queryFrom = 'panel_edit') {
       if (id) {
         getChartDetails(id, this.panelInfo.id, { queryFrom: queryFrom }).then(response => {
-          if (response.data.dataFrom === 'template') {
-            this.emptyTableData()
-          } else {
-            this.initTableData(response.data.tableId)
-          }
-          this.view = JSON.parse(JSON.stringify(response.data))
-          this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
-          this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
-          this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
-          this.view.yaxisExt = this.view.yaxisExt ? JSON.parse(this.view.yaxisExt) : []
-          this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
-          this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
-          this.view.extBubble = this.view.extBubble ? JSON.parse(this.view.extBubble) : []
-          this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
-          this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
-          this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
-          this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
+          // If click too fast on the panel, the data here may be inconsistent, so make a verification
+          if (response.data.id === this.param.id) {
+            if (response.data.dataFrom === 'template') {
+              this.emptyTableData(response.data.id)
+            } else {
+              this.initTableData(response.data.tableId)
+            }
+            this.view = JSON.parse(JSON.stringify(response.data))
+            this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
+            this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
+            this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
+            this.view.yaxisExt = this.view.yaxisExt ? JSON.parse(this.view.yaxisExt) : []
+            this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
+            this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
+            this.view.extBubble = this.view.extBubble ? JSON.parse(this.view.extBubble) : []
+            this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
+            this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
+            this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
+            this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
 
-          // 将视图传入echart组件
-          this.chart = response.data
-          this.data = response.data.data
+            // 将视图传入echart组件
+            this.chart = response.data
+            this.data = response.data.data
+          }
         }).catch(err => {
           this.httpRequest.status = err.response.data.success
           this.httpRequest.msg = err.response.data.message
