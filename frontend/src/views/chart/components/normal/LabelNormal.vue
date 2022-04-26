@@ -175,37 +175,38 @@ export default {
       if (this.chart.senior) {
         const senior = JSON.parse(this.chart.senior)
         if (senior.threshold && senior.threshold.labelThreshold && senior.threshold.labelThreshold.length > 0) {
-          const value = this.chart.data.series[0].data[0]
+          const value = parseFloat(this.chart.data.series[0].data[0])
           for (let i = 0; i < senior.threshold.labelThreshold.length; i++) {
             let flag = false
             const t = senior.threshold.labelThreshold[i]
+            const tv = parseFloat(t.value)
             if (t.term === 'eq') {
-              if (value === t.value) {
+              if (value === tv) {
                 this.label_content_class.color = t.color
                 flag = true
               }
             } else if (t.term === 'not_eq') {
-              if (value !== t.value) {
+              if (value !== tv) {
                 this.label_content_class.color = t.color
                 flag = true
               }
             } else if (t.term === 'lt') {
-              if (value < t.value) {
+              if (value < tv) {
                 this.label_content_class.color = t.color
                 flag = true
               }
             } else if (t.term === 'gt') {
-              if (value > t.value) {
+              if (value > tv) {
                 this.label_content_class.color = t.color
                 flag = true
               }
             } else if (t.term === 'le') {
-              if (value <= t.value) {
+              if (value <= tv) {
                 this.label_content_class.color = t.color
                 flag = true
               }
             } else if (t.term === 'ge') {
-              if (value >= t.value) {
+              if (value >= tv) {
                 this.label_content_class.color = t.color
                 flag = true
               }

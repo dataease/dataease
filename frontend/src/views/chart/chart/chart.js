@@ -674,8 +674,7 @@ export const BASE_CHART_STRING = {
     legend: DEFAULT_LEGEND_STYLE,
     xAxis: DEFAULT_XAXIS_STYLE,
     yAxis: DEFAULT_YAXIS_STYLE,
-    yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
-    background: DEFAULT_BACKGROUND_COLOR
+    yAxisExt: DEFAULT_YAXIS_EXT_STYLE
   }),
   customFilter: '[]'
 }
@@ -698,8 +697,7 @@ export const BASE_CHART = {
     legend: DEFAULT_LEGEND_STYLE,
     xAxis: DEFAULT_XAXIS_STYLE,
     yAxis: DEFAULT_YAXIS_STYLE,
-    yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
-    background: DEFAULT_BACKGROUND_COLOR
+    yAxisExt: DEFAULT_YAXIS_EXT_STYLE
   },
   customFilter: []
 }
