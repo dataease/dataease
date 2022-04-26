@@ -2,7 +2,7 @@
   <el-row class="demo_main">
     <div class="demo_title" />
     <div class="demo_content">
-      <a href="https://www.bilibili.com/video/BV1UB4y1K7jA" target="_blank">{{ $t('wizard.demo_video_hint') }}</a>
+      <a href="https://www.bilibili.com/video/BV1i34y1v7hq/" target="_blank">{{ $t('wizard.demo_video_hint') }}</a>
     </div>
   </el-row>
 </template>

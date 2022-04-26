@@ -227,7 +227,8 @@ export default {
       this.onFocus = true
       // 下拉框弹出时，设置弹框的宽度
       this.$nextTick(() => {
-        this.selectOptionWidth = event.srcElement.offsetWidth + 'px'
+        // this.selectOptionWidth = event.srcElement.offsetWidth + 'px'
+        this.selectOptionWidth = event.srcElement.parentElement.parentElement.offsetWidth + 'px'
       })
     }
 
