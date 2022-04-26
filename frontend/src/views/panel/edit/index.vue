@@ -949,6 +949,7 @@ export default {
             hyperlinks: HYPERLINKS,
             mobileStyle: BASE_MOBILE_STYLE,
             propValue: fileResult,
+            commonBackground: deepCopy(COMMON_BACKGROUND),
             style: {
               ...commonStyle
             }
