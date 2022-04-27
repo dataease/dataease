@@ -90,17 +90,13 @@ export default {
         const video = this.$refs.player
         if (video) {
           try {
-            if (this.pOption.isLive) {
-              this.flvPlayer = flvjs.createPlayer(this.pOption,
-                {
-                  enableWorker: false, // 不启用分离线程
-                  enableStashBuffer: false, // 关闭IO隐藏缓冲区
-                  isLive: true,
-                  lazyLoad: false
-                })
-            } else {
-              this.flvPlayer = flvjs.createPlayer(this.pOption)
-            }
+            this.flvPlayer = flvjs.createPlayer(this.pOption,
+              {
+                enableWorker: false, // 不启用分离线程
+                enableStashBuffer: false, // 关闭IO隐藏缓冲区
+                isLive: this.pOption.isLive,
+                lazyLoad: false
+              })
             this.flvPlayer.attachMediaElement(video)
             this.flvPlayer.load()
             this.flvPlayer.play()
