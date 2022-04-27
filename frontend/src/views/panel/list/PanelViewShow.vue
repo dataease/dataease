@@ -9,7 +9,7 @@
     <el-col v-if="panelInfo.name.length>0" class="panel-design">
 
       <el-row v-if="showType === 2" class="panel-design-head panel-share-head" style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;">
-        <div style="border-bottom: 1px solid #dfe4ed;height: 100%;">
+        <div style="height: 100%;">
           <share-head />
         </div>
       </el-row>
