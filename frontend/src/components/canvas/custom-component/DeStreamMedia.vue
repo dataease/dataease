@@ -1,7 +1,7 @@
 <template>
   <el-row ref="mainPlayer" style="width: 100%;height: 100%">
     <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
-      <video :ref="'player-'+element.id" class="centered-video" name="centeredVideo" :loop="pOption.loop" controls muted />
+      <video id="videoedit" :ref="'player-'+element.id" class="centered-video fullscreen-button" name="centeredVideo" :loop="pOption.loop" controls muted />
       <div v-if="editMode==='edit'" class="stream-mask edit-mask" />
       <div v-if="mobileLayoutStatus" class="stream-mask mobile-layout-mask">
         <span style="opacity: 0.7;">
@@ -177,6 +177,14 @@ export default {
   }
 
   .mobile-layout-mask{
+  }
+
+  .fullscreen-button{
+
+  }
+
+  video::-webkit-media-controls-fullscreen-button {
+    display: none;
   }
 
 </style>
