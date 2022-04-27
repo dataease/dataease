@@ -106,7 +106,8 @@ export const STREAMMEDIALINKS = {
     type: 'flv',
     isLive: false,
     cors: true, // 允许跨域
-    loop: true
+    loop: true,
+    autoplay: false
     // url: null // 网络动画视频
   }
 }

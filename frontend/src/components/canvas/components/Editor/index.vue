@@ -499,19 +499,22 @@ function movePlayer(item, position) {
 }
 
 function removeItem(index) {
-  const vm = this
-  const item = this.yourList[index]
-  removeItemFromPositionBox(item)
+  try {
+    const vm = this
+    const item = this.yourList[index]
+    removeItemFromPositionBox(item)
 
-  const belowItems = findBelowItems.call(this, item)
-  _.forEach(belowItems, function(upItem) {
-    const canGoUpRows = canItemGoUp(upItem)
-    if (canGoUpRows > 0) {
-      moveItemUp.call(vm, upItem, canGoUpRows)
-    }
-  })
-
-  this.yourList.splice(index, 1, {})
+    const belowItems = findBelowItems.call(this, item)
+    _.forEach(belowItems, function(upItem) {
+      const canGoUpRows = canItemGoUp(upItem)
+      if (canGoUpRows > 0) {
+        moveItemUp.call(vm, upItem, canGoUpRows)
+      }
+    })
+    this.yourList.splice(index, 1, {})
+  } catch (e) {
+    console.log('removeItem have some ignore error')
+  }
 }
 
 // 矩阵设计初始化的时候 预占位，防止编辑仪表板页面，初始化和视图编辑返回时出现组件位置变化问题

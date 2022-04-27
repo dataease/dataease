@@ -1431,6 +1431,7 @@ export default {
     no: '否',
     live_tips: '優先HTTPS鏈接',
     stream_media_add_tips: '請點擊添加配置流媒體信息...',
+    stream_mobile_tips: 'IOS终端可能无法显示',
     json_params_error: '第三方參數解析失敗，請檢查參數格式是否正確',
     inner_padding: '內邊距',
     board_radio: '邊框半徑',
