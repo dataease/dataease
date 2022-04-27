@@ -71,8 +71,8 @@ export default {
   mounted() {
     this.initOption()
     bus.$on('streamMediaLinksChange-' + this.element.id, () => {
-      this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType],
-      this.flvPlayer = null,
+      this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+      this.flvPlayer = null
       this.videoShow = false
       this.$nextTick(() => {
         this.videoShow = true
@@ -80,20 +80,38 @@ export default {
       })
     })
   },
+  beforeDestroy() {
+    this.destroyPlayer()
+  },
   methods: {
     initOption() {
       if (flvjs.isSupported() && this.pOption.url) {
+        this.destroyPlayer()
         const video = this.$refs.player
         if (video) {
-          this.flvPlayer = flvjs.createPlayer(this.pOption)
-          this.flvPlayer.attachMediaElement(video)
           try {
+            this.flvPlayer = flvjs.createPlayer(this.pOption,
+              {
+                enableWorker: false, // 不启用分离线程
+                enableStashBuffer: false, // 关闭IO隐藏缓冲区
+                isLive: this.pOption.isLive,
+                lazyLoad: false
+              })
+            this.flvPlayer.attachMediaElement(video)
             this.flvPlayer.load()
             this.flvPlayer.play()
           } catch (error) {
             console.log(error)
           }
         }
+      }
+    },
+    destroyPlayer() {
+    // Destroy
+      if (this.flvPlayer) {
+        this.flvPlayer.pause()
+        this.flvPlayer.destroy()
+        this.flvPlayer = null
       }
     }
   }
