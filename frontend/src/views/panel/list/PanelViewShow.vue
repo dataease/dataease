@@ -13,9 +13,9 @@
           <share-head />
         </div>
       </el-row>
-      <el-row v-else class="panel-design-head">
+      <el-row v-else class="panel-design-head" style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;">
         <!--仪表板头部区域-->
-        <div style="border-bottom: 1px solid #dfe4ed;height: 100%;">
+        <div style="height: 100%;">
           <el-col :span="12" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
             <span>{{ panelInfo.name || '测试仪表板' }}</span>
             &nbsp;
