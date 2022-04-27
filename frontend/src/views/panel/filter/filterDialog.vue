@@ -35,18 +35,17 @@
                   node-key="id"
                   :data="datas"
                   :props="defaultProps"
-                  lazy
-                  :load="loadTree"
+
                   @node-click="handleNodeClick"
                 >
                   <span slot-scope="{ node, data }" style="display: flex;flex: 1;width: 0%;" class="custom-tree-node">
                     <span>
-                      <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
-                      <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
-                      <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
-                      <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
-                      <svg-icon v-if="data.type === 'union'" icon-class="ds-union" class="ds-icon-union" />
-                      <svg-icon v-if="data.type === 'api'" icon-class="ds-api" class="ds-icon-api" />
+                      <svg-icon v-if="data.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
+                      <svg-icon v-if="data.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+                      <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+                      <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+                      <svg-icon v-if="data.modelInnerType === 'union'" icon-class="ds-union" class="ds-icon-union" />
+                      <svg-icon v-if="data.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
                     </span>
                     <span v-if="data.modelInnerType === 'db' || data.modelInnerType === 'sql'">
                       <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
@@ -202,13 +201,13 @@ import FilterHead from './filterMain/FilterHead'
 import FilterControl from './filterMain/FilterControl'
 import FilterFoot from './filterMain/FilterFoot'
 import bus from '@/utils/bus'
+import { queryAuthModel } from '@/api/authModel/authModel'
 import {
   mapState
 } from 'vuex'
 import {
   groupTree,
-  fieldListWithPermission,
-  post
+  fieldListWithPermission
 } from '@/api/dataset/dataset'
 import {
   viewsWithIds
@@ -366,6 +365,26 @@ export default {
   },
 
   methods: {
+
+    treeNode(cache) {
+      const modelInfo = localStorage.getItem('dataset-tree')
+      const userCache = (modelInfo && cache)
+      if (userCache) {
+        this.tData = JSON.parse(modelInfo)
+        const results = this.buildTree(this.tData)
+        this.defaultDatas = JSON.parse(JSON.stringify(results))
+        this.datas = JSON.parse(JSON.stringify(results))
+      }
+      queryAuthModel({ modelType: 'dataset' }, !userCache).then(res => {
+        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+        if (!userCache) {
+          this.tData = res.data
+          const results = this.buildTree(this.tData)
+          this.defaultDatas = JSON.parse(JSON.stringify(results))
+          this.datas = JSON.parse(JSON.stringify(results))
+        }
+      })
+    },
     initWithField() {
       if (this.myAttrs && this.myAttrs.activeName) {
         this.activeName = this.myAttrs.activeName
@@ -457,28 +476,7 @@ export default {
         this.showFieldDatas(data)
       }
     },
-    loadTree(node, resolve) {
-      if (!this.isTreeSearch) {
-        if (node.level > 0) {
-          if (node.data.id) {
-            post('/dataset/table/listAndGroup', {
-              sort: 'type asc,name asc,create_time desc',
-              sceneId: node.data.id
-            }).then(res => {
-              resolve(res.data)
-            })
-          }
-        }
-      } else {
-        node.data.children && resolve(node.data.children)
-      }
-    },
-    treeNode(group) {
-      post('/dataset/group/treeNode', group).then(res => {
-        this.defaultDatas = res.data
-        this.datas = res.data
-      })
-    },
+
     loadDataSetTree() {
       groupTree({}).then(res => {
         const datas = res.data
