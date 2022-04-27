@@ -1930,8 +1930,7 @@ public class DataSetTableService {
         inputStream.close();
         excelSheetDataList.forEach(excelSheetData -> {
             List<List<String>> data = excelSheetData.getData();
-            String[] fieldArray = excelSheetData.getFields().stream().map(TableField::getFieldName)
-                    .toArray(String[]::new);
+            String[] fieldArray = excelSheetData.getFields().stream().map(TableField::getFieldName).toArray(String[]::new);
             List<Map<String, Object>> jsonArray = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(data)) {
                 jsonArray = data.stream().map(ele -> {
