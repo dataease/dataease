@@ -310,6 +310,9 @@ public class ExcelXlsxReader extends DefaultHandler {
                     maxRef = ref;
                 }
                 if(curRow>1){
+                    for (int i=cellList.size();i<this.fields.size();i++){
+                        cellList.add("");
+                    }
                     List<String> tmp = new ArrayList<>(cellList);
                     this.getData().add(tmp);
                 }
