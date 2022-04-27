@@ -2300,7 +2300,7 @@ export default {
 
     closeEditDsField() {
       this.editDsField = false
-      this.initTableField()
+      this.initTableField(this.tabel.id)
     },
 
     // drag
