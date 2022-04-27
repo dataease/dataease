@@ -1,8 +1,13 @@
 <template>
   <el-row ref="mainPlayer" style="width: 100%;height: 100%">
     <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
-      <video ref="player" class="centered-video" name="centeredVideo" :loop="pOption.loop" controls muted />
-      <div v-if="editMode==='edit'" class="stream-mask" />
+      <video :ref="'player-'+element.id" class="centered-video" name="centeredVideo" :loop="pOption.loop" controls muted />
+      <div v-if="editMode==='edit'" class="stream-mask edit-mask" />
+      <div v-if="mobileLayoutStatus" class="stream-mask mobile-layout-mask">
+        <span style="opacity: 0.7;">
+          <span style="color: lightgray;">{{ $t('panel.stream_mobile_tips') }}</span>
+        </span>
+      </div>
     </div>
     <div v-else class="info-stream-class">
       {{ $t('panel.stream_media_add_tips') }}
@@ -14,6 +19,7 @@
 import flvjs from 'flv.js'
 import '@/custom-theme.css'
 import bus from '@/utils/bus'
+import { mapState } from 'vuex'
 
 export default {
   props: {
@@ -56,7 +62,10 @@ export default {
     },
     player() {
       return this.$refs.videoPlayer.player
-    }
+    },
+    ...mapState([
+      'mobileLayoutStatus'
+    ])
   },
   watch: {
     pOption: {
@@ -87,7 +96,7 @@ export default {
     initOption() {
       if (flvjs.isSupported() && this.pOption.url) {
         this.destroyPlayer()
-        const video = this.$refs.player
+        const video = this.$refs['player-' + this.element.id]
         if (video) {
           try {
             this.flvPlayer = flvjs.createPlayer(this.pOption,
@@ -154,8 +163,6 @@ export default {
     display: flex;
     height: calc(100% - 60px) !important;
     width: 100% !important;
-    background-color: #5c5e61;
-    opacity: 0;
     position: absolute;
     top: 0px;
     left: 0px;
@@ -164,5 +171,13 @@ export default {
     align-items: center;
     justify-content: center;
   }
+
+  .edit-mask{
+    opacity: 0;
+  }
+
+  .mobile-layout-mask{
+  }
+
 </style>
 
