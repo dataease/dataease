@@ -23,7 +23,8 @@ public class PanelGroupRequest extends PanelGroupDTO {
     private String dynamicData;
     @ApiModelProperty("内部模板ID")
     private String templateId;
-
+    @ApiModelProperty("静态文件")
+    private String staticResource;
 
     public PanelGroupRequest() {
     }
