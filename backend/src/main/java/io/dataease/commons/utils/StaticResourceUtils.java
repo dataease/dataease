@@ -1,8 +1,14 @@
 package io.dataease.commons.utils;
 
+import static io.dataease.commons.constants.StaticResourceConstants.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
+import sun.misc.BASE64Encoder;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Author: wangjiahao
@@ -10,9 +16,8 @@ import org.springframework.util.Assert;
  * Description:
  */
 public class StaticResourceUtils {
-    public static final String URL_SEPARATOR = "/";
 
-    private static final String RE_HTML_MARK = "(<[^<]*?>)|(<[\\s]*?/[^<]*?>)|(<[^<]*?/[\\s]*?>)";
+    private final static String FILE_BASE_PATH = USER_HOME+ FILE_SEPARATOR+UPLOAD_URL_PREFIX;
 
     public static String ensureBoth(@NonNull String string, @NonNull String bothfix) {
         return ensureBoth(string, bothfix, bothfix);
@@ -51,4 +56,45 @@ public class StaticResourceUtils {
 
         return StringUtils.removeEnd(string, suffix) + suffix;
     }
+
+    /**
+     *
+     * @param imgFile  local storage path
+     * @return
+     */
+    public static String getImgFileToBase64(String imgFile) {
+        //Convert the picture file into byte array  and encode it with Base64
+        InputStream inputStream = null;
+        byte[] buffer = null;
+        //Read picture byte array
+        try {
+            inputStream = new FileInputStream(FILE_BASE_PATH+FILE_SEPARATOR+imgFile);
+            int count = 0;
+            while (count == 0) {
+                count = inputStream.available();
+            }
+            buffer = new byte[count];
+            inputStream.read(buffer);
+        } catch (IOException e) {
+            LogUtil.error(e);
+        }catch (Exception e){
+            LogUtil.error(e);
+        }finally {
+            if (inputStream != null) {
+                try {
+                    // Close InputStream
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        // Encode byte array as Base64
+        if(buffer!=null){
+            return new BASE64Encoder().encode(buffer);
+        }else{
+            return null;
+        }
+    }
+
 }
