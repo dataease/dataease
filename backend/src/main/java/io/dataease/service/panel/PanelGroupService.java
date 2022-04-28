@@ -115,7 +115,7 @@ public class PanelGroupService {
         return TreeUtils.mergeTree(panelGroupDTOList, "default_panel");
     }
 
-    @DeCleaner(DePermissionType.PANEL)
+    @DeCleaner(value = DePermissionType.PANEL, key = "pid")
     public PanelGroup saveOrUpdate(PanelGroupRequest request) {
         String userName = AuthUtils.getUser().getUsername();
         String panelId = request.getId();

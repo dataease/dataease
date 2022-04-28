@@ -44,7 +44,7 @@ public class DataSetGroupService {
     @Resource
     private SysAuthService sysAuthService;
 
-    @DeCleaner(DePermissionType.DATASET)
+    @DeCleaner(value = DePermissionType.DATASET, key = "pid")
     public DataSetGroupDTO save(DatasetGroup datasetGroup) throws Exception {
         checkName(datasetGroup);
         if (StringUtils.isEmpty(datasetGroup.getId())) {

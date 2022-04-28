@@ -152,6 +152,10 @@
         GROUP BY a.id
     </select>
 
+    <select id="parentResource" resultType="String" >
+        select GET_V_AUTH_MODEL_WITH_PARENT(#{resourceId}, #{type})
+    </select>
+
 
 
 </mapper>
