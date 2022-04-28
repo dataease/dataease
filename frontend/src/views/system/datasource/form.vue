@@ -495,7 +495,7 @@ export default {
     changeType() {
       for (let i = 0; i < this.dsTypes.length; i++) {
         if (this.dsTypes[i].type === this.form.type) {
-          if(row.type !== 'api'){
+          if(this.form.type !== 'api'){
             this.form.configuration.extraParams = this.dsTypes[i].extraParams
           }
           this.datasourceType = this.dsTypes[i]

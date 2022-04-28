@@ -16,12 +16,8 @@ import io.dataease.provider.ProviderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.beans.PropertyVetoException;
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.sql.*;
 import java.util.*;
 
@@ -287,9 +283,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
             }
 
         } catch (SQLException e) {
-            io.dataease.plugins.common.exception.DataEaseException.throwException("SQL ERROR" + e.getMessage());
+            DataEaseException.throwException("SQL ERROR" + e.getMessage());
         } catch (Exception e) {
-            io.dataease.plugins.common.exception.DataEaseException.throwException("Data source connection exception: " + e.getMessage());
+            DataEaseException.throwException("Data source connection exception: " + e.getMessage());
         }
         return list;
     }
