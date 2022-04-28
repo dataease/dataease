@@ -542,9 +542,9 @@ export default {
         style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
         style['border-radius'] = (this.element.commonBackground.borderRadius || 0) + 'px'
         if (this.element.commonBackground.enable) {
-          if (this.element.commonBackground.backgroundType === 'innerImage') {
+          if (this.element.commonBackground.backgroundType === 'innerImage' && this.element.commonBackground.innerImage) {
             style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat`
-          } else if (this.element.commonBackground.backgroundType === 'outerImage') {
+          } else if (this.element.commonBackground.backgroundType === 'outerImage' && this.element.commonBackground.outerImage) {
             style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat`
           } else if (this.element.commonBackground.backgroundType === 'color') {
             style['background-color'] = hexColorToRGBA(this.element.commonBackground.color, this.element.commonBackground.alpha)

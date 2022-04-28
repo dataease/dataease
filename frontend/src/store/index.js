@@ -279,7 +279,7 @@ const data = {
             const ele = element.options.tabList[idx].content
             if (!ele.type || ele.type !== 'view') continue
 
-            const currentFilters = []
+            const currentFilters = element.linkageFilters || [] // 当前联动filter
 
             data.dimensionList.forEach(dimension => {
               const sourceInfo = viewId + '#' + dimension.id
@@ -312,9 +312,9 @@ const data = {
           state.componentData[index] = element
         }
         if (!element.type || element.type !== 'view') continue
-        // const currentFilters = element.linkageFilters || [] // 当前联动filter
+        const currentFilters = element.linkageFilters || [] // 当前联动filter
         // 联动的视图情况历史条件
-        const currentFilters = []
+        // const currentFilters = []
 
         data.dimensionList.forEach(dimension => {
           const sourceInfo = viewId + '#' + dimension.id

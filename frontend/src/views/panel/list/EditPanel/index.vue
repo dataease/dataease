@@ -169,6 +169,7 @@ export default {
         this.editPanel.panelInfo.panelStyle = this.importTemplateInfo.panelStyle
         this.editPanel.panelInfo.panelData = this.importTemplateInfo.panelData
         this.editPanel.panelInfo.dynamicData = this.importTemplateInfo.dynamicData
+        this.editPanel.panelInfo.staticResource = this.importTemplateInfo.staticResource
       }
       reader.readAsText(file)
     },

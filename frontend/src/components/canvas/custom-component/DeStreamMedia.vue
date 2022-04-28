@@ -1,9 +1,9 @@
 <template>
   <el-row ref="mainPlayer" style="width: 100%;height: 100%">
     <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
-      <video :ref="'player-'+element.id" class="centered-video" name="centeredVideo" :loop="pOption.loop" controls muted />
+      <video :ref="'player-'+element.id" class="centered-video" name="centeredVideo" :loop="pOption.loop" :controls="inScreen" muted />
       <div v-if="editMode==='edit'" class="stream-mask edit-mask" />
-      <div v-if="mobileLayoutStatus" class="stream-mask mobile-layout-mask">
+      <div v-if="mobileLayoutStatus" class="stream-mask">
         <span style="opacity: 0.7;">
           <span style="color: lightgray;">{{ $t('panel.stream_mobile_tips') }}</span>
         </span>
@@ -43,6 +43,11 @@ export default {
     h: {
       type: Number,
       default: 200
+    },
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data() {
@@ -174,9 +179,6 @@ export default {
 
   .edit-mask{
     opacity: 0;
-  }
-
-  .mobile-layout-mask{
   }
 
 </style>
