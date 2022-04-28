@@ -1509,6 +1509,9 @@ public class DataSetTableService {
 
     public void saveTableField(DatasetTable datasetTable) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
+        if (ObjectUtils.isEmpty(ds)) {
+            throw new RuntimeException(Translator.get("i18n_datasource_delete"));
+        }
         DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
         BeanUtils.copyBean(dataSetTableRequest, datasetTable);
 
