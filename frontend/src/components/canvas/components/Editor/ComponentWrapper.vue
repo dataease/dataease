@@ -28,6 +28,7 @@
         :style="getComponentStyleDefault(config.style)"
         :prop-value="config.propValue"
         :is-edit="false"
+        :in-screen="inScreen"
         :active="componentActiveFlag"
         :element="config"
         :search-count="searchCount"
