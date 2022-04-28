@@ -8,6 +8,7 @@ import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.LogUtil;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -147,6 +148,20 @@ public class ExtAuthServiceImpl implements ExtAuthService {
         LogUtil.info("all permission resource of role {} is cleanning...", roleId);
     }
 
-
-
+    @Override
+    public List<String> parentResource(String resourceId, String type) {
+        String s = extAuthMapper.parentResource(resourceId, type);
+        if (StringUtils.isNotBlank(s)) {
+            String[] split = s.split(",");
+            List<String> results = new ArrayList<>();
+            for (int i = 0; i < split.length; i++) {
+                String s1 = split[i];
+                if (StringUtils.isNotBlank(s1)) {
+                    results.add(s1);
+                }
+            }
+            return CollectionUtils.isEmpty(results) ? null : results;
+        }
+        return null;
+    }
 }

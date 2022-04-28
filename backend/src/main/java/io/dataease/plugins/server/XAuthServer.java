@@ -76,7 +76,7 @@ public class XAuthServer {
             String authCacheKey = getAuthCacheKey(request);
             if (StringUtils.isNotBlank(authCacheKey)) {
                 if (StringUtils.equals("dept", request.getAuthTargetType())) {
-                    List<String> authTargets = getAuthModels(request.getAuthTarget(), request.getAuthTargetType(),
+                    List<String> authTargets = AuthUtils.getAuthModels(request.getAuthTarget(), request.getAuthTargetType(),
                             user.getUserId(), user.getIsAdmin());
                     if (CollectionUtils.isNotEmpty(authTargets)) {
                         authTargets.forEach(deptId -> {
@@ -89,16 +89,6 @@ public class XAuthServer {
 
             }
         });
-    }
-
-    private List<String> getAuthModels(String id, String type, Long userId, Boolean isAdmin) {
-        AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
-        List<XpackVAuthModelDTO> vAuthModelDTOS = sysAuthService
-                .searchAuthModelTree(new XpackBaseTreeRequest(id, type, "children"), userId, isAdmin);
-        List<String> authSources = Optional.ofNullable(vAuthModelDTOS).orElse(new ArrayList<>()).stream()
-                .map(XpackVAuthModelDTO::getId)
-                .collect(Collectors.toList());
-        return authSources;
     }
 
     private String getAuthCacheKey(XpackSysAuthRequest request) {
