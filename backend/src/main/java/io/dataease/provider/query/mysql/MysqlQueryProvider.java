@@ -107,7 +107,7 @@ public class MysqlQueryProvider extends QueryProvider {
                     if (f.getDeType() == 2 || f.getDeType() == 3) {
                         fieldName = String.format(MySQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
                     } else {
-                        fieldName = originField;
+                        fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, MySQLConstants.DEFAULT_DATE_FORMAT);
                     }
                 } else if (f.getDeExtractType() == 0) {
                     if (f.getDeType() == 2) {
