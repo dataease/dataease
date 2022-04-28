@@ -53,7 +53,7 @@ export default {
           newView.propValue.viewId = res.data
           store.commit('addComponent', { component: newView })
         })
-      } if (data.type === 'de-tabs') {
+      } else if (data.type === 'de-tabs') {
         const sourceAndTargetIds = {}
         const newCop = deepCopy(data)
         newCop.options.tabList.forEach((item) => {

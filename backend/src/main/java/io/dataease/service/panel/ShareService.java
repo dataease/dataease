@@ -92,9 +92,9 @@ public class ShareService {
             } else {
                 shareNodes = typeSharedMap.get(key);
             }
-
-            if (null != authURDMap.get(key)) {
-                Map<String, Object> dataMap = filterData(authURDMap.get(key), shareNodes);
+            List<Long> value = entry.getValue();
+            if (null != value) {
+                Map<String, Object> dataMap = filterData(value, shareNodes);
                 List<Long> newIds = (List<Long>) dataMap.get("add");
                 for (int i = 0; i < newIds.size(); i++) {
                     Long id = newIds.get(i);
@@ -340,8 +340,29 @@ public class ShareService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void removeShares(PanelShareRemoveRequest removeRequest) {
+        String panelId = removeRequest.getPanelId();
         extPanelShareMapper.removeShares(removeRequest);
+        AuthURD sharedAuthURD = new AuthURD();
+        List<Long> removeIds = new ArrayList<Long>(){{add(removeRequest.getTargetId());}};
+        buildRedAuthURD(removeRequest.getType(), removeIds, sharedAuthURD);
+        CurrentUserDto user = AuthUtils.getUser();
+        Gson gson = new Gson();
+        PanelGroup panel = panelGroupMapper.selectByPrimaryKey(panelId);
+
+        String msg = panel.getName();
+
+        List<String> msgParam = new ArrayList<>();
+        msgParam.add(panelId);
+        Set<Long> redIds = AuthUtils.userIdsByURD(sharedAuthURD);
+        redIds.forEach(userId -> {
+            if (!user.getUserId().equals(userId)) {
+                DeMsgutil.sendMsg(userId, 3L, user.getNickName() + " 取消分享了仪表板【" + msg + "】，请查收!",
+                        gson.toJson(msgParam));
+            }
+        });
+
     }
 
 }

@@ -1430,6 +1430,7 @@ export default {
     no: 'No',
     live_tips: 'User Https First',
     stream_media_add_tips: 'Please Add Stream Media Info...',
+    stream_mobile_tips: 'IOS terminal may not display',
     json_params_error: 'Third Party Parameters Parsing Failed. Please Check Whether The Parameters Format Is Correct',
     inner_padding: 'Inner Padding',
     board_radio: 'Board Radio',
