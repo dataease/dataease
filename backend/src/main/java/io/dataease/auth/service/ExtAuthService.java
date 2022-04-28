@@ -28,5 +28,7 @@ public interface ExtAuthService {
     void clearDeptResource(Long deptId);
     void clearRoleResource(Long roleId);
 
+    List<String> parentResource(String resourceId, String type);
+
 
 }

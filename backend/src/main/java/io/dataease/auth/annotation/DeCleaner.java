@@ -10,5 +10,10 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DeCleaner {
+
     DePermissionType value();
+
+    int paramIndex() default 0;
+
+    String key() default "";
 }

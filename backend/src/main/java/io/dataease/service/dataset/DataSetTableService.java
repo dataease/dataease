@@ -115,7 +115,7 @@ public class DataSetTableService {
 
     private static Logger logger = LoggerFactory.getLogger(ClassloaderResponsity.class);
 
-    @DeCleaner(value = DePermissionType.DATASET)
+    @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
     public void batchInsert(List<DataSetTableRequest> datasetTable) throws Exception {
         for (DataSetTableRequest table : datasetTable) {
             save(table);
@@ -143,7 +143,7 @@ public class DataSetTableService {
         }
     }
 
-    @DeCleaner(value = DePermissionType.DATASET)
+    @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
     public void saveExcel(DataSetTableRequest datasetTable) throws Exception {
         List<String> datasetIdList = new ArrayList<>();
 
@@ -253,7 +253,7 @@ public class DataSetTableService {
         }
     }
 
-    @DeCleaner(value = DePermissionType.DATASET)
+    @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
     public DatasetTable save(DataSetTableRequest datasetTable) throws Exception {
         checkName(datasetTable);
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "sql")) {
@@ -1847,7 +1847,6 @@ public class DataSetTableService {
         return dataSetDetail;
     }
 
-    @DeCleaner(value = DePermissionType.DATASET)
     public ExcelFileData excelSaveAndParse(MultipartFile file, String tableId, Integer editType) throws Exception {
         String filename = file.getOriginalFilename();
         // parse file
