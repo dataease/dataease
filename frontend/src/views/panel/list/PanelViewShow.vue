@@ -139,6 +139,8 @@ import ShareHead from '@/views/panel/GrantAuth/ShareHead'
 import { initPanelData } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import { dataURLToBlob } from '@/components/canvas/utils/utils'
+import { findResourceAsBase64, readFile } from '@/api/staticResource/staticResource'
+
 export default {
   name: 'PanelViewShow',
   components: { Preview, SaveToTemplate, PDFPreExport, ShareHead },
@@ -262,25 +264,52 @@ export default {
       }, 50)
     },
     downloadToTemplate() {
-      this.dataLoading = true
-      setTimeout(() => {
+      const _this = this
+      _this.dataLoading = true
+      _this.findStaticSource(function(staticResource) {
         html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
-          this.dataLoading = false
-          const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
+          _this.dataLoading = false
+          const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
           if (snapshot !== '') {
-            this.templateInfo = {
-              name: this.$store.state.panel.panelInfo.name,
+            _this.templateInfo = {
+              name: _this.$store.state.panel.panelInfo.name,
               templateType: 'self',
               snapshot: snapshot,
-              panelStyle: JSON.stringify(this.canvasStyleData),
-              panelData: JSON.stringify(this.componentData),
-              dynamicData: JSON.stringify(this.panelViewDetailsInfo)
+              panelStyle: JSON.stringify(_this.canvasStyleData),
+              panelData: JSON.stringify(_this.componentData),
+              dynamicData: JSON.stringify(_this.panelViewDetailsInfo),
+              staticResource: JSON.stringify(staticResource || {})
             }
-            const blob = new Blob([JSON.stringify(this.templateInfo)], { type: '' })
-            FileSaver.saveAs(blob, this.$store.state.panel.panelInfo.name + '-TEMPLATE.DET')
+            const blob = new Blob([JSON.stringify(_this.templateInfo)], { type: '' })
+            FileSaver.saveAs(blob, _this.$store.state.panel.panelInfo.name + '-TEMPLATE.DET')
           }
         })
-      }, 50)
+      })
+    },
+    // 解析静态文件
+    findStaticSource(callBack) {
+      const staticResource = []
+      // 系统背景文件
+      if (this.canvasStyleData.panel.imageUrl && this.canvasStyleData.panel.imageUrl.indexOf('static-resource') > -1) {
+        staticResource.push(this.canvasStyleData.panel.imageUrl)
+      }
+      this.componentData.forEach(item => {
+        if (item.commonBackground && item.commonBackground.outerImage && item.commonBackground.outerImage.indexOf('static-resource') > -1) {
+          staticResource.push(item.commonBackground.outerImage)
+        }
+      })
+      if (staticResource.length > 0) {
+        try {
+          findResourceAsBase64({ resourcePathList: staticResource }).then((rsp) => {
+            callBack(rsp.data)
+          })
+        } catch (e) {
+          console.log('findResourceAsBase64 error')
+          callBack()
+        }
+      } else {
+        callBack()
+      }
     },
 
     downloadAsImage() {
