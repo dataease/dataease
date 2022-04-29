@@ -183,7 +183,7 @@ import { pluginLoaded } from '@/api/user'
 /* import { ldapStatus, pluginLoaded } from '@/api/user' */
 import { userLists, addUser, editUser, delUser, editPassword, editStatus, allRoles } from '@/api/system/user'
 import { getDeptTree, treeByDeptId } from '@/api/system/dept'
-
+import { mapGetters } from 'vuex'
 export default {
 
   components: { ComplexTable, LayoutContent, Treeselect },
@@ -320,6 +320,11 @@ export default {
       canLoadDom: false
     }
   },
+  computed: {
+    ...mapGetters([
+      'user'
+    ])
+  },
   mounted() {
     this.allRoles()
     this.search()
@@ -420,7 +425,7 @@ export default {
             this.$success(this.$t('commons.modify_success'))
             this.editPasswordVisible = false
             this.search()
-            window.location.reload()
+            this.user && this.user.userId && (this.user.userId === editPasswordForm.userId) && window.location.reload()
           })
         } else {
           return false
