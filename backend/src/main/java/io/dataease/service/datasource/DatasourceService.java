@@ -330,6 +330,12 @@ public class DatasourceService {
         return datasourceMapper.selectByPrimaryKey(id);
     }
 
+    public List<Datasource> selectByType(String type){
+        DatasourceExample datasourceExample = new DatasourceExample();
+        datasourceExample.createCriteria().andTypeEqualTo(type);
+        return datasourceMapper.selectByExampleWithBLOBs(datasourceExample);
+    }
+
     public void initAllDataSourceConnectionPool() {
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
         datasources.forEach(datasource -> {
