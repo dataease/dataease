@@ -1368,7 +1368,11 @@ export default {
 
     resizeView(index, item) {
       if (item.type === 'view' || item.type === 'de-show-date') {
-        this.$refs.wrapperChild[index].chartResize()
+        try {
+          this.$refs.wrapperChild[index].chartResize()
+        } catch (e) {
+          // ignore error
+        }
       }
     },
     editComponent(index, item) {

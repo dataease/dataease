@@ -115,7 +115,7 @@ export default {
             this.flvPlayer.load()
             this.flvPlayer.play()
           } catch (error) {
-            console.log(error)
+            console.log('flvjs err ignore')
           }
         }
       }
