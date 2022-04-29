@@ -9,7 +9,7 @@
         v-for="(config, index) in pcComponentData"
         v-if="!config.mobileSelected"
         :id="'wait' + config.id"
-        :key="index"
+        :key="config.id"
       >
         <component-wait-item
           :config="config"

@@ -1,5 +1,7 @@
 package io.dataease.service.dataset;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.auth.api.dto.CurrentUserDto;
@@ -960,6 +962,8 @@ public class DataSetTableService {
             res.put("data", jsonArray);
             return res;
         } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
             return res;
         }
     }
@@ -1321,6 +1325,17 @@ public class DataSetTableService {
         DatasourceTypes datasourceTypes = DatasourceTypes.valueOf(ds.getType());
         String keyword = datasourceTypes.getKeywordPrefix() + "%s" + datasourceTypes.getKeywordSuffix();
 
+        String configuration = ds.getConfiguration();
+        JSONObject jsonObject = JSON.parseObject(configuration);
+        String schema = jsonObject.getString("schema");
+        String joinPrefix = "";
+        if (StringUtils.isNotEmpty(schema) && (StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.db2.getType()) ||
+                StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.sqlServer.getType()) ||
+                StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.oracle.getType()) ||
+                StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.pg.getType()))) {
+            joinPrefix = String.format(keyword, schema) + ".";
+        }
+
         List<UnionDTO> union = dataTableInfoDTO.getUnion();
         // 所有选中的字段，即select后的查询字段
         Map<String, String[]> checkedInfo = new LinkedHashMap<>();
@@ -1386,7 +1401,7 @@ public class DataSetTableService {
                 String currentTableName = new Gson().fromJson(currentTable.getInfo(), DataTableInfoDTO.class)
                         .getTable();
 
-                join.append(" ").append(joinType).append(" ").append(String.format(keyword, currentTableName))
+                join.append(" ").append(joinType).append(" ").append(joinPrefix).append(String.format(keyword, currentTableName))
                         .append(" ON ");
                 for (int i = 0; i < unionParamDTO.getUnionFields().size(); i++) {
                     UnionItemDTO unionItemDTO = unionParamDTO.getUnionFields().get(i);
@@ -1409,13 +1424,13 @@ public class DataSetTableService {
             if (StringUtils.isEmpty(f)) {
                 DEException.throwException(Translator.get("i18n_union_ds_no_checked"));
             }
-            sql = MessageFormat.format("SELECT {0} FROM {1}", f, String.format(keyword, tableName)) + join.toString();
+            sql = MessageFormat.format("SELECT {0} FROM {1}", f, joinPrefix + String.format(keyword, tableName)) + join.toString();
         } else {
             String f = StringUtils.join(checkedInfo.get(tableName), ",");
             if (StringUtils.isEmpty(f)) {
                 throw new RuntimeException(Translator.get("i18n_union_ds_no_checked"));
             }
-            sql = MessageFormat.format("SELECT {0} FROM {1}", f, String.format(keyword, tableName));
+            sql = MessageFormat.format("SELECT {0} FROM {1}", f, joinPrefix + String.format(keyword, tableName));
         }
         Map<String, Object> map = new HashMap<>();
         map.put("sql", sql);
@@ -1494,6 +1509,9 @@ public class DataSetTableService {
 
     public void saveTableField(DatasetTable datasetTable) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
+        if (ObjectUtils.isEmpty(ds)) {
+            throw new RuntimeException(Translator.get("i18n_datasource_delete"));
+        }
         DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
         BeanUtils.copyBean(dataSetTableRequest, datasetTable);
 

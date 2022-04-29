@@ -266,35 +266,40 @@ export default {
     downloadToTemplate() {
       const _this = this
       _this.dataLoading = true
-      _this.findStaticSource(function(staticResource) {
-        html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
-          _this.dataLoading = false
-          const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
-          if (snapshot !== '') {
-            _this.templateInfo = {
-              name: _this.$store.state.panel.panelInfo.name,
-              templateType: 'self',
-              snapshot: snapshot,
-              panelStyle: JSON.stringify(_this.canvasStyleData),
-              panelData: JSON.stringify(_this.componentData),
-              dynamicData: JSON.stringify(_this.panelViewDetailsInfo),
-              staticResource: JSON.stringify(staticResource || {})
+      try {
+        _this.findStaticSource(function(staticResource) {
+          html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+            _this.dataLoading = false
+            const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
+            if (snapshot !== '') {
+              _this.templateInfo = {
+                name: _this.$store.state.panel.panelInfo.name,
+                templateType: 'self',
+                snapshot: snapshot,
+                panelStyle: JSON.stringify(_this.canvasStyleData),
+                panelData: JSON.stringify(_this.componentData),
+                dynamicData: JSON.stringify(_this.panelViewDetailsInfo),
+                staticResource: JSON.stringify(staticResource || {})
+              }
+              const blob = new Blob([JSON.stringify(_this.templateInfo)], { type: '' })
+              FileSaver.saveAs(blob, _this.$store.state.panel.panelInfo.name + '-TEMPLATE.DET')
             }
-            const blob = new Blob([JSON.stringify(_this.templateInfo)], { type: '' })
-            FileSaver.saveAs(blob, _this.$store.state.panel.panelInfo.name + '-TEMPLATE.DET')
-          }
+          })
         })
-      })
+      } catch (e) {
+        console.error(e)
+        _this.dataLoading = false
+      }
     },
     // 解析静态文件
     findStaticSource(callBack) {
       const staticResource = []
       // 系统背景文件
-      if (this.canvasStyleData.panel.imageUrl && this.canvasStyleData.panel.imageUrl.indexOf('static-resource') > -1) {
+      if (typeof this.canvasStyleData.panel.imageUrl === 'string' && this.canvasStyleData.panel.imageUrl.indexOf('static-resource') > -1) {
         staticResource.push(this.canvasStyleData.panel.imageUrl)
       }
       this.componentData.forEach(item => {
-        if (item.commonBackground && item.commonBackground.outerImage && item.commonBackground.outerImage.indexOf('static-resource') > -1) {
+        if (typeof item.commonBackground.outerImage === 'string' && item.commonBackground.outerImage.indexOf('static-resource') > -1) {
           staticResource.push(item.commonBackground.outerImage)
         }
       })
@@ -308,7 +313,9 @@ export default {
           callBack()
         }
       } else {
-        callBack()
+        setTimeout(() => {
+          callBack()
+        }, 0)
       }
     },
 
