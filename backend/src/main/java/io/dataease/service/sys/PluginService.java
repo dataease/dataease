@@ -13,10 +13,14 @@ import io.dataease.commons.utils.DeFileUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ZipUtils;
 import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.plugins.common.base.mapper.MyPluginMapper;
 import io.dataease.plugins.config.LoadjarUtil;
+import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.service.datasource.DatasourceService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +52,9 @@ public class PluginService {
 
     @Resource
     private MyPluginMapper myPluginMapper;
+
+    @Resource
+    private DatasourceService datasourceService;
 
     @Autowired
     private LoadjarUtil loadjarUtil;
@@ -187,6 +194,15 @@ public class PluginService {
         CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
         CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
         CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
+
+        if(myPlugin.getCategory().equalsIgnoreCase("datasource")){
+            if(CollectionUtils.isNotEmpty(datasourceService.selectByType(myPlugin.getDsType()))){
+                throw new RuntimeException(Translator.get("i18n_plugin_not_allow_delete"));
+            }
+            SpringContextUtil.getBeanFactory().removeBeanDefinition(myPlugin.getDsType() + "DsProvider");
+            SpringContextUtil.getBeanFactory().removeBeanDefinition(myPlugin.getDsType() + "QueryProvider");
+            SpringContextUtil.getBeanFactory().removeBeanDefinition(myPlugin.getDsType() + "Service");
+        }
         myPluginMapper.deleteByPrimaryKey(pluginId);
         return true;
     }
