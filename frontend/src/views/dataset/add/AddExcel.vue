@@ -322,7 +322,7 @@ export default {
             })
             return
           }
-          if (selectNode[i].datasetName.length > 50) {
+          if (selectNode[i].datasetName.length > 50 && !this.param.tableId) {
             validate = false
             this.$message({
               showClose: true,
