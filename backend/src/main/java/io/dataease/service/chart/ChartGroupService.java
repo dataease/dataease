@@ -31,10 +31,6 @@ public class ChartGroupService {
     @Resource
     private ExtChartGroupMapper extChartGroupMapper;
     @Resource
-    private ExtDataSetGroupMapper extDataSetGroupMapper;
-    @Resource
-    private SysAuthService sysAuthService;
-    @Resource
     private ExtChartViewMapper extChartViewMapper;
 
     public ChartGroupDTO save(ChartGroup chartGroup) {

@@ -65,6 +65,7 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.*;
@@ -84,12 +85,6 @@ public class ExtractDataService {
     @Resource
     @Lazy
     private DataSetTableTaskService dataSetTableTaskService;
-    @Resource
-    private DatasourceMapper datasourceMapper;
-    @Resource
-    private DatasetTableMapper datasetTableMapper;
-    @Resource
-    private DatasetTableTaskMapper datasetTableTaskMapper;
     @Resource
     private DatasourceService datasourceService;
     @Resource
@@ -133,24 +128,28 @@ public class ExtractDataService {
             "  exit 1\n" +
             "fi\n";
 
-    public synchronized boolean existSyncTask(DatasetTable datasetTable, DatasetTableTask datasetTableTask, Long startTime) {
-        datasetTable.setSyncStatus(JobStatus.Underway.name());
+    public synchronized boolean existSyncTask(String datasetTableId, String datasetTableTaskId, Long startTime) {
+        DatasetTable datasetTableRecord = new DatasetTable();
+        datasetTableRecord.setSyncStatus(JobStatus.Underway.name());
         DatasetTableExample example = new DatasetTableExample();
-        example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusNotEqualTo(JobStatus.Underway.name());
-        example.or(example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusIsNull());
-        boolean existSyncTask = datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
+        example.createCriteria().andIdEqualTo(datasetTableId).andSyncStatusNotEqualTo(JobStatus.Underway.name());
+        example.or(example.createCriteria().andIdEqualTo(datasetTableId).andSyncStatusIsNull());
+        boolean existSyncTask = dataSetTableService.updateByExampleSelective(datasetTableRecord, example) == 0;
         if (existSyncTask) {
             DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
-            datasetTableTaskLog.setTaskId(datasetTableTask.getId());
-            datasetTableTaskLog.setTableId(datasetTable.getId());
+            datasetTableTaskLog.setTaskId(datasetTableTaskId);
+            datasetTableTaskLog.setTableId(datasetTableId);
             datasetTableTaskLog.setStatus(JobStatus.Underway.name());
             List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
             return CollectionUtils.isEmpty(datasetTableTaskLogs) || !datasetTableTaskLogs.get(0).getTriggerType().equalsIgnoreCase(TriggerType.Custom.name());
         } else {
-            datasetTableTask.setLastExecTime(startTime);
-            datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
-            datasetTableTask.setStatus(TaskStatus.Exec.name());
-            dataSetTableTaskService.update(datasetTableTask);
+            DatasetTableTask record = new DatasetTableTask();
+            record.setLastExecTime(startTime);
+            record.setLastExecStatus(JobStatus.Underway.name());
+            record.setStatus(TaskStatus.Exec.name());
+            DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
+            datasetTableTaskExample.createCriteria().andIdEqualTo(datasetTableTaskId);
+            dataSetTableTaskService.updateByExampleSelective(record, datasetTableTaskExample);
             return false;
         }
     }
@@ -179,7 +178,7 @@ public class ExtractDataService {
             return o1.getColumnIndex().compareTo(o2.getColumnIndex());
         });
 
-        DatasetTableTaskLog  datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, ops);
+        DatasetTableTaskLog datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, ops);
         switch (updateType) {
             case all_scope:  // 全量更新
                 try {
@@ -195,7 +194,7 @@ public class ExtractDataService {
                     }
                     replaceTable(TableUtils.tableName(datasetTableId));
                     saveSuccessLog(datasetTableTaskLog);
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
+                    updateTableStatus(datasetTableId, JobStatus.Completed, execTime);
                     if (ops.equalsIgnoreCase("替换")) {
                         List<DatasetTableField> oldFileds = getDatasetTableFields(datasetTable.getId());
                         List<DatasetTableField> toAdd = new ArrayList<>();
@@ -228,7 +227,7 @@ public class ExtractDataService {
                     }
                 } catch (Exception e) {
                     saveErrorLog(datasetTableTaskLog, e);
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
+                    updateTableStatus(datasetTableId, JobStatus.Error, null);
                     dropDorisTable(TableUtils.tmpName(TableUtils.tableName(datasetTableId)));
                 } finally {
                     deleteFile("all_scope", datasetTableId);
@@ -247,10 +246,10 @@ public class ExtractDataService {
                         extractExcelDataForSimpleMode(datasetTable, "incremental_add");
                     }
                     saveSuccessLog(datasetTableTaskLog);
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
+                    updateTableStatus(datasetTableId, JobStatus.Completed, execTime);
                 } catch (Exception e) {
                     saveErrorLog(datasetTableTaskLog, e);
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
+                    updateTableStatus(datasetTableId, JobStatus.Error, null);
                 } finally {
                     deleteFile("incremental_add", datasetTableId);
                     deleteFile("incremental_delete", datasetTableId);
@@ -273,7 +272,7 @@ public class ExtractDataService {
             LogUtil.error("Can not find DatasetTable: " + datasetTableId);
             return;
         }
-        DatasetTableTask datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(taskId);
+        DatasetTableTask datasetTableTask = dataSetTableTaskService.selectByPrimaryKey(taskId);
         if (datasetTableTask == null) {
             return;
         }
@@ -284,19 +283,22 @@ public class ExtractDataService {
         }
 
         Long startTime = System.currentTimeMillis();
-        if (existSyncTask(datasetTable, datasetTableTask, startTime)) {
+        if (existSyncTask(datasetTable.getId(), datasetTableTask.getId(), startTime)) {
             LogUtil.info("Skip synchronization task for dataset due to exist others, dataset ID : " + datasetTableId);
             return;
         }
         DatasetTableTaskLog datasetTableTaskLog = getDatasetTableTaskLog(datasetTableId, taskId, startTime);
         UpdateType updateType = UpdateType.valueOf(type);
         if (context != null) {
-            datasetTable.setQrtzInstance(context.getFireInstanceId());
-            datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
+            DatasetTable datasetTableRecord = new DatasetTable();
+            datasetTableRecord.setQrtzInstance(context.getFireInstanceId());
+            DatasetTableExample example = new DatasetTableExample();
+            example.createCriteria().andIdEqualTo(datasetTableId);
+            dataSetTableService.updateByExampleSelective(datasetTableRecord, example);
         }
         Datasource datasource = new Datasource();
         if (StringUtils.isNotEmpty(datasetTable.getDataSourceId())) {
-            datasource = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
+            datasource = datasourceService.get(datasetTable.getDataSourceId());
         } else {
             datasource.setType(datasetTable.getType());
         }
@@ -337,7 +339,7 @@ public class ExtractDataService {
                         System.out.println(ignore.getMessage());
                     }
                     try {
-                        updateTableStatus(datasetTableId, datasetTable, lastExecStatus, execTime);
+                        updateTableStatus(datasetTableId, lastExecStatus, execTime);
                     } catch (Exception ignore) {
                         System.out.println(ignore.getMessage());
                     }
@@ -395,7 +397,7 @@ public class ExtractDataService {
                     } catch (Exception ignore) {
                     }
                     try {
-                        updateTableStatus(datasetTableId, datasetTable, lastExecStatus, execTime);
+                        updateTableStatus(datasetTableId, lastExecStatus, execTime);
                     } catch (Exception ignore) {
                     }
                 }
@@ -459,9 +461,9 @@ public class ExtractDataService {
         String dataFile = null;
         String script = null;
         String streamLoadScript = "";
-        if(kettleFilesKeep){
+        if (kettleFilesKeep) {
             streamLoadScript = shellScript;
-        }else {
+        } else {
             streamLoadScript = shellScriptForDeleteFile;
         }
         switch (extractType) {
@@ -586,14 +588,16 @@ public class ExtractDataService {
         });
     }
 
-    private void updateTableStatus(String datasetTableId, DatasetTable datasetTable, JobStatus completed, Long execTime) {
-        datasetTable.setSyncStatus(completed.name());
+    private void updateTableStatus(String datasetTableId, JobStatus jobStatus, Long execTime) {
+        DatasetTable datasetTableRecord = new DatasetTable();
+        datasetTableRecord.setId(datasetTableId);
+        datasetTableRecord.setSyncStatus(jobStatus.name());
         if (execTime != null) {
-            datasetTable.setLastUpdateTime(execTime);
+            datasetTableRecord.setLastUpdateTime(execTime);
         }
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andIdEqualTo(datasetTableId);
-        datasetTableMapper.updateByExampleSelective(datasetTable, example);
+        dataSetTableService.updateByExampleSelective(datasetTableRecord, example);
     }
 
     private void saveSuccessLog(DatasetTableTaskLog datasetTableTaskLog) {
@@ -706,7 +710,7 @@ public class ExtractDataService {
             for (ExcelSheetData sheet : excelXlsxReader.totalSheets) {
                 if (sheet.getExcelLable().equalsIgnoreCase(excelSheetData.getExcelLable())) {
                     for (List<String> dataItem : sheet.getData()) {
-                        if(dataItem.size()>0){
+                        if (dataItem.size() > 0) {
                             data.add(dataItem.toArray(new String[dataItem.size()]));
                         }
                     }
@@ -792,9 +796,9 @@ public class ExtractDataService {
         DorisConfiguration dorisConfiguration = new Gson().fromJson(dorisDatasource.getConfiguration(), DorisConfiguration.class);
         String columns = columnFields + ",dataease_uuid";
         String streamLoadScript = "";
-        if(kettleFilesKeep){
+        if (kettleFilesKeep) {
             streamLoadScript = shellScript;
-        }else {
+        } else {
             streamLoadScript = shellScriptForDeleteFile;
         }
         switch (extractType) {
@@ -897,9 +901,9 @@ public class ExtractDataService {
             case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfiguration.class);
                 dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfiguration.getHost().trim(), mysqlConfiguration.getDataBase().trim(), mysqlConfiguration.getPort().toString(), mysqlConfiguration.getUsername(), mysqlConfiguration.getPassword());
-                if(StringUtils.isNotEmpty(mysqlConfiguration.getExtraParams()) && mysqlConfiguration.getExtraParams().split("&").length > 0){
+                if (StringUtils.isNotEmpty(mysqlConfiguration.getExtraParams()) && mysqlConfiguration.getExtraParams().split("&").length > 0) {
                     String[] params = mysqlConfiguration.getExtraParams().split("&");
-                    for(int i=0;i<params.length;i++){
+                    for (int i = 0; i < params.length; i++) {
                         dataMeta.addExtraOption("MYSQL", params[i].split("=")[0], params[i].split("=")[1]);
                     }
                 }

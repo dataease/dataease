@@ -2245,8 +2245,7 @@ public class DataSetTableService {
         List<DatasetTable> jobStoppeddDatasetTables = new ArrayList<>();
 
         datasetTableMapper.selectByExample(example).forEach(datasetTable -> {
-            if (StringUtils.isEmpty(datasetTable.getQrtzInstance()) || !activeQrtzInstances.contains(
-                    datasetTable.getQrtzInstance().substring(0, datasetTable.getQrtzInstance().length() - 13))) {
+            if (StringUtils.isNotEmpty(datasetTable.getQrtzInstance()) && !activeQrtzInstances.contains(datasetTable.getQrtzInstance().substring(0, datasetTable.getQrtzInstance().length() - 13))) {
                 jobStoppeddDatasetTables.add(datasetTable);
             }
         });
@@ -2313,5 +2312,9 @@ public class DataSetTableService {
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(id);
         saveTableField(datasetTable);
         return datasetTable;
+    }
+
+    public int  updateByExampleSelective(DatasetTable record, DatasetTableExample example ){
+        return datasetTableMapper.updateByExampleSelective(record, example);
     }
 }
