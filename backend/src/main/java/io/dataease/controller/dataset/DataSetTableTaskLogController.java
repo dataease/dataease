@@ -35,7 +35,7 @@ public class DataSetTableTaskLogController {
     @ApiOperation("保存")
     @PostMapping("save")
     public DatasetTableTaskLog save(@RequestBody DatasetTableTaskLog datasetTableTaskLog) {
-        return dataSetTableTaskLogService.save(datasetTableTaskLog);
+        return dataSetTableTaskLogService.save(datasetTableTaskLog, true);
     }
 
     @ApiOperation("分页查询")

@@ -137,7 +137,7 @@ public class DataSetTableTaskService {
             datasetTableTaskLog.setStatus(JobStatus.Underway.name());
             datasetTableTaskLog.setStartTime(startTime);
             datasetTableTaskLog.setTriggerType(TriggerType.Custom.name());
-            dataSetTableTaskLogService.save(datasetTableTaskLog);
+            dataSetTableTaskLogService.save(datasetTableTaskLog, true);
         }
         return existSyncTask;
     }
