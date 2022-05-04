@@ -33,8 +33,8 @@ public class DataSetTableTaskLogService {
     @Resource
     private DatasetTableTaskMapper datasetTableTaskMapper;
 
-    public DatasetTableTaskLog save(DatasetTableTaskLog datasetTableTaskLog) {
-        if(datasetTableTaskMapper.selectByPrimaryKey(datasetTableTaskLog.getTaskId()) == null){
+    public DatasetTableTaskLog save(DatasetTableTaskLog datasetTableTaskLog, Boolean hasTask) {
+        if(hasTask && datasetTableTaskMapper.selectByPrimaryKey(datasetTableTaskLog.getTaskId()) == null){
             return datasetTableTaskLog;
         }
         if (StringUtils.isEmpty(datasetTableTaskLog.getId())) {
