@@ -344,7 +344,9 @@ public class ExcelXlsReader implements HSSFListener {
                     if(obtainedNum != null && totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().size() < obtainedNum){
                         totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
                     }
-
+                    if(obtainedNum == null){
+                        totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
+                    }
                     totalRows++;
                 }
             }

@@ -704,10 +704,21 @@ public class ExtractDataService {
         List<String[]> data = new ArrayList<>();
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
         List<ExcelSheetData> excelSheetDataList = dataTableInfoDTO.getExcelSheetDataList();
-        ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
         for (ExcelSheetData excelSheetData : excelSheetDataList) {
-            excelXlsxReader.process(new FileInputStream(excelSheetData.getPath()));
-            for (ExcelSheetData sheet : excelXlsxReader.totalSheets) {
+            String suffix = excelSheetData.getPath().substring(excelSheetData.getPath().lastIndexOf(".") + 1);
+            List<ExcelSheetData> totalSheets = new ArrayList<>();
+            if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
+                ExcelXlsReader excelXlsReader = new ExcelXlsReader();
+                excelXlsReader.process(new FileInputStream(excelSheetData.getPath()));
+                totalSheets = excelXlsReader.totalSheets;
+            }
+            if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
+                ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
+                excelXlsxReader.process(new FileInputStream(excelSheetData.getPath()));
+                totalSheets = excelXlsxReader.totalSheets;
+            }
+
+            for (ExcelSheetData sheet : totalSheets) {
                 if (sheet.getExcelLable().equalsIgnoreCase(excelSheetData.getExcelLable())) {
                     for (List<String> dataItem : sheet.getData()) {
                         if (dataItem.size() > 0) {
