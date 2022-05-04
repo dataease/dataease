@@ -1509,7 +1509,7 @@ public class DataSetTableService {
 
     public void saveTableField(DatasetTable datasetTable) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
-        if (ObjectUtils.isEmpty(ds)) {
+        if (ObjectUtils.isEmpty(ds) && !datasetTable.getType().equalsIgnoreCase("union")) {
             throw new RuntimeException(Translator.get("i18n_datasource_delete"));
         }
         DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
