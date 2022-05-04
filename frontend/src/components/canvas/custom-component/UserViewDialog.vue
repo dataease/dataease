@@ -123,10 +123,24 @@ export default {
         if (!this.curComponent && this.lastMapChart) {
           return this.lastMapChart
         }
+        if (this.curComponent && this.curComponent.options && this.curComponent.options.tabList && this.curComponent.options.tabList.length) {
+          const tabList = JSON.parse(JSON.stringify(this.curComponent.options.tabList))
+          tabList.forEach(tab => {
+            if (tab.content &&
+              tab.content.propValue &&
+              tab.content.propValue.viewId &&
+              tab.content.propValue.viewId === this.chart.id &&
+              tab.content.DetailAreaCode &&
+              tab.content.DetailAreaCode.length) {
+              DetailAreaCode = tab.content.DetailAreaCode
+            }
+          })
+        }
         const result = { ...temp, ...{ DetailAreaCode: DetailAreaCode }}
         this.setLastMapChart(result)
         return result
       }
+
       return null
     }
   },
