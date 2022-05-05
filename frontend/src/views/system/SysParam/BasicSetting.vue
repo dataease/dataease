@@ -31,6 +31,18 @@
         </el-col>
       </el-row>
 
+      <el-row v-if="loginTypes.length > 1">
+        <el-col>
+          <el-form-item :label="$t('system_parameter_setting.login_type')" prop="loginType">
+            <el-radio-group v-model="formInline.loginType">
+              <el-radio :label="0" size="mini">{{ $t('login.default_login') }}</el-radio>
+              <el-radio v-if="loginTypes.includes(1)" :label="1" size="mini">LDAP</el-radio>
+              <el-radio v-if="loginTypes.includes(2)" :label="2" size="mini">OIDC</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+      </el-row>
+
       <el-row>
         <el-col>
           <el-form-item :label="$t('display.openHomePage')">
@@ -55,6 +67,7 @@
 <script>
 
 import { basicInfo, updateInfo } from '@/api/system/basic'
+import { ldapStatus, oidcStatus } from '@/api/user'
 
 export default {
   name: 'EmailSetting',
@@ -69,6 +82,7 @@ export default {
       show: true,
       disabledSave: false,
       loading: false,
+      loginTypes: [0],
       rules: {
         frontTimeOut: [
           {
@@ -87,7 +101,19 @@ export default {
       }
     }
   },
+  beforeCreate() {
+    ldapStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(1)
+      }
+    })
 
+    oidcStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(2)
+      }
+    })
+  },
   created() {
     this.query()
   },
@@ -96,6 +122,10 @@ export default {
     query() {
       basicInfo().then(response => {
         this.formInline = response.data
+
+        if (this.formInline && !this.formInline.loginType) {
+          this.formInline.loginType = 0
+        }
 
         this.$nextTick(() => {
           this.$refs.formInline.clearValidate()
@@ -113,6 +143,7 @@ export default {
       const param = [
         { paramKey: 'basic.frontTimeOut', paramValue: this.formInline.frontTimeOut, type: 'text', sort: 1 },
         { paramKey: 'basic.msgTimeOut', paramValue: this.formInline.msgTimeOut, type: 'text', sort: 2 },
+        { paramKey: 'basic.loginType', paramValue: this.formInline.loginType, type: 'text', sort: 3 },
         { paramKey: 'ui.openHomePage', paramValue: this.formInline.openHomePage, type: 'text', sort: 13 }
 
       ]

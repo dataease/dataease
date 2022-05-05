@@ -92,3 +92,10 @@ export function getPublicKey() {
     method: 'get'
   })
 }
+
+export function defaultLoginType() {
+  return request({
+    url: '/system/defaultLoginType',
+    method: 'post'
+  })
+}

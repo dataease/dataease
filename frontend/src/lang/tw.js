@@ -639,6 +639,7 @@ export default {
     basic_setting: '基礎設置',
     front_time_out: '請求超時時間(單位:秒, 註意:保存後刷新瀏覽器生效)',
     msg_time_out: '消息保留時間(單位:天)',
+    login_type: '默認登錄方式',
     empty_front: '為空則默認取值10秒',
     empty_msg: '為空則默認取值30天',
     front_error: '請填寫0-100正整數',
