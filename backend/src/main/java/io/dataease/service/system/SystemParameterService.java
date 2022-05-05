@@ -28,6 +28,7 @@ import io.dataease.ext.*;
 @Transactional(rollbackFor = Exception.class)
 public class SystemParameterService {
 
+    private final static String LOGIN_TYPE_KEY = "basic.loginType";
     @Resource
     private SystemParameterMapper systemParameterMapper;
     @Resource
@@ -52,6 +53,10 @@ public class SystemParameterService {
                 }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.MSG_TIME_OUT.getValue())) {
                     result.setMsgTimeOut(param.getParamValue());
+                }
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.DEFAULT_LOGIN_TYPE.getValue())) {
+                    String paramValue = param.getParamValue();
+                    result.setLoginType(StringUtils.isNotBlank(paramValue) ? Integer.parseInt(paramValue) : 0);
                 }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.OPEN_HOME_PAGE.getValue())) {
                     boolean open = StringUtils.equals("true", param.getParamValue());
@@ -124,6 +129,11 @@ public class SystemParameterService {
             return null;
         }
         return param.getParamValue();
+    }
+
+    public Integer defaultLoginType() {
+        String value = getValue(LOGIN_TYPE_KEY);
+        return StringUtils.isNotBlank(value) ? Integer.parseInt(value) : 0;
     }
 
     public List<SystemParameterDTO> getSystemParameterInfo(String paramConstantsType) {

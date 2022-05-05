@@ -637,6 +637,7 @@ export default {
     basic_setting: 'Basic setting',
     front_time_out: 'Request timeOut(unit: second, Attention: Refresh browser takes effect after saving)',
     msg_time_out: 'Message retention time(unit: day)',
+    login_type: 'Default login type',
     empty_front: 'If empty then default value is 10s',
     empty_msg: 'If empty then default value is 30 days',
     front_error: 'Valid ranger [0 - 100]',

@@ -14,5 +14,7 @@ public class BasicInfo implements Serializable {
     private String msgTimeOut;
     @ApiModelProperty("显示首页")
     private String openHomePage;
+    @ApiModelProperty("默认登录方式")
+    private Integer loginType = 0;
 
 }
