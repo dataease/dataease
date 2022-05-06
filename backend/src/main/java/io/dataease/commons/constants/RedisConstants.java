@@ -8,5 +8,7 @@ public class RedisConstants {
 
     public static final String WEBSOCKET_MSG = "wsMsgService";
 
+    public static final String DS_REDIS_TOPIC = "ds_redis_topic";
+
 
 }
