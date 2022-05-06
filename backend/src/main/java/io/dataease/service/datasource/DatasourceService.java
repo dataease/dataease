@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import io.dataease.auth.annotation.DeCleaner;
+import io.dataease.commons.constants.RedisConstants;
 import io.dataease.ext.ExtDataSourceMapper;
 import io.dataease.ext.query.GridExample;
 import io.dataease.commons.constants.DePermissionType;
@@ -40,6 +41,10 @@ import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +68,8 @@ public class DatasourceService {
     private CommonThreadPool commonThreadPool;
     @Resource
     private SysAuthService sysAuthService;
+    @Resource
+    private Environment env;
 
     public Collection<DataSourceType>types(){
         Collection<DataSourceType> types =  new ArrayList<>();
@@ -89,6 +96,15 @@ public class DatasourceService {
         handleConnectionPool(datasource, "add");
         sysAuthService.copyAuth(datasource.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASOURCE);
         return datasource;
+    }
+
+
+    public void handleConnectionPool(String datasourceId, String type) {
+        Datasource datasource = datasourceMapper.selectByPrimaryKey(datasourceId);
+        if(datasource == null){
+            return;
+        }
+        handleConnectionPool(datasource, type);
     }
 
     public void handleConnectionPool(Datasource datasource, String type) {
@@ -193,7 +209,18 @@ public class DatasourceService {
         DatasourceExample example = new DatasourceExample();
         example.createCriteria().andIdEqualTo(updataDsRequest.getId());
         datasourceMapper.updateByExampleSelective(datasource, example);
-        handleConnectionPool(datasource, "edit");
+        handleConnectionPool(updataDsRequest.getId());
+    }
+
+    private void handleConnectionPool(String datasourceId){
+        String cacheType = env.getProperty("spring.cache.type");
+        if(cacheType != null && cacheType.equalsIgnoreCase("redis")){
+            handleConnectionPool(datasourceId, "delete");
+            RedisTemplate redisTemplate = SpringContextUtil.getBean("redisTemplate", RedisTemplate.class);
+            redisTemplate.convertAndSend(RedisConstants.DS_REDIS_TOPIC, datasourceId);
+        }else {
+            handleConnectionPool(datasourceId, "edit");
+        }
     }
 
     public ResultHolder validate(DatasourceDTO datasource) throws Exception {
