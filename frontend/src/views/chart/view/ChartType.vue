@@ -1,6 +1,8 @@
 <template>
   <div v-if="loadFinish" class="chart-type">
+
     <div v-for="(renderItem, category) in renderMap[chart.render]" :key="category">
+
       <el-divider class="chart-type-divider">{{ $t(category) }}</el-divider>
 
       <div v-for="(container, i) in renderItem" :key="i" style="display: block;">
@@ -42,6 +44,11 @@ export default {
       loadFinish: false
     }
   },
+  watch: {
+    chart() {
+      console.log('this.chart', this.chart)
+    }
+  },
   created() {
     const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views'))
     if (plugins) {
@@ -69,6 +76,7 @@ export default {
       this.pluginTypes = [...this.defaultTypes, ...plugins]
       this.formatTypes()
       this.loadFinish = true
+      console.log('55555555')
     },
     formatTypes() {
       this.pluginTypes.forEach(item => {
@@ -84,6 +92,7 @@ export default {
         } else {
           renderItem[category][len - 1].push(item)
         }
+        console.log('this.renderMap', this.renderMap)
       })
 
       // 填充占位符

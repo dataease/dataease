@@ -158,27 +158,27 @@
         </el-drawer>
 
         <!--PC端画布区域-->
-        <vue-ruler-tool
+        <!-- <vue-ruler-tool
           :content-layout="{left:0,top:0}"
           :is-scale-revise="false"
           :v-model="presetLine"
           class="ruler_class"
           :parent="true"
+        > -->
+        <div
+          v-if="!previewVisible&&!mobileLayoutStatus"
+          id="canvasInfo"
+          class="this_canvas"
+          :style="customCanvasStyle"
+          @drop="handleDrop"
+          @dragover="handleDragOver"
+          @mousedown="handleMouseDown"
+          @mouseup="deselectCurComponent"
+          @scroll="canvasScroll"
         >
-          <div
-            v-if="!previewVisible&&!mobileLayoutStatus"
-            id="canvasInfo"
-            class="this_canvas"
-            :style="customCanvasStyle"
-            @drop="handleDrop"
-            @dragover="handleDragOver"
-            @mousedown="handleMouseDown"
-            @mouseup="deselectCurComponent"
-            @scroll="canvasScroll"
-          >
-            <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
-          </div>
-        </vue-ruler-tool>
+          <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
+        </div>
+        <!-- </vue-ruler-tool> -->
         <!--移动端画布区域 保持宽高比2.5-->
         <el-row v-if="mobileLayoutStatus" class="mobile_canvas_main">
           <el-col :span="8" class="this_mobile_canvas_cell">

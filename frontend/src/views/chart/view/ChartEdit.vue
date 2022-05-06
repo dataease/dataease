@@ -2517,6 +2517,7 @@ export default {
       this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
     },
     changeChartType() {
+      console.log('------')
       this.setChartDefaultOptions()
       this.calcData(true, 'chart', true, true)
     },
