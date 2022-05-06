@@ -715,6 +715,7 @@ export default {
     var_pop: '方差',
     quick_calc: '快速计算',
     show_name_set: '显示名设置',
+    show_name: '显示名',
     color: '颜色',
     color_case: '配色方案',
     pls_slc_color_case: '请选择配色方案',
@@ -1095,7 +1096,8 @@ export default {
     unit_million: '百万',
     unit_hundred_million: '亿',
     formatter_decimal_count_error: '请输入0-10的整数',
-    gauge_threshold_compare_error: '阈值范围需逐级递增'
+    gauge_threshold_compare_error: '阈值范围需逐级递增',
+    tick_count: '刻度间隔数'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

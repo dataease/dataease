@@ -713,6 +713,7 @@ export default {
     var_pop: '方差',
     quick_calc: '快速計算',
     show_name_set: '顯示名設置',
+    show_name: '顯示名',
     color: '顔色',
     color_case: '配色方案',
     pls_slc_color_case: '請選擇配色方案',
@@ -1093,7 +1094,8 @@ export default {
     unit_million: '百萬',
     unit_hundred_million: '億',
     formatter_decimal_count_error: '請輸入0-10的整數',
-    gauge_threshold_compare_error: '阈值範圍需逐級遞增'
+    gauge_threshold_compare_error: '阈值範圍需逐級遞增',
+    tick_count: '刻度間隔數'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

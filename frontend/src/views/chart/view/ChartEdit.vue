@@ -1026,9 +1026,12 @@
 
     <!--显示名修改-->
     <el-dialog v-dialogDrag :title="$t('chart.show_name_set')" :visible="renameItem" :show-close="false" width="30%">
-      <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
-        <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="itemForm.name" size="mini" clearable />
+      <el-form ref="itemForm" label-width="80px" :model="itemForm" :rules="itemFormRules">
+        <el-form-item :label="$t('dataset.field_origin_name')" class="form-item">
+          <span style="padding: 0 16px;">{{ itemForm.dsFieldName }}</span>
+        </el-form-item>
+        <el-form-item :label="$t('chart.show_name')" class="form-item">
+          <el-input v-model="itemForm.name" style="width: 200px" size="mini" clearable />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -3036,6 +3039,14 @@ span {
   overflow: auto;
   border-right: 1px solid #e6e6e6;
   height: 100%;
+}
+
+.form-item-slider>>>.el-form-item__label{
+  font-size: 12px;
+  line-height: 38px;
+}
+.form-item>>>.el-form-item__label{
+  font-size: 12px;
 }
 
 </style>

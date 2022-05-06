@@ -116,7 +116,7 @@
 
 <script>
 import { compareItem } from '@/views/chart/chart/compare'
-import { getItemType } from '@/views/chart/components/drag-item/utils'
+import { getItemType, getOriginFieldName } from '@/views/chart/components/drag-item/utils'
 import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
 import bus from '@/utils/bus'
 import { formatterItem } from '@/views/chart/chart/formatter'
@@ -285,6 +285,7 @@ export default {
     showRename() {
       this.item.index = this.index
       this.item.renameType = 'quotaExt'
+      this.item.dsFieldName = getOriginFieldName(this.dimensionData, this.quotaData, this.item)
       this.$emit('onNameEdit', this.item)
     },
     removeItem() {
