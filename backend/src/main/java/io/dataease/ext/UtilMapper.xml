@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.ext.UtilMapper">
+
+    <select id="currentTimestamp"  resultType="java.lang.Long">
+        select  unix_timestamp(current_timestamp()) * 1000 as c_timestamp
+    </select>
+
+</mapper>

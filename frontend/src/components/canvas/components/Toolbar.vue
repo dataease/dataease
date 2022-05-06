@@ -41,6 +41,12 @@
       <el-tooltip :content="$t('panel.params_setting')">
         <el-button class="icon iconfont-tb icon-canshu" size="mini" circle @click="openOuterParamsSet" />
       </el-tooltip>
+      <el-tooltip v-if="!canvasStyleData.aidedDesign.showGrid" :content="$t('panel.aided_grid')+':'+$t('panel.aided_grid_close')">
+        <el-button class="icon iconfont-tb icon-wangge-close" size="mini" circle @click="showGridChange" />
+      </el-tooltip>
+      <el-tooltip v-if="canvasStyleData.aidedDesign.showGrid" :content="$t('panel.aided_grid')+':'+$t('panel.aided_grid_open')">
+        <el-button class="icon iconfont-tb icon-wangge-open" size="mini" circle @click="showGridChange" />
+      </el-tooltip>
       <span style="float: right;margin-left: 10px">
         <el-button size="mini" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
@@ -273,7 +279,15 @@ export default {
       }
       const components = deepCopy(this.componentData)
       components.forEach(view => {
+        if (view.DetailAreaCode) { view.DetailAreaCode = null }
         if (view.filters && view.filters.length > 0) { view.filters = [] }
+        if (view.type === 'de-tabs') {
+          view.options.tabList && view.options.tabList.length > 0 && view.options.tabList.forEach(tab => {
+            if (tab.content && tab.content.filters && tab.content.filters.length > 0) {
+              tab.content.filters = []
+            }
+          })
+        }
       })
       // 无需保存条件
       requestInfo.panelData = JSON.stringify(components)
@@ -363,6 +377,10 @@ export default {
     },
     auxiliaryMatrixChange() {
       this.canvasStyleData.auxiliaryMatrix = !this.canvasStyleData.auxiliaryMatrix
+    },
+    showGridChange() {
+      this.$store.state.styleChangeTimes++
+      this.canvasStyleData.aidedDesign.showGrid = !this.canvasStyleData.aidedDesign.showGrid
     },
     // 启用移动端布局
     openMobileLayout() {

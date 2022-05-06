@@ -1,6 +1,6 @@
 package io.dataease.dto;
 
-import io.dataease.base.domain.PanelGroupExtendData;
+import io.dataease.plugins.common.base.domain.PanelGroupExtendData;
 import lombok.Data;
 import org.pentaho.di.core.util.UUIDUtil;
 

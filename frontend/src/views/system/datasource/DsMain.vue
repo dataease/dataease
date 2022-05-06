@@ -9,6 +9,7 @@
         v-if="!!component"
         :params="param"
         :t-data="tData"
+        :ds-types="dsTypes"
         @refresh-type="refreshType"
         @switch-component="switchMain"
       />
@@ -32,7 +33,8 @@ export default {
       component: DataHome,
       datasource: {},
       param: null,
-      tData: null
+      tData: null,
+      dsTypes: []
     }
   },
   computed: {},
@@ -43,7 +45,7 @@ export default {
   methods: {
     // 切换main区内容
     switchMain(param) {
-      const { component, componentParam, tData } = param
+      const { component, componentParam, tData, dsTypes} = param
       this.component = DataHome
       this.param = null
       this.$nextTick(() => {
@@ -52,6 +54,7 @@ export default {
             this.component = DsForm
             this.param = componentParam
             this.tData = tData
+            this.dsTypes = dsTypes
             break
           default:
             this.component = DataHome

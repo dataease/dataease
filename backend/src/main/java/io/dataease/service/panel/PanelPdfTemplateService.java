@@ -1,8 +1,8 @@
 package io.dataease.service.panel;
 
-import io.dataease.base.domain.PanelPdfTemplate;
-import io.dataease.base.domain.PanelPdfTemplateExample;
-import io.dataease.base.mapper.PanelPdfTemplateMapper;
+import io.dataease.plugins.common.base.domain.PanelPdfTemplate;
+import io.dataease.plugins.common.base.domain.PanelPdfTemplateExample;
+import io.dataease.plugins.common.base.mapper.PanelPdfTemplateMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

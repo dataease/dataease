@@ -1,6 +1,6 @@
 package io.dataease.dto;
 
-import io.dataease.base.domain.SystemParameter;
+import io.dataease.plugins.common.base.domain.SystemParameter;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.web.multipart.MultipartFile;
 

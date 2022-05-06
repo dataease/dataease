@@ -1,7 +1,7 @@
 package io.dataease.provider;
 
-import io.dataease.base.domain.DatasetTableField;
-import io.dataease.base.domain.Datasource;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.Datasource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,8 +40,12 @@ public class DDLProviderImpl extends DDLProvider {
 
         Integer realSize = page * pageNumber < dataList.size() ? page * pageNumber : dataList.size();
         for (String[] strings : dataList.subList((page - 1) * pageNumber, realSize)) {
+            String[] strings1 = new String[strings.length];
+            for(int i=0; i< strings.length;i++){
+                strings1[i] = strings[i].replace("'","\\'");
+            }
             values.append("('").append(UUID.randomUUID())
-                    .append("','" ).append(String.join("','", Arrays.asList(strings)))
+                    .append("','" ).append(String.join("','", Arrays.asList(strings1)))
                     .append("'),");
         }
         return insertSql + values.substring(0, values.length() - 1);

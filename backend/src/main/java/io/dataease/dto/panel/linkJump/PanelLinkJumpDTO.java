@@ -1,6 +1,6 @@
 package io.dataease.dto.panel.linkJump;
 
-import io.dataease.base.domain.PanelLinkJump;
+import io.dataease.plugins.common.base.domain.PanelLinkJump;
 import lombok.Data;
 
 import java.util.ArrayList;

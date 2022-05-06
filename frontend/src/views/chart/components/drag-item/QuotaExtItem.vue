@@ -49,13 +49,14 @@
                 <i class="el-icon-arrow-right el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-if="item.id === 'count' || item.deType === 0 || item.deType === 1" :command="beforeSummary('count')">{{ $t('chart.count') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('sum')">{{ $t('chart.sum') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('avg')">{{ $t('chart.avg') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('max')">{{ $t('chart.max') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('min')">{{ $t('chart.min') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('stddev_pop')">{{ $t('chart.stddev_pop') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1" :command="beforeSummary('var_pop')">{{ $t('chart.var_pop') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('sum')">{{ $t('chart.sum') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('avg')">{{ $t('chart.avg') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('max')">{{ $t('chart.max') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('min')">{{ $t('chart.min') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('stddev_pop')">{{ $t('chart.stddev_pop') }}</el-dropdown-item>
+                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('var_pop')">{{ $t('chart.var_pop') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSummary('count')">{{ $t('chart.count') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSummary('count_distinct')">{{ $t('chart.count_distinct') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
@@ -98,6 +99,9 @@
           <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
             <span>{{ $t('chart.filter') }}...</span>
           </el-dropdown-item>
+          <el-dropdown-item v-if="chart.render === 'antv' && chart.type.includes('table')" icon="el-icon-notebook-2" divided :command="beforeClickItem('formatter')">
+            <span>{{ $t('chart.value_formatter') }}...</span>
+          </el-dropdown-item>
           <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">
             <span>{{ $t('chart.show_name_set') }}</span>
           </el-dropdown-item>
@@ -112,8 +116,10 @@
 
 <script>
 import { compareItem } from '@/views/chart/chart/compare'
-import { getItemType } from '@/views/chart/components/drag-item/utils'
+import { getItemType, getOriginFieldName } from '@/views/chart/components/drag-item/utils'
 import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
+import bus from '@/utils/bus'
+import { formatterItem } from '@/views/chart/chart/formatter'
 
 export default {
   name: 'QuotaExtItem',
@@ -148,7 +154,8 @@ export default {
     return {
       compareItem: compareItem,
       disableEditCompare: false,
-      tagType: 'success'
+      tagType: 'success',
+      formatterItem: formatterItem
     }
   },
   watch: {
@@ -168,11 +175,16 @@ export default {
   mounted() {
     this.init()
     this.isEnableCompare()
+    bus.$on('reset-change-table', () => this.getItemTagType())
+
   },
   methods: {
     init() {
       if (!this.item.compareCalc) {
         this.item.compareCalc = JSON.parse(JSON.stringify(this.compareItem))
+      }
+      if (!this.item.formatterCfg) {
+        this.item.formatterCfg = JSON.parse(JSON.stringify(this.formatterItem))
       }
     },
     isEnableCompare() {
@@ -205,6 +217,9 @@ export default {
           break
         case 'filter':
           this.editFilter()
+          break
+        case 'formatter':
+          this.valueFormatter()
           break
         default:
           break
@@ -270,6 +285,7 @@ export default {
     showRename() {
       this.item.index = this.index
       this.item.renameType = 'quotaExt'
+      this.item.dsFieldName = getOriginFieldName(this.dimensionData, this.quotaData, this.item)
       this.$emit('onNameEdit', this.item)
     },
     removeItem() {
@@ -290,6 +306,12 @@ export default {
     },
     getItemTagType() {
       this.tagType = getItemType(this.dimensionData, this.quotaData, this.item)
+    },
+
+    valueFormatter() {
+      this.item.index = this.index
+      this.item.formatterType = 'quota'
+      this.$emit('valueFormatter', this.item)
     }
   }
 }

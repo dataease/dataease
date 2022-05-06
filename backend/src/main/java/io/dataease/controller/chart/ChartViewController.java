@@ -3,16 +3,13 @@ package io.dataease.controller.chart;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.annotation.DePermissionProxy;
-import io.dataease.base.domain.ChartViewCacheWithBLOBs;
-import io.dataease.base.domain.ChartViewWithBLOBs;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
-import io.dataease.controller.request.chart.ChartCalRequest;
-import io.dataease.controller.request.chart.ChartExtRequest;
-import io.dataease.controller.request.chart.ChartViewCacheRequest;
-import io.dataease.controller.request.chart.ChartViewRequest;
+import io.dataease.controller.request.chart.*;
 import io.dataease.controller.response.ChartDetail;
 import io.dataease.dto.chart.ChartViewDTO;
+import io.dataease.plugins.common.base.domain.ChartViewCacheWithBLOBs;
+import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.service.chart.ChartViewCacheService;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.panel.PanelViewService;
@@ -23,6 +20,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author gin
@@ -42,7 +40,7 @@ public class ChartViewController {
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("/save/{panelId}")
-    public ChartViewDTO save(@PathVariable String panelId, @RequestBody ChartViewCacheRequest request) {
+    public ChartViewDTO save(@PathVariable String panelId, @RequestBody ChartViewRequest request) {
         return chartViewService.save(request);
     }
 
@@ -54,10 +52,10 @@ public class ChartViewController {
     }
 
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
-    @ApiOperation("保存到缓存表")
-    @PostMapping("/save2Cache/{panelId}")
-    public void save2Cache(@PathVariable String panelId, @RequestBody ChartViewCacheWithBLOBs chartViewWithBLOBs) {
-        chartViewService.save2Cache(chartViewWithBLOBs);
+    @ApiOperation("保存编辑的视图信息")
+    @PostMapping("/viewEditSave/{panelId}")
+    public void viewEditSave(@PathVariable String panelId, @RequestBody ChartViewWithBLOBs chartViewWithBLOBs) {
+        chartViewService.viewEditSave(chartViewWithBLOBs);
     }
 
     @ApiIgnore
@@ -112,6 +110,13 @@ public class ChartViewController {
         return chartViewService.chartCopy(id, panelId);
     }
 
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE, paramIndex = 1)
+    @ApiOperation("批量复制")
+    @PostMapping("chartBatchCopy/{panelId}")
+    public Map<String,String> chartBatchCopy(@RequestBody ChartCopyBatchRequest request, @PathVariable String panelId) {
+        return chartViewService.chartBatchCopy(request,panelId);
+    }
+
     @ApiIgnore
     @GetMapping("searchAdviceSceneId/{panelId}")
     public String searchAdviceSceneId(@PathVariable String panelId) {
@@ -147,12 +152,11 @@ public class ChartViewController {
         chartViewService.initViewCache(panelId);
     }
 
-
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW, paramIndex = 1)
-    @ApiOperation("重置视图缓存")
+    @ApiOperation("重置视图")
     @PostMapping("/resetViewCache/{id}/{panelId}")
     public void resetViewCache(@PathVariable String id, @PathVariable String panelId) {
-        chartViewCacheService.refreshCache(id);
+        chartViewCacheService.resetView(id);
     }
 
     @ApiOperation("校验视图Title")

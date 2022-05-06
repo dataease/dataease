@@ -3,38 +3,38 @@ package io.dataease.service.engine;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import io.dataease.base.domain.Datasource;
-import io.dataease.base.domain.DeEngine;
-import io.dataease.base.domain.DeEngineExample;
-import io.dataease.base.mapper.DeEngineMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.HttpClientConfig;
 import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.controller.ResultHolder;
-import io.dataease.controller.request.datasource.DatasourceRequest;
-import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.datasource.DorisConfiguration;
 import io.dataease.dto.datasource.MysqlConfiguration;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.common.base.domain.Datasource;
+import io.dataease.plugins.common.base.domain.DeEngine;
+import io.dataease.plugins.common.base.domain.DeEngineExample;
+import io.dataease.plugins.common.base.mapper.DeEngineMapper;
+import io.dataease.plugins.common.request.datasource.DatasourceRequest;
+import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.provider.ProviderFactory;
-import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.sql.Array;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class EngineService {
     @Resource
-    private Environment env;
+        private Environment env;
     @Resource
     private DeEngineMapper deEngineMapper;
     @Resource
@@ -79,7 +79,7 @@ public class EngineService {
             throw new Exception("未完整设置数据引擎");
         }
         try {
-            DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+            Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
             datasourceProvider.checkStatus(datasourceRequest);
@@ -152,16 +152,12 @@ public class EngineService {
     }
 
     private void setDs(DeEngine engine) {
-        Datasource datasource = new Datasource();
-        BeanUtils.copyBean(datasource, engine);
-        CacheUtils.put("ENGINE", "engine", datasource, null, null);
+        CacheUtils.removeAll("ENGINE");
     }
 
+    @Cacheable(value = "ENGINE")
     public Datasource getDeEngine() throws Exception {
-        Object catcheEngine = CacheUtils.get("ENGINE", "engine");
-        if (catcheEngine != null) {
-            return (Datasource) catcheEngine;
-        }
+        Datasource datasource = new Datasource();
 
         if (isLocalMode()) {
             JSONObject jsonObject = new JSONObject();
@@ -179,7 +175,7 @@ public class EngineService {
             engine.setDesc("doris");
             engine.setType("engine_doris");
             engine.setConfiguration(jsonObject.toJSONString());
-            setDs(engine);
+            BeanUtils.copyBean(datasource, engine);
         }
         if (isClusterMode()) {
             DeEngineExample engineExample = new DeEngineExample();
@@ -188,7 +184,7 @@ public class EngineService {
             if (CollectionUtils.isEmpty(deEngines)) {
                 throw new Exception("未设置数据引擎");
             }
-            setDs(deEngines.get(0));
+            BeanUtils.copyBean(datasource, deEngines.get(0));
         }
         if (isSimpleMode()) {
             DeEngineExample engineExample = new DeEngineExample();
@@ -197,9 +193,38 @@ public class EngineService {
             if (CollectionUtils.isEmpty(deEngines)) {
                 throw new Exception("未设置数据引擎");
             }
-            setDs(deEngines.get(0));
+            BeanUtils.copyBean(datasource, deEngines.get(0));
         }
-        return getDeEngine();
+        return datasource;
+    }
+
+    public void initSimpleEngine(){
+        if (!isSimpleMode()) {
+            return;
+        }
+        DeEngineExample engineExample = new DeEngineExample();
+        engineExample.createCriteria().andTypeEqualTo("engine_mysql");
+        List<DeEngine> deEngines = deEngineMapper.selectByExampleWithBLOBs(engineExample);
+        if (CollectionUtils.isNotEmpty(deEngines)) {
+            return;
+        }
+        DeEngine engine = new DeEngine();
+        engine.setId(UUID.randomUUID().toString());
+        engine.setType("engine_mysql");
+        MysqlConfiguration mysqlConfiguration = new MysqlConfiguration();
+        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+        Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
+        if(!matcher.find()){
+           return;
+        };
+        mysqlConfiguration.setHost(matcher.group(1));
+        mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
+        mysqlConfiguration.setDataBase(matcher.group(3).split("\\?")[0]);
+        mysqlConfiguration.setExtraParams(matcher.group(3).split("\\?")[1]);
+        mysqlConfiguration.setUsername(env.getProperty("spring.datasource.username"));
+        mysqlConfiguration.setPassword(env.getProperty("spring.datasource.password"));
+        engine.setConfiguration(new Gson().toJson(mysqlConfiguration));
+        deEngineMapper.insert(engine);
     }
 
 

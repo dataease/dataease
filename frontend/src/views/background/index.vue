@@ -64,12 +64,11 @@
               :on-remove="handleRemove"
               :http-request="upload"
               :file-list="fileList"
-              :on-change="onChange"
             >
               <i class="el-icon-plus" />
             </el-upload>
-            <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogVisible">
-              <img width="100%" :src="dialogImageUrl" alt="">
+            <el-dialog top="25vh" width="600px" :append-to-body="true" :destroy-on-close="true" :visible.sync="dialogVisible">
+              <img width="100%" :src="dialogImageUrl">
             </el-dialog>
           </el-col>
         </el-row>
@@ -108,9 +107,10 @@
 import { queryBackground } from '@/api/background/background'
 import BackgroundItem from '@/views/background/BackgroundItem'
 import { mapState } from 'vuex'
-import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
+import { uploadFileResult } from '@/api/staticResource/staticResource'
+import { COMMON_BACKGROUND_NONE } from '@/components/canvas/custom-component/component-list'
 
 export default {
   name: 'Background',
@@ -145,7 +145,7 @@ export default {
       if (this.curComponent && this.curComponent.commonBackground && this.curComponent.commonBackground.outerImage && typeof (this.curComponent.commonBackground.outerImage) === 'string') {
         this.fileList.push({ url: this.curComponent.commonBackground.outerImage })
       }
-      this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
+      this.backgroundOrigin = deepCopy(this.curComponent.commonBackground ? this.curComponent.commonBackground : COMMON_BACKGROUND_NONE)
       this.queryBackground()
     },
     queryBackground() {
@@ -179,7 +179,7 @@ export default {
     },
     handleRemove(file, fileList) {
       this.uploadDisabled = false
-      this.panel.imageUrl = null
+      this.curComponent.commonBackground.outerImage = null
       this.fileList = []
       this.commitStyle()
     },
@@ -187,16 +187,11 @@ export default {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
-    onChange(file, fileList) {
-      var _this = this
-      _this.uploadDisabled = true
-      const reader = new FileReader()
-      reader.onload = function() {
-        _this.curComponent.commonBackground.outerImage = reader.result
-      }
-      reader.readAsDataURL(file.raw)
-    },
     upload(file) {
+      const _this = this
+      uploadFileResult(file, (fileUrl) => {
+        _this.curComponent.commonBackground.outerImage = fileUrl
+      })
       // console.log('this is upload')
     }
 

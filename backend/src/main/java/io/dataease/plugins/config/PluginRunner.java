@@ -1,8 +1,8 @@
 package io.dataease.plugins.config;
 
-import io.dataease.base.domain.MyPlugin;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.service.sys.PluginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

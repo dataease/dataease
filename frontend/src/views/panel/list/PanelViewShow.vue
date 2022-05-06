@@ -8,14 +8,14 @@
   >
     <el-col v-if="panelInfo.name.length>0" class="panel-design">
 
-      <el-row v-if="showType === 2" class="panel-design-head panel-share-head">
-        <div style="border-bottom: 1px solid #dfe4ed;height: 100%;">
+      <el-row v-if="showType === 2" class="panel-design-head panel-share-head" style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;">
+        <div style="height: 100%;">
           <share-head />
         </div>
       </el-row>
-      <el-row v-else class="panel-design-head">
+      <el-row v-else class="panel-design-head" style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;">
         <!--仪表板头部区域-->
-        <div style="border-bottom: 1px solid #dfe4ed;height: 100%;">
+        <div style="height: 100%;">
           <el-col :span="12" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
             <span>{{ panelInfo.name || '测试仪表板' }}</span>
             &nbsp;
@@ -35,14 +35,14 @@
               </el-tooltip>
             </span>
             <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
-              <el-tooltip :content="$t('panel.export_to_panel')">
-                <el-button class="el-icon-download" size="mini" circle @click="downloadToTemplate" />
-              </el-tooltip>
-            </span>
-            <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
-              <el-tooltip :content="$t('panel.export_to_pdf')">
-                <el-button class="el-icon-notebook-2" size="mini" circle @click="downloadAsPDF" />
-              </el-tooltip>
+              <el-dropdown>
+                <el-button size="mini" class="el-icon-download" circle />
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item icon="el-icon-copy-document" @click.native="downloadToTemplate">{{ $t('panel.export_to_panel') }}</el-dropdown-item>
+                  <el-dropdown-item icon="el-icon-notebook-2" @click.native="downloadAsPDF">{{ $t('panel.export_to_pdf') }}</el-dropdown-item>
+                  <el-dropdown-item icon="el-icon-picture-outline" @click.native="downloadAsImage">{{ $t('panel.export_to_img') }}</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
             </span>
             <span style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.fullscreen_preview')">
@@ -138,6 +138,9 @@ import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
 import { initPanelData } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
+import { dataURLToBlob } from '@/components/canvas/utils/utils'
+import { findResourceAsBase64, readFile } from '@/api/staticResource/staticResource'
+
 export default {
   name: 'PanelViewShow',
   components: { Preview, SaveToTemplate, PDFPreExport, ShareHead },
@@ -261,25 +264,87 @@ export default {
       }, 50)
     },
     downloadToTemplate() {
+      const _this = this
+      _this.dataLoading = true
+      try {
+        _this.findStaticSource(function(staticResource) {
+          html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+            _this.dataLoading = false
+            const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
+            if (snapshot !== '') {
+              _this.templateInfo = {
+                name: _this.$store.state.panel.panelInfo.name,
+                templateType: 'self',
+                snapshot: snapshot,
+                panelStyle: JSON.stringify(_this.canvasStyleData),
+                panelData: JSON.stringify(_this.componentData),
+                dynamicData: JSON.stringify(_this.panelViewDetailsInfo),
+                staticResource: JSON.stringify(staticResource || {})
+              }
+              const blob = new Blob([JSON.stringify(_this.templateInfo)], { type: '' })
+              FileSaver.saveAs(blob, _this.$store.state.panel.panelInfo.name + '-TEMPLATE.DET')
+            }
+          })
+        })
+      } catch (e) {
+        console.error(e)
+        _this.dataLoading = false
+      }
+    },
+    // 解析静态文件
+    findStaticSource(callBack) {
+      const staticResource = []
+      // 系统背景文件
+      if (typeof this.canvasStyleData.panel.imageUrl === 'string' && this.canvasStyleData.panel.imageUrl.indexOf('static-resource') > -1) {
+        staticResource.push(this.canvasStyleData.panel.imageUrl)
+      }
+      this.componentData.forEach(item => {
+        if (typeof item.commonBackground.outerImage === 'string' && item.commonBackground.outerImage.indexOf('static-resource') > -1) {
+          staticResource.push(item.commonBackground.outerImage)
+        }
+      })
+      if (staticResource.length > 0) {
+        try {
+          findResourceAsBase64({ resourcePathList: staticResource }).then((rsp) => {
+            callBack(rsp.data)
+          })
+        } catch (e) {
+          console.log('findResourceAsBase64 error')
+          callBack()
+        }
+      } else {
+        setTimeout(() => {
+          callBack()
+        }, 0)
+      }
+    },
+
+    downloadAsImage() {
       this.dataLoading = true
       setTimeout(() => {
-        html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
-          this.dataLoading = false
-          const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
-          if (snapshot !== '') {
-            this.templateInfo = {
-              name: this.$store.state.panel.panelInfo.name,
-              templateType: 'self',
-              snapshot: snapshot,
-              panelStyle: JSON.stringify(this.canvasStyleData),
-              panelData: JSON.stringify(this.componentData),
-              dynamicData: JSON.stringify(this.panelViewDetailsInfo)
-            }
-            const blob = new Blob([JSON.stringify(this.templateInfo)], { type: '' })
-            FileSaver.saveAs(blob, this.$store.state.panel.panelInfo.name + '-TEMPLATE.DET')
-          }
-        })
-      }, 50)
+        this.exporting = true
+        setTimeout(() => {
+          const canvasID = document.getElementById('canvasInfoTemp')
+          const a = document.createElement('a')
+          html2canvas(canvasID).then(canvas => {
+            this.exporting = false
+            const dom = document.body.appendChild(canvas)
+            dom.style.display = 'none'
+            a.style.display = 'none'
+            document.body.removeChild(dom)
+            const blob = dataURLToBlob(dom.toDataURL('image/png', 1))
+            a.setAttribute('href', URL.createObjectURL(blob))
+            a.setAttribute('download', this.$store.state.panel.panelInfo.name + '.png')
+            document.body.appendChild(a)
+            a.click()
+            URL.revokeObjectURL(blob)
+            document.body.removeChild(a)
+            setTimeout(() => {
+              this.dataLoading = false
+            }, 300)
+          })
+        }, 1500)
+      }, 500)
     },
 
     downloadAsPDF() {

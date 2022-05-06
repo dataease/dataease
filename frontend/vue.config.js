@@ -20,7 +20,7 @@ module.exports = {
     proxy: {
       '^(?!/login)': {
         target: 'http://localhost:8081/',
-        ws: false
+        ws: true
       }
     },
     open: true,

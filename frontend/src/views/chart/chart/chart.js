@@ -55,7 +55,8 @@ export const DEFAULT_SIZE = {
   liquidOutlineDistance: 8,
   liquidWaveLength: 128,
   liquidWaveCount: 3,
-  liquidShape: 'circle'
+  liquidShape: 'circle',
+  tablePageMode: 'page'
 }
 export const DEFAULT_LABEL = {
   show: false,
@@ -277,7 +278,8 @@ export const DEFAULT_FUNCTION_CFG = {
   sliderRange: [0, 10]
 }
 export const DEFAULT_THRESHOLD = {
-  gaugeThreshold: ''
+  gaugeThreshold: '',
+  labelThreshold: []
 }
 // chart config
 export const BASE_BAR = {
@@ -672,8 +674,7 @@ export const BASE_CHART_STRING = {
     legend: DEFAULT_LEGEND_STYLE,
     xAxis: DEFAULT_XAXIS_STYLE,
     yAxis: DEFAULT_YAXIS_STYLE,
-    yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
-    background: DEFAULT_BACKGROUND_COLOR
+    yAxisExt: DEFAULT_YAXIS_EXT_STYLE
   }),
   customFilter: '[]'
 }
@@ -696,8 +697,7 @@ export const BASE_CHART = {
     legend: DEFAULT_LEGEND_STYLE,
     xAxis: DEFAULT_XAXIS_STYLE,
     yAxis: DEFAULT_YAXIS_STYLE,
-    yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
-    background: DEFAULT_BACKGROUND_COLOR
+    yAxisExt: DEFAULT_YAXIS_EXT_STYLE
   },
   customFilter: []
 }

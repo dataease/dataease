@@ -1,8 +1,8 @@
 package io.dataease.service;
 
-import io.dataease.base.domain.SystemParameter;
-import io.dataease.base.domain.SystemParameterExample;
-import io.dataease.base.mapper.SystemParameterMapper;
+import io.dataease.plugins.common.base.domain.SystemParameter;
+import io.dataease.plugins.common.base.domain.SystemParameterExample;
+import io.dataease.plugins.common.base.mapper.SystemParameterMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;

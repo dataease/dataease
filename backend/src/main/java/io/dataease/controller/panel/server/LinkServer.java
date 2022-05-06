@@ -3,7 +3,7 @@ package io.dataease.controller.panel.server;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.dataease.auth.filter.F2CLinkFilter;
-import io.dataease.base.domain.PanelLink;
+import io.dataease.plugins.common.base.domain.PanelLink;
 import io.dataease.controller.panel.api.LinkApi;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.panel.link.*;

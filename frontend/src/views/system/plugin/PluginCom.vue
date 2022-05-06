@@ -5,6 +5,8 @@
     :ref="refId"
     :url="url"
     :obj="obj"
+    v-bind="$attrs"
+    v-on="$listeners"
     @execute-axios="executeAxios"
     @on-add-languanges="addLanguages"
     @plugin-call-back="pluginCallBack"
@@ -26,6 +28,7 @@ export default {
   components: {
     AsyncComponent
   },
+  inheritAttrs: true,
   props: {
     componentName: {
       type: String,
@@ -83,7 +86,7 @@ export default {
       this.$refs[this.refId] && this.$refs[this.refId].chartResize && this.$refs[this.refId].chartResize()
     }, */
     callPluginInner(param) {
-      this.$refs[this.refId] && this.$refs[this.refId].callPluginInner && this.$refs[this.refId].callPluginInner(param)
+      return this.$refs[this.refId] && this.$refs[this.refId].callPluginInner && this.$refs[this.refId].callPluginInner(param)
     }
   }
 }

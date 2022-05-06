@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.ext.ExtPanelGroupExtendDataMapper">
+
+    <insert id="savePanelExtendData">
+        INSERT INTO `panel_group_extend_data` (id, panel_id,view_id,view_details) VALUES
+        <foreach collection="records" item="item" index="index" separator=",">
+            (uuid(),#{item.panelId},#{item.viewId},#{item.viewDetails})
+        </foreach>
+    </insert>
+
+    <insert id="copyExtendData">
+        INSERT INTO `panel_group_extend_data` ( id, panel_id, view_id, view_details ) SELECT
+        uuid() as id,
+        #{newPanelId},
+        #{newViewId},
+        view_details
+        FROM
+            panel_group_extend_data
+        WHERE
+            view_id =#{sourceViewId}
+  </insert>
+
+    <insert id="copyWithCopyId">
+        INSERT INTO `panel_group_extend_data` (
+            id,
+            panel_id,
+            view_id,
+            view_details,
+            copy_from,
+            copy_id
+        ) SELECT
+        uuid() AS id,
+        pv_copy.panel_id AS panel_id,
+        pv_copy.chart_view_id AS view_id,
+        view_details,
+        id AS copy_from,
+        #{copyId} AS copy_id
+        FROM
+            (
+            SELECT
+                panel_id,
+                copy_from_view,
+                chart_view_id
+            FROM
+                panel_view
+            WHERE
+                copy_id = #{copyId}
+            ) pv_copy
+            INNER JOIN panel_group_extend_data ON panel_group_extend_data.view_id = pv_copy.copy_from_view
+  </insert>
+
+
+</mapper>

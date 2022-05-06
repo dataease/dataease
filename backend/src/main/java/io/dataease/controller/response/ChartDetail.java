@@ -1,8 +1,8 @@
 package io.dataease.controller.response;
 
-import io.dataease.base.domain.ChartViewWithBLOBs;
-import io.dataease.base.domain.DatasetTable;
-import io.dataease.base.domain.Datasource;
+import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
+import io.dataease.plugins.common.base.domain.DatasetTable;
+import io.dataease.plugins.common.base.domain.Datasource;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

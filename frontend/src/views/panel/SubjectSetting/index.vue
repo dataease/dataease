@@ -17,21 +17,22 @@
         <el-collapse-item :title="$t('panel.panel')" name="panel">
           <el-row class="selector-div">
             <background-selector class="attr-selector" />
+<!--            <panel-aided-design class="attr-selector" />-->
             <component-gap class="attr-selector" />
             <panel-refresh-time class="attr-selector" />
             <panel-view-result class="attr-selector" />
           </el-row>
         </el-collapse-item>
-        <el-collapse-item :title="$t('chart.module_style')" name="component">
-          <el-row class="selector-div">
-            <panel-background-color-selector
-              v-if="chart"
-              class="attr-selector"
-              :chart="chart"
-              @onChangeBackgroundForm="onChangeBackgroundForm"
-            />
-          </el-row>
-        </el-collapse-item>
+<!--        <el-collapse-item :title="$t('chart.module_style')" name="component">-->
+<!--          <el-row class="selector-div">-->
+<!--            <panel-background-color-selector-->
+<!--              v-if="chart"-->
+<!--              class="attr-selector"-->
+<!--              :chart="chart"-->
+<!--              @onChangeBackgroundForm="onChangeBackgroundForm"-->
+<!--            />-->
+<!--          </el-row>-->
+<!--        </el-collapse-item>-->
         <el-collapse-item :title="$t('chart.shape_attr')" name="graphical">
           <el-row class="selector-div">
             <panel-color-selector
@@ -70,9 +71,11 @@ import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import bus from '@/utils/bus'
 import PanelViewResult from '@/views/panel/SubjectSetting/PanelStyle/PanelViewResult'
+import PanelAidedDesign from '@/views/panel/SubjectSetting/PanelStyle/PanelAidedDesign'
 
 export default {
   components: {
+    PanelAidedDesign,
     PanelViewResult,
     slider,
     BackgroundSelector,

@@ -2,7 +2,7 @@ package io.dataease.controller.datasource;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
-import io.dataease.base.domain.Datasource;
+import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.utils.AuthUtils;
@@ -11,15 +11,18 @@ import io.dataease.controller.datasource.request.UpdataDsRequest;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.dto.datasource.DBTableDTO;
+import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.dto.DatasourceDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.pentaho.di.core.database.DataSourceProviderInterface;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +41,13 @@ public class DatasourceController {
     @PostMapping("/add")
     public Datasource addDatasource(@RequestBody Datasource datasource) throws Exception{
         return datasourceService.addDatasource(datasource);
+    }
+
+    @RequiresPermissions("datasource:read")
+    @ApiOperation("数据源类型")
+    @GetMapping("/types")
+    public Collection types() throws Exception{
+        return datasourceService.types();
     }
 
     @ApiIgnore

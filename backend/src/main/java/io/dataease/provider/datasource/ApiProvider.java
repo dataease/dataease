@@ -2,16 +2,16 @@ package io.dataease.provider.datasource;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.Gson;
+import io.dataease.plugins.common.dto.datasource.TableDesc;
+import io.dataease.plugins.common.dto.datasource.TableField;
+import io.dataease.plugins.common.request.datasource.DatasourceRequest;
+import io.dataease.plugins.datasource.provider.Provider;
 import com.jayway.jsonpath.JsonPath;
-import io.dataease.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.commons.utils.HttpClientConfig;
 import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.controller.request.datasource.ApiDefinitionRequest;
-import io.dataease.controller.request.datasource.DatasourceRequest;
-import io.dataease.dto.datasource.TableDesc;
-import io.dataease.dto.datasource.TableField;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,8 +22,10 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service("api")
-public class ApiProvider extends DatasourceProvider{
+@Service("apiProvider")
+public class ApiProvider extends Provider{
+
+
     @Override
     public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
@@ -45,16 +47,10 @@ public class ApiProvider extends DatasourceProvider{
     }
 
     @Override
-    public List<String[]> fetchResult(DatasourceRequest datasourceRequest) throws Exception {
-        return null;
-    }
-
-    @Override
     public List<TableField> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
         return null;
     }
 
-    @Override
     public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
         Map<String, List> result = new HashMap<>();
         List<String[]> dataList = new ArrayList<>();
@@ -83,17 +79,6 @@ public class ApiProvider extends DatasourceProvider{
         return tableFields;
     }
 
-    @Override
-    public void handleDatasource(DatasourceRequest datasourceRequest, String type) throws Exception {
-
-    }
-
-    @Override
-    public List<String> getSchema(DatasourceRequest datasourceRequest) throws Exception {
-        return null;
-    }
-
-    @Override
     public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
         List<ApiDefinition> lists = JSONObject.parseArray(datasourceRequest.getDatasource().getConfiguration(), ApiDefinition.class);
         List<TableField> tableFields = new ArrayList<>();
@@ -113,7 +98,6 @@ public class ApiProvider extends DatasourceProvider{
         return tableFields;
     }
 
-    @Override
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         List<ApiDefinition> apiDefinitionList = JSONObject.parseArray(datasourceRequest.getDatasource().getConfiguration(), ApiDefinition.class);
         JSONObject apiItemStatuses = new JSONObject();
@@ -191,7 +175,12 @@ public class ApiProvider extends DatasourceProvider{
         }
         List<LinkedHashMap> datas = new ArrayList<>();
         try {
-            datas = JsonPath.read(response,apiDefinition.getDataPath());
+            Object object = JsonPath.read(response,apiDefinition.getDataPath());
+            if(object instanceof List){
+                datas = (List<LinkedHashMap>)object;
+            }else {
+                datas.add((LinkedHashMap)object);
+            }
         }catch (Exception e){
             throw new Exception("jsonPath 路径错误：" + e.getMessage());
         }
@@ -231,7 +220,14 @@ public class ApiProvider extends DatasourceProvider{
 
     private List<String[]> fetchResult(String result, ApiDefinition apiDefinition){
         List<String[]> dataList = new LinkedList<>();
-        List<LinkedHashMap> datas = JsonPath.read(result, apiDefinition.getDataPath());
+        List<LinkedHashMap> datas = new ArrayList<>();
+
+        Object object = JsonPath.read(result,apiDefinition.getDataPath());
+        if(object instanceof List){
+            datas = (List<LinkedHashMap>)object;
+        }else {
+            datas.add((LinkedHashMap)object);
+        }
         for (LinkedHashMap data : datas) {
             String[] row = new String[apiDefinition.getFields().size()];
             int i = 0;

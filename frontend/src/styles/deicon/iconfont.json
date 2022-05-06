@@ -6,6 +6,48 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1278123",
+      "name": "图片",
+      "font_class": "tupian",
+      "unicode": "e666",
+      "unicode_decimal": 58982
+    },
+    {
+      "icon_id": "6156146",
+      "name": "超链接",
+      "font_class": "chaolianjie1",
+      "unicode": "e6e4",
+      "unicode_decimal": 59108
+    },
+    {
+      "icon_id": "11839649",
+      "name": "跳转",
+      "font_class": "com-jump",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
+      "icon_id": "9595900",
+      "name": "跳转",
+      "font_class": "component-tiaozhuan",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "4674763",
+      "name": "网格\表格",
+      "font_class": "wangge-open",
+      "unicode": "e60b",
+      "unicode_decimal": 58891
+    },
+    {
+      "icon_id": "28110370",
+      "name": "关闭网格",
+      "font_class": "wangge-close",
+      "unicode": "e609",
+      "unicode_decimal": 58889
+    },
+    {
       "icon_id": "26621948",
       "name": "流媒体，媒体列表",
       "font_class": "a-liumeitimeitiliebiao",

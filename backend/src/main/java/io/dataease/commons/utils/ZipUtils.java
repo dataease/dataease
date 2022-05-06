@@ -56,38 +56,34 @@ public class ZipUtils {
     }
 
     public static void unzip(File source, String out) throws IOException {
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(source))) {
+        ZipInputStream zis = new ZipInputStream(new FileInputStream(source));
+        ZipEntry entry = zis.getNextEntry();
+        while (entry != null) {
+            File file = protectZipSlip(entry.getName(), out);
 
-            ZipEntry entry = zis.getNextEntry();
+            if (entry.isDirectory()) {
+                if (!file.mkdirs()) {
+                }
+            } else {
+                File parent = file.getParentFile();
 
-            while (entry != null) {
-
-                File file = protectZipSlip(entry.getName(), out);
-
-                if (entry.isDirectory()) {
-                    if (!file.mkdirs()) {
-                    }
-                } else {
-                    File parent = file.getParentFile();
-
-                    if (!parent.exists()) {
-                        if (!parent.mkdirs()) {
-                        }
-                    }
-
-                    try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file))) {
-
-                        byte[] buffer = new byte[Math.toIntExact(entry.getSize())];
-
-                        int location;
-
-                        while ((location = zis.read(buffer)) != -1) {
-                            bos.write(buffer, 0, location);
-                        }
+                if (!parent.exists()) {
+                    if (!parent.mkdirs()) {
                     }
                 }
-                entry = zis.getNextEntry();
+
+                try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file))) {
+
+                    byte[] buffer = new byte[Math.toIntExact(entry.getSize())];
+
+                    int location;
+
+                    while ((location = zis.read(buffer)) != -1) {
+                        bos.write(buffer, 0, location);
+                    }
+                }
             }
+            entry = zis.getNextEntry();
         }
     }
 

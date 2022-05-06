@@ -213,5 +213,4 @@ export function checkCustomDs() {
     loading: true
   })
 }
-export const disabledSyncDs= ['es', 'ck', 'mongo', 'redshift', 'hive', 'impala']
 export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs }

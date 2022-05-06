@@ -347,6 +347,9 @@ export default {
       targetViewInfo.targetFieldId = null
     },
     sourceFieldCheckedChange(data) {
+      if (data.checked) {
+        this.linkJump.checked = true
+      }
       this.$nextTick(() => {
         this.$refs.linkJumpInfoTree.setCurrentKey(data.sourceFieldId)
         this.nodeClick(data)

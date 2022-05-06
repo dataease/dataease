@@ -6,10 +6,13 @@
       type="card"
       style-type="radioGroup"
       class="de-tabs-height"
+      :class="isCurrentEdit ? 'de-tabs-edit' : ''"
       :font-color="fontColor"
       :active-color="activeColor"
       :border-color="borderColor"
       :border-active-color="borderActiveColor"
+      :addable="isEdit"
+      @tab-add="addTab"
       @tab-click="handleClick"
     >
       <!--  <plugin-com ref="dataease-tabs" v-model="activeTabName" type="card" class="de-tabs" component-name="dataease-tabs" @tab-click="handleClick"> -->
@@ -39,27 +42,36 @@
                 {{ $t('detabs.selectview') }}
               </el-dropdown-item>
 
-              <el-dropdown-item v-if=" element.options.tabList.length > 1" :command="beforeHandleCommond('deleteCur', item)">
+              <el-dropdown-item :command="beforeHandleCommond('selectOthers', item)">
+                {{ $t('detabs.selectOthers') }}
+              </el-dropdown-item>
+
+              <el-dropdown-item
+                v-if=" element.options.tabList.length > 1"
+                :command="beforeHandleCommond('deleteCur', item)"
+              >
                 {{ $t('table.delete') }}
               </el-dropdown-item>
 
             </el-dropdown-menu>
           </el-dropdown>
         </span>
-
+        <component
+          :is="item.content.component"
+          v-if="item.content && item.content.type!=='view'"
+          :ref="item.name"
+          :in-tab="true"
+          :is-edit="isEdit"
+          :active="active"
+          :element="item.content"
+          :filters="filterMap[item.content.propValue && item.content.propValue.viewId] || []"
+          :out-style="outStyle"
+          :edit-mode="editMode"
+          :h="tabH"
+        />
         <div v-if="activeTabName === item.name" class="de-tab-content">
-          <!-- <user-view
-            v-if="item.content && item.content.propValue && item.content.propValue.viewId"
-            :ref="item.name"
-            :in-tab="true"
-            :is-edit="isEdit"
-            :active="active"
-            :element="item.content"
-            :filters="item.content.filters"
-            :out-style="outStyle"
-          /> -->
           <user-view
-            v-if="item.content && item.content.propValue && item.content.propValue.viewId"
+            v-if="item.content && item.content.type==='view' && item.content.propValue && item.content.propValue.viewId"
             :ref="item.name"
             :in-tab="true"
             :is-edit="isEdit"
@@ -117,6 +129,23 @@
       </span>
     </el-dialog>
 
+    <el-dialog
+      :title="$t('detabs.availableComponents')"
+      :append-to-body="true"
+      :visible.sync="otherComponentDialogVisible"
+      width="300px"
+      height="250px"
+      :show-close="false"
+      :close-on-click-modal="false"
+      center
+    >
+      <tab-use-list v-if="otherComponentDialogVisible" ref="otherComponentSelect" />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="otherComponentDialogVisible = false">{{ $t('table.cancel') }}</el-button>
+        <el-button type="primary" @click="sureOtherComponentSelector">{{ $t('table.confirm') }}</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 
 </template>
@@ -130,9 +159,11 @@ import componentList from '@/components/canvas/custom-component/component-list'
 import { mapState } from 'vuex'
 import { chartCopy } from '@/api/chart/chart'
 import { buildFilterMap } from '@/utils/conditionUtil'
+import TabUseList from '@/views/panel/AssistComponent/tabUseList'
+
 export default {
   name: 'DeTabls',
-  components: { ViewSelect, AsyncSoltComponent },
+  components: { TabUseList, ViewSelect, AsyncSoltComponent },
   props: {
     element: {
       type: Object,
@@ -152,6 +183,15 @@ export default {
       default: function() {
         return {}
       }
+    },
+    editMode: {
+      type: String,
+      require: false,
+      default: 'edit'
+    },
+    h: {
+      type: Number,
+      default: 200
     }
   },
   data() {
@@ -165,16 +205,20 @@ export default {
       textarea: '',
       curItem: null,
       viewDialogVisible: false,
+      otherComponentDialogVisible: false,
       url: '/api/pluginCommon/component/dataease-tabs'
       /* fontColor: '#999999',
-      activeColor: '#f18406',
+        activeColor: '#f18406',
 
-      borderColor: '#999999',
-      borderActiveColor: '#f18406' */
+        borderColor: '#999999',
+        borderActiveColor: '#f18406' */
 
     }
   },
   computed: {
+    tabH() {
+      return this.h - 50
+    },
     dropdownShow() {
       return this.isEdit && !this.mobileLayoutStatus
     },
@@ -205,13 +249,32 @@ export default {
     },
     titleValid() {
       return !!this.textarea && !!this.textarea.trim()
+    },
+    isCurrentEdit() {
+      return this.isEdit && this.curComponent && this.curComponent.id === this.element.id
     }
   },
   watch: {
-    curComponent: {
+    // curComponent: {
+    //   handler(newVal, oldVla) {
+    //   },
+    //   deep: true
+    // },
+    active: {
       handler(newVal, oldVla) {
-      },
-      deep: true
+        let activeTabInner
+        this.element.options.tabList.forEach(item => {
+          if (item && item.name === this.activeTabName && item.content) {
+            activeTabInner = item.content
+          }
+        })
+        if (newVal && activeTabInner) {
+          this.$store.commit('setCurActiveTabInner', activeTabInner)
+        } else {
+          this.$store.commit('setCurActiveTabInner', null)
+        }
+      }
+
     }
   },
   created() {
@@ -236,12 +299,40 @@ export default {
         case 'selectView':
           this.selectView(command.param)
           break
+        case 'selectOthers':
+          this.selectOthers(command.param)
+          break
       }
     },
     selectView(param) {
       this.activeTabName = param.name
       this.curItem = param
       this.viewDialogVisible = true
+    },
+    selectOthers(param) {
+      this.activeTabName = param.name
+      this.curItem = param
+      this.otherComponentDialogVisible = true
+    },
+    sureOtherComponentSelector() {
+      const curSelectedId = this.$refs.otherComponentSelect.getCurSelectedComponent()
+      if (curSelectedId) {
+        let component
+        const newComponentId = uuid.v1()
+        componentList.forEach(componentTemp => {
+          if (componentTemp.id === curSelectedId) {
+            component = JSON.parse(JSON.stringify(componentTemp))
+            component.style.width = '100%'
+            component.style.height = '100%'
+            this.curItem.content = component
+            this.curItem.name = newComponentId
+            this.activeTabName = newComponentId
+            this.$store.commit('setCurActiveTabInner', component)
+            this.styleChange()
+          }
+        })
+      }
+      this.otherComponentDialogVisible = false
     },
     sureViewSelector() {
       const nodes = this.$refs.viewSelect.getCurrentSelected()
@@ -315,6 +406,9 @@ export default {
       this.$store.dispatch('chart/setViewId', null)
       this.styleChange()
     },
+    addTab() {
+      this.addNewTab(this.element.id)
+    },
 
     addNewTab(componentId) {
       if (!componentId || componentId !== this.element.id) return
@@ -337,23 +431,26 @@ export default {
     handleClick(tab) {
       const name = tab.name
       this.element.options.tabList.forEach(item => {
-        if (item && item.name === name && item.content && item.content.propValue && item.content.propValue.viewId) {
-          this.filterMap[item.content.propValue.viewId] = item.content.filters
-          this.$store.dispatch('chart/setViewId', item.content.propValue.viewId)
+        if (item && item.name === name && item.content) {
+          this.$store.commit('setCurActiveTabInner', item.content)
+          if (item.content.propValue && item.content.propValue.viewId) {
+            this.filterMap[item.content.propValue.viewId] = item.content.filters
+            this.$store.dispatch('chart/setViewId', item.content.propValue.viewId)
+          }
         }
       })
-      // console.log(tab)
     }
-
   }
 }
 </script>
 
 <style lang="scss" scoped>
+
   .de-tabs-div {
     height: 100%;
     overflow: hidden;
   }
+
   .de-tabs-height {
     height: 100%;
   }

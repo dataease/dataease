@@ -1,11 +1,11 @@
 package io.dataease.service.sys;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.ZipUtil;
 import com.google.gson.Gson;
-import io.dataease.base.domain.MyPlugin;
-import io.dataease.base.mapper.MyPluginMapper;
-import io.dataease.base.mapper.ext.ExtSysPluginMapper;
-import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.dto.MyPluginDTO;
+import io.dataease.ext.ExtSysPluginMapper;
+import io.dataease.ext.query.GridExample;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.CodingUtil;
@@ -13,8 +13,14 @@ import io.dataease.commons.utils.DeFileUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ZipUtils;
 import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.common.base.domain.MyPlugin;
+import io.dataease.plugins.common.base.mapper.MyPluginMapper;
 import io.dataease.plugins.config.LoadjarUtil;
+import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.service.datasource.DatasourceService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,6 +53,9 @@ public class PluginService {
     @Resource
     private MyPluginMapper myPluginMapper;
 
+    @Resource
+    private DatasourceService datasourceService;
+
     @Autowired
     private LoadjarUtil loadjarUtil;
 
@@ -65,14 +74,15 @@ public class PluginService {
      * @param file
      * @return
      */
-    public Map<String, Object> localInstall(MultipartFile file) {
+    public Map<String, Object> localInstall(MultipartFile file) throws Exception{
         //1.上传文件到服务器pluginDir目录下
         File dest = DeFileUtils.upload(file, pluginDir + "temp/");
         //2.解压目标文件dest 得到plugin.json和jar
         String folder = pluginDir + "folder/";
         try {
-            ZipUtils.upZipFile(dest, folder);
-        } catch (IOException e) {
+            ZipUtil.unzip(dest.getAbsolutePath(), folder);
+            // ZipUtils.unzip(dest, folder);
+        } catch (Exception e) {
             DeFileUtils.deleteFile(pluginDir + "temp/");
             DeFileUtils.deleteFile(folder);
             // 需要删除文件
@@ -90,7 +100,7 @@ public class PluginService {
             LogUtil.error(msg);
             DEException.throwException(new RuntimeException(msg));
         }
-        MyPlugin myPlugin = formatJsonFile(jsonFiles[0]);
+        MyPluginDTO myPlugin = formatJsonFile(jsonFiles[0]);
 
         if (!versionMatch(myPlugin.getRequire())) {
             String msg = "当前插件要求系统版本最低为：" + myPlugin.getRequire();
@@ -118,6 +128,9 @@ public class PluginService {
             targetDir = makeTargetDir(myPlugin);
             String jarPath;
             jarPath = DeFileUtils.copy(jarFile, targetDir);
+            if(myPlugin.getCategory().equalsIgnoreCase("datasource")){
+                DeFileUtils.copyFolder(folder + "/" + myPlugin.getDsType() + "Driver", targetDir + myPlugin.getDsType() + "Driver");
+            }
             loadJar(jarPath, myPlugin);
             myPluginMapper.insert(myPlugin);
 
@@ -181,6 +194,15 @@ public class PluginService {
         CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
         CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
         CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
+
+        if(myPlugin.getCategory().equalsIgnoreCase("datasource")){
+            if(CollectionUtils.isNotEmpty(datasourceService.selectByType(myPlugin.getDsType()))){
+                throw new RuntimeException(Translator.get("i18n_plugin_not_allow_delete"));
+            }
+            SpringContextUtil.getBeanFactory().removeBeanDefinition(myPlugin.getDsType() + "DsProvider");
+            SpringContextUtil.getBeanFactory().removeBeanDefinition(myPlugin.getDsType() + "QueryProvider");
+            SpringContextUtil.getBeanFactory().removeBeanDefinition(myPlugin.getDsType() + "Service");
+        }
         myPluginMapper.deleteByPrimaryKey(pluginId);
         return true;
     }
@@ -192,6 +214,11 @@ public class PluginService {
         String path = pluginDir + plugin.getStore() + "/" + fileName;
         File jarFile = new File(path);
         FileUtil.del(jarFile);
+
+        if(plugin.getCategory().equalsIgnoreCase("datasource")){
+            File driverFile = new File(pluginDir + plugin.getStore() + "/" + plugin.getDsType() + "Driver");
+            FileUtil.del(driverFile);
+        }
     }
 
     /**
@@ -224,13 +251,13 @@ public class PluginService {
      *
      * @return
      */
-    private MyPlugin formatJsonFile(File file) {
+    private MyPluginDTO formatJsonFile(File file) {
         String str = DeFileUtils.readJson(file);
         Gson gson = new Gson();
         Map<String, Object> myPlugin = gson.fromJson(str, Map.class);
         myPlugin.put("free", (Double) myPlugin.get("free") > 0.0);
-        myPlugin.put("loadMybatis", (Double) myPlugin.get("loadMybatis") > 0.0);
-        MyPlugin result = new MyPlugin();
+        myPlugin.put("loadMybatis", myPlugin.get("loadMybatis") == null ? false : (Double) myPlugin.get("loadMybatis") > 0.0);
+        MyPluginDTO result = new MyPluginDTO();
         try {
             org.apache.commons.beanutils.BeanUtils.populate(result, myPlugin);
             result.setInstallTime(System.currentTimeMillis());
@@ -240,6 +267,10 @@ public class PluginService {
             e.printStackTrace();
         }
         //BeanUtils.copyBean(result, myPlugin);
+        if(result.getCategory().equalsIgnoreCase("datasource") && (StringUtils.isEmpty(result.getStore()) || !result.getStore().equalsIgnoreCase("default"))){
+            result.setStore("thirdpart");
+        }
+
         return result;
     }
 

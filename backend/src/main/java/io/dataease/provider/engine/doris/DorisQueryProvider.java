@@ -1,18 +1,18 @@
 package io.dataease.provider.engine.doris;
 
-import io.dataease.base.domain.ChartViewWithBLOBs;
-import io.dataease.base.domain.DatasetTableField;
-import io.dataease.base.domain.DatasetTableFieldExample;
-import io.dataease.base.domain.Datasource;
-import io.dataease.base.mapper.DatasetTableFieldMapper;
-import io.dataease.controller.request.chart.ChartExtFilterRequest;
-import io.dataease.dto.chart.ChartCustomFilterItemDTO;
-import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
-import io.dataease.dto.chart.ChartViewFieldDTO;
-import io.dataease.dto.sqlObj.SQLObj;
+import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
+import io.dataease.plugins.common.base.domain.Datasource;
+import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.plugins.common.constants.DorisConstants;
-import io.dataease.provider.QueryProvider;
 import io.dataease.plugins.common.constants.SQLConstants;
+import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
+import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
+import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
+import io.dataease.plugins.common.dto.sqlObj.SQLObj;
+import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
+import io.dataease.plugins.datasource.query.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +35,7 @@ import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREF
  * @Author gin
  * @Date 2021/5/17 4:11 下午
  */
-@Service("dorisEngineQuery")
+@Service("engine_dorisQueryProvider")
 public class DorisQueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;
@@ -1026,7 +1026,11 @@ public class DorisQueryProvider extends QueryProvider {
         if (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*")) {
             fieldName = DorisConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format(DorisConstants.AGG_FIELD, y.getSummary(), originField);
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                fieldName = String.format(DorisConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else {
+                fieldName = String.format(DorisConstants.AGG_FIELD, y.getSummary(), originField);
+            }
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                 String cast = String.format(DorisConstants.CAST, originField, y.getDeType() == 2 ? DorisConstants.DEFAULT_INT_FORMAT : DorisConstants.DEFAULT_FLOAT_FORMAT);
@@ -1035,7 +1039,11 @@ public class DorisQueryProvider extends QueryProvider {
                 fieldName = String.format(DorisConstants.ROUND, cast1, "2");
             } else {
                 String cast = String.format(DorisConstants.CAST, originField, y.getDeType() == 2 ? DorisConstants.DEFAULT_INT_FORMAT : DorisConstants.DEFAULT_FLOAT_FORMAT);
-                fieldName = String.format(DorisConstants.AGG_FIELD, y.getSummary(), cast);
+                if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                    fieldName = String.format(DorisConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
+                } else {
+                    fieldName = String.format(DorisConstants.AGG_FIELD, y.getSummary(), cast);
+                }
             }
         }
         return SQLObj.builder()
@@ -1081,6 +1089,7 @@ public class DorisQueryProvider extends QueryProvider {
     private String reflectFieldName(DatasetTableField field) {
         return field.getDataeaseName();
     }
+
     private String calcFieldRegex(String originField, SQLObj tableObj) {
         originField = originField.replaceAll("[\\t\\n\\r]]", "");
         // 正则提取[xxx]

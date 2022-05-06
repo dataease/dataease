@@ -1,7 +1,7 @@
 <template>
   <de-container>
     <de-aside-container>
-      <dataset-group-selector-tree :privileges="privileges" :mode="mode" :clear-empty-dir="clearEmptyDir" :type="type" :custom-type="customType" :show-mode="showMode" @getTable="getTable" />
+      <dataset-group-selector-tree :checked-table="checkedTable" :privileges="privileges" :mode="mode" :clear-empty-dir="clearEmptyDir" :type="type" :custom-type="customType" :show-mode="showMode" @getTable="getTable" />
     </de-aside-container>
     <de-main-container>
       <dataset-table-data :table="table" />
@@ -54,6 +54,11 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    checkedTable: {
+      type: Object,
+      required: false,
+      default: null
     }
   },
   data() {
@@ -65,6 +70,7 @@ export default {
   created() {
   },
   mounted() {
+    this.getTable(this.checkedTable)
   },
   methods: {
     getTable(table) {

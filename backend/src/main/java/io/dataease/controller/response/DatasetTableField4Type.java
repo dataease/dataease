@@ -1,6 +1,6 @@
 package io.dataease.controller.response;
 
-import io.dataease.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

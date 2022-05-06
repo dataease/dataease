@@ -1,26 +1,18 @@
 package io.dataease.service.chart;
 
+import cn.hutool.core.lang.Assert;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.service.AuthUserService;
-import io.dataease.base.domain.*;
-import io.dataease.base.mapper.ChartViewCacheMapper;
-import io.dataease.base.mapper.ChartViewMapper;
-import io.dataease.base.mapper.PanelViewMapper;
-import io.dataease.base.mapper.ext.ExtChartGroupMapper;
-import io.dataease.base.mapper.ext.ExtChartViewMapper;
-import io.dataease.base.mapper.ext.ExtPanelGroupExtendDataMapper;
-import io.dataease.commons.constants.ColumnPermissionConstants;
+import io.dataease.ext.*;
 import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.JdbcConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
-import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.request.chart.*;
-import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.controller.response.ChartDetail;
 import io.dataease.controller.response.DataSetDetail;
 import io.dataease.dto.chart.*;
@@ -30,12 +22,21 @@ import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.common.base.domain.*;
+import io.dataease.plugins.common.base.mapper.ChartViewCacheMapper;
+import io.dataease.plugins.common.base.mapper.ChartViewMapper;
+import io.dataease.plugins.common.base.mapper.PanelViewMapper;
+import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
+import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
+import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
+import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
+import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.datasource.provider.Provider;
+import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.view.entity.*;
 import io.dataease.plugins.view.service.ViewPluginService;
 import io.dataease.provider.ProviderFactory;
-import io.dataease.provider.datasource.DatasourceProvider;
-import io.dataease.provider.QueryProvider;
 import io.dataease.service.chart.util.ChartDataBuild;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
@@ -44,12 +45,12 @@ import io.dataease.service.dataset.PermissionService;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
 import io.dataease.service.panel.PanelGroupExtendDataService;
-import io.dataease.service.panel.PanelViewService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -105,36 +106,29 @@ public class ChartViewService {
     private ReentrantLock lock = new ReentrantLock();
 
     // 直接保存统一到缓存表
-    public ChartViewDTO save(ChartViewCacheRequest chartView) {
+    public ChartViewDTO save(ChartViewRequest chartView) {
         long timestamp = System.currentTimeMillis();
         chartView.setUpdateTime(timestamp);
-        chartViewCacheMapper.updateByPrimaryKeySelective(chartView);
+        chartViewMapper.updateByPrimaryKeySelective(chartView);
         Optional.ofNullable(chartView.getId()).ifPresent(id -> {
             CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
         });
         return getOne(chartView.getId(), "panel_edit");
     }
 
-    public String checkTitle(ChartViewCacheRequest chartView){
+    public String checkTitle(ChartViewCacheRequest chartView) {
         ChartViewCacheExample example = new ChartViewCacheExample();
         example.createCriteria().andTitleEqualTo(chartView.getTitle()).andSceneIdEqualTo(chartView.getSceneId()).andIdNotEqualTo(chartView.getId());
-        List<ChartViewCache>  result =  chartViewCacheMapper.selectByExample(example);
-        if(CollectionUtils.isNotEmpty(result)){
-           return "fail";
-        }else{
+        List<ChartViewCache> result = chartViewCacheMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(result)) {
+            return "fail";
+        } else {
             return "success";
         }
     }
 
     public ChartViewWithBLOBs newOne(ChartViewWithBLOBs chartView) {
         long timestamp = System.currentTimeMillis();
-        // 校验名称
-        ChartViewExample queryExample = new ChartViewExample();
-        queryExample.createCriteria().andSceneIdEqualTo(chartView.getSceneId()).andNameEqualTo(chartView.getName());
-        List<ChartView>  result =  chartViewMapper.selectByExample(queryExample);
-        if(CollectionUtils.isNotEmpty(result)){
-            DEException.throwException(Translator.get("theme_name_repeat"));
-        }
         chartView.setUpdateTime(timestamp);
         chartView.setId(UUID.randomUUID().toString());
         chartView.setCreateBy(AuthUtils.getUser().getUsername());
@@ -156,11 +150,14 @@ public class ChartViewService {
     }
 
 
-    // 直接保存统一到缓存表
-    public void save2Cache(ChartViewCacheWithBLOBs chartView) {
+    /**
+     * @Description 保存编辑的视图信息
+     * @param chartView
+     */
+    public void viewEditSave(ChartViewWithBLOBs chartView) {
         long timestamp = System.currentTimeMillis();
         chartView.setUpdateTime(timestamp);
-        chartViewCacheMapper.updateByPrimaryKeySelective(chartView);
+        chartViewMapper.updateByPrimaryKeySelective(chartView);
         Optional.ofNullable(chartView.getId()).ifPresent(id -> {
             CacheUtils.remove(JdbcConstants.VIEW_CACHE_KEY, id);
         });
@@ -251,25 +248,14 @@ public class ChartViewService {
     }
 
 
-    @Transactional
     public ChartViewDTO getOne(String id, String queryFrom) {
-        try{
-            ChartViewDTO result;
-            if(CommonConstants.VIEW_QUERY_FROM.PANEL_EDIT.equals(queryFrom)) {
-                //仪表板编辑页面 从缓存表中取数据 缓存表中没有数据则进行插入
-                result = extChartViewMapper.searchOneFromCache(id);
-                if (result == null) {
-                    chartViewCacheService.refreshCache(id);
-                    result = extChartViewMapper.searchOneFromCache(id);
-                }
-            } else {
-                result = extChartViewMapper.searchOne(id);
-            }
-            if(result==null){
+        try {
+            ChartViewDTO result = extChartViewMapper.searchOne(id);
+            if (result == null) {
                 DataEaseException.throwException(Translator.get("i18n_chart_delete"));
             }
             return result;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             DataEaseException.throwException(e);
         }
@@ -438,12 +424,12 @@ public class ChartViewService {
 
         List<ChartExtFilterRequest> filters = new ArrayList<>();
         // 联动条件
-        if(ObjectUtils.isNotEmpty(requestList.getLinkageFilters())){
+        if (ObjectUtils.isNotEmpty(requestList.getLinkageFilters())) {
             filters.addAll(requestList.getLinkageFilters());
         }
 
         // 外部参数条件
-        if(ObjectUtils.isNotEmpty(requestList.getOuterParamsFilters())){
+        if (ObjectUtils.isNotEmpty(requestList.getOuterParamsFilters())) {
             filters.addAll(requestList.getOuterParamsFilters());
         }
 
@@ -511,17 +497,20 @@ public class ChartViewService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         Datasource ds = table.getMode() == 0 ? datasourceService.get(table.getDataSourceId()) : engineService.getDeEngine();
         datasourceRequest.setDatasource(ds);
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         List<String[]> data = new ArrayList<>();
 
 
         // 如果是插件视图 走插件内部的逻辑
         if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
             Map<String, List<ChartViewFieldDTO>> fieldMap = new HashMap<>();
-            fieldMap.put("xAxis",xAxis);
-            fieldMap.put("yAxis",yAxis);
-            fieldMap.put("extStack",extStack);
-            fieldMap.put("extBubble",extBubble);
+            List<ChartViewFieldDTO> xAxisExt = new Gson().fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
+            }.getType());
+            fieldMap.put("xAxisExt",xAxisExt);
+            fieldMap.put("xAxis", xAxis);
+            fieldMap.put("yAxis", yAxis);
+            fieldMap.put("extStack", extStack);
+            fieldMap.put("extBubble", extBubble);
             PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view);
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
@@ -533,7 +522,7 @@ public class ChartViewService {
             Map<String, Object> mapChart = pluginViewResult(pluginViewParam, view, data, isDrill);
             Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
 
-            return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal,view, isDrill, drillFilters);
+            return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters);
             // 如果是插件到此结束
         }
 
@@ -772,7 +761,7 @@ public class ChartViewService {
         }
         // table组件，明细表，也用于导出数据
         Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
-        return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal,view, isDrill, drillFilters);
+        return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters);
     }
 
     public ChartViewDTO uniteViewResult(String sql, Map<String, Object> chartData, Map<String, Object> tabelData, ChartViewDTO view, Boolean isDrill, List<ChartExtFilterRequest> drillFilters) {
@@ -799,8 +788,6 @@ public class ChartViewService {
         pluginViewSet.setDsType(ds.getType());
         pluginViewSet.setTabelId(table.getId());
         PluginViewLimit pluginViewLimit = BeanUtils.copyBean(new PluginViewLimit(), view);
-
-
 
 
         List<PluginChartFieldCustomFilter> fieldFilters = customFilters.stream().map(filter -> gson.fromJson(gson.toJson(filter), PluginChartFieldCustomFilter.class)).collect(Collectors.toList());
@@ -976,7 +963,7 @@ public class ChartViewService {
      * @return
      * @throws Exception
      */
-    public List<String[]> cacheViewData(DatasourceProvider datasourceProvider, DatasourceRequest datasourceRequest, String viewId) throws Exception {
+    public List<String[]> cacheViewData(Provider datasourceProvider, DatasourceRequest datasourceRequest, String viewId) throws Exception {
         List<String[]> result;
         Object cache = CacheUtils.get(JdbcConstants.VIEW_CACHE_KEY, viewId);
         if (cache == null) {
@@ -1038,13 +1025,35 @@ public class ChartViewService {
         return chartViewMapper.selectByPrimaryKey(id);
     }
 
-    public String chartCopy(String id, String panelId) {
+    public String chartCopy(String sourceViewId,String newViewId, String panelId) {
+        extChartViewMapper.chartCopy(newViewId, sourceViewId, panelId);
+        extChartViewMapper.copyCache(sourceViewId, newViewId);
+        extPanelGroupExtendDataMapper.copyExtendData(sourceViewId, newViewId, panelId);
+        chartViewCacheService.refreshCache(newViewId);
+        return newViewId;
+    }
+
+    public String chartCopy(String sourceViewId, String panelId) {
         String newChartId = UUID.randomUUID().toString();
-        extChartViewMapper.chartCopy(newChartId, id, panelId);
-        extChartViewMapper.copyCache(id,newChartId);
-        extPanelGroupExtendDataMapper.copyExtendData(id,newChartId,panelId);
-        chartViewCacheService.refreshCache(newChartId);
-        return newChartId;
+       return chartCopy(sourceViewId,newChartId,panelId);
+    }
+
+
+    /**
+     * @Description Copy a set of views with a given source ID and target ID
+     * @param request
+     * @param panelId
+     * @return
+     */
+    public Map<String,String> chartBatchCopy(ChartCopyBatchRequest request,String panelId){
+        Assert.notNull(panelId,"panelId should not be null");
+        Map<String,String> sourceAndTargetIds = request.getSourceAndTargetIds();
+        if(sourceAndTargetIds != null && !sourceAndTargetIds.isEmpty()){
+            for(Map.Entry<String,String> entry:sourceAndTargetIds.entrySet()){
+                chartCopy(entry.getKey(),entry.getValue(),panelId);
+            }
+        }
+        return request.getSourceAndTargetIds();
     }
 
     public String searchAdviceSceneId(String panelId) {
@@ -1073,8 +1082,14 @@ public class ChartViewService {
         }
     }
 
+    /**
+     * @param panelId
+     * @Description 初始化仪表板内部视图的cache表
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void initViewCache(String panelId) {
-        extChartViewMapper.deleteCacheWithPanel(null,panelId);
+        extChartViewMapper.deleteCacheWithPanel(null, panelId);
+        extChartViewMapper.initPanelChartViewCache(panelId);
     }
 
 }

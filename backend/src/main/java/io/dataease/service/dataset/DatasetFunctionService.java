@@ -1,7 +1,10 @@
 package io.dataease.service.dataset;
 
-import io.dataease.base.domain.*;
-import io.dataease.base.mapper.DatasetTableFunctionMapper;
+import io.dataease.plugins.common.base.domain.DatasetTable;
+import io.dataease.plugins.common.base.domain.DatasetTableFunction;
+import io.dataease.plugins.common.base.domain.DatasetTableFunctionExample;
+import io.dataease.plugins.common.base.domain.Datasource;
+import io.dataease.plugins.common.base.mapper.DatasetTableFunctionMapper;
 import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;

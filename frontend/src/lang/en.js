@@ -2,7 +2,7 @@ export default {
   fu: {
     search_bar: {
       search: 'Search',
-      adv_search: 'Advanced search',
+      adv_search: 'Advarequirednced search',
       ok: 'Confirm',
       cancel: 'Cancel',
       please_select: 'Please select',
@@ -131,6 +131,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    default_pwd: 'Default Pwd',
     stop: 'Stop',
     first_login_tips: 'Please change the initial password',
     roger_that: 'Roger That',
@@ -278,7 +279,7 @@ export default {
     id: 'ID',
     millisecond: 'Millisecond',
     cannot_be_null: 'Cannot be null',
-    required: '{0} is required',
+    required: 'Required',
     already_exists: 'Already Exists',
     modifier: 'Modifier',
     validate: 'Validate',
@@ -411,7 +412,9 @@ export default {
   },
   detabs: {
     eidttitle: 'Edit Title',
-    selectview: 'Select View'
+    selectview: 'Select View',
+    selectOthers: 'Select Others',
+    availableComponents: 'Available Components'
   },
   example: {
     warning: 'Creating and editing pages cannot be cached by keep-alive because keep-alive include does not currently support caching based on routes, so it is currently cached based on component name. If you want to achieve a similar caching effect, you can use a browser caching scheme such as localStorage. Or do not use keep-alive include to cache all pages directly. See details'
@@ -634,6 +637,7 @@ export default {
     basic_setting: 'Basic setting',
     front_time_out: 'Request timeOut(unit: second, Attention: Refresh browser takes effect after saving)',
     msg_time_out: 'Message retention time(unit: day)',
+    login_type: 'Default login type',
     empty_front: 'If empty then default value is 10s',
     empty_msg: 'If empty then default value is 30 days',
     front_error: 'Valid ranger [0 - 100]',
@@ -707,6 +711,7 @@ export default {
     var_pop: 'Variance',
     quick_calc: 'Fast calculation',
     show_name_set: 'Display name setting',
+    show_name: 'Display name',
     color: 'Color',
     color_case: 'Color Scheme',
     pls_slc_color_case: 'Please choose a color scheme',
@@ -900,7 +905,10 @@ export default {
     filter_in: 'IN',
     filter_not_in: 'NOT IN',
     chart_details: 'Chart Details',
+    details: 'Details',
+    image: 'Image',
     export_details: 'Export Details',
+    export: 'Export',
     color_light: 'Light',
     color_classical: 'Classical',
     color_fresh: 'Fresh',
@@ -1064,7 +1072,30 @@ export default {
     total_pos_left: 'Left',
     total_pos_right: 'Right',
     chart_label: 'Label',
-    drag_block_label: 'Label'
+    drag_block_label: 'Label',
+    count_distinct: 'Distinct Count',
+    table_page_mode: 'Page Mode',
+    page_mode_page: 'Page',
+    page_mode_pull: 'Pull',
+    exp_can_not_empty: 'Condition can not be empty',
+    value_formatter: 'Value Formatter',
+    value_formatter_type: 'Formatter Type',
+    value_formatter_auto: 'Auto',
+    value_formatter_value: 'Value',
+    value_formatter_percent: 'Percent',
+    value_formatter_unit: 'Unit',
+    value_formatter_decimal_count: 'Decimal Count',
+    value_formatter_suffix: 'Unit Suffix',
+    value_formatter_thousand_separator: 'Thousand Separator',
+    value_formatter_example: 'Example',
+    unit_none: 'None',
+    unit_thousand: 'Thousand',
+    unit_ten_thousand: 'Ten Thousand',
+    unit_million: 'Million',
+    unit_hundred_million: 'Hundred Million',
+    formatter_decimal_count_error: 'Range 0-10',
+    gauge_threshold_compare_error: 'Range must added',
+    tick_count: 'Tick Split'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',
@@ -1079,6 +1110,7 @@ export default {
     rename: 'Rename',
     tips: 'Tips',
     confirm_delete: 'confirm_delete',
+    confirm_delete_msg: 'Deleting a dataset will affect its related user-defined dataset, associated dataset and dashboard. Confirm the delete？',
     delete_success: 'delete_success',
     confirm: 'confirm',
     cancel: 'cancel',
@@ -1325,6 +1357,8 @@ export default {
     get_schema: 'Get Schema',
     schema: 'Database Schema',
     please_choose_schema: 'Please select Schema',
+    charset: 'Charset',
+    please_choose_charset: 'Please select Charset',
     edit_datasource_msg: 'Modifying the data source information may make the data set under the modified data source unavailable. Confirm the modification？',
     repeat_datasource_msg: 'Data source information with the same configuration already exists, ',
     confirm_save: 'Confirm save?',
@@ -1353,7 +1387,7 @@ export default {
     priority: 'Advanced setting',
     extra_params: 'Extra JDBC connection string',
     please_input_dataPath: 'Please enter the JsonPath data path',
-    warning: 'Contains invalid datasets',
+    warning: 'Contains invalid table',
     data_table: 'Dataset Table',
     data_table_name: 'Dataset Table name',
     method: 'Request mode',
@@ -1393,11 +1427,13 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    hyperlinks: 'Hyperlinks',
     is_live: 'Is Live',
     yes: 'Yes',
     no: 'No',
     live_tips: 'User Https First',
     stream_media_add_tips: 'Please Add Stream Media Info...',
+    stream_mobile_tips: 'IOS terminal may not display',
     json_params_error: 'Third Party Parameters Parsing Failed. Please Check Whether The Parameters Format Is Correct',
     inner_padding: 'Inner Padding',
     board_radio: 'Board Radio',
@@ -1412,6 +1448,7 @@ export default {
     enable_param: 'Enable Param',
     param_name: 'Param Name',
     outer_param_set: 'Outer Param Set',
+    outer_param_decode_error: 'External Parameter Parsing Error And Does Not Take Effect, Please Check',
     input_param_name: "Please Input Param's Name",
     params_setting: 'Outer Params Setting',
     template_view_tips: "Template's Views. Please Change",
@@ -1483,6 +1520,7 @@ export default {
     save_to_panel: 'Save to template',
     export_to_panel: 'Export to template',
     export_to_pdf: 'Export to PDF',
+    export_to_img: 'Export to Image',
     preview: 'Preview',
     fullscreen_preview: 'Fullscreen Preview',
     new_tab_preview: 'New Tab Preview',
@@ -1580,6 +1618,9 @@ export default {
     matrix: 'matrix',
     suspension: 'suspension',
     new_element_distribution: 'New element Distribution',
+    aided_grid: 'Aided Grid',
+    aided_grid_open: 'Open',
+    aided_grid_close: 'Close',
     subject_no_edit: 'System Subject Can Not Edit',
     subject_name_not_null: 'Subject Name Can Not Be Null And Less Than 20 charts',
     is_enable: 'Enable',
@@ -1662,7 +1703,10 @@ export default {
     themeDark: 'Dark',
     themeCustom: 'Custom',
     openHomePage: 'Show Home Page',
-    mobileBG: 'Mobile Login page BG'
+    mobileBG: 'Mobile Login page BG',
+    helpLink: 'Help Document Link',
+    homeLink: 'Home Link',
+    defaultHomeLink: 'Default is the system built-in home page'
 
   },
   auth: {

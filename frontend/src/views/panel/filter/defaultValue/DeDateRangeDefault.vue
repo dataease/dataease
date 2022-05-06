@@ -38,7 +38,7 @@
             controls-position="right"
             size="mini"
             :min="0"
-            :max="10"
+            :max="100"
             @change="sDynamicPrefixChange"
           />
         </el-form-item>
@@ -91,7 +91,7 @@
             controls-position="right"
             size="mini"
             :min="0"
-            :max="10"
+            :max="100"
             @change="eDynamicPrefixChange"
           />
         </el-form-item>

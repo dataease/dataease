@@ -2,28 +2,30 @@ package io.dataease.service.dataset;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
-import io.dataease.base.domain.*;
-import io.dataease.base.mapper.DatasetTableMapper;
-import io.dataease.base.mapper.DatasetTableTaskMapper;
-import io.dataease.base.mapper.DatasourceMapper;
-import io.dataease.base.mapper.ext.ExtChartViewMapper;
+import io.dataease.ext.ExtChartViewMapper;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.datasource.ApiDefinition;
+import io.dataease.plugins.common.base.domain.*;
+import io.dataease.plugins.common.base.mapper.DatasetTableMapper;
+import io.dataease.plugins.common.base.mapper.DatasetTableTaskMapper;
+import io.dataease.plugins.common.base.mapper.DatasourceMapper;
 import io.dataease.plugins.common.constants.DatasourceTypes;
+import io.dataease.plugins.common.constants.DeTypeConstants;
+import io.dataease.plugins.common.dto.datasource.TableField;
+import io.dataease.plugins.common.request.datasource.DatasourceRequest;
+import io.dataease.plugins.datasource.provider.Provider;
+import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.provider.DDLProvider;
-import io.dataease.provider.datasource.DatasourceProvider;
 import io.dataease.provider.datasource.JdbcProvider;
 import io.dataease.provider.ProviderFactory;
-import io.dataease.controller.request.datasource.DatasourceRequest;
 import io.dataease.dto.datasource.*;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.exception.DataEaseException;
 import io.dataease.listener.util.CacheUtils;
-import io.dataease.provider.QueryProvider;
 import io.dataease.service.engine.EngineService;
 import io.dataease.service.kettle.KettleService;
 import io.dataease.service.message.DeMsgutil;
@@ -31,13 +33,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
@@ -67,9 +65,9 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.io.*;
-import java.net.InetAddress;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -87,12 +85,6 @@ public class ExtractDataService {
     @Resource
     @Lazy
     private DataSetTableTaskService dataSetTableTaskService;
-    @Resource
-    private DatasourceMapper datasourceMapper;
-    @Resource
-    private DatasetTableMapper datasetTableMapper;
-    @Resource
-    private DatasetTableTaskMapper datasetTableTaskMapper;
     @Resource
     private DatasourceService datasourceService;
     @Resource
@@ -123,24 +115,41 @@ public class ExtractDataService {
             "  exit 1\n" +
             "fi\n";
 
-    public synchronized boolean existSyncTask(DatasetTable datasetTable, DatasetTableTask datasetTableTask, Long startTime) {
-        datasetTable.setSyncStatus(JobStatus.Underway.name());
+    private static final String shellScriptForDeleteFile = "result=`curl --location-trusted -u %s:%s -H \"label:%s\" -H \"column_separator:%s\" -H \"columns:%s\" -H \"merge_type: %s\" -T %s -XPUT http://%s:%s/api/%s/%s/_stream_load`\n" +
+            "rm -rf  %s \n" +
+            "if [ $? -eq 0 ] ; then\n" +
+            "  failstatus=$(echo $result | grep '\"Status\": \"Fail\"')\n" +
+            "  if [ \"x${failstatus}\" != \"x\" ];then" +
+            "     echo $result\n" +
+            "     exit 1\n" +
+            "  fi\n" +
+            "else\n" +
+            "  echo $result\n" +
+            "  exit 1\n" +
+            "fi\n";
+
+    public synchronized boolean existSyncTask(String datasetTableId, String datasetTableTaskId, Long startTime) {
+        DatasetTable datasetTableRecord = new DatasetTable();
+        datasetTableRecord.setSyncStatus(JobStatus.Underway.name());
         DatasetTableExample example = new DatasetTableExample();
-        example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusNotEqualTo(JobStatus.Underway.name());
-        example.or(example.createCriteria().andIdEqualTo(datasetTable.getId()).andSyncStatusIsNull());
-        boolean existSyncTask = datasetTableMapper.updateByExampleSelective(datasetTable, example) == 0;
+        example.createCriteria().andIdEqualTo(datasetTableId).andSyncStatusNotEqualTo(JobStatus.Underway.name());
+        example.or(example.createCriteria().andIdEqualTo(datasetTableId).andSyncStatusIsNull());
+        boolean existSyncTask = dataSetTableService.updateByExampleSelective(datasetTableRecord, example) == 0;
         if (existSyncTask) {
             DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
-            datasetTableTaskLog.setTaskId(datasetTableTask.getId());
-            datasetTableTaskLog.setTableId(datasetTable.getId());
+            datasetTableTaskLog.setTaskId(datasetTableTaskId);
+            datasetTableTaskLog.setTableId(datasetTableId);
             datasetTableTaskLog.setStatus(JobStatus.Underway.name());
             List<DatasetTableTaskLog> datasetTableTaskLogs = dataSetTableTaskLogService.select(datasetTableTaskLog);
             return CollectionUtils.isEmpty(datasetTableTaskLogs) || !datasetTableTaskLogs.get(0).getTriggerType().equalsIgnoreCase(TriggerType.Custom.name());
         } else {
-            datasetTableTask.setLastExecTime(startTime);
-            datasetTableTask.setLastExecStatus(JobStatus.Underway.name());
-            datasetTableTask.setStatus(TaskStatus.Exec.name());
-            dataSetTableTaskService.update(datasetTableTask);
+            DatasetTableTask record = new DatasetTableTask();
+            record.setLastExecTime(startTime);
+            record.setLastExecStatus(JobStatus.Underway.name());
+            record.setStatus(TaskStatus.Exec.name());
+            DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
+            datasetTableTaskExample.createCriteria().andIdEqualTo(datasetTableTaskId);
+            dataSetTableTaskService.updateByExampleSelective(record, datasetTableTaskExample);
             return false;
         }
     }
@@ -169,7 +178,7 @@ public class ExtractDataService {
             return o1.getColumnIndex().compareTo(o2.getColumnIndex());
         });
 
-        DatasetTableTaskLog  datasetTableTaskLog = writeDatasetTableTaskLog(datasetTableId, ops);
+        DatasetTableTaskLog datasetTableTaskLog = writeExcelLog(datasetTableId, ops);
         switch (updateType) {
             case all_scope:  // 全量更新
                 try {
@@ -184,8 +193,8 @@ public class ExtractDataService {
                         extractExcelDataForSimpleMode(datasetTable, "all_scope");
                     }
                     replaceTable(TableUtils.tableName(datasetTableId));
-                    saveSuccessLog(datasetTableTaskLog);
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
+                    saveSuccessLog(datasetTableTaskLog, false);
+                    updateTableStatus(datasetTableId, JobStatus.Completed, execTime);
                     if (ops.equalsIgnoreCase("替换")) {
                         List<DatasetTableField> oldFileds = getDatasetTableFields(datasetTable.getId());
                         List<DatasetTableField> toAdd = new ArrayList<>();
@@ -217,8 +226,8 @@ public class ExtractDataService {
                         toDelete.forEach(datasetTableField -> dataSetTableFieldsService.delete(datasetTableField.getId()));
                     }
                 } catch (Exception e) {
-                    saveErrorLog(datasetTableTaskLog, e);
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
+                    saveErrorLog(datasetTableTaskLog, e, false);
+                    updateTableStatus(datasetTableId, JobStatus.Error, null);
                     dropDorisTable(TableUtils.tmpName(TableUtils.tableName(datasetTableId)));
                 } finally {
                     deleteFile("all_scope", datasetTableId);
@@ -236,11 +245,11 @@ public class ExtractDataService {
                     } else {
                         extractExcelDataForSimpleMode(datasetTable, "incremental_add");
                     }
-                    saveSuccessLog(datasetTableTaskLog);
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Completed, execTime);
+                    saveSuccessLog(datasetTableTaskLog, false);
+                    updateTableStatus(datasetTableId, JobStatus.Completed, execTime);
                 } catch (Exception e) {
-                    saveErrorLog(datasetTableTaskLog, e);
-                    updateTableStatus(datasetTableId, datasetTable, JobStatus.Error, null);
+                    saveErrorLog(datasetTableTaskLog, e, false);
+                    updateTableStatus(datasetTableId, JobStatus.Error, null);
                 } finally {
                     deleteFile("incremental_add", datasetTableId);
                     deleteFile("incremental_delete", datasetTableId);
@@ -263,7 +272,7 @@ public class ExtractDataService {
             LogUtil.error("Can not find DatasetTable: " + datasetTableId);
             return;
         }
-        DatasetTableTask datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(taskId);
+        DatasetTableTask datasetTableTask = dataSetTableTaskService.selectByPrimaryKey(taskId);
         if (datasetTableTask == null) {
             return;
         }
@@ -274,19 +283,22 @@ public class ExtractDataService {
         }
 
         Long startTime = System.currentTimeMillis();
-        if (existSyncTask(datasetTable, datasetTableTask, startTime)) {
+        if (existSyncTask(datasetTable.getId(), datasetTableTask.getId(), startTime)) {
             LogUtil.info("Skip synchronization task for dataset due to exist others, dataset ID : " + datasetTableId);
             return;
         }
         DatasetTableTaskLog datasetTableTaskLog = getDatasetTableTaskLog(datasetTableId, taskId, startTime);
         UpdateType updateType = UpdateType.valueOf(type);
         if (context != null) {
-            datasetTable.setQrtzInstance(context.getFireInstanceId());
-            datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
+            DatasetTable datasetTableRecord = new DatasetTable();
+            datasetTableRecord.setQrtzInstance(context.getFireInstanceId());
+            DatasetTableExample example = new DatasetTableExample();
+            example.createCriteria().andIdEqualTo(datasetTableId);
+            dataSetTableService.updateByExampleSelective(datasetTableRecord, example);
         }
         Datasource datasource = new Datasource();
         if (StringUtils.isNotEmpty(datasetTable.getDataSourceId())) {
-            datasource = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
+            datasource = datasourceService.get(datasetTable.getDataSourceId());
         } else {
             datasource.setType(datasetTable.getType());
         }
@@ -302,11 +314,11 @@ public class ExtractDataService {
                     execTime = System.currentTimeMillis();
                     extractData(datasetTable, datasource, datasetTableFields, "all_scope", null);
                     replaceTable(TableUtils.tableName(datasetTableId));
-                    saveSuccessLog(datasetTableTaskLog);
+                    saveSuccessLog(datasetTableTaskLog, true);
                     msg = true;
                     lastExecStatus = JobStatus.Completed;
                 } catch (Exception e) {
-                    saveErrorLog(datasetTableTaskLog, e);
+                    saveErrorLog(datasetTableTaskLog, e, true);
                     msg = false;
                     lastExecStatus = JobStatus.Error;
                     execTime = null;
@@ -327,7 +339,7 @@ public class ExtractDataService {
                         System.out.println(ignore.getMessage());
                     }
                     try {
-                        updateTableStatus(datasetTableId, datasetTable, lastExecStatus, execTime);
+                        updateTableStatus(datasetTableId, lastExecStatus, execTime);
                     } catch (Exception ignore) {
                         System.out.println(ignore.getMessage());
                     }
@@ -362,11 +374,11 @@ public class ExtractDataService {
                             extractData(datasetTable, datasource, datasetTableFields, "incremental_delete", sql);
                         }
                     }
-                    saveSuccessLog(datasetTableTaskLog);
+                    saveSuccessLog(datasetTableTaskLog, true);
                     msg = true;
                     lastExecStatus = JobStatus.Completed;
                 } catch (Exception e) {
-                    saveErrorLog(datasetTableTaskLog, e);
+                    saveErrorLog(datasetTableTaskLog, e, true);
                     msg = false;
                     lastExecStatus = JobStatus.Error;
                     execTime = null;
@@ -385,7 +397,7 @@ public class ExtractDataService {
                     } catch (Exception ignore) {
                     }
                     try {
-                        updateTableStatus(datasetTableId, datasetTable, lastExecStatus, execTime);
+                        updateTableStatus(datasetTableId, lastExecStatus, execTime);
                     } catch (Exception ignore) {
                     }
                 }
@@ -431,7 +443,7 @@ public class ExtractDataService {
         if (lists.size() > 1) {
             throw new Exception("存在重名的API数据表");
         }
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+        Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(datasource);
         datasourceRequest.setTable(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable());
@@ -448,14 +460,20 @@ public class ExtractDataService {
 
         String dataFile = null;
         String script = null;
+        String streamLoadScript = "";
+        if (kettleFilesKeep) {
+            streamLoadScript = shellScript;
+        } else {
+            streamLoadScript = shellScriptForDeleteFile;
+        }
         switch (extractType) {
             case "all_scope":
                 dataFile = root_path + TableUtils.tmpName(TableUtils.tableName(datasetTable.getId())) + "." + extention;
-                script = String.format(shellScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), System.currentTimeMillis(), separator, columns, "APPEND", dataFile, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tmpName(TableUtils.tableName(datasetTable.getId())));
+                script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), System.currentTimeMillis(), separator, columns, "APPEND", dataFile, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tmpName(TableUtils.tableName(datasetTable.getId())), dataFile);
                 break;
             default:
                 dataFile = root_path + TableUtils.addName(TableUtils.tableName(datasetTable.getId())) + "." + extention;
-                script = String.format(shellScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), System.currentTimeMillis(), separator, columns, "APPEND", dataFile, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tableName(datasetTable.getId()));
+                script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), System.currentTimeMillis(), separator, columns, "APPEND", dataFile, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tableName(datasetTable.getId()), dataFile);
                 break;
         }
 
@@ -570,28 +588,30 @@ public class ExtractDataService {
         });
     }
 
-    private void updateTableStatus(String datasetTableId, DatasetTable datasetTable, JobStatus completed, Long execTime) {
-        datasetTable.setSyncStatus(completed.name());
+    private void updateTableStatus(String datasetTableId, JobStatus jobStatus, Long execTime) {
+        DatasetTable datasetTableRecord = new DatasetTable();
+        datasetTableRecord.setId(datasetTableId);
+        datasetTableRecord.setSyncStatus(jobStatus.name());
         if (execTime != null) {
-            datasetTable.setLastUpdateTime(execTime);
+            datasetTableRecord.setLastUpdateTime(execTime);
         }
         DatasetTableExample example = new DatasetTableExample();
         example.createCriteria().andIdEqualTo(datasetTableId);
-        datasetTableMapper.updateByExampleSelective(datasetTable, example);
+        dataSetTableService.updateByExampleSelective(datasetTableRecord, example);
     }
 
-    private void saveSuccessLog(DatasetTableTaskLog datasetTableTaskLog) {
+    private void saveSuccessLog(DatasetTableTaskLog datasetTableTaskLog, Boolean hasTask) {
         datasetTableTaskLog.setStatus(JobStatus.Completed.name());
         datasetTableTaskLog.setEndTime(System.currentTimeMillis());
-        dataSetTableTaskLogService.save(datasetTableTaskLog);
+        dataSetTableTaskLogService.save(datasetTableTaskLog, hasTask);
     }
 
-    private void saveErrorLog(DatasetTableTaskLog datasetTableTaskLog, Exception e) {
+    private void saveErrorLog(DatasetTableTaskLog datasetTableTaskLog, Exception e, Boolean hasTask) {
         LogUtil.error("Extract data error: " + datasetTableTaskLog.getTaskId(), e);
         datasetTableTaskLog.setStatus(JobStatus.Error.name());
         datasetTableTaskLog.setInfo(e.getMessage());
         datasetTableTaskLog.setEndTime(System.currentTimeMillis());
-        dataSetTableTaskLogService.save(datasetTableTaskLog);
+        dataSetTableTaskLogService.save(datasetTableTaskLog, hasTask);
     }
 
     private void createEngineTable(String tableName, List<DatasetTableField> datasetTableFields) throws Exception {
@@ -647,14 +667,14 @@ public class ExtractDataService {
         return null;
     }
 
-    private DatasetTableTaskLog writeDatasetTableTaskLog(String datasetTableId, String taskId) {
+    private DatasetTableTaskLog writeExcelLog(String datasetTableId, String taskId) {
         DatasetTableTaskLog datasetTableTaskLog = new DatasetTableTaskLog();
         datasetTableTaskLog.setTableId(datasetTableId);
         datasetTableTaskLog.setTaskId(taskId);
         datasetTableTaskLog.setStatus(JobStatus.Underway.name());
         datasetTableTaskLog.setTriggerType(TriggerType.Cron.name());
         datasetTableTaskLog.setStartTime(System.currentTimeMillis());
-        dataSetTableTaskLogService.save(datasetTableTaskLog);
+        dataSetTableTaskLogService.save(datasetTableTaskLog, false);
         return datasetTableTaskLog;
     }
 
@@ -676,7 +696,7 @@ public class ExtractDataService {
         }
         datasetTableTaskLog.setTriggerType(TriggerType.Cron.name());
         datasetTableTaskLog.setStartTime(startTime);
-        dataSetTableTaskLogService.save(datasetTableTaskLog);
+        dataSetTableTaskLogService.save(datasetTableTaskLog, true);
         return datasetTableTaskLog;
     }
 
@@ -684,13 +704,24 @@ public class ExtractDataService {
         List<String[]> data = new ArrayList<>();
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
         List<ExcelSheetData> excelSheetDataList = dataTableInfoDTO.getExcelSheetDataList();
-        ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
         for (ExcelSheetData excelSheetData : excelSheetDataList) {
-            excelXlsxReader.process(new FileInputStream(excelSheetData.getPath()));
-            for (ExcelSheetData sheet : excelXlsxReader.totalSheets) {
+            String suffix = excelSheetData.getPath().substring(excelSheetData.getPath().lastIndexOf(".") + 1);
+            List<ExcelSheetData> totalSheets = new ArrayList<>();
+            if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
+                ExcelXlsReader excelXlsReader = new ExcelXlsReader();
+                excelXlsReader.process(new FileInputStream(excelSheetData.getPath()));
+                totalSheets = excelXlsReader.totalSheets;
+            }
+            if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
+                ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
+                excelXlsxReader.process(new FileInputStream(excelSheetData.getPath()));
+                totalSheets = excelXlsxReader.totalSheets;
+            }
+
+            for (ExcelSheetData sheet : totalSheets) {
                 if (sheet.getExcelLable().equalsIgnoreCase(excelSheetData.getExcelLable())) {
                     for (List<String> dataItem : sheet.getData()) {
-                        if(dataItem.size()>0){
+                        if (dataItem.size() > 0) {
                             data.add(dataItem.toArray(new String[dataItem.size()]));
                         }
                     }
@@ -747,7 +778,6 @@ public class ExtractDataService {
             DataEaseException.throwException(transStatus.getLoggingString());
             return;
         }
-
         executing = true;
         String lastCarteObjectId = Job.sendToSlaveServer(jobMeta, jobExecutionConfiguration, repository, null);
         SlaveServerJobStatus jobStatus = null;
@@ -762,7 +792,7 @@ public class ExtractDataService {
         if (jobStatus.getStatusDescription().equals("Finished")) {
             return;
         } else {
-            DataEaseException.throwException((jobStatus.getLoggingString()));
+            DataEaseException.throwException(jobStatus.getLoggingString());
         }
     }
 
@@ -776,20 +806,26 @@ public class ExtractDataService {
         Datasource dorisDatasource = engineService.getDeEngine();
         DorisConfiguration dorisConfiguration = new Gson().fromJson(dorisDatasource.getConfiguration(), DorisConfiguration.class);
         String columns = columnFields + ",dataease_uuid";
+        String streamLoadScript = "";
+        if (kettleFilesKeep) {
+            streamLoadScript = shellScript;
+        } else {
+            streamLoadScript = shellScriptForDeleteFile;
+        }
         switch (extractType) {
             case "all_scope":
                 outFile = TableUtils.tmpName(TableUtils.tableName(datasetTable.getId()));
                 jobName = "job_" + TableUtils.tableName(datasetTable.getId());
-                script = String.format(shellScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), System.currentTimeMillis(), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tmpName(TableUtils.tableName(datasetTable.getId())), root_path + outFile + "." + extention);
+                script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), datasetTable.getId() + System.currentTimeMillis(), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tmpName(TableUtils.tableName(datasetTable.getId())), root_path + outFile + "." + extention);
                 break;
             case "incremental_add":
                 outFile = TableUtils.addName(datasetTable.getId());
                 jobName = "job_add_" + TableUtils.tableName(datasetTable.getId());
-                script = String.format(shellScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), System.currentTimeMillis(), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tableName(datasetTable.getId()), root_path + outFile + "." + extention);
+                script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), datasetTable.getId() + System.currentTimeMillis(), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tableName(datasetTable.getId()), root_path + outFile + "." + extention);
                 break;
             case "incremental_delete":
                 outFile = TableUtils.deleteName(TableUtils.tableName(datasetTable.getId()));
-                script = String.format(shellScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), System.currentTimeMillis(), separator, columns, "DELETE", root_path + outFile + "." + extention, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tableName(datasetTable.getId()), root_path + outFile + "." + extention);
+                script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), datasetTable.getId() + System.currentTimeMillis(), separator, columns, "DELETE", root_path + outFile + "." + extention, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tableName(datasetTable.getId()), root_path + outFile + "." + extention);
                 jobName = "job_delete_" + TableUtils.tableName(datasetTable.getId());
                 break;
             default:
@@ -842,7 +878,7 @@ public class ExtractDataService {
 
     private String fetchSqlField(String sql, Datasource ds) throws Exception {
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-        DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         datasourceRequest.setQuery(qp.wrapSql(sql));
@@ -876,9 +912,9 @@ public class ExtractDataService {
             case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfiguration.class);
                 dataMeta = new DatabaseMeta("db", "MYSQL", "Native", mysqlConfiguration.getHost().trim(), mysqlConfiguration.getDataBase().trim(), mysqlConfiguration.getPort().toString(), mysqlConfiguration.getUsername(), mysqlConfiguration.getPassword());
-                if(StringUtils.isNotEmpty(mysqlConfiguration.getExtraParams()) && mysqlConfiguration.getExtraParams().split("&").length > 0){
+                if (StringUtils.isNotEmpty(mysqlConfiguration.getExtraParams()) && mysqlConfiguration.getExtraParams().split("&").length > 0) {
                     String[] params = mysqlConfiguration.getExtraParams().split("&");
-                    for(int i=0;i<params.length;i++){
+                    for (int i = 0; i < params.length; i++) {
                         dataMeta.addExtraOption("MYSQL", params[i].split("=")[0], params[i].split("=")[1]);
                     }
                 }

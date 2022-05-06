@@ -43,13 +43,19 @@
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { checkAddHttp } from '@/utils/urlUtils'
-import bus from "@/utils/bus";
+import bus from '@/utils/bus'
 
 export default {
   props: {
     linkInfo: {
       type: Object,
       required: true
+    },
+    // 属性所属组件位置
+    attrPosition: {
+      type: String,
+      required: false,
+      default: 'panel'
     }
   },
   data() {
@@ -78,7 +84,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'curComponent'
+      'curComponent',
+      'curActiveTabInner'
     ])
   },
   methods: {
@@ -87,6 +94,12 @@ export default {
     },
     onSubmit() {
       this.linkInfoTemp[this.linkInfoTemp.videoType].sources[0].src = checkAddHttp(this.linkInfoTemp[this.linkInfoTemp.videoType].sources[0].src)
+
+      if (this.attrPosition === 'panel') {
+        this.curComponent.videoLinks = this.linkInfoTemp
+      } else {
+        this.curActiveTabInner.videoLinks = this.linkInfoTemp
+      }
       this.curComponent.videoLinks = this.linkInfoTemp
       this.$store.state.styleChangeTimes++
       bus.$emit('videoLinksChange-' + this.curComponent.id)

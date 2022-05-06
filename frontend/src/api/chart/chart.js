@@ -27,6 +27,14 @@ export function chartCopy(id, panelId) {
     loading: false
   })
 }
+export function chartBatchCopy(params, panelId) {
+  return request({
+    url: '/chart/view/chartBatchCopy/' + panelId,
+    method: 'post',
+    data: params,
+    loading: false
+  })
+}
 export function chartGroupTree(data) {
   return request({
     url: '/chart/group/tree',
@@ -86,9 +94,9 @@ export function getChartDetails(id, panelId, data) {
   })
 }
 
-export function save2Cache(panelId, data) {
+export function viewEditSave(panelId, data) {
   return request({
-    url: '/chart/view/save2Cache/' + panelId,
+    url: '/chart/view/viewEditSave/' + panelId,
     method: 'post',
     loading: false,
     data

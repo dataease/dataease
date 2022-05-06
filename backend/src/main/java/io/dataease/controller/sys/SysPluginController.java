@@ -2,7 +2,7 @@ package io.dataease.controller.sys;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import io.dataease.base.domain.MyPlugin;
+import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.base.BaseGridRequest;

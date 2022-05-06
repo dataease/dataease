@@ -2,7 +2,7 @@ import store from '@/store/index'
 import toast from '@/components/canvas/utils/toast'
 import generateID from '@/components/canvas/utils/generateID'
 import { deepCopy } from '@/components/canvas/utils/utils'
-import { chartCopy } from '@/api/chart/chart'
+import { chartBatchCopy, chartCopy } from '@/api/chart/chart'
 import { uuid } from 'vue-uuid'
 
 export default {
@@ -52,6 +52,19 @@ export default {
           newView.id = uuid.v1()
           newView.propValue.viewId = res.data
           store.commit('addComponent', { component: newView })
+        })
+      } else if (data.type === 'de-tabs') {
+        const sourceAndTargetIds = {}
+        const newCop = deepCopy(data)
+        newCop.options.tabList.forEach((item) => {
+          if (item.content && item.content.type === 'view') {
+            const newViewId = uuid.v1()
+            sourceAndTargetIds[item.content.propValue.viewId] = newViewId
+            item.content.propValue.viewId = newViewId
+          }
+        })
+        chartBatchCopy({ 'sourceAndTargetIds': sourceAndTargetIds }, state.panel.panelInfo.id).then((rsp) => {
+          store.commit('addComponent', { component: newCop })
         })
       } else {
         const newCop = deepCopy(data)

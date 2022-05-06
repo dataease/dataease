@@ -65,7 +65,7 @@
 <script>
 
 import { encrypt } from '@/utils/rsaEncrypt'
-import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded } from '@/api/user'
+import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded, defaultLoginType } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
 import { initTheme } from '@/utils/ThemeUtil'
 import PluginCom from '@/views/system/plugin/PluginCom'
@@ -116,10 +116,14 @@ export default {
     }
   },
   beforeCreate() {
+    let p1 = null
+    let p2 = null
+    let p3 = null
     pluginLoaded().then(res => {
       this.isPluginLoaded = res.success && res.data
       this.isPluginLoaded && initTheme()
       this.contentShow = true
+      p1 = Promise.resolve(1)
     }).catch(() => {
       this.contentShow = true
     })
@@ -128,18 +132,30 @@ export default {
       if (res.success && res.data) {
         this.loginTypes.push(1)
       }
+      p2 = Promise.resolve(2)
     })
 
     oidcStatus().then(res => {
       if (res.success && res.data) {
         this.loginTypes.push(2)
       }
+      p3 = Promise.resolve(3)
     })
     getPublicKey().then(res => {
       if (res.success && res.data) {
         // 保存公钥
         localStorage.setItem('publicKey', res.data)
       }
+    })
+    defaultLoginType().then(res => {
+      Promise.all([p1, p2, p3]).then(() => {
+        if (res.success && res.data && this.loginTypes.includes(res.data)) {
+          this.loginForm.loginType = res.data
+          this.$nextTick(() => {
+            this.changeLoginType(this.loginForm.loginType)
+          })
+        }
+      })
     })
   },
 

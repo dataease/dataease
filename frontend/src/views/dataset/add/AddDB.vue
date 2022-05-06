@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import {listDatasource, post, isKettleRunning, disabledSyncDs} from '@/api/dataset/dataset'
+import {listDatasource, post, isKettleRunning} from '@/api/dataset/dataset'
 import {engineMode} from "@/api/system/engine";
 
 export default {
@@ -93,8 +93,7 @@ export default {
       kettleRunning: false,
       selectedDatasource: {},
       engineMode: 'local',
-      disabledSync: true,
-      disabledSyncDs: disabledSyncDs
+      disabledSync: true
     }
   },
   watch: {
@@ -108,7 +107,7 @@ export default {
           if (this.options[i].id === val) {
             this.selectedDatasource = this.options[i]
             this.mode = '0'
-            if (this.engineMode === 'simple' || (!this.kettleRunning || this.disabledSyncDs.indexOf(this.selectedDatasource.type) !== -1 )) {
+            if (this.engineMode === 'simple' || (!this.kettleRunning || this.selectedDatasource.calculationMode === 'DIRECT')) {
               this.disabledSync = true
             } else {
               this.disabledSync = false

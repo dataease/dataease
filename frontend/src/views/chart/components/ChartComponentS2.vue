@@ -6,9 +6,9 @@
     </span>
     <div ref="tableContainer" style="width: 100%;overflow: hidden;" :style="{background:container_bg_class.background}">
       <div v-if="chart.type === 'table-normal'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-normal-drill' : 'table-dom-normal'" />
-      <div v-if="chart.type === 'table-info'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-info-drill' : 'table-dom-info'" />
+      <div v-if="chart.type === 'table-info'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? (showPage ? 'table-dom-info-drill' : 'table-dom-info-drill-pull') : (showPage ? 'table-dom-info' : 'table-dom-info-pull')" />
       <div v-if="chart.type === 'table-pivot'" :id="chartId" style="width: 100%;overflow: hidden;" class="table-dom-normal" />
-      <el-row v-show="chart.type === 'table-info'" class="table-page">
+      <el-row v-show="showPage" class="table-page">
         <span class="total-style">
           {{ $t('chart.total') }}
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
@@ -99,7 +99,8 @@ export default {
         pageSize: 20,
         show: 0
       },
-      tableData: []
+      tableData: [],
+      showPage: false
     }
   },
 
@@ -135,17 +136,19 @@ export default {
   methods: {
     initData() {
       let datas = []
+      this.showPage = false
       if (this.chart.data && this.chart.data.fields) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
         this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
         datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        if (this.chart.type === 'table-info') {
+        if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && datas.length > this.currentPage.pageSize) {
           // 计算分页
           this.currentPage.show = datas.length
           const pageStart = (this.currentPage.page - 1) * this.currentPage.pageSize
           const pageEnd = pageStart + this.currentPage.pageSize
           datas = datas.slice(pageStart, pageEnd)
+          this.showPage = true
         }
       } else {
         this.fields = []
@@ -380,11 +383,17 @@ export default {
 .table-dom-info{
   height:calc(100% - 36px);
 }
+.table-dom-info-pull{
+  height:calc(100%);
+}
 .table-dom-normal{
   height:100%;
 }
 .table-dom-info-drill{
   height:calc(100% - 36px - 12px);
+}
+.table-dom-info-drill-pull{
+  height:calc(100% - 12px);
 }
 .table-dom-normal-drill{
   height:calc(100% - 12px);
@@ -408,5 +417,11 @@ export default {
 }
 .page-style >>> .el-input__inner{
   height: 24px;
+}
+.page-style >>> button{
+  background: transparent!important;
+}
+.page-style >>> li{
+  background: transparent!important;
 }
 </style>

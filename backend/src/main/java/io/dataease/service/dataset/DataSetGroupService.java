@@ -1,10 +1,7 @@
 package io.dataease.service.dataset;
 
 import io.dataease.auth.annotation.DeCleaner;
-import io.dataease.base.domain.DatasetGroup;
-import io.dataease.base.domain.DatasetGroupExample;
-import io.dataease.base.mapper.DatasetGroupMapper;
-import io.dataease.base.mapper.ext.ExtDataSetGroupMapper;
+import io.dataease.ext.ExtDataSetGroupMapper;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.SysAuthConstants;
@@ -17,6 +14,9 @@ import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.common.base.domain.DatasetGroup;
+import io.dataease.plugins.common.base.domain.DatasetGroupExample;
+import io.dataease.plugins.common.base.mapper.DatasetGroupMapper;
 import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -44,7 +44,7 @@ public class DataSetGroupService {
     @Resource
     private SysAuthService sysAuthService;
 
-    @DeCleaner(DePermissionType.DATASET)
+    @DeCleaner(value = DePermissionType.DATASET, key = "pid")
     public DataSetGroupDTO save(DatasetGroup datasetGroup) throws Exception {
         checkName(datasetGroup);
         if (StringUtils.isEmpty(datasetGroup.getId())) {

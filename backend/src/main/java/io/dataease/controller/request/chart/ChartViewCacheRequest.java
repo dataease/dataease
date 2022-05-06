@@ -1,6 +1,6 @@
 package io.dataease.controller.request.chart;
 
-import io.dataease.base.domain.ChartViewCacheWithBLOBs;
+import io.dataease.plugins.common.base.domain.ChartViewCacheWithBLOBs;
 import lombok.Data;
 
 /**

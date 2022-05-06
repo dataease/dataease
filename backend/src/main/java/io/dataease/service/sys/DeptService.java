@@ -1,10 +1,7 @@
 package io.dataease.service.sys;
 
-import io.dataease.base.domain.SysDept;
-import io.dataease.base.domain.SysDeptExample;
-import io.dataease.base.mapper.SysDeptMapper;
-import io.dataease.base.mapper.ext.ExtDeptMapper;
-import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.ext.*;
+import io.dataease.ext.query.GridExample;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.request.DeptCreateRequest;
@@ -12,6 +9,9 @@ import io.dataease.controller.sys.request.DeptDeleteRequest;
 import io.dataease.controller.sys.request.DeptStatusRequest;
 import io.dataease.controller.sys.request.SimpleTreeNode;
 import io.dataease.controller.sys.response.DeptTreeNode;
+import io.dataease.plugins.common.base.domain.SysDept;
+import io.dataease.plugins.common.base.domain.SysDeptExample;
+import io.dataease.plugins.common.base.mapper.SysDeptMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;

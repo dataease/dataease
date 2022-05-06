@@ -1,7 +1,6 @@
 package io.dataease.service.chart;
 
-import io.dataease.base.mapper.ChartViewCacheMapper;
-import io.dataease.base.mapper.ext.ExtChartViewMapper;
+import io.dataease.ext.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +22,10 @@ public class ChartViewCacheService {
         if(extChartViewMapper.updateToCache(viewId)==0){
             extChartViewMapper.copyToCache(viewId);
         }
+    }
+
+    public void resetView(String viewId){
+        extChartViewMapper.updateToViewFromCache(viewId);
     }
 
 }

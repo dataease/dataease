@@ -42,11 +42,14 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/index.html", ANON);
         filterChainDefinitionMap.put("/link.html", ANON);
         filterChainDefinitionMap.put("/board/**", ANON);
+        filterChainDefinitionMap.put("/websocket/**", ANON);
+        filterChainDefinitionMap.put("/system/defaultLoginType", ANON);
 
         // 获取主题信息
         filterChainDefinitionMap.put("/plugin/theme/themes", ANON);
         filterChainDefinitionMap.put("/plugin/theme/items/**", ANON);
         filterChainDefinitionMap.put("/plugin/view/types", ANON);
+        filterChainDefinitionMap.put("/static-resource/**", ANON);
 
         // 验证链接
         filterChainDefinitionMap.put("/api/link/validate**", ANON);
@@ -93,6 +96,7 @@ public class ShiroServiceImpl implements ShiroService {
 
         filterChainDefinitionMap.put("/api/link/resourceDetail/**", "link");
         filterChainDefinitionMap.put("/api/link/viewDetail/**", "link");
+        filterChainDefinitionMap.put("/panel/group/exportDetails", ANON);
         filterChainDefinitionMap.put("/dataset/field/linkMultFieldValues", "link");
 
         filterChainDefinitionMap.put("/**", "authc");

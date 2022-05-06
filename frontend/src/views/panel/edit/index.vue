@@ -168,7 +168,7 @@
           @mouseup="deselectCurComponent"
           @scroll="canvasScroll"
         >
-          <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
+          <Editor ref="canvasEditor" :matrix-count="pcMatrixCountBase" :out-style="outStyle" :scroll-top="scrollTop" />
         </div>
         <!--移动端画布区域 保持宽高比2.5-->
         <el-row v-if="mobileLayoutStatus" class="mobile_canvas_main">
@@ -338,7 +338,7 @@ import ViewSelect from '../ViewSelect'
 import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
-import { deepCopy, panelInit } from '@/components/canvas/utils/utils'
+import { deepCopy, matrixBaseChange, panelInit } from '@/components/canvas/utils/utils'
 import componentList, {
   BASE_MOBILE_STYLE,
   COMMON_BACKGROUND,
@@ -547,6 +547,16 @@ export default {
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
+    pcMatrixCountBase() {
+      if (this.canvasStyleData.aidedDesign) {
+        return {
+          x: this.pcMatrixCount.x * this.canvasStyleData.aidedDesign.matrixBase,
+          y: this.pcMatrixCount.y * this.canvasStyleData.aidedDesign.matrixBase
+        }
+      } else {
+        return this.pcMatrixCount
+      }
+    },
     ...mapState([
       'curComponent',
       'curCanvasScale',
@@ -651,6 +661,8 @@ export default {
         initPanelData(panelId, function() {
           // 初始化视图缓存
           initViewCache(panelId)
+          // 初始化记录的视图信息
+          _this.$store.commit('setComponentViewsData')
           // 初始化保存状态
           setTimeout(() => {
             _this.$store.commit('refreshSaveStatus')
@@ -937,6 +949,7 @@ export default {
             hyperlinks: HYPERLINKS,
             mobileStyle: BASE_MOBILE_STYLE,
             propValue: fileResult,
+            commonBackground: deepCopy(COMMON_BACKGROUND),
             style: {
               ...commonStyle
             }
@@ -982,7 +995,7 @@ export default {
       // 用户视图设置 复制一个模板
       componentList.forEach(componentTemp => {
         if (componentTemp.type === 'view') {
-          component = deepCopy(componentTemp)
+          component = matrixBaseChange(deepCopy(componentTemp))
           const propValue = {
             id: newComponentId,
             viewId: newViewInfo.id

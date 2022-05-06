@@ -4,7 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
-import io.dataease.base.domain.DatasetTableTaskLog;
+import io.dataease.plugins.common.base.domain.DatasetTableTaskLog;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.utils.PageUtils;
@@ -35,7 +35,7 @@ public class DataSetTableTaskLogController {
     @ApiOperation("保存")
     @PostMapping("save")
     public DatasetTableTaskLog save(@RequestBody DatasetTableTaskLog datasetTableTaskLog) {
-        return dataSetTableTaskLogService.save(datasetTableTaskLog);
+        return dataSetTableTaskLogService.save(datasetTableTaskLog, true);
     }
 
     @ApiOperation("分页查询")

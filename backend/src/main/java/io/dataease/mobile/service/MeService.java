@@ -1,6 +1,6 @@
 package io.dataease.mobile.service;
 
-import io.dataease.base.mapper.ext.MobileMeMapper;
+import io.dataease.ext.MobileMeMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.mobile.dto.MeItemDTO;
 import org.springframework.stereotype.Service;

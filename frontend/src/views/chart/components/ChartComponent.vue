@@ -115,6 +115,11 @@ export default {
     terminalType: {
       type: String,
       default: 'pc'
+    },
+    scale: {
+      type: Number,
+      required: false,
+      default: 1
     }
   },
   data() {
@@ -210,7 +215,7 @@ export default {
       } else if (chart.type === 'radar') {
         chart_option = baseRadarOption(JSON.parse(JSON.stringify(BASE_RADAR)), chart)
       } else if (chart.type === 'gauge') {
-        chart_option = baseGaugeOption(JSON.parse(JSON.stringify(BASE_GAUGE)), chart)
+        chart_option = baseGaugeOption(JSON.parse(JSON.stringify(BASE_GAUGE)), chart, this.terminalType === 'pc' ? this.scale : '0.7')
       } else if (chart.type === 'scatter') {
         chart_option = baseScatterOption(JSON.parse(JSON.stringify(BASE_SCATTER)), chart, this.terminalType)
       } else if (chart.type === 'treemap') {
@@ -229,7 +234,7 @@ export default {
           this.myChart.clear()
           return
         }
-        const cCode = this.dynamicAreaCode || customAttr.areaCode
+        const cCode = this.chart.DetailAreaCode || this.dynamicAreaCode || customAttr.areaCode
         if (this.$store.getters.geoMap[cCode]) {
           const json = this.$store.getters.geoMap[cCode]
           this.initMapChart(json, chart)

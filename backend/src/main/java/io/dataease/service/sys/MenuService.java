@@ -1,11 +1,5 @@
 package io.dataease.service.sys;
 
-
-import io.dataease.base.domain.SysMenu;
-import io.dataease.base.domain.SysMenuExample;
-import io.dataease.base.mapper.SysMenuMapper;
-import io.dataease.base.mapper.ext.ExtMenuMapper;
-import io.dataease.base.mapper.ext.ExtSysMenuMapper;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.request.MenuCreateRequest;
@@ -13,6 +7,11 @@ import io.dataease.controller.sys.request.MenuDeleteRequest;
 import io.dataease.controller.sys.request.SimpleTreeNode;
 import io.dataease.controller.sys.response.MenuNodeResponse;
 import io.dataease.controller.sys.response.MenuTreeNode;
+import io.dataease.ext.ExtMenuMapper;
+import io.dataease.ext.ExtSysMenuMapper;
+import io.dataease.plugins.common.base.domain.SysMenu;
+import io.dataease.plugins.common.base.domain.SysMenuExample;
+import io.dataease.plugins.common.base.mapper.SysMenuMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;

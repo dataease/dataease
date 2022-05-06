@@ -1,8 +1,8 @@
 package io.dataease.commons.utils;
 
-import io.dataease.dto.datasource.TableField;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.dto.datasource.TableField;
 import org.apache.poi.hssf.eventusermodel.*;
 import org.apache.poi.hssf.eventusermodel.dummyrecord.LastCellOfRowDummyRecord;
 import org.apache.poi.hssf.eventusermodel.dummyrecord.MissingCellDummyRecord;
@@ -24,6 +24,16 @@ import java.util.stream.Collectors;
 public class ExcelXlsReader implements HSSFListener {
 
     private int minColums = -1;
+
+    public Integer getObtainedNum() {
+        return obtainedNum;
+    }
+
+    public void setObtainedNum(Integer obtainedNum) {
+        this.obtainedNum = obtainedNum;
+    }
+
+    private Integer obtainedNum = null;
 
     private POIFSFileSystem fs;
 
@@ -331,10 +341,12 @@ public class ExcelXlsReader implements HSSFListener {
                     totalSheets.add(excelSheetData);
                 }else {
                     List<String> tmp = new ArrayList<>(cellList);
-                    if(totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().size() < 100){
+                    if(obtainedNum != null && totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().size() < obtainedNum){
                         totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
                     }
-
+                    if(obtainedNum == null){
+                        totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
+                    }
                     totalRows++;
                 }
             }

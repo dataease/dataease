@@ -1,6 +1,6 @@
 package io.dataease.plugins.config;
 
-import io.dataease.base.domain.MyPlugin;
+import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.plugins.loader.ClassloaderResponsity;
 import io.dataease.plugins.loader.ControllerLoader;
 import io.dataease.plugins.loader.ModuleClassLoader;

@@ -28,7 +28,7 @@
         </el-form-item>
       </el-form>
     </el-row>
-    <i slot="reference" class="icon iconfont icon-chaolianjie" />
+    <i slot="reference" class="icon iconfont icon-font icon-chaolianjie1" />
   </el-popover>
 </template>
 
@@ -118,6 +118,9 @@ export default {
   >>>.el-popover{
     height: 200px;
     overflow: auto;
+  }
+  .icon-font{
+    color: white;
   }
 
 </style>

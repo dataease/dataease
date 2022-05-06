@@ -1,5 +1,13 @@
 <template>
-  <el-row class="main_container">
+  <div
+    v-if="loading"
+    v-loading="loading"
+    style="position:absolute;top:55px;width: 100%;height: calc(100% - 55px);"
+  />
+  <div v-else-if="homeLink">
+    <iframe id="mobsf" :src="homeLink" frameborder="0" style="position:absolute;top:55px;width: 100%;height: calc(100% - 55px);" />
+  </div>
+  <el-row v-else class="main_container">
     <el-row class="head">
       <span class="hint_head">{{ $t('wizard.welcome_title') }}</span> <br>
       <span class="hint_content">{{ $t('wizard.welcome_hint') }}</span>
@@ -35,7 +43,7 @@ export default {
           head: this.$t('wizard.quick_start'),
           content: this.$t('wizard.demo_video_hint'),
           bottom: '',
-          href: 'https://www.bilibili.com/video/BV1UB4y1K7jA',
+          href: 'https://www.bilibili.com/video/BV1i34y1v7hq/',
           component: 'CardDetail'
         },
         {
@@ -54,7 +62,7 @@ export default {
         },
         {
           head: this.$t('wizard.teaching_video'),
-          content: '<a href="https://www.bilibili.com/video/BV1pb4y1E7Zg?spm_id_from=333.999.0.0" target="_blank">【DataEase教学视频】视图钻取</a><br><a href="https://www.bilibili.com/video/BV1rm4y1f7a7?spm_id_from=333.999.0.0" target="_blank">【DataEase教学视频】视图组件联动</a><br><a href="https://www.bilibili.com/video/BV1Xq4y187H9?spm_id_from=333.999.0.0" target="_blank">【DataEase教学视频】移动端布局设置</a>',
+          content: '<a href="https://www.bilibili.com/video/BV15P4y1u7Pa?spm_id_from=333.999.0.0" target="_blank">1.1 连接数据库并添加数据集</a><br><a href="https://www.bilibili.com/video/BV1cU4y1d77S?spm_id_from=333.999.0.0" target="_blank">1.2 Excel 数据集和 API 数据集</a><br><a href="https://www.bilibili.com/video/BV1zY411n7Q1?spm_id_from=333.999.0.0" target="_blank">1.3 数据集整合</a>',
           bottom: '',
           href: 'https://space.bilibili.com/510493147/channel/collectiondetail?sid=262774',
           component: 'CardDetail'
@@ -73,9 +81,25 @@ export default {
           href: 'https://www.dataease.io',
           component: 'CardDetail'
         }
-      ]
+      ],
+      loading: true
+
     }
   },
+  computed: {
+    homeLink() {
+      if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.homeLink'] && this.$store.getters.uiInfo['ui.homeLink'].paramValue) {
+        return this.$store.getters.uiInfo['ui.homeLink'].paramValue
+      }
+      return null
+    }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.loading = false
+    }, 1000)
+  },
+
   created() {
     this.init()
   },

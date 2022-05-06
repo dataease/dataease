@@ -5,7 +5,7 @@
         <div class="field-content">
 
           <div class="field-content-right">
-            <el-row style="display:flex;height: 32px;">
+            <el-row style="display:inline-flex;height: 32px;width: auto;">
               <draggable
                 v-model="element.options.attrs.dragItems"
                 group="dimension"
@@ -78,7 +78,7 @@ export default {
 <style lang="scss" scoped>
   .filter-field {
     border-radius: 4px;
-    height: 45px;
+    height: 40px;
 
     .field-content {
       position: relative;
@@ -113,14 +113,15 @@ export default {
         border-left: none;
         color: #9ea6b2;
         border: 1px solid var(--TableBorderColor, #E6E6E6);
-        width: 0%;
-        max-width: 0%;
+        width: 100%;
+        // max-width: 0%;
         position: relative;
-        display: table-cell;
+        display: inherit;
         vertical-align: middle;
         margin: 0px;
-        padding: 0 0 0 0;
+        padding: 4px 0 0 0;
         height: 100%;
+        line-height: 100%;
       }
     }
 

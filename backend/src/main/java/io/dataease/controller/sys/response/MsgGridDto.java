@@ -1,6 +1,6 @@
 package io.dataease.controller.sys.response;
 
-import io.dataease.base.domain.SysMsg;
+import io.dataease.plugins.common.base.domain.SysMsg;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

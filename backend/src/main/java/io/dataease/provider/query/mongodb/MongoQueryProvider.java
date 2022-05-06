@@ -1,19 +1,20 @@
 package io.dataease.provider.query.mongodb;
 
-import io.dataease.base.domain.ChartViewWithBLOBs;
-import io.dataease.base.domain.DatasetTableField;
-import io.dataease.base.domain.DatasetTableFieldExample;
-import io.dataease.base.domain.Datasource;
-import io.dataease.base.mapper.DatasetTableFieldMapper;
-import io.dataease.commons.constants.DeTypeConstants;
-import io.dataease.controller.request.chart.ChartExtFilterRequest;
-import io.dataease.dto.chart.ChartCustomFilterItemDTO;
-import io.dataease.dto.chart.ChartFieldCustomFilterDTO;
-import io.dataease.dto.chart.ChartViewFieldDTO;
-import io.dataease.dto.sqlObj.SQLObj;
+import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
+import io.dataease.plugins.common.base.domain.Datasource;
+import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
+import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.constants.MongoConstants;
+import io.dataease.plugins.common.constants.MySQLConstants;
 import io.dataease.plugins.common.constants.SQLConstants;
-import io.dataease.provider.QueryProvider;
+import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
+import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
+import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
+import io.dataease.plugins.common.dto.sqlObj.SQLObj;
+import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
+import io.dataease.plugins.datasource.query.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +37,7 @@ import static io.dataease.plugins.common.constants.SQLConstants.TABLE_ALIAS_PREF
  * @Author gin
  * @Date 2021/5/17 2:43 下午
  */
-@Service("mongoQuery")
+@Service("mongoQueryProvider")
 public class MongoQueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;
@@ -915,9 +916,17 @@ public class MongoQueryProvider extends QueryProvider {
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
             fieldName = MongoConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
-            fieldName = String.format(MongoConstants.AGG_FIELD, y.getSummary(), originField);
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                fieldName = String.format(MongoConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else {
+                fieldName = String.format(MongoConstants.AGG_FIELD, y.getSummary(), originField);
+            }
         } else {
-            fieldName = String.format(MongoConstants.AGG_FIELD, y.getSummary(), originField);
+            if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
+                fieldName = String.format(MongoConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+            } else {
+                fieldName = String.format(MongoConstants.AGG_FIELD, y.getSummary(), originField);
+            }
         }
         return SQLObj.builder()
                 .fieldName(fieldName)

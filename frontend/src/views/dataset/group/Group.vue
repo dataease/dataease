@@ -475,7 +475,13 @@ export default {
     },
 
     deleteTable(data) {
-      this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
+      let confirm_delete_msg = ''
+      if(data.modelInnerType === 'union' || data.modelInnerType === 'custom'){
+        confirm_delete_msg = this.$t('dataset.confirm_delete')
+      }else {
+        confirm_delete_msg = this.$t('dataset.confirm_delete_msg')
+      }
+      this.$confirm(confirm_delete_msg, this.$t('dataset.tips'), {
         confirmButtonText: this.$t('dataset.confirm'),
         cancelButtonText: this.$t('dataset.cancel'),
         type: 'warning'

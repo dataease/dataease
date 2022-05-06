@@ -21,7 +21,14 @@
       :ref="element.propValue.id"
       :component-name="chart.type + '-view'"
       :obj="{chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
+      :chart="chart"
+      :track-menu="trackMenu"
+      :search-count="searchCount"
+      :terminal-type="scaleCoefficientType"
+      :scale="scale"
       class="chart-class"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
     />
     <chart-component
       v-else-if="charViewShowFlag"
@@ -31,6 +38,7 @@
       :track-menu="trackMenu"
       :search-count="searchCount"
       :terminal-type="scaleCoefficientType"
+      :scale="scale"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -41,6 +49,7 @@
       :chart="chart"
       :track-menu="trackMenu"
       :search-count="searchCount"
+      :scale="scale"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -61,8 +70,22 @@
       :chart="chart"
       class="table-class"
     />
-    <label-normal v-else-if="labelShowFlag" :ref="element.propValue.id" :chart="chart" class="table-class" />
-    <label-normal-text v-else-if="labelTextShowFlag" :ref="element.propValue.id" :chart="chart" class="table-class" />
+    <label-normal
+      v-else-if="labelShowFlag"
+      :ref="element.propValue.id"
+      :chart="chart"
+      class="table-class"
+    />
+    <label-normal-text
+      v-else-if="labelTextShowFlag"
+      :ref="element.propValue.id"
+      :chart="chart"
+      class="table-class"
+      :track-menu="trackMenu"
+      :search-count="searchCount"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
+    />
     <div style="position: absolute;left: 8px;bottom:8px;">
       <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
     </div>
@@ -163,7 +186,8 @@ export default {
       pre: null,
       preCanvasPanel: null,
       sourceCustomAttrStr: null,
-      sourceCustomStyleStr: null
+      sourceCustomStyleStr: null,
+      scale: 1
     }
   },
 
@@ -274,7 +298,8 @@ export default {
       'previewCanvasScale',
       'mobileLayoutStatus',
       'componentData',
-      'panelViewDetailsInfo'
+      'panelViewDetailsInfo',
+      'componentViewsData'
     ])
   },
 
@@ -398,11 +423,11 @@ export default {
     },
     // 根据仪表板的缩放比例，修改视图内部参数
     mergeScale() {
-      const scale = Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient
+      this.scale = Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient
       const customAttrChart = JSON.parse(this.sourceCustomAttrStr)
       const customStyleChart = JSON.parse(this.sourceCustomStyleStr)
-      recursionTransObj(customAttrTrans, customAttrChart, scale, this.scaleCoefficientType)
-      recursionTransObj(customStyleTrans, customStyleChart, scale, this.scaleCoefficientType)
+      recursionTransObj(customAttrTrans, customAttrChart, this.scale, this.scaleCoefficientType)
+      recursionTransObj(customStyleTrans, customStyleChart, this.scale, this.scaleCoefficientType)
 
       // 移动端地图标签不显示
       if (this.chart.type === 'map' && this.scaleCoefficientType === 'mobile') {
@@ -461,6 +486,11 @@ export default {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
+            if (this.isEdit) {
+              this.componentViewsData[this.chart.id] = {
+                'title': this.chart.title
+              }
+            }
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
             // 记录当前数据
             this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
@@ -609,9 +639,9 @@ export default {
         const current = this.$refs[this.element.propValue.id]
 
         if (this.chart.isPlugin) {
-          current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
+          current && current.callPluginInner && this.setDetailMapCode(null) && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
         } else {
-          current && current.registerDynamicMap && current.registerDynamicMap(null)
+          current && current.registerDynamicMap && this.setDetailMapCode(null) && current.registerDynamicMap(null)
         }
       }
     },
@@ -639,10 +669,15 @@ export default {
       this.currentAcreaNode = tempNode
       const current = this.$refs[this.element.propValue.id]
       if (this.chart.isPlugin) {
-        current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: this.currentAcreaNode.code })
+        current && current.callPluginInner && this.setDetailMapCode(this.currentAcreaNode.code) && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: this.currentAcreaNode.code })
       } else {
-        current && current.registerDynamicMap && current.registerDynamicMap(this.currentAcreaNode.code)
+        current && current.registerDynamicMap && this.setDetailMapCode(this.currentAcreaNode.code) && current.registerDynamicMap(this.currentAcreaNode.code)
       }
+    },
+
+    setDetailMapCode(code) {
+      this.element.DetailAreaCode = code
+      return true
     },
 
     // 切换下一级地图
@@ -660,9 +695,9 @@ export default {
         this.currentAcreaNode = nextNode
         const current = this.$refs[this.element.propValue.id]
         if (this.chart.isPlugin) {
-          nextNode && current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: nextNode.code })
+          nextNode && current && current.callPluginInner && this.setDetailMapCode(nextNode.code) && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: nextNode.code })
         } else {
-          nextNode && current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
+          nextNode && current && current.registerDynamicMap && this.setDetailMapCode(nextNode.code) && current.registerDynamicMap(nextNode.code)
         }
       }
     },

@@ -84,6 +84,22 @@
       </el-form>
 
       <el-form v-show="chart.type && chart.type.includes('table')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+        <el-form-item v-show="chart.type && chart.type === 'table-info'" :label="$t('chart.table_page_mode')" class="form-item">
+          <el-select v-model="sizeForm.tablePageMode" :placeholder="$t('chart.table_page_mode')" @change="changeBarSizeCase">
+            <el-option :label="$t('chart.page_mode_page')" value="page" />
+            <el-option :label="$t('chart.page_mode_pull')" value="pull" />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="chart.type && chart.type === 'table-info' && sizeForm.tablePageMode === 'page'" :label="$t('chart.table_page_size')" class="form-item">
+          <el-select v-model="sizeForm.tablePageSize" :placeholder="$t('chart.table_page_size')" @change="changeBarSizeCase">
+            <el-option
+              v-for="item in pageSizeOptions"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item :label="$t('chart.table_title_fontsize')" class="form-item">
           <el-select v-model="sizeForm.tableTitleFontSize" :placeholder="$t('chart.table_title_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -100,15 +116,8 @@
         <el-form-item :label="$t('chart.table_item_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableItemHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type && chart.type === 'table-info'" :label="$t('chart.table_page_size')" class="form-item">
-          <el-select v-model="sizeForm.tablePageSize" :placeholder="$t('chart.table_page_size')" @change="changeBarSizeCase">
-            <el-option
-              v-for="item in pageSizeOptions"
-              :key="item.value"
-              :label="item.name"
-              :value="item.value"
-            />
-          </el-select>
+        <el-form-item :label="$t('chart.table_column_width_config')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.tableColumnWidth" :min="10" :max="1000" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
 
@@ -340,6 +349,7 @@ export default {
           this.sizeForm.liquidWaveLength = this.sizeForm.liquidWaveLength ? this.sizeForm.liquidWaveLength : DEFAULT_SIZE.liquidWaveLength
           this.sizeForm.liquidWaveCount = this.sizeForm.liquidWaveCount ? this.sizeForm.liquidWaveCount : DEFAULT_SIZE.liquidWaveCount
 
+          this.sizeForm.tablePageMode = this.sizeForm.tablePageMode ? this.sizeForm.tablePageMode : DEFAULT_SIZE.tablePageMode
           this.sizeForm.tablePageSize = this.sizeForm.tablePageSize ? this.sizeForm.tablePageSize : DEFAULT_SIZE.tablePageSize
         }
       }

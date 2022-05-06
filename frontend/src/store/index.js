@@ -50,6 +50,8 @@ const data = {
     componentDataCache: null,
     // 当前展示画布组件数据
     componentData: [],
+    // 当前展示画布视图信息
+    componentViewsData: {},
     // PC布局画布组件数据
     pcComponentData: [],
     // 移动端布局画布组件数据
@@ -105,7 +107,11 @@ const data = {
     // 视图是否编辑记录
     panelViewEditInfo: {},
     // 仪表板视图明细
-    panelViewDetailsInfo: {}
+    panelViewDetailsInfo: {},
+    // 当前tab页内组件
+    curActiveTabInner: null,
+    // static resource local path
+    staticResourcePath: '/static-resource/'
   },
   mutations: {
     ...animation.mutations,
@@ -145,6 +151,10 @@ const data = {
       state.curComponentIndex = index
     },
 
+    setCurActiveTabInner(state, curActiveTabInner) {
+      state.curActiveTabInner = curActiveTabInner
+    },
+
     setCurCanvasScale(state, curCanvasScale) {
       state.curCanvasScale = curCanvasScale
     },
@@ -172,6 +182,10 @@ const data = {
 
     setComponentData(state, componentData = []) {
       Vue.set(state, 'componentData', componentData)
+    },
+
+    setComponentViewsData(state, componentViewsData = {}) {
+      Vue.set(state, 'componentViewsData', componentViewsData)
     },
 
     setPcComponentData(state, pcComponentData = []) {
@@ -265,7 +279,7 @@ const data = {
             const ele = element.options.tabList[idx].content
             if (!ele.type || ele.type !== 'view') continue
 
-            const currentFilters = []
+            const currentFilters = element.linkageFilters || [] // 当前联动filter
 
             data.dimensionList.forEach(dimension => {
               const sourceInfo = viewId + '#' + dimension.id
@@ -298,9 +312,9 @@ const data = {
           state.componentData[index] = element
         }
         if (!element.type || element.type !== 'view') continue
-        // const currentFilters = element.linkageFilters || [] // 当前联动filter
+        const currentFilters = element.linkageFilters || [] // 当前联动filter
         // 联动的视图情况历史条件
-        const currentFilters = []
+        // const currentFilters = []
 
         data.dimensionList.forEach(dimension => {
           const sourceInfo = viewId + '#' + dimension.id
@@ -345,8 +359,13 @@ const data = {
 
           // 外部参数 可能会包含多个参数
           Object.keys(params).forEach(function(sourceInfo) {
-            // 获取外部参数的值 sourceInfo 是外部参数名称
-            const paramValue = params[sourceInfo]
+            // 获取外部参数的值 sourceInfo 是外部参数名称 支持数组传入
+            let paramValue = params[sourceInfo]
+            let operator = 'in'
+            if (paramValue && !Array.isArray(paramValue)) {
+              paramValue = [paramValue]
+              operator = 'eq'
+            }
             // 获取所有目标联动信息
             const targetInfoList = trackInfo[sourceInfo] || []
 
@@ -355,7 +374,7 @@ const data = {
               const targetViewId = targetInfoArray[0] // 目标视图
               if (element.propValue.viewId === targetViewId) { // 如果目标视图 和 当前循环组件id相等 则进行条件增减
                 const targetFieldId = targetInfoArray[1] // 目标视图列ID
-                const condition = new Condition('', targetFieldId, 'eq', [paramValue], [targetViewId])
+                const condition = new Condition('', targetFieldId, operator, paramValue, [targetViewId])
                 let j = currentFilters.length
                 while (j--) {
                   const filter = currentFilters[j]

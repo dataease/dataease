@@ -3,12 +3,7 @@ package io.dataease.service.panel;
 import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.api.dto.CurrentUserDto;
-import io.dataease.base.domain.PanelGroup;
-import io.dataease.base.domain.PanelShare;
-import io.dataease.base.domain.PanelShareExample;
-import io.dataease.base.mapper.PanelGroupMapper;
-import io.dataease.base.mapper.PanelShareMapper;
-import io.dataease.base.mapper.ext.ExtPanelShareMapper;
+import io.dataease.ext.ExtPanelShareMapper;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
@@ -21,6 +16,11 @@ import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelShareDto;
 import io.dataease.dto.panel.PanelShareOutDTO;
 import io.dataease.dto.panel.PanelSharePo;
+import io.dataease.plugins.common.base.domain.PanelGroup;
+import io.dataease.plugins.common.base.domain.PanelShare;
+import io.dataease.plugins.common.base.domain.PanelShareExample;
+import io.dataease.plugins.common.base.mapper.PanelGroupMapper;
+import io.dataease.plugins.common.base.mapper.PanelShareMapper;
 import io.dataease.service.message.DeMsgutil;
 import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
@@ -92,9 +92,9 @@ public class ShareService {
             } else {
                 shareNodes = typeSharedMap.get(key);
             }
-
-            if (null != authURDMap.get(key)) {
-                Map<String, Object> dataMap = filterData(authURDMap.get(key), shareNodes);
+            List<Long> value = entry.getValue();
+            if (null != value) {
+                Map<String, Object> dataMap = filterData(value, shareNodes);
                 List<Long> newIds = (List<Long>) dataMap.get("add");
                 for (int i = 0; i < newIds.size(); i++) {
                     Long id = newIds.get(i);
@@ -340,8 +340,29 @@ public class ShareService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void removeShares(PanelShareRemoveRequest removeRequest) {
+        String panelId = removeRequest.getPanelId();
         extPanelShareMapper.removeShares(removeRequest);
+        AuthURD sharedAuthURD = new AuthURD();
+        List<Long> removeIds = new ArrayList<Long>(){{add(removeRequest.getTargetId());}};
+        buildRedAuthURD(removeRequest.getType(), removeIds, sharedAuthURD);
+        CurrentUserDto user = AuthUtils.getUser();
+        Gson gson = new Gson();
+        PanelGroup panel = panelGroupMapper.selectByPrimaryKey(panelId);
+
+        String msg = panel.getName();
+
+        List<String> msgParam = new ArrayList<>();
+        msgParam.add(panelId);
+        Set<Long> redIds = AuthUtils.userIdsByURD(sharedAuthURD);
+        redIds.forEach(userId -> {
+            if (!user.getUserId().equals(userId)) {
+                DeMsgutil.sendMsg(userId, 3L, user.getNickName() + " 取消分享了仪表板【" + msg + "】，请查收!",
+                        gson.toJson(msgParam));
+            }
+        });
+
     }
 
 }

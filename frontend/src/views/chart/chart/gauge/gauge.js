@@ -1,8 +1,9 @@
 import { componentStyle } from '../common/common'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { DEFAULT_THRESHOLD } from '@/views/chart/chart/chart'
+import { getScaleValue } from '@/components/canvas/utils/style'
 
-export function baseGaugeOption(chart_option, chart) {
+export function baseGaugeOption(chart_option, chart, scale = 1) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -50,6 +51,25 @@ export function baseGaugeOption(chart_option, chart) {
         value: chart.data.series[0].data[0]
       }
       chart_option.series[0].data.push(y)
+
+      chart_option.series[0].axisTick = {
+        splitNumber: getScaleValue(5, scale), // 刻度间隔数
+        length: getScaleValue(10, scale), // 子刻度线长度
+        lineStyle: {
+          width: getScaleValue(2, scale) // 子刻度线宽度
+        }
+      }
+      chart_option.series[0].splitLine = {
+        length: getScaleValue(18, scale), // 刻度线长度
+        lineStyle: {
+          width: getScaleValue(2, scale) // 刻度线宽度
+        }
+      }
+      chart_option.series[0].axisLabel = {
+        distance: getScaleValue(20, scale), // 刻度值文字里刻度线距离
+        fontSize: getScaleValue(20, scale)// 刻度值字体大小
+      }
+
       // threshold
       if (chart.senior) {
         const range = []
@@ -62,7 +82,7 @@ export function baseGaugeOption(chart_option, chart) {
           const per = parseFloat(chart.data.series[0].data[0]) / parseFloat(chart_option.series[0].max)
           for (let i = 0; i < arr.length; i++) {
             const ele = arr[i]
-            const p = parseInt(ele) / 100
+            const p = parseFloat(ele) / 100
             range.push([p, hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)])
             if (!flag && per <= p) {
               flag = true
@@ -87,22 +107,30 @@ export function baseGaugeOption(chart_option, chart) {
             show: false
           }
           chart_option.series[0].axisTick = {
+            splitNumber: getScaleValue(5, scale), // 刻度间隔数
+            length: getScaleValue(10, scale), // 子刻度线长度
             lineStyle: {
-              color: 'auto'
+              color: 'auto',
+              width: getScaleValue(2, scale) // 子刻度线宽度
             }
           }
           chart_option.series[0].splitLine = {
+            length: getScaleValue(18, scale), // 刻度线长度
             lineStyle: {
-              color: 'auto'
+              color: 'auto',
+              width: getScaleValue(2, scale) // 刻度线宽度
             }
           }
           chart_option.series[0].axisLabel = {
-            color: 'auto'
+            color: 'auto',
+            distance: getScaleValue(20, scale), // 刻度值文字里刻度线距离
+            fontSize: getScaleValue(20, scale)// 刻度值字体大小
           }
         }
       }
     }
   }
+  console.log(chart_option.series[0])
   // console.log(chart_option);
   componentStyle(chart_option, chart)
   return chart_option

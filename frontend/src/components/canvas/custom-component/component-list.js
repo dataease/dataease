@@ -106,7 +106,8 @@ export const STREAMMEDIALINKS = {
     type: 'flv',
     isLive: false,
     cors: true, // 允许跨域
-    loop: true
+    loop: true,
+    autoplay: false
     // url: null // 网络动画视频
   }
 }
@@ -171,6 +172,33 @@ export const pictureList = [
   }
 ]
 
+export const tabUseList = [
+  {
+    id: '20002',
+    component: 'video',
+    type: 'video',
+    label: '视频',
+    icon: 'iconfont icon-video',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '20003',
+    component: 'stream-media',
+    type: 'stream-media',
+    label: '流媒体',
+    icon: 'iconfont icon-a-liumeitimeitiliebiao',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '30002',
+    component: 'de-frame',
+    type: 'de-frame',
+    label: '网页',
+    icon: 'iconfont icon-iframe',
+    defaultClass: 'text-filter'
+  }
+]
+
 export const otherList = [
   {
     id: '30001',
@@ -200,6 +228,7 @@ const list = [
     icon: 'wenben',
     type: 'v-text',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 400,
       height: 100,
@@ -211,7 +240,6 @@ const list = [
       color: '#000000',
       verticalAlign: 'middle'
     },
-    hyperlinks: HYPERLINKS,
     x: 1,
     y: 1,
     sizex: 10,
@@ -252,6 +280,7 @@ const list = [
     type: 'Picture',
     propValue: require('@/components/canvas/assets/title.jpg'),
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 300,
       height: 200
@@ -271,6 +300,7 @@ const list = [
     type: 'Picture',
     propValue: require('@/components/canvas/assets/bg-kj-1.jpg'),
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       borderStyle: 'solid',
       borderWidth: 0,
@@ -289,6 +319,7 @@ const list = [
     icon: 'juxing',
     type: 'rect-shape',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 300,
       height: 200,
@@ -311,13 +342,14 @@ const list = [
     icon: 'juxing',
     type: 'view',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 300,
       height: 200
     },
     x: 1,
     y: 36,
-    sizex: 10,
+    sizex: 12,
     sizey: 6,
     auxiliaryMatrix: true,
     miniSizex: 1,
@@ -331,6 +363,7 @@ const list = [
     icon: 'tabs',
     type: 'de-tabs',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 200,
       height: 200,
@@ -347,7 +380,7 @@ const list = [
     },
     x: 1,
     y: 1,
-    sizex: 10,
+    sizex: 12,
     sizey: 10,
     miniSizex: 1,
     miniSizey: 1
@@ -360,6 +393,7 @@ const list = [
     icon: 'shijian',
     type: 'de-show-date',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 250,
       height: 100,
@@ -397,6 +431,7 @@ const list = [
     icon: 'iconfont icon-iframe',
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 400,
       height: 200
@@ -437,6 +472,7 @@ const list = [
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 400,
       height: 200
@@ -457,6 +493,7 @@ const list = [
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
       width: 400,
       height: 200

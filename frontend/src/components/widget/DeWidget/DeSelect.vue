@@ -10,6 +10,7 @@
     :placeholder="$t(element.options.attrs.placeholder)"
     :popper-append-to-body="inScreen"
     :size="size"
+    :filterable="true"
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
@@ -90,7 +91,7 @@ export default {
       this.changeValue(value)
     },
     'element.options.attrs.fieldId': function(value, old) {
-      if (typeof value === 'undefined' || value === old) return
+      if (value === null || typeof value === 'undefined' || value === old) return
       this.datas = []
 
       let method = multFieldValues
@@ -226,7 +227,8 @@ export default {
       this.onFocus = true
       // 下拉框弹出时，设置弹框的宽度
       this.$nextTick(() => {
-        this.selectOptionWidth = event.srcElement.offsetWidth + 'px'
+        // this.selectOptionWidth = event.srcElement.offsetWidth + 'px'
+        this.selectOptionWidth = event.srcElement.parentElement.parentElement.offsetWidth + 'px'
       })
     }
 

@@ -3,11 +3,6 @@ package io.dataease.service.panel;
 import io.dataease.auth.config.RsaProperties;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.auth.util.RsaUtil;
-import io.dataease.base.domain.*;
-import io.dataease.base.mapper.PanelGroupMapper;
-import io.dataease.base.mapper.PanelLinkMapper;
-import io.dataease.base.mapper.PanelLinkMappingMapper;
-import io.dataease.base.mapper.ext.ExtPanelLinkMapper;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.ServletUtils;
@@ -16,13 +11,17 @@ import io.dataease.controller.request.panel.link.LinkRequest;
 import io.dataease.controller.request.panel.link.OverTimeRequest;
 import io.dataease.controller.request.panel.link.PasswordRequest;
 import io.dataease.dto.panel.link.GenerateDto;
+import io.dataease.plugins.common.base.domain.*;
+import io.dataease.plugins.common.base.mapper.PanelGroupMapper;
+import io.dataease.plugins.common.base.mapper.PanelLinkMapper;
+import io.dataease.plugins.common.base.mapper.PanelLinkMappingMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import io.dataease.ext.ExtPanelLinkMapper;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,7 +34,7 @@ public class PanelLinkService {
     private static final String USERPARAM = "&user=";
     private static final String SHORT_URL_PREFIX = "/link/";
 
-    @Value("${server.servlet.context-path}")
+    @Value("${server.servlet.context-path:#{null}}")
     private String contextPath;
 
     @Resource

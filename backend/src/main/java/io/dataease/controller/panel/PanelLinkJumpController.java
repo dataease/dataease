@@ -3,7 +3,7 @@ package io.dataease.controller.panel;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 
 import io.dataease.auth.annotation.DePermissionProxy;
-import io.dataease.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.dto.PermissionProxy;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseRequest;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseResponse;

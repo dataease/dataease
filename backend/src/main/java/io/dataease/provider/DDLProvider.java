@@ -1,7 +1,7 @@
 package io.dataease.provider;
 
-import io.dataease.base.domain.DatasetTableField;
-import io.dataease.base.domain.Datasource;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.Datasource;
 
 import java.util.List;
 

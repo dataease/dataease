@@ -122,12 +122,6 @@
           <el-color-picker ref="backgroundColorPicker" v-model="styleInfo.backgroundColor" style="margin-top: 7px;height: 0px" :predefine="predefineColors" size="mini" @change="styleChange" />
         </div>
       </div>
-
-      <div v-if="attrShow('hyperlinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-tooltip v-if="curComponent.hyperlinks" content="超链接">
-          <Hyperlinks :link-info="curComponent.hyperlinks" />
-        </el-tooltip>
-      </div>
       <div v-if="attrShow('videoLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
         <el-tooltip content="视频信息">
           <VideoLinks :link-info="curComponent.videoLinks" />
@@ -154,6 +148,24 @@
       <div v-if="attrShow('deTabStyle')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <el-tooltip content="tab内部样式">
           <tab-style :style-info="styleInfo" />
+        </el-tooltip>
+      </div>
+      <!--tab 内部组件样式-->
+      <div v-if="attrTabShow('videoLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+        <el-tooltip content="视频信息">
+          <VideoLinks :attr-position="'tab'" :link-info="curActiveTabInner.videoLinks" />
+        </el-tooltip>
+      </div>
+
+      <div v-if="attrTabShow('streamMediaLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+        <el-tooltip content="流媒体信息">
+          <StreamMediaLinks :attr-position="'tab'" :link-info="curActiveTabInner.streamMediaLinks" />
+        </el-tooltip>
+      </div>
+
+      <div v-if="attrTabShow('frameLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+        <el-tooltip content="网页地址">
+          <FrameLinks :attr-position="'tab'" :link-info="curActiveTabInner.frameLinks" />
         </el-tooltip>
       </div>
 
@@ -340,7 +352,8 @@ export default {
     ...mapState([
       'curComponent',
       'curCanvasScale',
-      'canvasStyleData'
+      'canvasStyleData',
+      'curActiveTabInner'
     ])
 
   },
@@ -398,6 +411,10 @@ export default {
         this.mainWidthOffset = document.getElementById('main-attr').offsetWidth - 50
       }
       // console.log('mainWidthOffset:' + this.mainWidthOffset)
+    },
+    attrTabShow(attr) {
+      // console.log('attr:' + attr + this[this.curComponent.type].includes(attr))
+      return this.curActiveTabInner && this[this.curActiveTabInner.type] && this[this.curActiveTabInner.type].includes(attr)
     },
     attrShow(attr) {
       // console.log('attr:' + attr + this[this.curComponent.type].includes(attr))

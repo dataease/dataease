@@ -9,7 +9,7 @@ import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.mobile.dto.HomeItemDTO;
 import io.dataease.mobile.dto.HomeItemShareDTO;
-import io.dataease.base.mapper.ext.HomeMapper;
+import io.dataease.ext.HomeMapper;
 import io.dataease.mobile.dto.HomeRequest;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;

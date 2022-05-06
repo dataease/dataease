@@ -1,7 +1,7 @@
 package io.dataease.dto.chart;
 
-import io.dataease.base.domain.DatasetGroup;
-import io.dataease.commons.model.ITreeBase;
+import io.dataease.plugins.common.base.domain.DatasetGroup;
+import io.dataease.plugins.common.model.ITreeBase;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

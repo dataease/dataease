@@ -366,10 +366,12 @@
                             :item="item"
                             :dimension-data="dimension"
                             :quota-data="quota"
+                            :chart="chart"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
                             @onNameEdit="showRename"
+                            @valueFormatter="valueFormatter"
                           />
                         </transition-group>
                       </draggable>
@@ -445,6 +447,7 @@
                             @editItemFilter="showQuotaEditFilter"
                             @onNameEdit="showRename"
                             @editItemCompare="showQuotaEditCompare"
+                            @valueFormatter="valueFormatter"
                           />
                         </transition-group>
                       </draggable>
@@ -877,7 +880,7 @@
                       @onLegendChange="onLegendChange"
                     />
                   </el-collapse-item>
-                  <el-collapse-item v-if="chart.customStyle && view.customStyle.background" name="background" :title="$t('chart.background')">
+                  <el-collapse-item v-if="view.customStyle && view.customStyle.background" name="background" :title="$t('chart.background')">
                     <background-color-selector
                       :param="param"
                       class="attr-selector"
@@ -893,7 +896,7 @@
         <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 300px;">
           <el-row class="view-panel">
             <div
-              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge'))"
+              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge')) || view.type === 'text'"
               style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
               class="attr-style theme-border-class"
             >
@@ -913,7 +916,7 @@
                 </el-collapse>
               </el-row>
               <el-row
-                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge'))"
+                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge') || view.type === 'text')"
               >
                 <span class="padding-lr">{{ $t('chart.analyse_cfg') }}</span>
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
@@ -930,7 +933,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-if="view.type && (view.type.includes('gauge'))"
+                    v-if="view.type && (view.type.includes('gauge') || view.type === 'text')"
                     name="threshold"
                     :title="$t('chart.threshold')"
                   >
@@ -959,7 +962,10 @@
               ref="dynamicChart"
               :component-name="chart.type + '-view'"
               :obj="{chart}"
+              :chart-id="chart.id"
+              :chart="chart"
               class="chart-class"
+              @onChartClick="chartClick"
             />
             <chart-component
               v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'echarts'"
@@ -1020,9 +1026,12 @@
 
     <!--显示名修改-->
     <el-dialog v-dialogDrag :title="$t('chart.show_name_set')" :visible="renameItem" :show-close="false" width="30%">
-      <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
-        <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="itemForm.name" size="mini" clearable />
+      <el-form ref="itemForm" label-width="80px" :model="itemForm" :rules="itemFormRules">
+        <el-form-item :label="$t('dataset.field_origin_name')" class="form-item">
+          <span style="padding: 0 16px;">{{ itemForm.dsFieldName }}</span>
+        </el-form-item>
+        <el-form-item :label="$t('chart.show_name')" class="form-item">
+          <el-input v-model="itemForm.name" style="width: 200px" size="mini" clearable />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -1088,7 +1097,7 @@
       width="70%"
       class="dialog-css"
     >
-      <table-selector @getTable="getTable" />
+      <table-selector :checked-table="table" @getTable="getTable" />
       <p style="margin-top: 10px;color:#F56C6C;font-size: 12px;">{{ $t('chart.change_ds_tip') }}</p>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeChangeChart">{{ $t('chart.cancel') }}</el-button>
@@ -1116,6 +1125,7 @@
       </div>
     </el-dialog>
 
+    <!--同环比设置-->
     <el-dialog
       v-if="showEditQuotaCompare"
       v-dialogDrag
@@ -1131,6 +1141,23 @@
         <el-button type="primary" size="mini" @click="saveQuotaEditCompare">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
+
+    <!--数值格式-->
+    <el-dialog
+      v-if="showValueFormatter"
+      v-dialogDrag
+      :title="$t('chart.value_formatter') + ' - ' + valueFormatterItem.name"
+      :visible="showValueFormatter"
+      :show-close="false"
+      width="600px"
+      class="dialog-css"
+    >
+      <value-formatter-edit :formatter-item="valueFormatterItem" :chart="chart" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeValueFormatter">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveValueFormatter">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -1139,7 +1166,7 @@ import {
   ajaxGetDataOnly,
   post,
   getChartDetails,
-  save2Cache,
+  viewEditSave,
   resetViewCacheCallBack
 } from '@/api/chart/chart'
 import DimensionItem from '../components/drag-item/DimensionItem'
@@ -1154,7 +1181,6 @@ import bus from '@/utils/bus'
 import DatasetChartDetail from '../../dataset/common/DatasetChartDetail'
 // shape attr,component style
 import {
-  DEFAULT_BACKGROUND_COLOR,
   DEFAULT_COLOR_CASE,
   DEFAULT_FUNCTION_CFG,
   DEFAULT_LABEL,
@@ -1213,9 +1239,11 @@ import Threshold from '@/views/chart/components/senior/Threshold'
 import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { pluginTypes } from '@/api/chart/chart'
+import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
 export default {
   name: 'ChartEdit',
   components: {
+    ValueFormatterEdit,
     LabelNormalText,
     TotalCfg,
     Threshold,
@@ -1307,7 +1335,6 @@ export default {
           xAxis: DEFAULT_XAXIS_STYLE,
           yAxis: DEFAULT_YAXIS_STYLE,
           yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
-          background: DEFAULT_BACKGROUND_COLOR,
           split: DEFAULT_SPLIT
         },
         senior: {
@@ -1366,7 +1393,9 @@ export default {
       quotaItemCompare: {},
       showEditQuotaCompare: false,
       preChartId: '',
-      pluginRenderOptions: []
+      pluginRenderOptions: [],
+      showValueFormatter: false,
+      valueFormatterItem: {}
 
     }
   },
@@ -1378,6 +1407,7 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     ...mapState([
+      'curComponent',
       'panelViewEditInfo'
     ])
     /* pluginRenderOptions() {
@@ -1443,7 +1473,8 @@ export default {
       })
       this.pluginRenderOptions = [...this.renderOptions, ...pluginOptions]
     },
-    emptyTableData() {
+    emptyTableData(id) {
+      console.log('emptyTableData:' + id)
       this.table = {}
       this.dimension = []
       this.quota = []
@@ -1468,11 +1499,14 @@ export default {
       bus.$on('plugins-calc-style', this.calcStyle)
       bus.$on('plugin-chart-click', this.chartClick)
     },
-    initTableData(id) {
+    initTableData(id, optType) {
       if (id != null) {
         post('/dataset/table/getWithPermission/' + id, null).then(response => {
-          this.table = response.data
-          this.initTableField(id)
+          // If click too fast on the panel, the data here may be inconsistent, so make a verification
+          if (this.view.tableId === id) {
+            this.table = response.data
+            this.initTableField(id, optType)
+          }
         }).catch(err => {
           this.table = null
           this.resetDatasetField()
@@ -1482,15 +1516,26 @@ export default {
         })
       }
     },
-    initTableField(id) {
+    initTableField(id, optType) {
       if (this.table) {
         post('/dataset/table/getFieldsFromDE', this.table).then(response => {
-          this.dimension = response.data.dimension
-          this.quota = response.data.quota
-          this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
-          this.quotaData = JSON.parse(JSON.stringify(this.quota))
-          this.fieldFilter(this.searchField)
+          // If click too fast on the panel, the data here may be inconsistent, so make a verification
+          if (this.view.tableId === id) {
+            this.dimension = response.data.dimension
+            this.quota = response.data.quota
+            this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
+            this.quotaData = JSON.parse(JSON.stringify(this.quota))
+            this.fieldFilter(this.searchField)
+            if (optType === 'change') {
+              this.resetChangeTable()
+              this.$nextTick(() => {
+                bus.$emit('reset-change-table', 'change')
+                this.calcData()
+              })
+            }
+          }
         }).catch(err => {
+          console.log(err)
           this.resetView()
           this.httpRequest.status = err.response.data.success
           this.httpRequest.msg = err.response.data.message
@@ -1499,6 +1544,35 @@ export default {
       } else {
         this.resetDatasetField()
       }
+    },
+    resetChangeTable() {
+      const compareData = {}
+      this.dimensionData.forEach(deimension => {
+        compareData[deimension.originName] = deimension
+      })
+      this.quotaData.forEach(quota => {
+        compareData[quota.originName] = quota
+      })
+      const compareCols = ['xaxis', 'xaxisExt', 'yaxis', 'yaxisExt', 'customFilter', 'extStack', 'extBubble', 'drillFields']
+      this.viewFieldChange(compareData, compareCols)
+    },
+    viewFieldChange(compareData, compareCols) {
+      const _this = this
+      compareCols.forEach(compareCol => {
+        _this.view[compareCol].forEach(function(item, index) {
+          if (compareData[item.originName]) {
+            const itemTemp = {
+              ...compareData[item.originName],
+              name: item.name,
+              deType: item.deType,
+              type: item.type,
+              groupType: item.groupType,
+              sort: item.sort
+            }
+            _this.view[compareCol][index] = itemTemp
+          }
+        })
+      })
     },
     buildParam(getData, trigger, needRefreshGroup = false, switchType = false) {
       if (!this.view.resultCount ||
@@ -1729,7 +1803,7 @@ export default {
       this.changeEditStatus(true)
       const view = this.buildParam(true, 'chart', false, switchType)
       if (!view) return
-      save2Cache(this.panelInfo.id, view).then(() => {
+      viewEditSave(this.panelInfo.id, view).then(() => {
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
     },
@@ -1756,7 +1830,7 @@ export default {
       // 保存到缓存表
       const viewSave = this.buildParam(true, 'chart', false, false)
       if (!viewSave) return
-      save2Cache(this.panelInfo.id, viewSave)
+      viewEditSave(this.panelInfo.id, viewSave)
 
       bus.$emit('view-in-cache', { type: 'styleChange', viewId: this.param.id, viewInfo: view })
     },
@@ -1845,27 +1919,30 @@ export default {
     getChart(id, queryFrom = 'panel_edit') {
       if (id) {
         getChartDetails(id, this.panelInfo.id, { queryFrom: queryFrom }).then(response => {
-          if (response.data.dataFrom === 'template') {
-            this.emptyTableData()
-          } else {
-            this.initTableData(response.data.tableId)
-          }
-          this.view = JSON.parse(JSON.stringify(response.data))
-          this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
-          this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
-          this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
-          this.view.yaxisExt = this.view.yaxisExt ? JSON.parse(this.view.yaxisExt) : []
-          this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
-          this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
-          this.view.extBubble = this.view.extBubble ? JSON.parse(this.view.extBubble) : []
-          this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
-          this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
-          this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
-          this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
+          // If click too fast on the panel, the data here may be inconsistent, so make a verification
+          if (response.data.id === this.param.id) {
+            if (response.data.dataFrom === 'template') {
+              this.emptyTableData(response.data.id)
+            } else {
+              this.initTableData(response.data.tableId)
+            }
+            this.view = JSON.parse(JSON.stringify(response.data))
+            this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
+            this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
+            this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
+            this.view.yaxisExt = this.view.yaxisExt ? JSON.parse(this.view.yaxisExt) : []
+            this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
+            this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
+            this.view.extBubble = this.view.extBubble ? JSON.parse(this.view.extBubble) : []
+            this.view.customAttr = this.view.customAttr ? JSON.parse(this.view.customAttr) : {}
+            this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
+            this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
+            this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
 
-          // 将视图传入echart组件
-          this.chart = response.data
-          this.data = response.data.data
+            // 将视图传入echart组件
+            this.chart = response.data
+            this.data = response.data.data
+          }
         }).catch(err => {
           this.httpRequest.status = err.response.data.success
           this.httpRequest.msg = err.response.data.message
@@ -2198,20 +2275,11 @@ export default {
     // 更换数据集
     changeChart() {
       this.view.dataFrom = 'dataset'
-      if (this.view.tableId !== this.changeTable.id) {
-        this.view.tableId = this.changeTable.id
-        this.view.xaxis = []
-        this.view.xaxisExt = []
-        this.view.yaxis = []
-        this.view.yaxisExt = []
-        this.view.customFilter = []
-        this.view.extStack = []
-        this.view.extBubble = []
-        this.view.drillFields = []
-      }
+      const optType = this.view.tableId === this.changeTable.id ? 'same' : 'change'
       // this.save(true, 'chart', false)
+      this.view.tableId = this.changeTable.id
       this.calcData(true, 'chart', false)
-      this.initTableData(this.view.tableId)
+      this.initTableData(this.view.tableId, optType)
       this.closeChangeChart()
     },
 
@@ -2235,7 +2303,7 @@ export default {
 
     closeEditDsField() {
       this.editDsField = false
-      this.initTableField()
+      this.initTableField(this.table.id)
     },
 
     // drag
@@ -2273,11 +2341,11 @@ export default {
     },
     addXaxisExt(e) {
       if (this.view.type !== 'table-info') {
-        this.dragCheckType(this.view.xaxis, 'd')
+        this.dragCheckType(this.view.xaxisExt, 'd')
       }
-      this.dragMoveDuplicate(this.view.xaxis, e)
-      if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxis.length > 1) {
-        this.view.xaxis = [this.view.xaxis[0]]
+      this.dragMoveDuplicate(this.view.xaxisExt, e)
+      if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxisExt.length > 1) {
+        this.view.xaxisExt = [this.view.xaxisExt[0]]
       }
       this.calcData(true)
     },
@@ -2416,6 +2484,7 @@ export default {
         this.backToParent(0, length)
         this.currentAcreaNode = null
         const current = this.$refs.dynamicChart
+        this.setDetailMapCode(null)
         if (this.view.isPlugin) {
           current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
         } else {
@@ -2450,13 +2519,18 @@ export default {
       // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(this.currentAcreaNode.code)
       const current = this.$refs.dynamicChart
       if (this.view.isPlugin) {
-        current && current.callPluginInner && current.callPluginInner({
+        current && current.callPluginInner && this.setDetailMapCode(this.currentAcreaNode.code) && current.callPluginInner({
           methodName: 'registerDynamicMap',
           methodParam: this.currentAcreaNode.code
         })
       } else {
-        current && current.registerDynamicMap && current.registerDynamicMap(this.currentAcreaNode.code)
+        current && current.registerDynamicMap && this.setDetailMapCode(this.currentAcreaNode.code) && current.registerDynamicMap(this.currentAcreaNode.code)
       }
+    },
+
+    setDetailMapCode(code) {
+      this.curComponent.DetailAreaCode = code
+      return true
     },
 
     // 切换下一级地图
@@ -2477,12 +2551,12 @@ export default {
         // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(nextNode.code)
         const current = this.$refs.dynamicChart
         if (this.view.isPlugin) {
-          nextNode && current && current.callPluginInner && current.callPluginInner({
+          nextNode && current && current.callPluginInner && this.setDetailMapCode(nextNode.code) && current.callPluginInner({
             methodName: 'registerDynamicMap',
             methodParam: nextNode.code
           })
         } else {
-          nextNode && current && current.registerDynamicMap && current.registerDynamicMap(nextNode.code)
+          nextNode && current && current.registerDynamicMap && this.setDetailMapCode(nextNode.code) && current.registerDynamicMap(nextNode.code)
         }
         return nextNode
       }
@@ -2505,10 +2579,10 @@ export default {
     },
 
     reset() {
-      this.changeEditStatus(false)
-      this.getChart(this.param.id, 'panel')
       const _this = this
-      resetViewCacheCallBack(this.param.id, this.panelInfo.id, function(rsp) {
+      resetViewCacheCallBack(_this.param.id, _this.panelInfo.id, function(rsp) {
+        _this.changeEditStatus(false)
+        _this.getChart(_this.param.id, 'panel')
         bus.$emit('view-in-cache', { type: 'propChange', viewId: _this.param.id })
       })
     },
@@ -2544,6 +2618,35 @@ export default {
           this.view.customAttr.label.position = 'middle'
         }
       }
+    },
+
+    valueFormatter(item) {
+      this.valueFormatterItem = JSON.parse(JSON.stringify(item))
+      this.showValueFormatter = true
+    },
+    closeValueFormatter() {
+      this.showValueFormatter = false
+    },
+    saveValueFormatter() {
+      const ele = this.valueFormatterItem.formatterCfg.decimalCount
+      if (ele === undefined || ele.toString().indexOf('.') > -1 || parseInt(ele).toString() === 'NaN' || parseInt(ele) < 0 || parseInt(ele) > 10) {
+        this.$message({
+          message: this.$t('chart.formatter_decimal_count_error'),
+          type: 'error',
+          showClose: true
+        })
+        return
+      }
+      // 更新指标
+      if (this.valueFormatterItem.formatterType === 'quota') {
+        this.view.yaxis[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
+      } else if (this.valueFormatterItem.formatterType === 'quotaExt') {
+        this.view.yaxisExt[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
+      } else if (this.valueFormatterItem.formatterType === 'dimension') {
+        this.view.xaxis[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
+      }
+      this.calcData(true)
+      this.closeValueFormatter()
     }
   }
 }
@@ -2598,7 +2701,7 @@ export default {
 
 .view-panel {
   display: flex;
-  height: calc(100% - 80px);
+  height: 100%;
   background-color: #f7f8fa;
 }
 
@@ -2717,6 +2820,7 @@ span {
 }
 
 .tab-header > > > .el-tabs__content {
+  height: calc(100% - 40px);
 }
 
 .draggable-group {
@@ -2935,6 +3039,14 @@ span {
   overflow: auto;
   border-right: 1px solid #e6e6e6;
   height: 100%;
+}
+
+.form-item-slider>>>.el-form-item__label{
+  font-size: 12px;
+  line-height: 38px;
+}
+.form-item>>>.el-form-item__label{
+  font-size: 12px;
 }
 
 </style>

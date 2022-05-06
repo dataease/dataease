@@ -1,8 +1,9 @@
 import { getPadding, getTheme } from '@/views/chart/chart/common/common_antv'
 import { Gauge } from '@antv/g2plot'
 import { DEFAULT_SIZE, DEFAULT_THRESHOLD } from '@/views/chart/chart/chart'
+import { getScaleValue } from '@/components/canvas/utils/style'
 
-export function baseGaugeOptionAntV(plot, container, chart, action) {
+export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
   let max, labelContent, startAngel, endAngel
   // theme
   const theme = getTheme(chart)
@@ -48,7 +49,7 @@ export function baseGaugeOptionAntV(plot, container, chart, action) {
       const arr = threshold.gaugeThreshold.split(',')
       for (let i = 0; i < arr.length; i++) {
         const ele = arr[i]
-        const p = parseInt(ele) / 100
+        const p = parseFloat(ele) / 100
         range.push(p)
         if (!flag && per <= p) {
           flag = true
@@ -72,6 +73,26 @@ export function baseGaugeOptionAntV(plot, container, chart, action) {
     // indicator: null,
     statistic: {
       content: labelContent
+    },
+    axis: {
+      label: {
+        style: {
+          fontSize: getScaleValue(14, scale) // 刻度值字体大小
+        }
+      },
+      tickLine: {
+        length: getScaleValue(12, scale) * -1, // 刻度线长度
+        style: {
+          lineWidth: getScaleValue(1, scale)// 刻度线宽度
+        }
+      },
+      subTickLine: {
+        count: 4, // 子刻度数
+        length: getScaleValue(6, scale) * -1, // 子刻度线长度
+        style: {
+          lineWidth: getScaleValue(1, scale)// 子刻度线宽度
+        }
+      }
     }
     // range: {
     //   width: 12
@@ -93,11 +114,21 @@ export function baseGaugeOptionAntV(plot, container, chart, action) {
       },
       pin: {
         style: {
-          stroke: theme.styleSheet.paletteQualitative10[index % theme.styleSheet.paletteQualitative10.length]
+          stroke: theme.styleSheet.paletteQualitative10[index % theme.styleSheet.paletteQualitative10.length],
+          r: getScaleValue(10, scale)
+        }
+      }
+    }
+  } else {
+    options.indicator = {
+      pin: {
+        style: {
+          r: getScaleValue(10, scale)
         }
       }
     }
   }
+  // console.log(options.indicator.pin)
 
   // 开始渲染
   if (plot) {

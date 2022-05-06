@@ -26,8 +26,8 @@ public class CacheUtils {
     public static Object get(String cacheName, Object key) {
         if (getCacheManager() instanceof RedisCacheManager) {
             org.springframework.cache.Cache cache = getCacheManager().getCache(cacheName);
-            if (null == cache) return null;
-            return cache.get(key);
+            if (null == cache || null == cache.get(key)) return null;
+            return cache.get(key).get();
         }
         Element element = cache(cacheName).get(key);
         if (null == element) return null;
@@ -36,9 +36,12 @@ public class CacheUtils {
 
     public static void put(String cacheName, Object key, Object value, Integer ttl, Integer tti) {
         if (getCacheManager() instanceof RedisCacheManager) {
-            RedisTemplate redisTemplate = (RedisTemplate) CommonBeanFactory.getBean("redisTemplate");
+            /*RedisTemplate redisTemplate = (RedisTemplate) CommonBeanFactory.getBean("redisTemplate");
             ValueOperations valueOperations = redisTemplate.opsForValue();
-            valueOperations.setIfPresent(cacheName + "::" + key , value );
+            valueOperations.set(cacheName + "::" + key , value );*/
+            org.springframework.cache.Cache cache = getCacheManager().getCache(cacheName);
+            if (null == cache) return;
+            cache.put(key, value);
             return;
         }
         Element e = new Element(key, value);

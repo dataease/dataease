@@ -143,7 +143,9 @@ div:focus {
     height: 100vh !important;
   }
 }
-
+.de-tabs-edit>.el-tabs__header{
+    padding-right: 50px !important;
+}
 .de-tabs {
   .el-tabs__header {
     margin: 0 0 0 0 !important;
@@ -810,4 +812,10 @@ div:focus {
   >span.el-input__prefix {
     padding-top: 0px;
   }
+}
+
+.pwd-tips > span {
+    
+    font-weight: 800;
+    color: #F56C6C;
 }

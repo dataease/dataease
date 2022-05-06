@@ -1,6 +1,6 @@
 package io.dataease.dto.dataset;
 
-import io.dataease.dto.datasource.TableField;
+import io.dataease.plugins.common.dto.datasource.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

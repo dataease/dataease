@@ -1,7 +1,7 @@
 package io.dataease.service.message.service.strategy;
 
-import io.dataease.base.domain.SysMsg;
-import io.dataease.base.mapper.SysMsgMapper;
+import io.dataease.plugins.common.base.domain.SysMsg;
+import io.dataease.plugins.common.base.mapper.SysMsgMapper;
 import io.dataease.service.message.service.SendService;
 import org.springframework.stereotype.Service;
 

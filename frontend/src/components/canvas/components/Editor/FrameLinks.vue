@@ -35,6 +35,12 @@ export default {
     linkInfo: {
       type: Object,
       required: true
+    },
+    // 属性所属组件位置
+    attrPosition: {
+      type: String,
+      required: false,
+      default: 'panel'
     }
   },
   data() {
@@ -63,7 +69,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'curComponent'
+      'curComponent',
+      'curActiveTabInner'
     ])
   },
   methods: {
@@ -72,7 +79,11 @@ export default {
     },
     onSubmit() {
       this.linkInfoTemp.src = checkAddHttp(this.linkInfoTemp.src)
-      this.curComponent.frameLinks = this.linkInfoTemp
+      if (this.attrPosition === 'panel') {
+        this.curComponent.frameLinks = this.linkInfoTemp
+      } else {
+        this.curActiveTabInner.frameLinks = this.linkInfoTemp
+      }
       this.$store.state.styleChangeTimes++
       bus.$emit('frameLinksChange-' + this.curComponent.id)
       this.popoverClose()

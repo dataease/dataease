@@ -1,6 +1,6 @@
 package io.dataease.controller.sys.base;
 
-import io.dataease.base.mapper.ext.query.GridExample;
+import io.dataease.ext.query.GridExample;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.collections.CollectionUtils;

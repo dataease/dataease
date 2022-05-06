@@ -1,8 +1,8 @@
 package io.dataease.listener;
 
-import io.dataease.base.domain.DataeaseCodeVersion;
-import io.dataease.base.mapper.DataeaseCodeVersionMapper;
-import io.dataease.base.mapper.ext.DEVersionMapper;
+import io.dataease.plugins.common.base.domain.DataeaseCodeVersion;
+import io.dataease.plugins.common.base.mapper.DataeaseCodeVersionMapper;
+import io.dataease.ext.DEVersionMapper;
 import io.dataease.plugins.loader.ClassloaderResponsity;
 import io.dataease.service.panel.PanelGroupService;
 import org.slf4j.Logger;
