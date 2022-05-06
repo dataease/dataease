@@ -639,6 +639,7 @@ export default {
     basic_setting: '基礎設置',
     front_time_out: '請求超時時間(單位:秒, 註意:保存後刷新瀏覽器生效)',
     msg_time_out: '消息保留時間(單位:天)',
+    login_type: '默認登錄方式',
     empty_front: '為空則默認取值10秒',
     empty_msg: '為空則默認取值30天',
     front_error: '請填寫0-100正整數',
@@ -712,6 +713,7 @@ export default {
     var_pop: '方差',
     quick_calc: '快速計算',
     show_name_set: '顯示名設置',
+    show_name: '顯示名',
     color: '顔色',
     color_case: '配色方案',
     pls_slc_color_case: '請選擇配色方案',
@@ -1092,7 +1094,8 @@ export default {
     unit_million: '百萬',
     unit_hundred_million: '億',
     formatter_decimal_count_error: '請輸入0-10的整數',
-    gauge_threshold_compare_error: '阈值範圍需逐級遞增'
+    gauge_threshold_compare_error: '阈值範圍需逐級遞增',
+    tick_count: '刻度間隔數'
   },
   dataset: {
     sheet_warn: '有多個 Sheet 頁，默認抽取第一個',

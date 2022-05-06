@@ -110,6 +110,7 @@ public interface ParamConstants {
     enum BASIC implements ParamConstants {
         FRONT_TIME_OUT("basic.frontTimeOut"),
         MSG_TIME_OUT("basic.msgTimeOut"),
+        DEFAULT_LOGIN_TYPE("basic.loginType"),
         OPEN_HOME_PAGE("ui.openHomePage");
 
         private String value;

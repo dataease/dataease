@@ -637,6 +637,7 @@ export default {
     basic_setting: 'Basic setting',
     front_time_out: 'Request timeOut(unit: second, Attention: Refresh browser takes effect after saving)',
     msg_time_out: 'Message retention time(unit: day)',
+    login_type: 'Default login type',
     empty_front: 'If empty then default value is 10s',
     empty_msg: 'If empty then default value is 30 days',
     front_error: 'Valid ranger [0 - 100]',
@@ -710,6 +711,7 @@ export default {
     var_pop: 'Variance',
     quick_calc: 'Fast calculation',
     show_name_set: 'Display name setting',
+    show_name: 'Display name',
     color: 'Color',
     color_case: 'Color Scheme',
     pls_slc_color_case: 'Please choose a color scheme',
@@ -1092,7 +1094,8 @@ export default {
     unit_million: 'Million',
     unit_hundred_million: 'Hundred Million',
     formatter_decimal_count_error: 'Range 0-10',
-    gauge_threshold_compare_error: 'Range must added'
+    gauge_threshold_compare_error: 'Range must added',
+    tick_count: 'Tick Split'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

@@ -115,4 +115,9 @@ public class SystemParameterController {
         }
     }
 
+    @PostMapping(value = "/defaultLoginType")
+    public Integer defaultLoginType() {
+        return systemParameterService.defaultLoginType();
+    }
+
 }

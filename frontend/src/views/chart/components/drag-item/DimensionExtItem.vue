@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import { getItemType } from '@/views/chart/components/drag-item/utils'
+import { getItemType, getOriginFieldName } from '@/views/chart/components/drag-item/utils'
 import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
 import bus from '@/utils/bus'
 
@@ -192,6 +192,7 @@ export default {
     showRename() {
       this.item.index = this.index
       this.item.renameType = 'dimensionExt'
+      this.item.dsFieldName = getOriginFieldName(this.dimensionData, this.quotaData, this.item)
       this.$emit('onNameEdit', this.item)
     },
     removeItem() {

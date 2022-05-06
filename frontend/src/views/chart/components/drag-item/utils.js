@@ -36,3 +36,22 @@ export function getItemType(dimensionData, quotaData, item) {
     return 'danger'
   }
 }
+
+export function getOriginFieldName(dimensionList, quotaList, field) {
+  let originName = ''
+  for (let i = 0; i < dimensionList.length; i++) {
+    const item = dimensionList[i]
+    if (item.id === field.id) {
+      originName = item.name
+      break
+    }
+  }
+  for (let i = 0; i < quotaList.length; i++) {
+    const item = quotaList[i]
+    if (item.id === field.id) {
+      originName = item.name
+      break
+    }
+  }
+  return originName
+}
