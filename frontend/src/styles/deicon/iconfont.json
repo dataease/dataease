@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5807789",
+      "name": "批量操作",
+      "font_class": "piliang-copy",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    },
+    {
       "icon_id": "1278123",
       "name": "图片",
       "font_class": "tupian",

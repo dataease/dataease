@@ -1427,6 +1427,7 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    edit_leave_tips: 'Do You Want To Abandon And Leave The Current Page?',
     hyperlinks: 'Hyperlinks',
     is_live: 'Is Live',
     yes: 'Yes',
