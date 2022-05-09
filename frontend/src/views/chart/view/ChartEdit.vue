@@ -660,253 +660,24 @@
           </el-row>
         </el-tab-pane>
         <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 300px">
-          <el-row class="view-panel">
-            <plugin-com
-              v-if="view.isPlugin"
-              style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
-              class="attr-style theme-border-class"
-              :component-name="view.type + '-style'"
-              :obj="{view, param, chart}"
-            />
-            <div
-              v-else
-              style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;padding-right: 6px"
-              class="attr-style theme-border-class"
-            >
-              <el-row class="padding-lr">
-                <span class="title-text">{{ $t('chart.style_priority') }}</span>
-                <el-row>
-                  <el-radio-group
-                    v-model="view.stylePriority"
-                    class="radio-span"
-                    size="mini"
-                    @change="calcStyle"
-                  >
-                    <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
-                    <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
-                  </el-radio-group>
-                </el-row>
-              </el-row>
-              <el-row>
-                <span class="padding-lr">{{ $t('chart.shape_attr') }}</span>
-                <el-collapse v-model="attrActiveNames" class="style-collapse">
-                  <el-collapse-item name="color" :title="$t('chart.color')">
-                    <color-selector
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onColorChange="onColorChange"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'word-cloud'"
-                    name="size"
-                    :title="$t('chart.size')"
-                  >
-                    <size-selector
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onSizeChange="onSizeChange"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.render && view.render === 'antv' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'word-cloud' && chart.type !== 'treemap' && chart.type !== 'funnel' && chart.type !== 'bar-stack'"
-                    name="size"
-                    :title="(chart.type && chart.type.includes('table')) ? $t('chart.table_config') : $t('chart.size')"
-                  >
-                    <size-selector-ant-v
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onSizeChange="onSizeChange"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
-                    name="label"
-                    :title="$t('chart.label')"
-                  >
-                    <label-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onLabelChange="onLabelChange"
-                    />
-                    <label-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onLabelChange="onLabelChange"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
-                    name="tooltip"
-                    :title="$t('chart.tooltip')"
-                  >
-                    <tooltip-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onTooltipChange="onTooltipChange"
-                    />
-                    <tooltip-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onTooltipChange="onTooltipChange"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.type === 'table-pivot'"
-                    name="totalCfg"
-                    :title="$t('chart.total_cfg')"
-                  >
-                    <total-cfg
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onTotalCfgChange="onTotalCfgChange"
-                    />
-                  </el-collapse-item>
-                </el-collapse>
-              </el-row>
-              <el-row>
-                <span class="padding-lr">{{ $t('chart.module_style') }}</span>
-                <el-collapse v-model="styleActiveNames" class="style-collapse">
-                  <el-collapse-item
-                    v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
-                    name="xAxis"
-                    :title="$t('chart.xAxis')"
-                  >
-                    <x-axis-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeXAxisForm="onChangeXAxisForm"
-                    />
-                    <x-axis-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeXAxisForm="onChangeXAxisForm"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
-                    name="yAxis"
-                    :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')"
-                  >
-                    <y-axis-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeYAxisForm="onChangeYAxisForm"
-                    />
-                    <y-axis-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeYAxisForm="onChangeYAxisForm"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.type && view.type === 'chart-mix'"
-                    name="yAxisExt"
-                    :title="$t('chart.yAxis_ext')"
-                  >
-                    <y-axis-ext-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeYAxisForm="onChangeYAxisExtForm"
-                    />
-                    <y-axis-ext-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeYAxisForm="onChangeYAxisExtForm"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.type && view.type.includes('radar')"
-                    name="split"
-                    :title="$t('chart.split')"
-                  >
-                    <split-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeSplitForm="onChangeSplitForm"
-                    />
-                    <split-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeSplitForm="onChangeSplitForm"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item v-show="view.type" name="title" :title="$t('chart.title')">
-                    <title-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onTextChange="onTextChange"
-                    />
-                    <title-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onTextChange="onTextChange"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall' && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
-                    name="legend"
-                    :title="$t('chart.legend')"
-                  >
-                    <legend-selector
-                      v-if="view.render && view.render === 'echarts'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onLegendChange="onLegendChange"
-                    />
-                    <legend-selector-ant-v
-                      v-else-if="view.render && view.render === 'antv'"
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onLegendChange="onLegendChange"
-                    />
-                  </el-collapse-item>
-                  <el-collapse-item v-if="view.customStyle && view.customStyle.background" name="background" :title="$t('chart.background')">
-                    <background-color-selector
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onChangeBackgroundForm="onChangeBackgroundForm"
-                    />
-                  </el-collapse-item>
-                </el-collapse>
-              </el-row>
-            </div>
-          </el-row>
+          <chart-style
+            :param="param"
+            :view="view"
+            :chart="chart"
+            @calcStyle="calcStyle"
+            @onColorChange="onColorChange"
+            @onSizeChange="onSizeChange"
+            @onLabelChange="onLabelChange"
+            @onTooltipChange="onTooltipChange"
+            @onTotalCfgChange="onTotalCfgChange"
+            @onChangeXAxisForm="onChangeXAxisForm"
+            @onChangeYAxisForm="onChangeYAxisForm"
+            @onChangeYAxisExtForm="onChangeYAxisExtForm"
+            @onChangeSplitForm="onChangeSplitForm"
+            @onTextChange="onTextChange"
+            @onLegendChange="onLegendChange"
+            @onChangeBackgroundForm="onChangeBackgroundForm"
+          />
         </el-tab-pane>
         <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 300px;">
           <el-row class="view-panel">
@@ -1229,16 +1000,6 @@ import {
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '../chart/chart'
-import ColorSelector from '../components/shape-attr/ColorSelector'
-import SizeSelector from '../components/shape-attr/SizeSelector'
-import LabelSelector from '../components/shape-attr/LabelSelector'
-import TitleSelector from '../components/component-style/TitleSelector'
-import LegendSelector from '../components/component-style/LegendSelector'
-import TooltipSelector from '../components/shape-attr/TooltipSelector'
-import XAxisSelector from '../components/component-style/XAxisSelector'
-import YAxisSelector from '../components/component-style/YAxisSelector'
-import BackgroundColorSelector from '../components/component-style/BackgroundColorSelector'
-import SplitSelector from '../components/component-style/SplitSelector'
 import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
@@ -1248,18 +1009,8 @@ import TableSelector from './TableSelector'
 import FieldEdit from '../../dataset/data/FieldEdit'
 import { areaMapping } from '@/api/map/map'
 import QuotaExtItem from '@/views/chart/components/drag-item/QuotaExtItem'
-import YAxisExtSelector from '@/views/chart/components/component-style/YAxisExtSelector'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import ChartType from '@/views/chart/view/ChartType'
-import TitleSelectorAntV from '@/views/chart/components/component-style/TitleSelectorAntV'
-import LabelSelectorAntV from '@/views/chart/components/shape-attr/LabelSelectorAntV'
-import TooltipSelectorAntV from '@/views/chart/components/shape-attr/TooltipSelectorAntV'
-import LegendSelectorAntV from '@/views/chart/components/component-style/LegendSelectorAntV'
-import XAxisSelectorAntV from '@/views/chart/components/component-style/XAxisSelectorAntV'
-import YAxisSelectorAntV from '@/views/chart/components/component-style/YAxisSelectorAntV'
-import YAxisExtSelectorAntV from '@/views/chart/components/component-style/YAxisExtSelectorAntV'
-import SizeSelectorAntV from '@/views/chart/components/shape-attr/SizeSelectorAntV'
-import SplitSelectorAntV from '@/views/chart/components/component-style/SplitSelectorAntV'
 import CompareEdit from '@/views/chart/components/compare/CompareEdit'
 import { compareItem } from '@/views/chart/chart/compare'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
@@ -1270,40 +1021,29 @@ import { mapState } from 'vuex'
 import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
 import Threshold from '@/views/chart/components/senior/Threshold'
-import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { pluginTypes } from '@/api/chart/chart'
 import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
 import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
+import ChartStyle from '@/views/chart/view/ChartStyle'
 export default {
   name: 'ChartEdit',
   components: {
+    ChartStyle,
     CustomSortEdit,
     ValueFormatterEdit,
     LabelNormalText,
-    TotalCfg,
     Threshold,
     AssistLine,
     FunctionCfg,
     DimensionExtItem,
     ChartComponentS2,
     CompareEdit,
-    SplitSelectorAntV,
-    SizeSelectorAntV,
-    YAxisExtSelectorAntV,
-    YAxisSelectorAntV,
-    XAxisSelectorAntV,
-    LegendSelectorAntV,
-    TooltipSelectorAntV,
-    LabelSelectorAntV,
-    TitleSelectorAntV,
     ChartType,
     ChartComponentG2,
-    YAxisExtSelector,
     QuotaExtItem,
     FilterItem,
     FieldEdit,
-    SplitSelector,
     TableSelector,
     ResultFilterEditor,
     LabelNormal,
@@ -1311,15 +1051,6 @@ export default {
     TableNormal,
     DatasetChartDetail,
     QuotaFilterEditor,
-    BackgroundColorSelector,
-    XAxisSelector,
-    YAxisSelector,
-    TooltipSelector,
-    LabelSelector,
-    LegendSelector,
-    TitleSelector,
-    SizeSelector,
-    ColorSelector,
     ChartComponent,
     QuotaItem,
     DimensionItem,
