@@ -421,9 +421,9 @@ function transAxisPosition(chart, axis) {
   if (chart.type.includes('horizontal')) {
     switch (axis.position) {
       case 'top':
-        return 'right'
-      case 'bottom':
         return 'left'
+      case 'bottom':
+        return 'right'
       case 'left':
         return 'bottom'
       case 'right':
@@ -459,7 +459,18 @@ export function getAnalyse(chart) {
   if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix'))) {
     senior = JSON.parse(chart.senior)
     if (senior.assistLine && senior.assistLine.length > 0) {
+      const customStyle = JSON.parse(chart.customStyle)
+      let xAxisPosition, yAxisPosition
+      if (customStyle.xAxis) {
+        const a = JSON.parse(JSON.stringify(customStyle.xAxis))
+        xAxisPosition = transAxisPosition(chart, a)
+      }
+      if (customStyle.yAxis) {
+        const a = JSON.parse(JSON.stringify(customStyle.yAxis))
+        yAxisPosition = transAxisPosition(chart, a)
+      }
       senior.assistLine.forEach(ele => {
+        const content = ele.name + ' : ' + parseFloat(ele.value)
         assistLine.push({
           type: 'line',
           start: ['start', parseFloat(ele.value)],
@@ -469,18 +480,34 @@ export function getAnalyse(chart) {
             lineDash: getLineDash(ele.lineType)
           }
         })
-        assistLine.push({
-          type: 'text',
-          position: ['start', parseFloat(ele.value)],
-          content: parseFloat(ele.value),
-          offsetY: -2,
-          offsetX: 2,
-          style: {
-            textBaseline: 'bottom',
-            fill: ele.color,
-            fontSize: 10
-          }
-        })
+        if (!chart.type.includes('horizontal')) {
+          assistLine.push({
+            type: 'text',
+            position: [yAxisPosition === 'left' ? 'start' : 'end', parseFloat(ele.value)],
+            content: content,
+            offsetY: -2,
+            offsetX: yAxisPosition === 'left' ? 2 : -10 * (content.length - 2),
+            style: {
+              textBaseline: 'bottom',
+              fill: ele.color,
+              fontSize: 10
+            }
+          })
+        } else {
+          assistLine.push({
+            type: 'text',
+            position: [xAxisPosition === 'left' ? 'start' : 'end', parseFloat(ele.value)],
+            content: content,
+            offsetY: xAxisPosition === 'left' ? -2 : -10 * (content.length - 2),
+            offsetX: 2,
+            rotate: Math.PI / 2,
+            style: {
+              textBaseline: 'bottom',
+              fill: ele.color,
+              fontSize: 10
+            }
+          })
+        }
       })
     }
   }
