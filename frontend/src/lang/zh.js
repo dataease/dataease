@@ -1097,7 +1097,10 @@ export default {
     unit_hundred_million: '亿',
     formatter_decimal_count_error: '请输入0-10的整数',
     gauge_threshold_compare_error: '阈值范围需逐级递增',
-    tick_count: '刻度间隔数'
+    tick_count: '刻度间隔数',
+    custom_sort: '自定义排序',
+    custom_sort_tip: '自定义排序优先级高于字段排序',
+    clean_custom_sort: '清除自定义排序'
   },
   dataset: {
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',

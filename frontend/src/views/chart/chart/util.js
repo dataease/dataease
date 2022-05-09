@@ -321,3 +321,36 @@ export const TYPE_CONFIGS = [
     icon: 'map'
   }
 ]
+
+export function customSort(custom, data) {
+  const indexArr = []
+  const joinArr = []
+  for (let i = 0; i < custom.length; i++) {
+    const ele = custom[i]
+    for (let j = 0; j < data.length; j++) {
+      const d = data[j]
+      if (ele === d.field) {
+        joinArr.push(d)
+        indexArr.push(j)
+      }
+    }
+  }
+  // 取得 joinArr 就是两者的交集
+  const indexArrData = []
+  for (let i = 0; i < data.length; i++) {
+    indexArrData.push(i)
+  }
+  const indexResult = []
+  for (let i = 0; i < indexArrData.length; i++) {
+    if (indexArr.indexOf(indexArrData[i]) === -1) {
+      indexResult.push(indexArrData[i])
+    }
+  }
+
+  const subArr = []
+  for (let i = 0; i < indexResult.length; i++) {
+    subArr.push(data[indexResult[i]])
+  }
+
+  return joinArr.concat(subArr)
+}

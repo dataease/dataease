@@ -1095,7 +1095,10 @@ export default {
     unit_hundred_million: 'Hundred Million',
     formatter_decimal_count_error: 'Range 0-10',
     gauge_threshold_compare_error: 'Range must added',
-    tick_count: 'Tick Split'
+    tick_count: 'Tick Split',
+    custom_sort: 'Custom Sort',
+    custom_sort_tip: 'Custom sort field first',
+    clean_custom_sort: 'Clean'
   },
   dataset: {
     sheet_warn: 'There are multiple sheet pages, and the first one is extracted by default',

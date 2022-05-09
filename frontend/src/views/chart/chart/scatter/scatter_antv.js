@@ -11,6 +11,7 @@ import {
 } from '@/views/chart/chart/common/common_antv'
 
 import { Scatter } from '@antv/g2plot'
+import { customSort } from '@/views/chart/chart/util'
 
 export function baseScatterOptionAntV(plot, container, chart, action) {
   // theme
@@ -23,7 +24,13 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
   // data
-  const data = chart.data.datas
+  let data
+  const cus = JSON.parse(chart.customSort)
+  if (cus && cus.length > 0) {
+    data = customSort(cus, chart.data.datas)
+  } else {
+    data = chart.data.datas
+  }
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)
