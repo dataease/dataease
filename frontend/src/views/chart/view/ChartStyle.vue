@@ -183,7 +183,7 @@
             name="split"
             :title="$t('chart.split')"
           >
-            <split-selector
+            <size-selector
               v-if="view.render && view.render === 'echarts'"
               :param="param"
               class="attr-selector"
@@ -267,7 +267,6 @@ import YAxisSelector from '@/views/chart/components/component-style/YAxisSelecto
 import YAxisSelectorAntV from '@/views/chart/components/component-style/YAxisSelectorAntV'
 import YAxisExtSelector from '@/views/chart/components/component-style/YAxisExtSelector'
 import YAxisExtSelectorAntV from '@/views/chart/components/component-style/YAxisExtSelectorAntV'
-import SplitSelector from '@/views/chart/components/component-style/SplitSelector'
 import TitleSelector from '@/views/chart/components/component-style/TitleSelector'
 import TitleSelectorAntV from '@/views/chart/components/component-style/TitleSelectorAntV'
 import LegendSelector from '@/views/chart/components/component-style/LegendSelector'
@@ -282,7 +281,6 @@ export default {
     LegendSelector,
     TitleSelectorAntV,
     TitleSelector,
-    SplitSelector,
     YAxisExtSelectorAntV,
     YAxisExtSelector,
     YAxisSelectorAntV,

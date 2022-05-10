@@ -111,7 +111,11 @@ const data = {
     // 当前tab页内组件
     curActiveTabInner: null,
     // static resource local path
-    staticResourcePath: '/static-resource/'
+    staticResourcePath: '/static-resource/',
+    // panel edit batch operation status
+    batchOptStatus: false,
+    // Currently selected components
+    curBatchOptComponents: []
   },
   mutations: {
     ...animation.mutations,
@@ -512,6 +516,25 @@ const data = {
     },
     resetViewEditInfo(state) {
       state.panelViewEditInfo = {}
+    },
+    removeCurBatchComponentWithId(state, id) {
+      for (let index = 0; index < state.curBatchOptComponents.length; index++) {
+        const element = state.curBatchOptComponents[index]
+        if (element === id) {
+          state.curBatchOptComponents.splice(index, 1)
+          break
+        }
+      }
+      console.log(state.curBatchOptComponents)
+    },
+    addCurBatchComponent(state, id) {
+      if (id) {
+        state.curBatchOptComponents.push(id)
+      }
+      console.log(state.curBatchOptComponents)
+    },
+    setBatchOptStatus(state, status) {
+      state.batchOptStatus = status
     }
   },
   modules: {
