@@ -119,7 +119,22 @@ public class SysUserController {
     @ApiOperation("更新个人信息")
     @PostMapping("/updatePersonInfo")
     public void updatePersonInfo(@RequestBody SysUserCreateRequest request) {
-        sysUserService.updatePersonInfo(request);
+        Long userId = AuthUtils.getUser().getUserId();
+        // 防止修改他人信息， 防止必填内容留空
+        if (!request.getUserId().equals(userId) || request.getEmail() == null || request.getNickName() == null) {
+            throw new RuntimeException("内容不合法");
+        }
+        // 再次验证，匹配格式
+        if (!request.getPhone().isEmpty() && !request.getPhone().matches("^1[3|4|5|7|8][0-9]{9}$")) {
+            throw new RuntimeException("电话格式错误");
+        }
+        if (!request.getEmail().matches("^[a-zA-Z0-9_._-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$")) {
+            throw new RuntimeException("邮箱格式错误");
+        }
+        if (!(2 <= request.getNickName().length() && request.getNickName().length() <= 50)) {
+            throw new RuntimeException("姓名格式错误");
+        }
+        sysUserService.updatePersonBasicInfo(request);
     }
 
     @ApiOperation("设置语言")

@@ -208,6 +208,25 @@ public class SysUserService {
 
     }
 
+    /**
+     * 更新用户基本信息
+     * 只允许修改 email, nickname, phone
+     * 防止此接口被恶意利用更改不允许更改的信息，新建SysUser对象并只设置部分值
+     * @param request
+     * @return
+     */
+    @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
+    @Transactional
+    public int updatePersonBasicInfo(SysUserCreateRequest request) {
+        SysUser user = new SysUser();
+        long now = System.currentTimeMillis();
+        user.setUserId(request.getUserId());
+        user.setUpdateTime(now);
+        user.setEmail(request.getEmail());
+        user.setNickName(request.getNickName());
+        user.setPhone(request.getPhone());
+        return sysUserMapper.updateByPrimaryKeySelective(user);
+    }
 
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     public int updateStatus(SysUserStateRequest request) {
@@ -218,7 +237,7 @@ public class SysUserService {
     }
 
     /**
-     * 修改用户密码清楚缓存
+     * 修改用户密码清除缓存
      *
      * @param request
      * @return
@@ -235,6 +254,9 @@ public class SysUserService {
         }
         SysUser sysUser = new SysUser();
         sysUser.setUserId(user.getUserId());
+        if (!request.getNewPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,30}$")) {
+            throw new RuntimeException("密码格式错误");
+        }
         sysUser.setPassword(CodingUtil.md5(request.getNewPassword()));
         return sysUserMapper.updateByPrimaryKeySelective(sysUser);
     }
