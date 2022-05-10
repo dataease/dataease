@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@antv/g2plot": "^2.4.9",
+    "@antv/l7-maps": "^2.8.35",
     "@antv/s2": "^1.11.0",
     "@antv/util": "^2.0.17",
     "@riophae/vue-treeselect": "0.4.0",

@@ -26,6 +26,7 @@ import '@/components/canvas/custom-component' // 注册自定义组件
 import '@/utils/DateUtil'
 import draggable from 'vuedraggable'
 import deWebsocket from '@/websocket'
+import { GaodeMap } from '@antv/l7-maps'
 Vue.config.productionTip = false
 Vue.use(VueClipboard)
 Vue.use(widgets)
@@ -35,6 +36,7 @@ Vue.prototype.$api = api
 import * as echarts from 'echarts'
 
 Vue.prototype.$echarts = echarts
+Vue.prototype.$gaodeMap = GaodeMap
 
 import UmyUi from 'umy-ui'
 Vue.use(UmyUi)
