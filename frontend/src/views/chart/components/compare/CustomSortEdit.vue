@@ -47,6 +47,7 @@ export default {
       console.log(this.chart)
       const chart = JSON.parse(JSON.stringify(this.chart))
       let customSortData
+      const res = []
       if (Object.prototype.toString.call(chart.customSort) === '[object Array]') {
         customSortData = JSON.parse(JSON.stringify(chart.customSort))
       } else {
@@ -56,7 +57,7 @@ export default {
         if (chart && chart.data) {
           const data = chart.data.datas
           data.forEach(ele => {
-            this.sortList.push(ele.field)
+            res.push(ele.field)
           })
         }
       } else {
@@ -64,10 +65,14 @@ export default {
           const data = chart.data.datas
           const cus = customSort(customSortData, data)
           cus.forEach(ele => {
-            this.sortList.push(ele.field)
+            res.push(ele.field)
           })
         }
       }
+      // 字段去重
+      this.sortList = res.filter(function(item, index, arr) {
+        return res.indexOf(item, 0) === index
+      })
     },
     onMove() {
     },
