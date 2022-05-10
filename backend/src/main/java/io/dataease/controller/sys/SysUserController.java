@@ -4,6 +4,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.exception.DataEaseException;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysRole;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
@@ -122,17 +124,17 @@ public class SysUserController {
         Long userId = AuthUtils.getUser().getUserId();
         // 防止修改他人信息， 防止必填内容留空
         if (!request.getUserId().equals(userId) || request.getEmail() == null || request.getNickName() == null) {
-            throw new RuntimeException("内容不合法");
+            DataEaseException.throwException(Translator.get("i18n_wrong_content"));
         }
         // 再次验证，匹配格式
         if (!request.getPhone().isEmpty() && !request.getPhone().matches("^1[3|4|5|7|8][0-9]{9}$")) {
-            throw new RuntimeException("电话格式错误");
+            DataEaseException.throwException(Translator.get("i18n_wrong_tel"));
         }
         if (!request.getEmail().matches("^[a-zA-Z0-9_._-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$")) {
-            throw new RuntimeException("邮箱格式错误");
+            DataEaseException.throwException(Translator.get("i18n_wrong_email"));
         }
         if (!(2 <= request.getNickName().length() && request.getNickName().length() <= 50)) {
-            throw new RuntimeException("姓名格式错误");
+            DataEaseException.throwException(Translator.get("i18n_wrong_name_format"));
         }
         sysUserService.updatePersonBasicInfo(request);
     }
