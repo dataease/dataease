@@ -916,8 +916,10 @@ export default {
       this.$refs.files.click()
     },
     handleFileChange(e) {
+      console.log(e)
       const _this = this
       const file = e.target.files[0]
+      console.log(file)
       if (!file.type.includes('image')) {
         toast('只能插入图片')
         return
@@ -926,7 +928,10 @@ export default {
       reader.onload = (res) => {
         const fileResult = res.target.result
         const img = new Image()
+        img.src = fileResult
         img.onload = () => {
+          console.log('宽高',img.width,img.height)
+          let ratio = img.height/img.width
           const component = {
             ...commonAttr,
             id: generateID(),
@@ -944,15 +949,15 @@ export default {
           component.auxiliaryMatrix = false
           component.style.top = _this.dropComponentInfo.shadowStyle.y
           component.style.left = _this.dropComponentInfo.shadowStyle.x
-          component.style.width = _this.dropComponentInfo.shadowStyle.width
-          component.style.height = _this.dropComponentInfo.shadowStyle.height
+          component.style.width = img.width< 400 ? img.width : 400
+          component.style.height = img.height< parseInt(400*ratio) ? img.height : parseInt(400*ratio)
+          console.log('component',component)
           this.$store.commit('addComponent', {
             component: component
           })
           this.$store.commit('recordSnapshot', 'handleFileChange')
         }
-
-        img.src = fileResult
+        // img.src = fileResult
       }
 
       reader.readAsDataURL(file)
