@@ -10,7 +10,6 @@ import {
   getSlider,
   getAnalyse
 } from '@/views/chart/chart/common/common_antv'
-import { customSort } from '@/views/chart/chart/util'
 
 export function baseLineOptionAntV(plot, container, chart, action) {
   // theme
@@ -23,13 +22,7 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
   // data
-  let data
-  const cus = JSON.parse(chart.customSort)
-  if (cus && cus.length > 0) {
-    data = customSort(cus, chart.data.datas)
-  } else {
-    data = chart.data.datas
-  }
+  const data = chart.data.datas
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)
@@ -121,13 +114,7 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
   // data
-  let data
-  const cus = JSON.parse(chart.customSort)
-  if (cus && cus.length > 0) {
-    data = customSort(cus, chart.data.datas)
-  } else {
-    data = chart.data.datas
-  }
+  const data = chart.data.datas
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)

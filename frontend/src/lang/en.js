@@ -1096,7 +1096,7 @@ export default {
     formatter_decimal_count_error: 'Range 0-10',
     gauge_threshold_compare_error: 'Range must added',
     tick_count: 'Tick Split',
-    custom_sort: 'Custom Sort',
+    custom_sort: 'Custom',
     custom_sort_tip: 'Custom sort field first',
     clean_custom_sort: 'Clean'
   },

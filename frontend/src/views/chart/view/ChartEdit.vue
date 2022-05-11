@@ -347,15 +347,6 @@
                         <span
                           v-else-if="view.type && view.type === 'table-info'"
                         >{{ $t('chart.dimension_or_quota') }}</span>
-
-                        <!--自定义排序-->
-                        <i
-                          v-if="false && view.render === 'antv' && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('funnel') || view.type.includes('pie') || view.type.includes('radar') || view.type.includes('scatter') || view.type.includes('waterfall'))"
-                          style="margin-left: 4px;cursor: pointer;"
-                          class="el-icon-sort"
-                          :title="$t('chart.custom_sort')"
-                          @click="customSort"
-                        />
                       </span>
                       <draggable
                         v-model="view.xaxis"
@@ -364,8 +355,7 @@
                         :move="onMove"
                         class="drag-block-style"
                         @add="addXaxis"
-                        @update="resetCustomSort"
-                        @remove="resetCustomSort"
+                        @update="calcData(true)"
                       >
                         <transition-group class="draggable-group">
                           <dimension-item
@@ -944,25 +934,6 @@
         <el-button type="primary" size="mini" @click="saveValueFormatter">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
-
-    <!--自定义排序-->
-    <el-dialog
-      v-if="showCustomSort"
-      v-dialogDrag
-      :title="$t('chart.custom_sort')"
-      :visible="showCustomSort"
-      :show-close="false"
-      width="500px"
-      class="dialog-css"
-    >
-      <!--      <value-formatter-edit :formatter-item="valueFormatterItem" :chart="chart" />-->
-      <custom-sort-edit :chart="chart" @onSortChange="customSortChange" />
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeCustomSort">{{ $t('chart.cancel') }}</el-button>
-        <el-button size="mini" @click="resetCustomSort">{{ $t('chart.clean_custom_sort') }}</el-button>
-        <el-button type="primary" size="mini" @click="saveCustomSort">{{ $t('chart.confirm') }}</el-button>
-      </div>
-    </el-dialog>
   </el-row>
 </template>
 
@@ -1024,13 +995,11 @@ import Threshold from '@/views/chart/components/senior/Threshold'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { pluginTypes } from '@/api/chart/chart'
 import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
-import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
 import ChartStyle from '@/views/chart/view/ChartStyle'
 export default {
   name: 'ChartEdit',
   components: {
     ChartStyle,
-    CustomSortEdit,
     ValueFormatterEdit,
     LabelNormalText,
     Threshold,
@@ -1111,8 +1080,7 @@ export default {
         },
         customFilter: [],
         render: 'antv',
-        isPlugin: false,
-        customSort: []
+        isPlugin: false
       },
       moveId: -1,
       chart: {
@@ -1163,9 +1131,7 @@ export default {
       preChartId: '',
       pluginRenderOptions: [],
       showValueFormatter: false,
-      valueFormatterItem: {},
-      showCustomSort: false,
-      customSortList: []
+      valueFormatterItem: {}
 
     }
   },
@@ -1258,7 +1224,6 @@ export default {
       this.resetDrill()
       this.initFromPanel()
       this.getChart(this.param.id)
-      this.getData(this.param.id)
     },
     bindPluginEvent() {
       bus.$on('show-dimension-edit-filter', this.showDimensionEditFilter)
@@ -1525,7 +1490,6 @@ export default {
       view.drillFields = JSON.stringify(view.drillFields)
       view.extBubble = JSON.stringify(view.extBubble)
       view.senior = JSON.stringify(view.senior)
-      view.customSort = JSON.stringify(view.customSort)
       delete view.data
       return view
     },
@@ -1595,7 +1559,6 @@ export default {
       view.customStyle = JSON.stringify(this.view.customStyle)
       view.customFilter = JSON.stringify(this.view.customFilter)
       view.senior = JSON.stringify(this.view.senior)
-      view.customSort = JSON.stringify(this.view.customSort)
       view.title = this.view.title
       view.stylePriority = this.view.stylePriority
       // view.data = this.data
@@ -1661,7 +1624,6 @@ export default {
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
           this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
-          this.view.customSort = this.view.customSort ? JSON.parse(this.view.customSort) : []
           // 将视图传入echart组件
           this.chart = response.data
           this.data = response.data.data
@@ -1713,7 +1675,6 @@ export default {
             this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
             this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
             this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
-            this.view.customSort = this.view.customSort ? JSON.parse(this.view.customSort) : []
 
             // 将视图传入echart组件
             this.chart = response.data
@@ -2113,7 +2074,7 @@ export default {
       if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'label') && this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
       }
-      this.resetCustomSort()
+      this.calcData(true)
     },
     addXaxisExt(e) {
       if (this.view.type !== 'table-info') {
@@ -2236,12 +2197,12 @@ export default {
         if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
           if (this.sendToChildren(param)) {
             this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
-            this.getData(this.param.id)
+            // this.getData(this.param.id)
             this.calcData(true, 'chart', false, false)
           }
         } else {
           this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
-          this.getData(this.param.id)
+          // this.getData(this.param.id)
           this.calcData(true, 'chart', false, false)
         }
       } else if (this.view.drillFields.length > 0) {
@@ -2276,7 +2237,7 @@ export default {
         this.backToParent(index, length)
       }
 
-      this.getData(this.param.id)
+      // this.getData(this.param.id)
       this.calcData(true, 'chart', false, false)
     },
     // 回到父级地图
@@ -2359,7 +2320,7 @@ export default {
       resetViewCacheCallBack(_this.param.id, _this.panelInfo.id, function(rsp) {
         _this.changeEditStatus(false)
         _this.getChart(_this.param.id, 'panel')
-        _this.getData(_this.param.id)
+        // _this.getData(_this.param.id)
         bus.$emit('view-in-cache', { type: 'propChange', viewId: _this.param.id })
       })
     },
@@ -2424,27 +2385,6 @@ export default {
       }
       this.calcData(true)
       this.closeValueFormatter()
-    },
-
-    customSort() {
-      this.showCustomSort = true
-    },
-    customSortChange(val) {
-      this.customSortList = val
-    },
-    closeCustomSort() {
-      this.showCustomSort = false
-    },
-    saveCustomSort() {
-      this.view.customSort = JSON.parse(JSON.stringify(this.customSortList))
-      this.calcData(true)
-      this.closeCustomSort()
-    },
-    resetCustomSort() {
-      this.chart.customSort = []
-      this.view.customSort = []
-      this.calcData(true)
-      this.closeCustomSort()
     }
   }
 }

@@ -49,8 +49,7 @@
             drill_fields,
             senior,
             SNAPSHOT,
-            data_from,
-            custom_sort
+            data_from
             ) SELECT
             id,
             `name`,
@@ -79,8 +78,7 @@
             drill_fields,
             senior,
             SNAPSHOT,
-            data_from,
-            custom_sort  from chart_view
+            data_from  from chart_view
         WHERE
             chart_view.id   = #{id}
     </insert>
@@ -114,8 +112,7 @@
             drill_fields,
             senior,
             SNAPSHOT,
-            data_from,
-            custom_sort
+            data_from
             ) SELECT
             #{newViewId} as id,
             `name`,
@@ -144,8 +141,7 @@
             drill_fields,
             senior,
             SNAPSHOT,
-            data_from,
-            custom_sort  from chart_view_cache
+            data_from  from chart_view_cache
         WHERE
             chart_view_cache.id   = #{sourceViewId}
     </insert>
@@ -179,8 +175,7 @@
                     drill_fields,
                     senior,
                     SNAPSHOT,
-                    data_from,
-                    custom_sort
+                    data_from
                     ) SELECT
                     id,
                     `name`,
@@ -209,8 +204,7 @@
                     drill_fields,
                     senior,
                     SNAPSHOT,
-                    data_from,
-                    custom_sort  from chart_view
+                    data_from  from chart_view
                 WHERE
                     chart_view.scene_id   = #{panelId}
     </insert>
@@ -293,8 +287,7 @@
                                 `chart_type`,
                                 `is_plugin`,
                                 `senior`,
-                                `data_from`,
-                                `custom_sort`)
+                                `data_from`)
         SELECT #{newChartId},
                GET_CHART_VIEW_COPY_NAME(#{oldChartId},#{panelId}) as `name`,
                #{panelId},
@@ -322,8 +315,7 @@
                'private',
                `is_plugin`,
                `senior`,
-               `data_from`,
-               `custom_sort`
+               `data_from`
         FROM chart_view
         WHERE id = #{oldChartId}
     </insert>
@@ -373,8 +365,7 @@
                                 custom_filter,
                                 drill_fields,
                                 SNAPSHOT,
-                                data_from,
-                                custom_sort)
+                                data_from)
         SELECT pv_copy.chart_view_id AS id,
                `name`,
                title,
@@ -401,8 +392,7 @@
                custom_filter,
                drill_fields,
                SNAPSHOT,
-               data_from,
-               custom_sort
+               data_from
         FROM (
                  SELECT panel_id,
                         copy_from_view,
@@ -512,8 +502,7 @@
         cv.drill_fields = cve.drill_fields,
         cv.senior = cve.senior,
         cv.SNAPSHOT = cve.SNAPSHOT,
-        cv.data_from = cve.data_from,
-        cv.custom_sort = cve.custom_sort
+        cv.data_from = cve.data_from
         where cve.id = cv.id and cv.id in
         <foreach collection="viewIds" item="viewId" open='(' separator=',' close=')'>
             #{viewId}
@@ -549,8 +538,7 @@
         cv.drill_fields = cve.drill_fields,
         cv.senior = cve.senior,
         cv.SNAPSHOT = cve.SNAPSHOT,
-        cv.data_from = cve.data_from,
-        cv.custom_sort = cve.custom_sort
+        cv.data_from = cve.data_from
         where cve.id = cv.id  and cv.id =#{viewId}
     </update>
 
@@ -584,8 +572,7 @@
         cv.drill_fields = cve.drill_fields,
         cv.senior = cve.senior,
         cv.SNAPSHOT = cve.SNAPSHOT,
-        cv.data_from = cve.data_from,
-        cv.custom_sort = cve.custom_sort
+        cv.data_from = cve.data_from
         where cve.id = cv.id  and cv.id =#{viewId}
     </update>
 
