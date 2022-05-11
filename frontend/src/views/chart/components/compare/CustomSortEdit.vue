@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { customSort } from '@/views/chart/chart/util'
+import { post } from '@/api/dataset/dataset'
 
 export default {
   name: 'CustomSortEdit',
@@ -27,11 +27,20 @@ export default {
     chart: {
       type: Object,
       required: true
+    },
+    field: {
+      type: Object,
+      required: true
     }
   },
   data() {
     return {
       sortList: []
+    }
+  },
+  computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
     }
   },
   watch: {
@@ -44,34 +53,8 @@ export default {
   },
   methods: {
     init() {
-      console.log(this.chart)
-      const chart = JSON.parse(JSON.stringify(this.chart))
-      let customSortData
-      const res = []
-      if (Object.prototype.toString.call(chart.customSort) === '[object Array]') {
-        customSortData = JSON.parse(JSON.stringify(chart.customSort))
-      } else {
-        customSortData = JSON.parse(chart.customSort)
-      }
-      if (!customSortData || customSortData.length === 0) {
-        if (chart && chart.data) {
-          const data = chart.data.datas
-          data.forEach(ele => {
-            res.push(ele.field)
-          })
-        }
-      } else {
-        if (chart && chart.data) {
-          const data = chart.data.datas
-          const cus = customSort(customSortData, data)
-          cus.forEach(ele => {
-            res.push(ele.field)
-          })
-        }
-      }
-      // 字段去重
-      this.sortList = res.filter(function(item, index, arr) {
-        return res.indexOf(item, 0) === index
+      post('/chart/view/getFieldData/' + this.chart.id + '/' + this.panelInfo.id + '/' + this.field.id, {}).then(response => {
+        this.sortList = response.data
       })
     },
     onMove() {

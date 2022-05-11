@@ -372,6 +372,7 @@
                             @editItemFilter="showDimensionEditFilter"
                             @onNameEdit="showRename"
                             @valueFormatter="valueFormatter"
+                            @onCustomSort="onCustomSort"
                           />
                         </transition-group>
                       </draggable>
@@ -934,6 +935,23 @@
         <el-button type="primary" size="mini" @click="saveValueFormatter">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
+
+    <!--自定义排序-->
+    <el-dialog
+      v-if="showCustomSort"
+      v-dialogDrag
+      :title="$t('chart.custom_sort')"
+      :visible="showCustomSort"
+      :show-close="false"
+      width="500px"
+      class="dialog-css"
+    >
+      <custom-sort-edit :chart="chart" :field="customSortField" @onSortChange="customSortChange" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeCustomSort">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveCustomSort">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -996,9 +1014,11 @@ import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { pluginTypes } from '@/api/chart/chart'
 import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
 import ChartStyle from '@/views/chart/view/ChartStyle'
+import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
 export default {
   name: 'ChartEdit',
   components: {
+    CustomSortEdit,
     ChartStyle,
     ValueFormatterEdit,
     LabelNormalText,
@@ -1131,7 +1151,10 @@ export default {
       preChartId: '',
       pluginRenderOptions: [],
       showValueFormatter: false,
-      valueFormatterItem: {}
+      valueFormatterItem: {},
+      showCustomSort: false,
+      customSortList: [],
+      customSortField: {}
 
     }
   },
@@ -1540,7 +1563,6 @@ export default {
       const view = this.buildParam(true, 'chart', false, switchType)
       if (!view) return
       viewEditSave(this.panelInfo.id, view).then(() => {
-        this.getData(this.param.id)
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
     },
@@ -1695,6 +1717,11 @@ export default {
       // console.log(e)
       this.moveId = e.draggedContext.element.id
       return true
+    },
+
+    onCustomSort(item) {
+      this.customSortField = this.view.xaxis[item.index]
+      this.customSort()
     },
 
     dimensionItemChange(item) {
@@ -2385,6 +2412,33 @@ export default {
       }
       this.calcData(true)
       this.closeValueFormatter()
+    },
+
+    customSort() {
+      this.showCustomSort = true
+    },
+    customSortChange(val) {
+      this.customSortList = val
+    },
+    closeCustomSort() {
+      this.showCustomSort = false
+      this.customSortField = {}
+      this.customSortList = []
+    },
+    saveCustomSort() {
+      // 先将所有自定义排序的维度设置为none，再对当前维度赋值
+      this.view.xaxis.forEach(ele => {
+        if (ele.sort === 'custom_sort') {
+          ele.sort = 'none'
+          ele.customSort = []
+        }
+        if (ele.id === this.customSortField.id) {
+          ele.sort = 'custom_sort'
+          ele.customSort = this.customSortList
+        }
+      })
+      this.calcData(true)
+      this.closeCustomSort()
     }
   }
 }

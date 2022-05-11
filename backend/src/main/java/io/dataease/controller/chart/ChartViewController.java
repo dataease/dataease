@@ -75,8 +75,8 @@ public class ChartViewController {
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW, paramIndex = 1)
     @ApiOperation("详细信息")
     @PostMapping("/get/{id}/{panelId}")
-    public ChartViewDTO get(@PathVariable String id, @PathVariable String panelId,@RequestBody ChartViewRequest viewRequest) {
-        ChartViewDTO result = chartViewService.getOne(id,viewRequest.getQueryFrom());
+    public ChartViewDTO get(@PathVariable String id, @PathVariable String panelId, @RequestBody ChartViewRequest viewRequest) {
+        ChartViewDTO result = chartViewService.getOne(id, viewRequest.getQueryFrom());
         return result;
     }
 
@@ -92,7 +92,7 @@ public class ChartViewController {
     @ApiOperation("数据")
     @PostMapping("/getData/{id}/{panelId}")
     public ChartViewDTO getData(@PathVariable String id, @PathVariable String panelId,
-            @RequestBody ChartExtRequest requestList) throws Exception {
+                                @RequestBody ChartExtRequest requestList) throws Exception {
         return chartViewService.getData(id, requestList);
     }
 
@@ -113,8 +113,8 @@ public class ChartViewController {
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE, paramIndex = 1)
     @ApiOperation("批量复制")
     @PostMapping("chartBatchCopy/{panelId}")
-    public Map<String,String> chartBatchCopy(@RequestBody ChartCopyBatchRequest request, @PathVariable String panelId) {
-        return chartViewService.chartBatchCopy(request,panelId);
+    public Map<String, String> chartBatchCopy(@RequestBody ChartCopyBatchRequest request, @PathVariable String panelId) {
+        return chartViewService.chartBatchCopy(request, panelId);
     }
 
     @ApiIgnore
@@ -161,8 +161,16 @@ public class ChartViewController {
 
     @ApiOperation("校验视图Title")
     @PostMapping("/checkTitle")
-    public String checkTitle( @RequestBody ChartViewCacheRequest request) {
+    public String checkTitle(@RequestBody ChartViewCacheRequest request) {
         return chartViewService.checkTitle(request);
+    }
+
+    @ApiIgnore
+    @ApiOperation("获取字段值")
+    @PostMapping("/getFieldData/{id}/{panelId}/{fieldId}")
+    public List<String> getFieldData(@PathVariable String id, @PathVariable String panelId, @PathVariable String fieldId,
+                                     @RequestBody ChartExtRequest requestList) throws Exception {
+        return chartViewService.getFieldData(id, requestList, false, fieldId);
     }
 
 }
