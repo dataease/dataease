@@ -1096,7 +1096,7 @@ export default {
     formatter_decimal_count_error: '請輸入0-10的整數',
     gauge_threshold_compare_error: '阈值範圍需逐級遞增',
     tick_count: '刻度間隔數',
-    custom_sort: '自定義排序',
+    custom_sort: '自定義',
     custom_sort_tip: '自定義排序優先級高於字段排序',
     clean_custom_sort: '清除自定義排序'
   },

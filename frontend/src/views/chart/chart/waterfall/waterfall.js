@@ -1,6 +1,5 @@
 import {
   getLabel,
-  getLegend,
   getPadding,
   getTheme,
   getTooltip,
@@ -8,7 +7,6 @@ import {
   getYAxis
 } from '@/views/chart/chart/common/common_antv'
 import { Waterfall } from '@antv/g2plot'
-import { customSort } from '@/views/chart/chart/util'
 
 export function baseWaterfallOptionAntV(plot, container, chart, action) {
   // theme
@@ -28,13 +26,7 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
     delete yAxis.maxLimit
   }
   // data
-  let data
-  const cus = JSON.parse(chart.customSort)
-  if (cus && cus.length > 0) {
-    data = customSort(cus, chart.data.datas)
-  } else {
-    data = chart.data.datas
-  }
+  const data = chart.data.datas
   // total
   const total = {
     label: '合计',
