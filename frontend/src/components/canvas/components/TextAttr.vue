@@ -150,6 +150,12 @@
           <tab-style :style-info="styleInfo" />
         </el-tooltip>
       </div>
+
+      <div v-if="attrShow('titlePostion')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+        <el-tooltip content="标题位置">
+          <title-postion :style-info="styleInfo" />
+        </el-tooltip>
+      </div>
       <!--tab 内部组件样式-->
       <div v-if="attrTabShow('videoLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <el-tooltip content="视频信息">
@@ -264,7 +270,8 @@ export default {
         'fontSize',
         'fontWeight',
         'letterSpacing',
-        'color'
+        'color',
+        'titlePostion'
       ],
       // tab组件显示的属性
       'de-tabs': [
