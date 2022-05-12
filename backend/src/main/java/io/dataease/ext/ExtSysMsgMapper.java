@@ -1,5 +1,5 @@
 package io.dataease.ext;
-;
+
 import io.dataease.controller.sys.response.MsgGridDto;
 import io.dataease.plugins.common.base.domain.SysMsgExample;
 import io.dataease.plugins.common.base.domain.SysMsgSetting;
@@ -13,32 +13,28 @@ import java.util.List;
 @Mapper
 public interface ExtSysMsgMapper {
 
-
     @Update({
-        "<script>",
+            "<script>",
             "update sys_msg set status = 1, read_time = #{time} where msg_id in ",
             "<foreach collection='msgIds' item='msgId' open='(' separator=',' close=')' >",
-                " #{msgId}",
+            " #{msgId}",
             "</foreach>",
-        "</script>"
+            "</script>"
     })
     int batchStatus(@Param("msgIds") List<Long> msgIds, @Param("time") Long time);
 
-
     @Delete({
             "<script>",
-                "delete from sys_msg where msg_id in ",
-                "<foreach collection='msgIds' item='msgId' open='(' separator=',' close=')' >",
-                    " #{msgId}",
-                "</foreach>",
+            "delete from sys_msg where msg_id in ",
+            "<foreach collection='msgIds' item='msgId' open='(' separator=',' close=')' >",
+            " #{msgId}",
+            "</foreach>",
             "</script>"
     })
     int batchDelete(@Param("msgIds") List<Long> msgIds);
 
     int batchInsert(@Param("settings") List<SysMsgSetting> settings);
 
-
     List<MsgGridDto> queryGrid(SysMsgExample example);
-
 
 }
