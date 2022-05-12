@@ -147,10 +147,12 @@ export default {
         localStorage.setItem('publicKey', res.data)
       }
     })
-    defaultLoginType().then(res => {
-      Promise.all([p1, p2, p3]).then(() => {
-        if (res.success && res.data && this.loginTypes.includes(res.data)) {
-          this.loginForm.loginType = res.data
+    Promise.all([p1, p2, p3]).then(() => {
+      defaultLoginType().then(res => {
+        const result = res
+        console.log('default login type is :' + res.data)
+        if (result.success && result.data && this.loginTypes.includes(result.data)) {
+          this.loginForm.loginType = result.data
           this.$nextTick(() => {
             this.changeLoginType(this.loginForm.loginType)
           })
@@ -218,7 +220,6 @@ export default {
             password: encrypt(this.loginForm.password),
             loginType: this.loginForm.loginType
           }
-          const publicKey = localStorage.getItem('publicKey')
           this.$store.dispatch('user/login', user).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
