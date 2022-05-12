@@ -68,7 +68,7 @@ export const editStatus = (data) => {
   })
 }
 
-export const persionInfo = () => {
+export const personInfo = () => {
   return request({
     url: pathMap.personInfoPath,
     method: 'post'
@@ -133,4 +133,4 @@ export function existLdapUsers() {
   })
 }
 
-export default { editPassword, delUser, editUser, addUser, userLists, editStatus, persionInfo, updatePerson, updatePersonPwd, allRoles, roleGrid, ldapUsers, saveLdapUser, existLdapUsers }
+export default { editPassword, delUser, editUser, addUser, userLists, editStatus, personInfo, updatePerson, updatePersonPwd, allRoles, roleGrid, ldapUsers, saveLdapUser, existLdapUsers }
