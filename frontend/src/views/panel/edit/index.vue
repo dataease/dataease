@@ -24,7 +24,7 @@
     </el-header>
     <de-container>
       <de-aside-container class="ms-aside-container">
-        <div v-if="showAside" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
+        <div v-show="showAside" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
           <div
             style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px"
           >
@@ -204,9 +204,9 @@
               </el-row>
               <el-row class="this_mobile_canvas_inner_bottom">
                 <el-col :span="12">
-                  <i v-if="!hasStar" class="el-icon-star-off" size="mini" @click="star" />
+                  <i v-show="!hasStar" class="el-icon-star-off" size="mini" @click="star" />
                   <i
-                    v-if="hasStar"
+                    v-show="hasStar"
                     class="el-icon-star-on"
                     style="color: #0a7be0;font-size: 18px"
                     size="mini"
@@ -226,11 +226,11 @@
         </el-row>
       </de-main-container>
 
-      <div v-if="!mobileLayoutStatus&&rightDrawOpen" class="tools-window-main">
-        <div v-if="showViewToolsAside">
-          <chart-edit v-if="curComponent" ref="chartEditRef" :edit-from="'panel'" :param="chartEditParam" />
+      <div v-show="!mobileLayoutStatus&&rightDrawOpen" class="tools-window-main">
+        <div v-show="showViewToolsAside">
+          <chart-edit v-show="curComponent" ref="chartEditRef" :edit-statue="showViewToolsAside&&!mobileLayoutStatus&&rightDrawOpen" :edit-from="'panel'" :param="chartEditParam" />
         </div>
-        <div v-if="!showViewToolsAside">
+        <div v-show="!showViewToolsAside">
           <el-row style="height: 40px">
             <el-tooltip :content="$t('chart.draw_back')">
               <el-button class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 5px;" size="mini" circle @click="changeRightDrawOpen(false)" />
@@ -302,7 +302,7 @@
     >
 
     <!--矩形样式组件-->
-    <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+    <TextAttr v-show="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
     <!--复用ChartGroup组件 不做显示-->
     <ChartGroup
       ref="chartGroup"

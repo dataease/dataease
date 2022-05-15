@@ -1298,6 +1298,11 @@ export default {
       type: String,
       required: false,
       default: 'view'
+    },
+    editStatue: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data() {
@@ -1416,10 +1421,17 @@ export default {
     } */
   },
   watch: {
+    'editStatue': function(val) {
+      if (val && this.param.id !== this.preChartId) {
+        this.preChartId = this.param.id
+        this.chartInit()
+        // console.log('fromwatch:' + JSON.stringify(val))
+      }
+    },
     'param': function(val) {
       if (this.param.optType === 'new') {
         //
-      } else if (this.param.id !== this.preChartId) {
+      } else if (this.param.id !== this.preChartId && this.editStatue) {
         this.preChartId = this.param.id
         this.chartInit()
         // console.log('fromwatch:' + JSON.stringify(val))
