@@ -173,4 +173,11 @@ public class ChartViewController {
         return chartViewService.getFieldData(id, requestList, false, fieldId);
     }
 
+    @ApiIgnore
+    @ApiOperation("更新视图属性")
+    @PostMapping("/viewPropsSave/{panelId}")
+    public void  viewPropsSave(@PathVariable String panelId, @RequestBody ChartViewWithBLOBs chartViewWithBLOBs) {
+         chartViewService.viewPropsSave(chartViewWithBLOBs);
+    }
+
 }

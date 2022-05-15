@@ -115,6 +115,7 @@ import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/componen
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
+import { viewPropsSave } from '@/api/chart/chart'
 export default {
   name: 'UserView',
   components: { LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
@@ -185,8 +186,14 @@ export default {
       changeScaleIndex: 0,
       pre: null,
       preCanvasPanel: null,
+      // string
       sourceCustomAttrStr: null,
+      // obj
+      sourceCustomAttr: null,
+      // string
       sourceCustomStyleStr: null,
+      // obj
+      sourceCustomStyle: null,
       scale: 1
     }
   },
@@ -299,7 +306,8 @@ export default {
       'mobileLayoutStatus',
       'componentData',
       'panelViewDetailsInfo',
-      'componentViewsData'
+      'componentViewsData',
+      'curBatchOptComponents'
     ])
   },
 
@@ -392,6 +400,30 @@ export default {
     }
   },
   methods: {
+    batchOptChange(param) {
+      if (this.curBatchOptComponents.includes(this.element.propValue.viewId)) {
+        this.$store.state.styleChangeTimes++
+        // stylePriority change to 'view'
+        const updateParams = { 'id': this.chart.id, 'stylePriority': 'view' }
+        if (param.custom === 'customAttr') {
+          const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
+          sourceCustomAttr[param.property] = param.value
+          this.sourceCustomAttrStr = JSON.stringify(sourceCustomAttr)
+          this.chart.customAttr = this.sourceCustomAttrStr
+          updateParams['customAttr'] = this.sourceCustomAttrStr
+        } else if (param.custom === 'customStyle') {
+          this.sourceCustomStyleStr = this.chart.customStyle
+          const sourceCustomStyle = JSON.parse(this.sourceCustomStyleStr)
+          sourceCustomStyle[param.property] = param.value
+          this.sourceCustomStyleStr = JSON.stringify(sourceCustomStyle)
+          this.chart.customStyle = this.sourceCustomStyleStr
+          updateParams['customStyle'] = this.sourceCustomStyleStr
+        }
+        viewPropsSave(this.panelInfo.id, updateParams)
+        this.$store.commit('recordViewEdit', { viewId: this.chart.id, hasEdit: true })
+        this.mergeScale()
+      }
+    },
     resizeChart() {
       if (this.chart.type === 'map') {
         this.destroyTimeMachine()
@@ -415,6 +447,9 @@ export default {
       })
       bus.$on('view-in-cache', param => {
         param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
+      })
+      bus.$on('batch-opt-change', param => {
+        this.batchOptChange(param)
       })
     },
 
@@ -488,7 +523,10 @@ export default {
             this.chart = response.data
             if (this.isEdit) {
               this.componentViewsData[this.chart.id] = {
-                'title': this.chart.title
+                'title': this.chart.title,
+                'render': this.chart.render,
+                'type': this.chart.type,
+                'isPlugin': this.chart.isPlugin
               }
             }
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
@@ -797,7 +835,6 @@ export default {
         this.sourceCustomAttrStr = this.chart.customAttr
         this.sourceCustomStyleStr = this.chart.customStyle
         this.mergeScale()
-        this.mergeStyle()
       }
     }
   }

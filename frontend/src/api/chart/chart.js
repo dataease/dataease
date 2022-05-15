@@ -125,3 +125,12 @@ export function checkTitle(data) {
     loading: false
   })
 }
+
+export function viewPropsSave(panelId, data) {
+  return request({
+    url: '/chart/view/viewPropsSave/' + panelId,
+    method: 'post',
+    loading: false,
+    data
+  })
+}

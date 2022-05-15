@@ -1430,6 +1430,7 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    batch_opt: 'Batch Operation',
     edit_leave_tips: 'Do You Want To Abandon And Leave The Current Page?',
     hyperlinks: 'Hyperlinks',
     is_live: 'Is Live',
