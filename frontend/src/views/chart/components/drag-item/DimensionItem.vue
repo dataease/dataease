@@ -1,5 +1,6 @@
 <template>
-  <span>
+  <span style="position: relative;display: inline-block;">
+    <i v-show="false" class="el-icon-arrow-down el-icon-delete" style="position: absolute;top: 6px;right: 24px;color: #878d9f;cursor: pointer;z-index: 1;" @click="removeItem" />
     <el-dropdown trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis" :type="tagType">
@@ -33,7 +34,7 @@
                 <el-dropdown-item :command="beforeSort('none')">{{ $t('chart.none') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
-                <el-dropdown-item v-show="false && (item.deType === 0 || item.deType === 5)" :command="beforeSort('custom_sort')">{{ $t('chart.custom_sort') }}...</el-dropdown-item>
+                <el-dropdown-item v-show="item.deType === 0 || item.deType === 5" :command="beforeSort('custom_sort')">{{ $t('chart.custom_sort') }}...</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>

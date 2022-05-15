@@ -1097,7 +1097,7 @@ export default {
     gauge_threshold_compare_error: 'Range must added',
     tick_count: 'Tick Split',
     custom_sort: 'Custom',
-    custom_sort_tip: 'Custom sort field first',
+    custom_sort_tip: 'Custom sort field first,and only support single field',
     clean_custom_sort: 'Clean'
   },
   dataset: {

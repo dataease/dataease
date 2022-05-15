@@ -10,7 +10,10 @@
     >
       <transition-group class="draggable-group">
         <span v-for="(item,index) in sortList" :key="index" class="item-dimension" :title="item">
-          {{ item }}
+          <svg-icon icon-class="drag" class="item-icon" />
+          <span class="item-span">
+            {{ item }}
+          </span>
         </span>
       </transition-group>
     </draggable>
@@ -73,15 +76,25 @@ export default {
 }
 
 .item-dimension {
-  padding: 2px 10px;
+  padding: 2px;
   margin: 2px 2px 0 2px;
   border: solid 1px #eee;
   text-align: left;
   color: #606266;
   /*background-color: rgba(35,46,64,.05);*/
   background-color: white;
-  display: block;
-  word-break: break-all;
+  display: flex;
+  align-items: center;
+}
+
+.item-icon{
+  cursor: move;
+  margin: 0 2px;
+}
+
+.item-span{
+  display: inline-block;
+  width: 100%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

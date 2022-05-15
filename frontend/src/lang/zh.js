@@ -1099,7 +1099,7 @@ export default {
     gauge_threshold_compare_error: '阈值范围需逐级递增',
     tick_count: '刻度间隔数',
     custom_sort: '自定义',
-    custom_sort_tip: '自定义排序优先级高于字段排序',
+    custom_sort_tip: '自定义排序优先级最高，且仅支持单个字段自定义',
     clean_custom_sort: '清除自定义排序'
   },
   dataset: {
