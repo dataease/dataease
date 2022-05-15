@@ -47,6 +47,9 @@
       <el-tooltip v-if="canvasStyleData.aidedDesign.showGrid" :content="$t('panel.aided_grid')+':'+$t('panel.aided_grid_open')">
         <el-button class="icon iconfont-tb icon-wangge-open" size="mini" circle @click="showGridChange" />
       </el-tooltip>
+      <el-tooltip :content="$t('panel.batch_opt')">
+        <el-button class="icon iconfont-tb icon-piliang-copy" size="mini" circle @click="batchOption" />
+      </el-tooltip>
       <span style="float: right;margin-left: 10px">
         <el-button size="mini" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
@@ -135,7 +138,8 @@ export default {
       'targetLinkageInfo',
       'mobileLayoutStatus',
       'mobileComponentData',
-      'componentDataCache'
+      'componentDataCache',
+      'batchOptStatus'
     ])
   },
   created() {
@@ -381,6 +385,11 @@ export default {
     showGridChange() {
       this.$store.state.styleChangeTimes++
       this.canvasStyleData.aidedDesign.showGrid = !this.canvasStyleData.aidedDesign.showGrid
+    },
+    // batch option
+    batchOption() {
+      bus.$emit('change_panel_right_draw', !this.batchOptStatus)
+      this.$store.commit('setBatchOptStatus', !this.batchOptStatus)
     },
     // 启用移动端布局
     openMobileLayout() {

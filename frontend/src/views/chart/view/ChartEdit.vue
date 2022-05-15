@@ -652,9 +652,11 @@
         </el-tab-pane>
         <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 300px">
           <chart-style
+            v-if="chartProperties"
             :param="param"
             :view="view"
             :chart="chart"
+            :properties="chartProperties"
             @calcStyle="calcStyle"
             @onColorChange="onColorChange"
             @onSizeChange="onSizeChange"
@@ -1015,9 +1017,12 @@ import { pluginTypes } from '@/api/chart/chart'
 import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFormatterEdit'
 import ChartStyle from '@/views/chart/view/ChartStyle'
 import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
+import { TYPE_CONFIGS } from '@/views/chart/chart/util'
+import ChartStyleBack from '@/views/chart/view/ChartStyleBack'
 export default {
   name: 'ChartEdit',
   components: {
+    ChartStyleBack,
     CustomSortEdit,
     ChartStyle,
     ValueFormatterEdit,
@@ -1159,6 +1164,19 @@ export default {
     }
   },
   computed: {
+    chartProperties() {
+      const _this = this
+      if (_this.chart && _this.chart.render) {
+        const viewConfig = TYPE_CONFIGS.filter(item => item.render === _this.chart.render && item.value === _this.chart.type)
+        if (viewConfig) {
+          return viewConfig[0].properties
+        } else {
+          return null
+        }
+      } else {
+        return null
+      }
+    },
     chartType() {
       return this.chart.type
     },

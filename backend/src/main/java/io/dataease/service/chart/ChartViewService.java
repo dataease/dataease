@@ -1423,4 +1423,14 @@ public class ChartViewService {
         return res;
     }
 
+    /**
+     * @param chartView
+     * @Description Save the properties and style information of the view
+     */
+    public void viewPropsSave(ChartViewWithBLOBs chartView) {
+        long timestamp = System.currentTimeMillis();
+        chartView.setUpdateTime(timestamp);
+        chartViewMapper.updateByPrimaryKeySelective(chartView);
+    }
+
 }

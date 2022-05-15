@@ -11,6 +11,7 @@
         [classNameRotatable]: rotatable,
         [classNameActive]: enabled ,
         ['linkageSetting']:linkageActive,
+        ['batchSetting']:batchOptActive,
         ['positionChange']:!(dragging || resizing||rotating)
       },
       className
@@ -332,6 +333,11 @@ export default {
     linkageActive: {
       type: Boolean,
       default: false
+    },
+    // batch operation
+    batchOptActive: {
+      type: Boolean,
+      default: false
     }
   },
   data: function() {
@@ -381,8 +387,8 @@ export default {
   computed: {
     // 编辑组件显示
     editBarShow() {
-      // 编辑组件显示条件：1.当前组件存在 2.组件是激活状态或者当前在联动设置撞他 3.当前不在移动端画布编辑状态
-      return this.curComponent && (this.active || this.linkageSettingStatus) && !this.mobileLayoutStatus
+      // 编辑组件显示条件：1.当前组件存在 2.组件是激活状态或者当前在联动设置状态 3.当前不在移动端画布编辑状态 4.或者批量操作状态
+      return (this.curComponent && (this.active || this.linkageSettingStatus) && !this.mobileLayoutStatus) || this.batchOptStatus
     },
     // 移动端编辑组件选择按钮显示
     mobileCheckBarShow() {
@@ -580,7 +586,8 @@ export default {
       'linkageSettingStatus',
       'mobileLayoutStatus',
       'componentGap',
-      'scrollAutoMove'
+      'scrollAutoMove',
+      'batchOptStatus'
     ])
   },
   watch: {
@@ -1856,6 +1863,10 @@ export default {
 
 .linkageSetting{
   opacity: 0.5;
+}
+
+.batchSetting{
+  opacity: 0.7;
 }
 
 .positionChange{

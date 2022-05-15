@@ -29,6 +29,8 @@ import {
 } from '@/views/panel/panel'
 import bus from '@/utils/bus'
 import { BASE_MOBILE_STYLE } from '@/components/canvas/custom-component/component-list'
+import { TYPE_CONFIGS } from '@/views/chart/chart/util'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 Vue.use(Vuex)
 
@@ -111,7 +113,19 @@ const data = {
     // 当前tab页内组件
     curActiveTabInner: null,
     // static resource local path
-    staticResourcePath: '/static-resource/'
+    staticResourcePath: '/static-resource/',
+    // panel edit batch operation status
+    batchOptStatus: false,
+    // Currently selected components
+    curBatchOptComponents: [],
+    mixProperties: [],
+    batchOptChartInfo: null,
+    batchOptViews: {},
+    // properties changed
+    changeProperties: {
+      customStyle: {},
+      customAttr: {}
+    }
   },
   mutations: {
     ...animation.mutations,
@@ -512,6 +526,115 @@ const data = {
     },
     resetViewEditInfo(state) {
       state.panelViewEditInfo = {}
+    },
+    removeCurBatchComponentWithId(state, id) {
+      for (let index = 0; index < state.curBatchOptComponents.length; index++) {
+        const element = state.curBatchOptComponents[index]
+        if (element === id) {
+          delete state.batchOptViews[id]
+          state.curBatchOptComponents.splice(index, 1)
+          this.commit('setBatchOptChartInfo')
+          break
+        }
+      }
+    },
+    addCurBatchComponent(state, id) {
+      if (id) {
+        state.curBatchOptComponents.push(id)
+        // get view base info
+        const viewBaseInfo = state.componentViewsData[id]
+        // get properties
+        const viewConfig = TYPE_CONFIGS.filter(item => item.render === viewBaseInfo.render && item.value === viewBaseInfo.type)
+        const viewProperties = viewConfig ? viewConfig[0].properties : []
+        if (state.mixProperties.length > 0) {
+          // If it exists , taking the intersection
+          state.mixProperties = state.mixProperties.filter(property => viewProperties.indexOf(property) > -1)
+        } else {
+          // If it doesn't exist, assignment directly
+          state.mixProperties = deepCopy(viewProperties)
+        }
+
+        if (viewConfig && viewConfig.length > 0) {
+          state.batchOptViews[id] = viewConfig[0]
+          this.commit('setBatchOptChartInfo')
+        }
+      }
+    },
+    setBatchOptChartInfo(state) {
+      let render = null
+      let type = null
+      let isPlugin = null
+      state.mixProperties = []
+      if (state.batchOptViews && JSON.stringify(state.batchOptViews) !== '{}') {
+        for (const key in state.batchOptViews) {
+          if (state.mixProperties.length > 0) {
+            // If it exists , taking the intersection
+            state.mixProperties = state.mixProperties.filter(property => state.batchOptViews[key].properties.indexOf(property) > -1)
+          } else {
+            // If it doesn't exist, assignment directly
+            state.mixProperties = deepCopy(state.batchOptViews[key].properties)
+          }
+
+          if (render && render !== state.batchOptViews[key].render) {
+            render = 'mix'
+          } else {
+            render = state.batchOptViews[key].render
+          }
+
+          if (type && type !== state.batchOptViews[key].value) {
+            type = 'mix'
+          } else {
+            type = state.batchOptViews[key].value
+          }
+
+          if (isPlugin && isPlugin !== state.batchOptViews[key].isPlugin) {
+            isPlugin = 'mix'
+          } else {
+            isPlugin = state.batchOptViews[key].isPlugin
+          }
+        }
+        // Assembly history settings 'customAttr' & 'customStyle'
+        state.batchOptChartInfo = {
+          'mode': 'batchOpt',
+          'render': render,
+          'type': type,
+          'isPlugin': isPlugin,
+          'customAttr': state.changeProperties.customAttr,
+          'customStyle': state.changeProperties.customStyle
+        }
+      } else {
+        state.batchOptChartInfo = null
+      }
+    },
+    setBatchOptStatus(state, status) {
+      state.batchOptStatus = status
+      // Currently selected components
+      state.curBatchOptComponents = []
+      state.mixProperties = []
+      state.batchOptChartInfo = null
+      state.batchOptViews = {}
+      state.changeProperties = {
+        customStyle: {},
+        customAttr: {}
+      }
+    },
+    setChangeProperties(state, propertyInfo) {
+      state.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+    },
+    initCanvas(state) {
+      this.commit('setCurComponent', { component: null, index: null })
+      this.commit('clearLinkageSettingInfo', false)
+      this.commit('resetViewEditInfo')
+      state.batchOptStatus = false
+      // Currently selected components
+      state.curBatchOptComponents = []
+      state.mixProperties = []
+      state.batchOptChartInfo = null
+      state.batchOptViews = {}
+      state.changeProperties = {
+        customStyle: {},
+        customAttr: {}
+      }
     }
   },
   modules: {

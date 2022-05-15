@@ -226,11 +226,14 @@
         </el-row>
       </de-main-container>
 
-      <div v-if="!mobileLayoutStatus&&rightDrawOpen" class="tools-window-main">
-        <div v-if="showViewToolsAside">
-          <chart-edit v-if="curComponent" ref="chartEditRef" :edit-from="'panel'" :param="chartEditParam" />
+      <div v-show="!mobileLayoutStatus&&rightDrawOpen" class="tools-window-main">
+        <div v-show="showViewToolsAside">
+          <chart-edit ref="chartEditRef" :edit-from="'panel'" :param="chartEditParam" />
         </div>
-        <div v-if="!showViewToolsAside">
+        <div v-show="showBatchViewToolsAside">
+          <chart-style-batch-set />
+        </div>
+        <div v-show="!showViewToolsAside&&!showBatchViewToolsAside">
           <el-row style="height: 40px">
             <el-tooltip :content="$t('chart.draw_back')">
               <el-button class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 5px;" size="mini" circle @click="changeRightDrawOpen(false)" />
@@ -368,10 +371,12 @@ import ComponentWait from '@/views/panel/edit/ComponentWait'
 import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
 import ChartEdit from '@/views/chart/view/ChartEdit'
 import OuterParamsSet from '@/views/panel/OuterParamsSet/index'
+import ChartStyleBatchSet from '@/views/chart/view/ChartStyleBatchSet'
 
 export default {
   name: 'PanelEdit',
   components: {
+    ChartStyleBatchSet,
     OuterParamsSet,
     ComponentWait,
     DeMainContainer,
@@ -473,7 +478,10 @@ export default {
     },
     // 显示视图工具栏
     showViewToolsAside() {
-      return this.curComponent && (this.curComponent.type === 'view' || this.curComponent.type === 'de-tabs')
+      return !this.batchOptStatus && this.curComponent && (this.curComponent.type === 'view' || this.curComponent.type === 'de-tabs')
+    },
+    showBatchViewToolsAside() {
+      return this.batchOptStatus
     },
     showViewToolAsideType() {
       if (this.curComponent) {
@@ -571,7 +579,8 @@ export default {
       'pcMatrixCount',
       'mobileMatrixCount',
       'mobileLayoutStyle',
-      'scrollAutoMove'
+      'scrollAutoMove',
+      'batchOptStatus'
     ])
   },
 
@@ -598,13 +607,6 @@ export default {
   },
   created() {
     this.init(this.$store.state.panel.panelInfo.id)
-    // this.restore()
-    // 全局监听按键事件
-    // listenGlobalKeyDown()
-
-    this.$store.commit('setCurComponent', { component: null, index: null })
-    this.$store.commit('clearLinkageSettingInfo', false)
-    this.$store.commit('resetViewEditInfo')
   },
   mounted() {
     // this.insertToBody()
@@ -657,6 +659,7 @@ export default {
     init(panelId) {
       const _this = this
       _this.initHasStar()
+      this.$store.commit('initCanvas')
       if (panelId) {
         initPanelData(panelId, function() {
           // 初始化视图缓存

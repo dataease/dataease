@@ -1438,6 +1438,7 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    batch_opt: '批量操作',
     edit_leave_tips: '是否放弃编辑离开当前界面？',
     hyperlinks: '超链接',
     is_live: '是否直播',

@@ -41,9 +41,10 @@
       :snap="true"
       :snap-tolerance="2"
       :change-style="customStyle"
-      :draggable="!linkageSettingStatus"
-      :resizable="!linkageSettingStatus"
-      :linkage-active="linkageSettingStatus&&item===curLinkageView"
+      :draggable="deDraggable"
+      :resizable="deResizable"
+      :linkage-active="linkageActiveCheck(item)"
+      :batch-opt-active="batchOptActiveCheck(item)"
       @refLineParams="getRefLineParams"
       @showViewDetails="showViewDetails(index)"
       @resizeView="resizeView(index,item)"
@@ -955,6 +956,12 @@ export default {
     }
   },
   computed: {
+    deDraggable() {
+      return !this.linkageSettingStatus && !this.batchOptStatus
+    },
+    deResizable() {
+      return !this.linkageSettingStatus && !this.batchOptStatus
+    },
     showExportImgButton() {
       // if the chart type belong to table,'export image' button should be hidden
       return this.showChartInfo.type && !this.showChartInfo.type.includes('table')
@@ -1016,7 +1023,8 @@ export default {
       'doSnapshotIndex',
       'componentGap',
       'mobileLayoutStatus',
-      'curCanvasScale'
+      'curCanvasScale',
+      'batchOptStatus'
     ]),
     filterMap() {
       return buildFilterMap(this.componentData)
@@ -1090,6 +1098,12 @@ export default {
   created() {
   },
   methods: {
+    linkageActiveCheck(item) {
+      return this.linkageSettingStatus && item === this.curLinkageView
+    },
+    batchOptActiveCheck(item) {
+      return this.batchOptStatus && item.type === 'view'
+    },
     canvasInit() {
       this.editShow = false
       setTimeout(() => {

@@ -33,65 +33,121 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_table',
     value: 'table-normal',
     title: 'chart.chart_table_normal',
-    icon: 'table-normal'
+    icon: 'table-normal',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'title-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_table',
     value: 'table-info',
     title: 'chart.chart_table_info',
-    icon: 'table-info'
+    icon: 'table-info',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'title-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_table',
     value: 'table-pivot',
     title: 'chart.chart_table_pivot',
-    icon: 'table-pivot'
+    icon: 'table-pivot',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'total-cfg',
+      'title-selector-ant-v'
+    ]
   },
-
   {
     render: 'antv',
     category: 'chart.chart_type_quota',
     value: 'label',
     title: 'chart.chart_label',
-    icon: 'label'
+    icon: 'label',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'title-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_quota',
     value: 'text',
     title: 'chart.chart_card',
-    icon: 'text'
+    icon: 'text',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'title-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_quota',
     value: 'gauge',
     title: 'chart.chart_gauge',
-    icon: 'gauge'
+    icon: 'gauge',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'label-selector-ant-v',
+      'title-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_quota',
     value: 'liquid',
     title: 'chart.chart_liquid',
-    icon: 'liquid'
+    icon: 'liquid',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'label-selector-ant-v',
+      'title-selector-ant-v'
+    ]
   },
-
   {
     render: 'antv',
     category: 'chart.chart_type_trend',
     value: 'line',
     title: 'chart.chart_line',
-    icon: 'line'
+    icon: 'line',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'x-axis-selector-ant-v',
+      'y-axis-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_trend',
     value: 'line-stack',
     title: 'chart.chart_line_stack',
-    icon: 'line-stack'
+    icon: 'line-stack',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'x-axis-selector-ant-v',
+      'y-axis-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ]
   },
 
   {
@@ -99,35 +155,82 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_compare',
     value: 'bar',
     title: 'chart.chart_bar',
-    icon: 'bar'
+    icon: 'bar',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'x-axis-selector-ant-v',
+      'y-axis-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_compare',
     value: 'bar-stack',
     title: 'chart.chart_bar_stack',
-    icon: 'bar-stack'
+    icon: 'bar-stack',
+    properties: [
+      'color-selector',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'x-axis-selector-ant-v',
+      'y-axis-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_compare',
     value: 'waterfall',
     title: 'chart.chart_waterfall',
-    icon: 'waterfall'
+    icon: 'waterfall',
+    properties: [
+      'color-selector',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'x-axis-selector-ant-v',
+      'y-axis-selector-ant-v',
+      'title-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_compare',
     value: 'bar-horizontal',
     title: 'chart.chart_bar_horizontal',
-    icon: 'bar-horizontal'
+    icon: 'bar-horizontal',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'x-axis-selector-ant-v',
+      'y-axis-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_compare',
     value: 'bar-stack-horizontal',
     title: 'chart.chart_bar_stack_horizontal',
-    icon: 'bar-stack-horizontal'
+    icon: 'bar-stack-horizontal',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'x-axis-selector-ant-v',
+      'y-axis-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ]
   },
 
   {
@@ -135,35 +238,72 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_distribute',
     value: 'pie',
     title: 'chart.chart_pie',
-    icon: 'pie'
+    icon: 'pie',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_distribute',
     value: 'pie-rose',
     title: 'chart.chart_pie_rose',
-    icon: 'pie-rose'
+    icon: 'pie-rose',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_distribute',
     value: 'radar',
     title: 'chart.chart_radar',
-    icon: 'radar'
+    icon: 'radar',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'split-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_distribute',
     value: 'treemap',
     title: 'chart.chart_treemap',
-    icon: 'treemap'
+    icon: 'treemap',
+    properties: [
+      'color-selector',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_distribute',
     value: 'word-cloud',
     title: 'chart.chart_word_cloud',
-    icon: 'word-cloud'
+    icon: 'word-cloud',
+    properties: [
+      'color-selector',
+      'tooltip-selector-ant-v',
+      'title-selector-ant-v'
+    ]
   },
 
   {
@@ -171,14 +311,31 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_relation',
     value: 'scatter',
     title: 'chart.chart_scatter',
-    icon: 'scatter'
+    icon: 'scatter',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'x-axis-selector-ant-v',
+      'y-axis-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ]
   },
   {
     render: 'antv',
     category: 'chart.chart_type_relation',
     value: 'funnel',
     title: 'chart.chart_funnel',
-    icon: 'funnel'
+    icon: 'funnel',
+    properties: [
+      'color-selector',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ]
   },
   /* 下面是echarts图表类型 */
   {
@@ -186,14 +343,24 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_table',
     value: 'table-normal',
     title: 'chart.chart_table_normal',
-    icon: 'table-normal'
+    icon: 'table-normal',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'title-selector'
+    ]
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_table',
     value: 'table-info',
     title: 'chart.chart_table_info',
-    icon: 'table-info'
+    icon: 'table-info',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'title-selector'
+    ]
   },
 
   {
@@ -201,21 +368,37 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_quota',
     value: 'label',
     title: 'chart.chart_label',
-    icon: 'label'
+    icon: 'label',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'title-selector'
+    ]
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_quota',
     value: 'text',
     title: 'chart.chart_card',
-    icon: 'text'
+    icon: 'text',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'title-selector'
+    ]
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_quota',
     value: 'gauge',
     title: 'chart.chart_gauge',
-    icon: 'gauge'
+    icon: 'gauge',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'title-selector',
+    ]
   },
 
   {
@@ -223,21 +406,52 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_trend',
     value: 'line',
     title: 'chart.chart_line',
-    icon: 'line'
+    icon: 'line',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'x-axis-selector',
+      'y-axis-selector',
+      'title-selector',
+      'legend-selector'
+    ]
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_trend',
     value: 'line-stack',
     title: 'chart.chart_line_stack',
-    icon: 'line-stack'
+    icon: 'line-stack',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'x-axis-selector',
+      'y-axis-selector',
+      'title-selector',
+      'legend-selector'
+    ]
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_trend',
     value: 'chart-mix',
     title: 'chart.chart_mix',
-    icon: 'chart-mix'
+    icon: 'chart-mix',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'x-axis-selector',
+      'y-axis-selector',
+      'y-axis-ext-selector',
+      'title-selector',
+      'legend-selector'
+    ]
   },
 
   {
@@ -245,28 +459,68 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_compare',
     value: 'bar',
     title: 'chart.chart_bar',
-    icon: 'bar'
+    icon: 'bar',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'x-axis-selector',
+      'y-axis-selector',
+      'title-selector',
+      'legend-selector'
+    ]
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
     value: 'bar-stack',
     title: 'chart.chart_bar_stack',
-    icon: 'bar-stack'
+    icon: 'bar-stack',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'x-axis-selector',
+      'y-axis-selector',
+      'title-selector',
+      'legend-selector'
+    ]
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
     value: 'bar-horizontal',
     title: 'chart.chart_bar_horizontal',
-    icon: 'bar-horizontal'
+    icon: 'bar-horizontal',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'x-axis-selector',
+      'y-axis-selector',
+      'title-selector',
+      'legend-selector'
+    ]
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
     value: 'bar-stack-horizontal',
     title: 'chart.chart_bar_stack_horizontal',
-    icon: 'bar-stack-horizontal'
+    icon: 'bar-stack-horizontal',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'x-axis-selector',
+      'y-axis-selector',
+      'title-selector',
+      'legend-selector'
+    ]
   },
 
   {
@@ -274,28 +528,60 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_distribute',
     value: 'pie',
     title: 'chart.chart_pie',
-    icon: 'pie'
+    icon: 'pie',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'title-selector',
+      'legend-selector'
+    ]
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_distribute',
     value: 'pie-rose',
     title: 'chart.chart_pie_rose',
-    icon: 'pie-rose'
+    icon: 'pie-rose',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'title-selector',
+      'legend-selector'
+    ]
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_distribute',
     value: 'radar',
     title: 'chart.chart_radar',
-    icon: 'radar'
+    icon: 'radar',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'split-selector',
+      'title-selector',
+      'legend-selector'
+    ]
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_distribute',
     value: 'treemap',
     title: 'chart.chart_treemap',
-    icon: 'treemap'
+    icon: 'treemap',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'title-selector'
+    ]
   },
 
   {
@@ -303,14 +589,32 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_relation',
     value: 'scatter',
     title: 'chart.chart_scatter',
-    icon: 'scatter'
+    icon: 'scatter',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'x-axis-selector',
+      'y-axis-selector',
+      'title-selector',
+      'legend-selector'
+    ]
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_relation',
     value: 'funnel',
     title: 'chart.chart_funnel',
-    icon: 'funnel'
+    icon: 'funnel',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'title-selector',
+      'legend-selector'
+    ]
   },
 
   {
@@ -318,7 +622,14 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_space',
     value: 'map',
     title: 'chart.chart_map',
-    icon: 'map'
+    icon: 'map',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'title-selector'
+    ]
   }
 ]
 

@@ -5,6 +5,9 @@
       <el-checkbox v-model="linkageInfo.linkageActive" />
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
     </div>
+    <div v-if="batchOptAreaShow" style="margin-right: -1px;width: 18px;z-index: 5">
+      <el-checkbox @change="batchOptChange" />
+    </div>
     <div v-if="normalAreaShow">
       <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
         <span slot="icon" :title="$t('panel.setting')">
@@ -44,10 +47,9 @@ import bus from '@/utils/bus'
 import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 import LinkageField from '@/components/canvas/components/Editor/LinkageField'
 import toast from '@/components/canvas/utils/toast'
-import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
 
 export default {
-  components: { Hyperlinks, SettingMenu, LinkageField },
+  components: { SettingMenu, LinkageField },
 
   props: {
     element: {
@@ -87,13 +89,17 @@ export default {
     showJumpFlag() {
       return this.curComponent && this.curComponent.hyperlinks && this.curComponent.hyperlinks.enable
     },
+    // batch operation area
+    batchOptAreaShow() {
+      return this.batchOptStatus && this.element.type === 'view'
+    },
     // 联动区域按钮显示
     linkageAreaShow() {
       return this.linkageSettingStatus && this.element !== this.curLinkageView && this.element.type === 'view'
     },
     // 编辑或预览区域显示
     normalAreaShow() {
-      return !this.linkageSettingStatus
+      return !this.linkageSettingStatus && !this.batchOptStatus
     },
     existLinkage() {
       let linkageFiltersCount = 0
@@ -131,7 +137,9 @@ export default {
       'linkageSettingStatus',
       'targetLinkageInfo',
       'curLinkageView',
-      'curCanvasScale'
+      'curCanvasScale',
+      'batchOptStatus',
+      'curBatchOptComponents'
     ])
   },
   beforeDestroy() {
@@ -264,6 +272,17 @@ export default {
     },
     boardSet() {
       this.$emit('boardSet')
+    },
+    batchOptChange(val) {
+      if (val) {
+        // push
+        this.$store.commit('addCurBatchComponent', this.element.propValue.viewId)
+        console.log('push')
+      } else {
+        // remove
+        this.$store.commit('removeCurBatchComponentWithId', this.element.propValue.viewId)
+        console.log('remove')
+      }
     }
   }
 }
@@ -279,7 +298,7 @@ export default {
     padding-left: 5px;
     padding-right: 2px;
     cursor:pointer!important;
-    background-color: #0a7be0;
+    background-color: rgba(10,123,224, 1);
   }
   .bar-main i{
     color: white;

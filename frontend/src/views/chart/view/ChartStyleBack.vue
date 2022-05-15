@@ -12,8 +12,12 @@
       style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;padding-right: 6px"
       class="attr-style theme-border-class"
     >
-      <el-row v-if="chart.mode!=='batchOpt'" class="padding-lr">
+      <el-row class="padding-lr">
         <span class="title-text">{{ $t('chart.style_priority') }}</span>
+        <br>
+        <span class="title-text">{{ view.render }}</span>
+        <br>
+        <span class="title-text">{{ view.type }}</span>
         <el-row>
           <el-radio-group
             v-model="view.stylePriority"
@@ -30,87 +34,104 @@
         <span class="padding-lr">{{ $t('chart.shape_attr') }}</span>
         <el-collapse v-model="attrActiveNames" class="style-collapse">
           <el-collapse-item name="color" :title="$t('chart.color')">
+            {{ 'color-selector' }}
             <color-selector
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onColorChange="onColorChange($event,'color-selector')"
+              @onColorChange="onColorChange"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['size-selector','no-mix'])"
+            v-show="view.render && view.render === 'echarts' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'word-cloud'"
             name="size"
             :title="$t('chart.size')"
           >
+            {{ 'size-selector' }}
             <size-selector
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onSizeChange="onSizeChange($event,'size-selector')"
+              @onSizeChange="onSizeChange"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['size-selector-ant-v'])"
+            v-show="view.render && view.render === 'antv' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'word-cloud' && chart.type !== 'treemap' && chart.type !== 'funnel' && chart.type !== 'bar-stack'"
             name="size"
             :title="(chart.type && chart.type.includes('table')) ? $t('chart.table_config') : $t('chart.size')"
           >
+            {{ 'size-selector-ant-v' }}
             <size-selector-ant-v
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onSizeChange="onSizeChange($event,'size-selector-ant-v')"
+              @onSizeChange="onSizeChange"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['label-selector','label-selector-ant-v'])"
+            v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
             name="label"
             :title="$t('chart.label')"
           >
+            <span v-show="view.render && view.render === 'echarts'">
+              {{ 'label-selector' }}
+            </span>
+            <span v-show="view.render && view.render === 'antv'">
+              {{ 'label-selector-ant-v' }}
+            </span>
+
             <label-selector
-              v-if="showProperties('label-selector')"
+              v-if="view.render && view.render === 'echarts'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onLabelChange="onLabelChange($event,'label-selector')"
+              @onLabelChange="onLabelChange"
             />
             <label-selector-ant-v
-              v-else-if="showProperties('label-selector-ant-v')"
+              v-else-if="view.render && view.render === 'antv'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onLabelChange="onLabelChange($event,'label-selector-ant-v')"
+              @onLabelChange="onLabelChange"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['tooltip-selector','tooltip-selector-ant-v'])"
+            v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
             name="tooltip"
             :title="$t('chart.tooltip')"
           >
+            <span v-show="view.render && view.render === 'echarts'">
+              {{ 'tooltip-selector' }}
+            </span>
+            <span v-show="view.render && view.render === 'antv'">
+              {{ 'tooltip-selector-ant-v' }}
+            </span>
             <tooltip-selector
-              v-if="showProperties('tooltip-selector')"
+              v-if="view.render && view.render === 'echarts'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onTooltipChange="onTooltipChange($event,'tooltip-selector')"
+              @onTooltipChange="onTooltipChange"
             />
             <tooltip-selector-ant-v
-              v-else-if="showProperties('tooltip-selector-ant-v')"
+              v-else-if="view.render && view.render === 'antv'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onTooltipChange="onTooltipChange($event,'tooltip-selector-ant-v')"
+              @onTooltipChange="onTooltipChange"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['total-cfg'])"
+            v-show="view.type === 'table-pivot'"
             name="totalCfg"
             :title="$t('chart.total_cfg')"
           >
+            {{ 'total-cfg' }}
             <total-cfg
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onTotalCfgChange="onTotalCfgChange($event,'total-cfg')"
+              @onTotalCfgChange="onTotalCfgChange"
             />
           </el-collapse-item>
         </el-collapse>
@@ -119,119 +140,158 @@
         <span class="padding-lr">{{ $t('chart.module_style') }}</span>
         <el-collapse v-model="styleActiveNames" class="style-collapse">
           <el-collapse-item
-            v-show="showPropertiesCollapse(['x-axis-selector','x-axis-selector-ant-v'])"
+            v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
             name="xAxis"
             :title="$t('chart.xAxis')"
           >
+            <span v-show="view.render && view.render === 'echarts'">
+              {{ 'x-axis-selector' }}
+            </span>
+            <span v-show="view.render && view.render === 'antv'">
+              {{ 'x-axis-selector-ant-v' }}
+            </span>
             <x-axis-selector
-              v-if="showProperties('x-axis-selector')"
+              v-if="view.render && view.render === 'echarts'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onChangeXAxisForm="onChangeXAxisForm($event,'x-axis-selector')"
+              @onChangeXAxisForm="onChangeXAxisForm"
             />
             <x-axis-selector-ant-v
-              v-else-if="showProperties('x-axis-selector-ant-v')"
+              v-else-if="view.render && view.render === 'antv'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onChangeXAxisForm="onChangeXAxisForm($event,'x-axis-selector-ant-v')"
+              @onChangeXAxisForm="onChangeXAxisForm"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['y-axis-selector','y-axis-selector-ant-v'])"
+            v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
             name="yAxis"
             :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')"
           >
+            <span v-show="view.render && view.render === 'echarts'">
+              {{ 'y-axis-selector' }}
+            </span>
+            <span v-show="view.render && view.render === 'antv'">
+              {{ 'y-axis-selector-ant-v' }}
+            </span>
+
             <y-axis-selector
-              v-if="showProperties('y-axis-selector')"
+              v-if="view.render && view.render === 'echarts'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onChangeYAxisForm="onChangeYAxisForm($event,'y-axis-selector')"
+              @onChangeYAxisForm="onChangeYAxisForm"
             />
             <y-axis-selector-ant-v
-              v-else-if="showProperties('y-axis-selector-ant-v')"
+              v-else-if="view.render && view.render === 'antv'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onChangeYAxisForm="onChangeYAxisForm($event,'y-axis-selector-ant-v')"
+              @onChangeYAxisForm="onChangeYAxisForm"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['y-axis-ext-selector','y-axis-ext-selector-ant-v'])"
+            v-show="view.type && view.type === 'chart-mix'"
             name="yAxisExt"
             :title="$t('chart.yAxis_ext')"
           >
+            <span v-show="view.render && view.render === 'echarts'">
+              {{ 'y-axis-ext-selector' }}
+            </span>
+            <span v-show="view.render && view.render === 'antv'">
+              {{ 'y-axis-ext-selector-ant-v' }}
+            </span>
+
             <y-axis-ext-selector
-              v-if="showProperties('y-axis-ext-selector')"
+              v-if="view.render && view.render === 'echarts'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onChangeYAxisForm="onChangeYAxisExtForm($event,'y-axis-ext-selector')"
+              @onChangeYAxisForm="onChangeYAxisExtForm"
             />
             <y-axis-ext-selector-ant-v
-              v-else-if="showProperties('y-axis-ext-selector-ant-v')"
+              v-else-if="view.render && view.render === 'antv'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onChangeYAxisForm="onChangeYAxisExtForm($event,'y-axis-ext-selector-ant-v')"
+              @onChangeYAxisForm="onChangeYAxisExtForm"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['split-selector','split-selector-ant-v'])"
+            v-show="view.type && view.type.includes('radar')"
             name="split"
             :title="$t('chart.split')"
           >
+            <span v-show="view.render && view.render === 'echarts'">
+              {{ 'split-selector' }}
+            </span>
+            <span v-show="view.render && view.render === 'antv'">
+              {{ 'split-selector-ant-v' }}
+            </span>
             <split-selector
-              v-if="showProperties('split-selector')"
+              v-if="view.render && view.render === 'echarts'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onChangeSplitForm="onChangeSplitForm($event,'split-selector')"
+              @onChangeSplitForm="onChangeSplitForm"
             />
             <split-selector-ant-v
-              v-else-if="showProperties('split-selector-ant-v')"
+              v-else-if="view.render && view.render === 'antv'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onChangeSplitForm="onChangeSplitForm($event,'split-selector-ant-v')"
+              @onChangeSplitForm="onChangeSplitForm"
             />
           </el-collapse-item>
           <el-collapse-item v-show="view.type" name="title" :title="$t('chart.title')">
+            <span v-show="view.render && view.render === 'echarts'">
+              {{ 'title-selector' }}
+            </span>
+            <span v-show="view.render && view.render === 'antv'">
+              {{ 'title-selector-ant-v' }}
+            </span>
             <title-selector
-              v-if="showProperties('title-selector')"
+              v-if="view.render && view.render === 'echarts'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onTextChange="onTextChange($event,'title-selector')"
+              @onTextChange="onTextChange"
             />
             <title-selector-ant-v
-              v-else-if="showProperties('title-selector-ant-v')"
+              v-else-if="view.render && view.render === 'antv'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onTextChange="onTextChange($event,'title-selector-ant-v')"
+              @onTextChange="onTextChange"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['legend-selector','legend-selector-ant-v'])"
+            v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall' && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
             name="legend"
             :title="$t('chart.legend')"
           >
+            <span v-show="view.render && view.render === 'echarts'">
+              {{ 'legend-selector' }}
+            </span>
+            <span v-show="view.render && view.render === 'antv'">
+              {{ 'legend-selector-ant-v' }}
+            </span>
+
             <legend-selector
-              v-if="showProperties('legend-selector')"
+              v-if="view.render && view.render === 'echarts'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onLegendChange="onLegendChange($event,'legend-selector')"
+              @onLegendChange="onLegendChange"
             />
             <legend-selector-ant-v
-              v-else-if="showProperties('legend-selector-ant-v')"
+              v-else-if="view.render && view.render === 'antv'"
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onLegendChange="onLegendChange($event,'legend-selector-ant-v')"
+              @onLegendChange="onLegendChange"
             />
           </el-collapse-item>
           <el-collapse-item
@@ -239,11 +299,12 @@
             name="background"
             :title="$t('chart.background')"
           >
+            {{ background-color-selector }}
             <background-color-selector
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onChangeBackgroundForm="onChangeBackgroundForm($event,'background-color-selector')"
+              @onChangeBackgroundForm="onChangeBackgroundForm"
             />
           </el-collapse-item>
         </el-collapse>
@@ -272,11 +333,11 @@ import TitleSelectorAntV from '@/views/chart/components/component-style/TitleSel
 import LegendSelector from '@/views/chart/components/component-style/LegendSelector'
 import LegendSelectorAntV from '@/views/chart/components/component-style/LegendSelectorAntV'
 import BackgroundColorSelector from '@/views/chart/components/component-style/BackgroundColorSelector'
-import SplitSelector from '@/views/chart/components/component-style/SplitSelector'
-import SplitSelectorAntV from '@/views/chart/components/component-style/SplitSelectorAntV'
+import SplitSelector from "@/views/chart/components/component-style/SplitSelector";
+import SplitSelectorAntV from "@/views/chart/components/component-style/SplitSelectorAntV";
 
 export default {
-  name: 'ChartStyle',
+  name: 'ChartStyleBack',
   components: {
     SplitSelectorAntV,
     SplitSelector,
@@ -311,7 +372,7 @@ export default {
     },
     properties: {
       type: Array,
-      required: true
+      required: false
     }
   },
   data() {
@@ -320,77 +381,47 @@ export default {
       styleActiveNames: []
     }
   },
-  computed: {
-
-  },
   created() {
 
   },
   methods: {
-    showProperties(property) {
-      return this.properties.includes(property)
-    },
-    showPropertiesCollapse(propertiesInfo) {
-      let includeCount = 0
-      // Property does not support mixed mode
-      if (propertiesInfo.includes('no-mix') && this.chart.type === 'mix') {
-        return false
-      } else {
-        propertiesInfo.forEach(property => {
-          this.properties.includes(property) && includeCount++
-        })
-        return includeCount > 0
-      }
-    },
     calcStyle() {
       this.$emit('calcStyle')
     },
-    onColorChange(val, propertyName) {
-      val['propertyName'] = propertyName
+    onColorChange(val) {
       this.$emit('onColorChange', val)
     },
-    onSizeChange(val, propertyName) {
-      val['propertyName'] = propertyName
+    onSizeChange(val) {
       this.$emit('onSizeChange', val)
     },
-    onLabelChange(val, propertyName) {
-      val['propertyName'] = propertyName
+    onLabelChange(val) {
       this.$emit('onLabelChange', val)
     },
-    onTooltipChange(val, propertyName) {
-      val['propertyName'] = propertyName
+    onTooltipChange(val) {
       this.$emit('onTooltipChange', val)
     },
-    onTotalCfgChange(val, propertyName) {
-      val['propertyName'] = propertyName
+    onTotalCfgChange(val) {
       this.$emit('onTotalCfgChange', val)
     },
-    onChangeXAxisForm(val, propertyName) {
-      val['propertyName'] = propertyName
+    onChangeXAxisForm(val) {
       this.$emit('onChangeXAxisForm', val)
     },
-    onChangeYAxisForm(val, propertyName) {
-      val['propertyName'] = propertyName
+    onChangeYAxisForm(val) {
       this.$emit('onChangeYAxisForm', val)
     },
-    onChangeYAxisExtForm(val, propertyName) {
-      val['propertyName'] = propertyName
+    onChangeYAxisExtForm(val) {
       this.$emit('onChangeYAxisExtForm', val)
     },
-    onChangeSplitForm(val, propertyName) {
-      val['propertyName'] = propertyName
+    onChangeSplitForm(val) {
       this.$emit('onChangeSplitForm', val)
     },
-    onTextChange(val, propertyName) {
-      val['propertyName'] = propertyName
+    onTextChange(val) {
       this.$emit('onTextChange', val)
     },
-    onLegendChange(val, propertyName) {
-      val['propertyName'] = propertyName
+    onLegendChange(val) {
       this.$emit('onLegendChange', val)
     },
-    onChangeBackgroundForm(val, propertyName) {
-      val['propertyName'] = propertyName
+    onChangeBackgroundForm(val) {
       this.$emit('onChangeBackgroundForm', val)
     }
   }
