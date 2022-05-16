@@ -11,6 +11,7 @@
             <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
             <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
             <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
+            <svg-icon v-if="item.sort === 'custom_sort'" icon-class="custom_sort" class-name="field-icon-sort" />
           </span>
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
           <field-error-tips v-if="tagType === 'danger'" />
