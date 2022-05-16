@@ -78,7 +78,7 @@ export default {
 
 .item-dimension {
   padding: 2px;
-  margin: 2px 2px 0 2px;
+  margin: 2px;
   border: solid 1px #eee;
   text-align: left;
   color: #606266;
