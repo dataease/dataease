@@ -653,6 +653,8 @@ export default {
     kettle_setting: 'Kettle Setting'
   },
   chart: {
+    canvasSize: 'canvas size',
+    canvasWith: 'canvas width',
     title_repeat: 'The Title Already Exist',
     save_snapshot: 'Save Snapshot',
     datalist: 'Chart',
@@ -1970,7 +1972,6 @@ export default {
     tel: 'Tel:',
     web: 'Web:',
     add_datasource: 'Add a datasource'
-
   },
   kettle: {
     add: 'Add Kettle',

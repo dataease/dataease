@@ -656,6 +656,8 @@ export default {
     kettle_setting: 'Kettle 设置'
   },
   chart: {
+    canvasSize: '画布尺寸',
+    canvasWith: '画布宽度',
     title_repeat: '当前标题已存在',
     save_snapshot: '保存缩略图',
     datalist: '视图',
@@ -1984,7 +1986,11 @@ export default {
     email: '邮箱：',
     tel: '电话：',
     web: '网址：',
-    add_datasource: '添加一个数据源'
+    add_datasource: '添加一个数据源',
+    data_connection: '数据连接',
+    data_preparation: '数据准备',
+    analysis_display: '分析展现',
+    resource_publishing: '资源发布'
   },
   kettle: {
     add: '添加 Kettle 服务',
