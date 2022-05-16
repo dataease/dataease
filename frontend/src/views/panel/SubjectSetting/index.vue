@@ -16,6 +16,7 @@
       <el-collapse v-model="activeNames" @change="handleChange">
         <el-collapse-item :title="$t('panel.panel')" name="panel">
           <el-row class="selector-div">
+            <SetDrawSize class="attr-selector" />
             <background-selector class="attr-selector" />
             <component-gap class="attr-selector" />
             <panel-refresh-time class="attr-selector" />
@@ -61,6 +62,7 @@
 <script>
 import slider from './PreSubject/Slider'
 import BackgroundSelector from './PanelStyle/BackgroundSelector'
+import SetDrawSize from './PanelStyle/setDrawSize'
 import PanelBackgroundColorSelector from './PanelStyle/PanelBackgroundColorSelector'
 import PanelColorSelector from './PanelStyle/PanelColorSelector'
 import ComponentGap from './PanelStyle/ComponentGap'
@@ -74,6 +76,7 @@ import PanelViewResult from '@/views/panel/SubjectSetting/PanelStyle/PanelViewRe
 export default {
   components: {
     PanelViewResult,
+    SetDrawSize,
     slider,
     BackgroundSelector,
     ComponentGap,

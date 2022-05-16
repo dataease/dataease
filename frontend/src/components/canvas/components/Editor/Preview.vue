@@ -238,6 +238,7 @@ export default {
     _this.$store.commit('clearLinkageSettingInfo', false)
     _this.canvasStyleDataInit()
     // 如果当前终端设备是移动端，则进行移动端的布局设计
+    console.log('huoqude1shuju1===')
     if (_this.terminal === 'mobile') {
       _this.initMobileCanvas()
     }

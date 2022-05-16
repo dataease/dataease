@@ -40,6 +40,7 @@
     </el-row>
     <el-row class="view-panel-row">
       <el-tabs :stretch="true" class="tab-header">
+        <!-- 数据 -->
         <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 300px">
           <div v-if="view.dataFrom==='template'" class="view-panel-Mask">
             <span style="opacity: 1;">
@@ -84,6 +85,7 @@
                   @click="changeDs"
                 />
               </div>
+              <!-- 维度 -->
               <div class="padding-lr field-height">
                 <span>{{ $t('chart.dimension') }}</span>
                 <draggable
@@ -110,6 +112,7 @@
                   </transition-group>
                 </draggable>
               </div>
+              <!-- 指标 -->
               <div class="padding-lr field-height">
                 <span>{{ $t('chart.quota') }}</span>
                 <draggable
@@ -646,6 +649,7 @@
             </el-col>
           </el-row>
         </el-tab-pane>
+        <!-- 样式 -->
         <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 300px">
           <el-row class="view-panel">
             <plugin-com
@@ -890,6 +894,7 @@
             </div>
           </el-row>
         </el-tab-pane>
+        <!-- 高级 -->
         <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 300px;">
           <el-row class="view-panel">
             <div
@@ -1359,7 +1364,8 @@ export default {
       drillFilters: [],
       renderOptions: [
         { name: 'AntV', value: 'antv' },
-        { name: 'ECharts', value: 'echarts' }
+        { name: 'ECharts', value: 'echarts' },
+        // { name: 'HighCharts', value: 'highcharts' }
       ],
       drill: false,
       hasEdit: false,
@@ -1878,7 +1884,6 @@ export default {
 
     // move回调方法
     onMove(e, originalEvent) {
-      // console.log(e)
       this.moveId = e.draggedContext.element.id
       return true
     },
@@ -2517,6 +2522,7 @@ export default {
       this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
     },
     changeChartType() {
+      console.log('------')
       this.setChartDefaultOptions()
       this.calcData(true, 'chart', true, true)
     },

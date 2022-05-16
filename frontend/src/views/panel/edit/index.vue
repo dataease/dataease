@@ -138,6 +138,7 @@
 
       <!--画布区域-->
       <de-main-container id="canvasInfo-main">
+        <!-- <div>2121</div> -->
         <!--左侧抽屉-->
         <el-drawer
           :visible.sync="show"
@@ -157,6 +158,13 @@
         </el-drawer>
 
         <!--PC端画布区域-->
+        <!-- <vue-ruler-tool
+          :content-layout="{left:0,top:0}"
+          :is-scale-revise="false"
+          :v-model="presetLine"
+          class="ruler_class"
+          :parent="true"
+        > -->
         <div
           v-if="!previewVisible&&!mobileLayoutStatus"
           id="canvasInfo"
@@ -170,6 +178,7 @@
         >
           <Editor ref="canvasEditor" :matrix-count="pcMatrixCount" :out-style="outStyle" :scroll-top="scrollTop" />
         </div>
+        <!-- </vue-ruler-tool> -->
         <!--移动端画布区域 保持宽高比2.5-->
         <el-row v-if="mobileLayoutStatus" class="mobile_canvas_main">
           <el-col :span="8" class="this_mobile_canvas_cell">
@@ -329,6 +338,7 @@
 </template>
 
 <script>
+import VueRulerTool from 'vue-ruler-tool'
 import DeMainContainer from '@/components/datains/DeMainContainer'
 import DeContainer from '@/components/datains/DeContainer'
 import DeAsideContainer from '@/components/datains/DeAsideContainer'
@@ -372,6 +382,7 @@ import OuterParamsSet from '@/views/panel/OuterParamsSet/index'
 export default {
   name: 'PanelEdit',
   components: {
+    VueRulerTool,
     OuterParamsSet,
     ComponentWait,
     DeMainContainer,
@@ -393,6 +404,7 @@ export default {
   },
   data() {
     return {
+      presetLine: [{ type: 'l', site: 100 }, { type: 'v', site: 200 }],
       asideToolType: 'none',
       outerParamsSetVisible: false,
       autoMoveOffSet: 15,
@@ -542,6 +554,9 @@ export default {
           }
         }
       }
+
+      style.width = this.canvasStyleData.width + 'px'
+      console.log('shezhi===', style, this.canvasStyleData)
       return style
     },
     panelInfo() {
@@ -916,51 +931,94 @@ export default {
       this.$refs.files.click()
     },
     handleFileChange(e) {
-      console.log(e)
       const _this = this
       const file = e.target.files[0]
-      console.log(file)
       if (!file.type.includes('image')) {
         toast('只能插入图片')
         return
       }
-      const reader = new FileReader()
-      reader.onload = (res) => {
-        const fileResult = res.target.result
-        const img = new Image()
-        img.src = fileResult
-        img.onload = () => {
-          console.log('宽高',img.width,img.height)
-          let ratio = img.height/img.width
-          const component = {
-            ...commonAttr,
-            id: generateID(),
-            component: 'Picture',
-            type: 'picture-add',
-            label: '图片',
-            icon: '',
-            hyperlinks: HYPERLINKS,
-            mobileStyle: BASE_MOBILE_STYLE,
-            propValue: fileResult,
-            style: {
-              ...commonStyle
+      this.$prompt('请输入图片宽高(例如：400*200)', '图片宽高', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /^([1-9][0-9]*\*[1-9][0-9]*)$/,
+        inputErrorMessage: '请输入宽高并且是非零开头的整数'
+      }).then(({ value }) => {
+        // this.$message({
+        //   type: 'success',
+        //   message: '宽高: ' + value
+        // });
+        let arr = value.split('*');
+        const reader = new FileReader()
+        reader.onload = (res) => {
+          const fileResult = res.target.result
+          const img = new Image()
+          img.src = fileResult
+          img.onload = () => {
+            console.log('宽高',arr)
+            const component = {
+              ...commonAttr,
+              id: generateID(),
+              component: 'Picture',
+              type: 'picture-add',
+              label: '图片',
+              icon: '',
+              hyperlinks: HYPERLINKS,
+              mobileStyle: BASE_MOBILE_STYLE,
+              propValue: fileResult,
+              style: {
+                ...commonStyle
+              }
             }
+            component.auxiliaryMatrix = false
+            component.style.top = _this.dropComponentInfo.shadowStyle.y
+            component.style.left = _this.dropComponentInfo.shadowStyle.x
+            component.style.width = arr[0]
+            component.style.height = arr[1]
+            this.$store.commit('addComponent', {
+              component: component
+            })
+            this.$store.commit('recordSnapshot', 'handleFileChange')
           }
-          component.auxiliaryMatrix = false
-          component.style.top = _this.dropComponentInfo.shadowStyle.y
-          component.style.left = _this.dropComponentInfo.shadowStyle.x
-          component.style.width = img.width< 400 ? img.width : 400
-          component.style.height = img.height< parseInt(400*ratio) ? img.height : parseInt(400*ratio)
-          console.log('component',component)
-          this.$store.commit('addComponent', {
-            component: component
-          })
-          this.$store.commit('recordSnapshot', 'handleFileChange')
+          // img.src = fileResult
         }
-        // img.src = fileResult
-      }
-
-      reader.readAsDataURL(file)
+        reader.readAsDataURL(file)
+      }).catch(() => {
+        const reader = new FileReader()
+        reader.onload = (res) => {
+          const fileResult = res.target.result
+          const img = new Image()
+          img.src = fileResult
+          img.onload = () => {
+            console.log( '宽高', img.width, img.height )
+            let ratio = img.height / img.width
+            const component = {
+              ...commonAttr,
+              id: generateID(),
+              component: 'Picture',
+              type: 'picture-add',
+              label: '图片',
+              icon: '',
+              hyperlinks: HYPERLINKS,
+              mobileStyle: BASE_MOBILE_STYLE,
+              propValue: fileResult,
+              style: {
+                ...commonStyle
+              }
+            }
+            component.auxiliaryMatrix = false
+            component.style.top = _this.dropComponentInfo.shadowStyle.y
+            component.style.left = _this.dropComponentInfo.shadowStyle.x
+            component.style.width = img.width < 400 ? img.width : 400
+            component.style.height = img.height < parseInt(400 * ratio) ? img.height : parseInt(400 * ratio)
+            this.$store.commit('addComponent', {
+              component: component
+            })
+            this.$store.commit('recordSnapshot', 'handleFileChange')
+          }
+          // img.src = fileResult
+        }
+        reader.readAsDataURL(file)
+      })
     },
     getPositionX(x) {
       if (this.canvasStyleData.selfAdaption) {
@@ -982,6 +1040,7 @@ export default {
       this.$refs['chartGroup'].selectTable()
     },
     newViewInfo(newViewInfo) {
+      console.log(newViewInfo)
       let component
       const newComponentId = uuid.v1()
       // 用户视图设置 复制一个模板
@@ -1095,7 +1154,12 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss"  scoped>
+    .ruler_class{
+      .vue-ruler-h{
+        color: #f99;
+      }
+    }
   .ms-aside-container {
     height: calc(100vh - 35px);
     max-width: 60px;
@@ -1236,9 +1300,16 @@ export default {
   .this_canvas {
     width: 100%;
     height: calc(100vh - 35px);
-    overflow-x: hidden;
+    overflow-x: scroll;
     overflow-y: auto;
+    // overflow: scroll;
+    // overflow-y: auto;
+    white-space: nowrap;
     background-size: 100% 100% !important;
+      ::-webkit-scrollbar {
+      width:4px;
+      height: 20px;
+    }
   }
 
   .el-main {
@@ -1329,7 +1400,7 @@ export default {
 
   ::-webkit-scrollbar {
     width: 2px !important;
-    height: 2px !important;
+    height: 10px !important;
   }
 
   .tools-window-main {

@@ -849,6 +849,7 @@ export default {
     chart_line: '基础折线图',
     chart_line_stack: '堆叠折线图',
     chart_pie: '饼图',
+    chart_3Dpie: '3D饼图',
     chart_pie_rose: '南丁格尔玫瑰图',
     chart_funnel: '漏斗图',
     chart_radar: '雷达图',
