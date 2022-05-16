@@ -39,8 +39,8 @@
             <span slot-scope="{ node, data }" class="custom-tree-node father">
               <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span>
-                  <svg-icon v-if="!data.mobileLayout" icon-class="panel" class="ds-icon-scene" />
-                  <svg-icon v-if="data.mobileLayout" icon-class="panel-mobile" class="ds-icon-scene" />
+                  <svg-icon v-if="!data.mobileLayout" :icon-class="'panel-'+data.status" class="ds-icon-scene" />
+                  <svg-icon v-if="data.mobileLayout" :icon-class="'panel-mobile-'+data.status" class="ds-icon-scene" />
                 </span>
                 <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
@@ -91,8 +91,8 @@
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
               <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span v-if="data.nodeType === 'panel'">
-                  <svg-icon v-if="!data.mobileLayout" icon-class="panel" class="ds-icon-scene" />
-                  <svg-icon v-if="data.mobileLayout" icon-class="panel-mobile" class="ds-icon-scene" />
+                  <svg-icon v-if="!data.mobileLayout" :icon-class="'panel-'+data.status" class="ds-icon-scene" />
+                  <svg-icon v-if="data.mobileLayout" :icon-class="'panel-mobile-'+data.status" class="ds-icon-scene" />
                 </span>
                 <span v-if="data.nodeType === 'folder'">
                   <i class="el-icon-folder" />
@@ -806,6 +806,11 @@ export default {
     },
     editFromPanelViewShow() {
       this.edit(this.lastActiveNodeData, this.lastActiveNode)
+    },
+    editPanelBashInfo(params) {
+      if (params.operation === 'status') {
+        this.lastActiveNodeData.status = params.value
+      }
     }
   }
 }

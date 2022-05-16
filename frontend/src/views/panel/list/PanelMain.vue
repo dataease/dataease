@@ -17,7 +17,7 @@
       </el-tabs>
     </de-aside-container>
     <de-main-container>
-      <PanelViewShow v-if="mainActiveName==='PanelMain'" :active-tab="activeName" @editPanel="editPanel" />
+      <PanelViewShow v-if="mainActiveName==='PanelMain'" :active-tab="activeName" @editPanel="editPanel" @editPanelBashInfo="editPanelBashInfo" />
     </de-main-container>
   </de-container>
 </template>
@@ -104,6 +104,9 @@ export default {
     },
     editPanel() {
       this.$refs.panelList.editFromPanelViewShow()
+    },
+    editPanelBashInfo(param) {
+      this.$refs.panelList.editPanelBashInfo(param)
     }
 
   }
