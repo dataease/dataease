@@ -8,6 +8,7 @@ import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
+import io.dataease.controller.request.panel.PanelGroupBaseInfoRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.controller.request.panel.PanelViewDetailsRequest;
 import io.dataease.dto.PanelGroupExtendDataDTO;
@@ -101,6 +102,7 @@ public class PanelGroupService {
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         panelGroupRequest.setUserId(userId);
+        panelGroupRequest.setIsAdmin(AuthUtils.getUser().getIsAdmin());
         List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupList(panelGroupRequest);
         return TreeUtils.mergeTree(panelGroupDTOList, "panel_list");
     }
@@ -108,6 +110,7 @@ public class PanelGroupService {
     public List<PanelGroupDTO> defaultTree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         panelGroupRequest.setUserId(userId);
+        panelGroupRequest.setIsAdmin(AuthUtils.getUser().getIsAdmin());
         List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupListDefault(panelGroupRequest);
         return TreeUtils.mergeTree(panelGroupDTOList, "default_panel");
     }
@@ -526,5 +529,14 @@ public class PanelGroupService {
         } catch (Exception e) {
             DataEaseException.throwException(e);
         }
+    }
+
+    public void updatePanelStatus(String panelId,PanelGroupBaseInfoRequest request){
+        Assert.notNull(request.getStatus(),"status can not be null");
+        Assert.notNull(panelId,"panelId can not be null");
+        PanelGroupWithBLOBs panelGroup = new PanelGroupWithBLOBs();
+        panelGroup.setId(panelId);
+        panelGroup.setStatus(request.getStatus());
+        panelGroupMapper.updateByPrimaryKeySelective(panelGroup);
     }
 }

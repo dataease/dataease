@@ -4,6 +4,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.annotation.DePermissionProxy;
 import io.dataease.auth.annotation.DePermissions;
+import io.dataease.controller.request.panel.PanelGroupBaseInfoRequest;
 import io.dataease.plugins.common.base.domain.PanelGroup;
 import io.dataease.plugins.common.base.domain.PanelGroupWithBLOBs;
 import io.dataease.commons.constants.DePermissionType;
@@ -110,5 +111,12 @@ public class PanelGroupController {
         panelGroupService.exportPanelViewDetails(request,response);
     }
 
+    @ApiOperation("更新仪表板状态")
+    @PostMapping("/updatePanelStatus/{panelId}")
+    @I18n
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
+    public void updatePanelStatus(@PathVariable String panelId,@RequestBody PanelGroupBaseInfoRequest request){
+        panelGroupService.updatePanelStatus(panelId,request);
+    }
 
 }

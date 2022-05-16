@@ -23,9 +23,17 @@
             <span v-if="panelInfo.sourcePanelName" style="color: green;font-size: 12px">({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
           </el-col>
           <el-col :span="12">
+
             <span v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName" style="float: right;margin-right: 10px">
               <el-button size="mini" type="primary" @click="editPanel">
                 {{ $t('commons.edit') }}
+              </el-button>
+            </span>
+
+            <span v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName" style="float: right;margin-right: 10px">
+              <el-button size="mini" type="primary" @click="changePublishState">
+                <span v-if="panelInfo.status==='publish'">{{ $t('commons.unpublished') }}</span>
+                <span v-if="panelInfo.status!=='publish'">{{ $t('commons.publish') }}</span>
               </el-button>
             </span>
 
@@ -136,7 +144,7 @@ import { starStatus, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
-import { initPanelData } from '@/api/panel/panel'
+import { initPanelData, updatePanelStatus } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import { dataURLToBlob } from '@/components/canvas/utils/utils'
 import { findResourceAsBase64, readFile } from '@/api/staticResource/staticResource'
@@ -420,6 +428,14 @@ export default {
         const param = { userId: this.shareUserId }
         proxyInitPanelData(this.panelInfo.id, param, null)
       } else { initPanelData(this.panelInfo.id) }
+    },
+    changePublishState() {
+      if (this.panelInfo.status === 'publish') {
+        this.panelInfo.status = 'unpublished'
+      } else {
+        this.panelInfo.status = 'publish'
+      }
+      updatePanelStatus(this.panelInfo.id, { 'status': this.panelInfo.status })
     }
   }
 }

@@ -131,6 +131,8 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    publish: 'publish',
+    unpublished: 'unpublished',
     default_pwd: 'Default Pwd',
     stop: 'Stop',
     first_login_tips: 'Please change the initial password',
