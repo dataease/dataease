@@ -181,7 +181,6 @@ export default {
       }
     },
     sort(param) {
-      // console.log(param)
       if (param.type === 'custom_sort') {
         const item = {
           index: this.index,
@@ -201,7 +200,6 @@ export default {
       }
     },
     dateStyle(param) {
-      // console.log(param)
       this.item.dateStyle = param.type
       this.$emit('onDimensionItemChange', this.item)
     },
@@ -211,7 +209,6 @@ export default {
       }
     },
     datePattern(param) {
-      // console.log(param)
       this.item.datePattern = param.type
       this.$emit('onDimensionItemChange', this.item)
     },

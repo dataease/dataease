@@ -378,7 +378,6 @@ export default {
     },
 
     setComponentInfo() {
-      console.log('aaa')
     },
 
     editCurTitle(param) {

@@ -157,7 +157,6 @@ export default {
       }
     },
     sort(param) {
-      // console.log(param)
       this.item.sort = param.type
       this.$emit('onDimensionItemChange', this.item)
     },
@@ -167,7 +166,6 @@ export default {
       }
     },
     dateStyle(param) {
-      // console.log(param)
       this.item.dateStyle = param.type
       this.$emit('onDimensionItemChange', this.item)
     },

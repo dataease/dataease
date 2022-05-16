@@ -130,7 +130,6 @@ export default {
       return data
     },
     expandMsgNode(panelIds) {
-      // console.log(panelIds)
       this.$nextTick(() => {
         this.getMsgNodes(panelIds)
       })

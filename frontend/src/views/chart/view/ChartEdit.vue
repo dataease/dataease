@@ -1203,7 +1203,6 @@ export default {
       if (val && this.param.id !== this.preChartId) {
         this.preChartId = this.param.id
         this.chartInit()
-        // console.log('fromwatch:' + JSON.stringify(val))
       }
     },
     'param': function(val) {
@@ -1212,7 +1211,6 @@ export default {
       } else if (this.param.id !== this.preChartId && this.editStatue) {
         this.preChartId = this.param.id
         this.chartInit()
-        // console.log('fromwatch:' + JSON.stringify(val))
       }
     },
     searchField(val) {
@@ -1247,7 +1245,6 @@ export default {
     this.bindPluginEvent()
     this.initFromPanel()
     this.chartInit()
-    // console.log('mounted')
   },
   activated() {
   },
@@ -1261,7 +1258,6 @@ export default {
       this.pluginRenderOptions = [...this.renderOptions, ...pluginOptions]
     },
     emptyTableData(id) {
-      console.log('emptyTableData:' + id)
       this.table = {}
       this.dimension = []
       this.quota = []
@@ -1570,7 +1566,6 @@ export default {
     // 将视图传入echart组件
     //   this.chart = response.data
     //   this.data = response.data.data
-    //   // console.log(JSON.stringify(this.chart))
     //   this.httpRequest.status = true
     //   if (this.chart.privileges) {
     //     this.param.privileges = this.chart.privileges
@@ -1677,7 +1672,6 @@ export default {
           // 将视图传入echart组件
           this.chart = response.data
           this.data = response.data.data
-          // console.log(JSON.stringify(this.chart))
           this.httpRequest.status = true
           if (this.chart.privileges) {
             this.param.privileges = this.chart.privileges
@@ -1742,7 +1736,6 @@ export default {
 
     // move回调方法
     onMove(e, originalEvent) {
-      // console.log(e)
       this.moveId = e.draggedContext.element.id
       return true
     },

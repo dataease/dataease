@@ -661,7 +661,6 @@ export default {
       this.maxH = val
     },
     w(val) {
-      // console.log('changeWidthCK：' + this.resizing)
 
       if (this.resizing || this.dragging) {
         return
@@ -669,7 +668,6 @@ export default {
       if (this.parent) {
         this.bounds = this.calcResizeLimits()
       }
-      // console.log('changeWidth：' + val)
       this.changeWidth(val)
     },
     h(val) {
@@ -1051,7 +1049,6 @@ export default {
       const tmpDeltaY = axis && axis !== 'x' ? mouseClickPosition.mouseY - mY : 0
       // mY 鼠标指针移动的点 mY - this.latestMoveY 是计算向下移动还是向上移动
       const offsetY = mY - this.latestMoveY
-      // console.log('mY:' + mY + ';latestMoveY=' + this.latestMoveY + ';offsetY=' + offsetY)
       this.$emit('canvasDragging', mY, offsetY)
       this.latestMoveY = mY
       const [deltaX, deltaY] = snapToGrid(grid, tmpDeltaX, tmpDeltaY, this.scaleRatio)
@@ -1237,7 +1234,6 @@ export default {
       newH = restrictToBounds(newH, this.miniHeight || 0, this.maxH)
       // 纵横比
       if (this.lockAspectRatio) {
-        // console.log(this.lockAspectRatio, this.aspectFactor)
         if (newW / newH > this.aspectFactor) {
           newW = newH * this.aspectFactor
         } else {
@@ -1245,7 +1241,6 @@ export default {
         }
       }
       this.width = newW
-      // console.log('width2:' + this.width)
       this.height = newH
 
       // this.$emit('resizing', this.left, this.top, this.width, this.height)
@@ -1256,8 +1251,6 @@ export default {
       this.element.propValue && this.element.propValue.viewId && eventBus.$emit('resizing', this.element.propValue.viewId)
     },
     changeWidth(val) {
-      // console.log('parentWidth', this.parentWidth)
-      // console.log('parentHeight', this.parentHeight)
       // eslint-disable-next-line no-unused-vars
       const [newWidth, _] = snapToGrid(this.grid, val, 0, this.scale)
       // const right = restrictToBounds(this.parentWidth - newWidth - this.left, this.bounds.minRight, this.bounds.maxRight)
@@ -1272,7 +1265,6 @@ export default {
       this.right = right
       this.bottom = bottom
       this.width = width
-      // console.log('width3:' + this.width)
       this.height = height
     },
     changeHeight(val) {
@@ -1291,7 +1283,6 @@ export default {
       this.right = right
       this.bottom = bottom
       this.width = width
-      // console.log('width4:' + this.width)
       this.height = height
     },
     // 从控制柄松开
@@ -1309,7 +1300,6 @@ export default {
       this.lastMouseY = mouseY
       if (this.resizing) {
         this.resizing = false
-        // console.log('resizing2:' + this.resizing)
         this.conflictCheck()
         this.$emit('refLineParams', refLine)
         // this.$emit('resizestop', this.left, this.top, this.width, this.height)
@@ -1396,7 +1386,6 @@ export default {
               this.top = this.mouseClickPosition.top
               this.left = this.mouseClickPosition.left
               this.width = this.mouseClickPosition.width
-              // console.log('width5:' + this.width)
               this.height = this.mouseClickPosition.height
             }
           }
@@ -1580,7 +1569,6 @@ export default {
       let groupLeft = 0
       let groupTop = 0
       for (const item of nodes) {
-        // console.log('===' + typeof item.tagName)
         // 修复判断条件
         // if (item.className !== undefined && item.className.split(' ').includes(this.classNameActive)) {
         if (item.tagName !== 'svg' && item.className !== undefined && item.className.split(' ').includes(this.classNameActive)) {
@@ -1680,7 +1668,6 @@ export default {
       style.height = height
       style.rotate = this.rotate
       // this.hasMove = true
-      // console.log('recordMatrixCurShadowStyle:t1:' + JSON.stringify(style))
 
       this.$store.commit('setShapeStyle', style)
 
@@ -1710,7 +1697,6 @@ export default {
         this.aspectFactor = this.outsideAspectRatio
       }
       this.width = this.w !== 'auto' ? this.w : width
-      // console.log('width1:' + this.width)
       this.height = this.h !== 'auto' ? this.h : height
       this.right = this.parentWidth - this.width - this.left
       this.bottom = this.parentHeight - this.height - this.top

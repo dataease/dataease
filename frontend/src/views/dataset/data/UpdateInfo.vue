@@ -739,10 +739,8 @@ export default {
       this.codemirror.setSize('-webkit-fill-available', 'auto')
     },
     onCmFocus(cm) {
-      // console.log('the editor is focus!', cm)
     },
     onCmCodeChange(newCode) {
-      // console.log(newCode)
       this.sql = newCode
       this.$emit('codeChange', this.sql)
     },

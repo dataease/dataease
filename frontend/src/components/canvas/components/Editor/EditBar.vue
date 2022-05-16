@@ -148,13 +148,6 @@ export default {
     closePreview() {
       this.$emit('closePreview')
     },
-    createTimer() {
-      if (!this.timer) {
-        this.timer = setInterval(() => {
-          console.log('t=' + this.curComponent.auxiliaryMatrix)
-        }, 5000)
-      }
-    },
     destroyTimer() {
       if (this.timer) {
         clearInterval(this.timer)
@@ -277,11 +270,9 @@ export default {
       if (val) {
         // push
         this.$store.commit('addCurBatchComponent', this.element.propValue.viewId)
-        console.log('push')
       } else {
         // remove
         this.$store.commit('removeCurBatchComponentWithId', this.element.propValue.viewId)
-        console.log('remove')
       }
     }
   }

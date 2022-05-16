@@ -76,10 +76,8 @@ export default {
   },
   methods: {
     loaded(e) {
-      console.log('loaded:', e)
     },
     onError(e) {
-      console.log('onError:', e)
     }
 
   }

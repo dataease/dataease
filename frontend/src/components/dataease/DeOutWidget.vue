@@ -112,7 +112,6 @@ export default {
     this.watchSize()
   },
   created() {
-    // console.log('aaaaaa')
   },
   methods: {
 

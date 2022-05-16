@@ -1060,7 +1060,6 @@ export default {
     recordStyleChange(index) {
       if (index === this.$store.state.styleChangeTimes) {
         this.timeMachine = setTimeout(() => {
-          // console.log('recordSnapshot')
           this.$store.commit('recordSnapshot')
           this.$store.state.styleChangeTimes = 0
           this.destroyTimeMachine()

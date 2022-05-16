@@ -306,7 +306,6 @@ export default {
       //     this.expandedArray.splice(index, 1)
       //   }
       // }
-      // console.log(this.expandedArray);
     },
 
     back() {

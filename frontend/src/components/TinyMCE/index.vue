@@ -121,7 +121,6 @@ export default {
   },
   mounted() {
     tinymce.init({})
-    // console.log(this.toolbar,'======')
   },
   methods: {
     onClick(e) {

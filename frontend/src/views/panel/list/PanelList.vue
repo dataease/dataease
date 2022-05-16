@@ -760,7 +760,6 @@ export default {
               children: res.data
             }
           ]
-          // console.log('tGroupData=>' + JSON.stringify(_this.tGroupData))
         } else {
           _this.tGroupData = res.data
         }

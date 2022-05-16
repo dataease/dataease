@@ -317,7 +317,6 @@ export default {
       })
     },
     panelNodeClick(data, node) {
-      // console.log('panelNodeClick:' + JSON.stringify(data))
       this.linkJumpInfo.targetViewInfoList = []
       this.getPanelViewList(data.id)
     },

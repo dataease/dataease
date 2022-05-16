@@ -334,7 +334,6 @@ export default {
       })
     },
     saveEdit(item) {
-      // console.log(this.tableFields)
       // const list = this.tableFields.dimensionListData.concat(this.tableFields.quotaListData)
       // batchEdit(list).then(response => {
       //   // this.closeEdit()
