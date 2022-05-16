@@ -2444,19 +2444,19 @@ export default {
       this.customSortList = []
     },
     saveCustomSort() {
-      // 先将所有自定义排序的维度设置为none，再对当前维度赋值
       this.view.xaxis.forEach(ele => {
-        if (ele.sort === 'custom_sort') {
-          ele.sort = 'none'
-          ele.customSort = []
-        }
+        // 先将所有自定义排序的维度设置为none，再对当前维度赋值
+        // if (ele.sort === 'custom_sort') {
+        //   ele.sort = 'none'
+        //   ele.customSort = []
+        // }
         if (ele.id === this.customSortField.id) {
           ele.sort = 'custom_sort'
           ele.customSort = this.customSortList
         }
       })
-      this.calcData(true)
       this.closeCustomSort()
+      this.calcData(true)
     }
   }
 }

@@ -873,24 +873,7 @@ public class ChartViewService {
             }
         }
         // 自定义排序
-        if (xAxis.size() > 0) {
-            // 找到对应维度
-            ChartViewFieldDTO chartViewFieldDTO = null;
-            int index = 0;
-            for (int i = 0; i < xAxis.size(); i++) {
-                ChartViewFieldDTO item = xAxis.get(i);
-                if (StringUtils.equalsIgnoreCase(item.getSort(), "custom_sort")) {
-                    chartViewFieldDTO = item;
-                    index = i;
-                    break;
-                }
-            }
-            if (ObjectUtils.isNotEmpty(chartViewFieldDTO)) {
-                // 获取自定义值与data对应列的结果
-                data = customSort(Optional.ofNullable(chartViewFieldDTO.getCustomSort()).orElse(new ArrayList<>()), data, index);
-            }
-        }
-
+        data = resultCustomSort(xAxis, data);
         // 同比/环比计算，通过对比类型和数据设置，计算出对应指标的结果，然后替换结果data数组中的对应元素
         // 如果因维度变化（如时间字段缺失，时间字段的展示格式变化）导致无法计算结果的，则结果data数组中的对应元素全置为null
         // 根据不同图表类型，获得需要替换的指标index array
@@ -1018,6 +1001,48 @@ public class ChartViewService {
         // table组件，明细表，也用于导出数据
         Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
         return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters);
+    }
+
+    // 对结果排序
+    public List<String[]> resultCustomSort(List<ChartViewFieldDTO> xAxis, List<String[]> data) {
+        List<String[]> res = new ArrayList<>(data);
+        if (xAxis.size() > 0) {
+            // 找到对应维度
+            for (int i = 0; i < xAxis.size(); i++) {
+                ChartViewFieldDTO item = xAxis.get(i);
+                if (StringUtils.equalsIgnoreCase(item.getSort(), "custom_sort")) {
+                    // 获取自定义值与data对应列的结果
+                    if (i > 0) {
+                        // 首先根据优先级高的字段分类，在每个前置字段相同的组里排序
+                        Map<String, List<String[]>> map = new LinkedHashMap<>();
+                        for (String[] d : res) {
+                            StringBuilder stringBuilder = new StringBuilder();
+                            for (int j = 0; j < i; j++) {
+                                if (StringUtils.equalsIgnoreCase(xAxis.get(j).getSort(), "none")) {
+                                    continue;
+                                }
+                                stringBuilder.append(d[j]);
+                            }
+                            if (CollectionUtils.isEmpty(map.get(stringBuilder.toString()))) {
+                                map.put(stringBuilder.toString(), new ArrayList<>());
+                            }
+                            map.get(stringBuilder.toString()).add(d);
+                        }
+                        Iterator<Map.Entry<String, List<String[]>>> iterator = map.entrySet().iterator();
+                        List<String[]> list = new ArrayList<>();
+                        while (iterator.hasNext()) {
+                            Map.Entry<String, List<String[]>> next = iterator.next();
+                            list.addAll(customSort(Optional.ofNullable(item.getCustomSort()).orElse(new ArrayList<>()), next.getValue(), i));
+                        }
+                        res.clear();
+                        res.addAll(list);
+                    } else {
+                        res = customSort(Optional.ofNullable(item.getCustomSort()).orElse(new ArrayList<>()), res, i);
+                    }
+                }
+            }
+        }
+        return res;
     }
 
     public ChartViewDTO uniteViewResult(String sql, Map<String, Object> chartData, Map<String, Object> tabelData, ChartViewDTO view, Boolean isDrill, List<ChartExtFilterRequest> drillFilters) {
@@ -1371,16 +1396,17 @@ public class ChartViewService {
                     getIndex = i;
                 }
             }
-            if (ObjectUtils.isNotEmpty(chartViewFieldDTO)) {
+            List<String[]> sortResult = resultCustomSort(xAxis, sqlData);
+            if (ObjectUtils.isNotEmpty(chartViewFieldDTO) && (getIndex >= index)) {
                 // 获取自定义值与data对应列的结果
-                List<String[]> strings = customSort(Optional.ofNullable(chartViewFieldDTO.getCustomSort()).orElse(new ArrayList<>()), sqlData, index);
+                List<String[]> strings = customSort(Optional.ofNullable(chartViewFieldDTO.getCustomSort()).orElse(new ArrayList<>()), sortResult, index);
                 for (int i = 0; i < strings.size(); i++) {
                     res.add(strings.get(i)[getIndex]);
                 }
             } else {
                 // 返回请求结果
-                for (int i = 0; i < sqlData.size(); i++) {
-                    res.add(sqlData.get(i)[getIndex]);
+                for (int i = 0; i < sortResult.size(); i++) {
+                    res.add(sortResult.get(i)[getIndex]);
                 }
             }
         }

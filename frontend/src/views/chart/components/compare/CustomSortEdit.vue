@@ -17,7 +17,8 @@
         </span>
       </transition-group>
     </draggable>
-    <p style="margin-top: 10px;color:#F56C6C;font-size: 12px;">{{ $t('chart.custom_sort_tip') }}</p>
+    <!--tips-->
+    <!--<p style="margin-top: 10px;color:#F56C6C;font-size: 12px;">{{ $t('chart.custom_sort_tip') }}</p>-->
   </div>
 </template>
 
