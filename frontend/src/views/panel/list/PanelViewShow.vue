@@ -436,6 +436,10 @@ export default {
         this.panelInfo.status = 'publish'
       }
       updatePanelStatus(this.panelInfo.id, { 'status': this.panelInfo.status })
+      this.$emit('editPanelBashInfo', {
+        'operation': 'status',
+        'value': this.panelInfo.status
+      })
     }
   }
 }
