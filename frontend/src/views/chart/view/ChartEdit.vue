@@ -1018,11 +1018,9 @@ import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFo
 import ChartStyle from '@/views/chart/view/ChartStyle'
 import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
 import { TYPE_CONFIGS } from '@/views/chart/chart/util'
-import ChartStyleBack from '@/views/chart/view/ChartStyleBack'
 export default {
   name: 'ChartEdit',
   components: {
-    ChartStyleBack,
     CustomSortEdit,
     ChartStyle,
     ValueFormatterEdit,
@@ -1062,6 +1060,11 @@ export default {
       type: String,
       required: false,
       default: 'view'
+    },
+    editStatue: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data() {
@@ -1196,10 +1199,17 @@ export default {
     } */
   },
   watch: {
+    'editStatue': function(val) {
+      if (val && this.param.id !== this.preChartId) {
+        this.preChartId = this.param.id
+        this.chartInit()
+        // console.log('fromwatch:' + JSON.stringify(val))
+      }
+    },
     'param': function(val) {
       if (this.param.optType === 'new') {
         //
-      } else if (this.param.id !== this.preChartId) {
+      } else if (this.param.id !== this.preChartId && this.editStatue) {
         this.preChartId = this.param.id
         this.chartInit()
         // console.log('fromwatch:' + JSON.stringify(val))

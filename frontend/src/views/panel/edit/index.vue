@@ -24,7 +24,7 @@
     </el-header>
     <de-container>
       <de-aside-container class="ms-aside-container">
-        <div v-if="showAside" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
+        <div v-show="showAside" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
           <div
             style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px"
           >
@@ -228,7 +228,7 @@
 
       <div v-show="!mobileLayoutStatus&&rightDrawOpen" class="tools-window-main">
         <div v-show="showViewToolsAside">
-          <chart-edit ref="chartEditRef" :edit-from="'panel'" :param="chartEditParam" />
+          <chart-edit ref="chartEditRef" :edit-statue="showViewToolsAside&&!mobileLayoutStatus&&rightDrawOpen" :edit-from="'panel'" :param="chartEditParam" />
         </div>
         <div v-show="showBatchViewToolsAside">
           <chart-style-batch-set />
@@ -305,7 +305,7 @@
     >
 
     <!--矩形样式组件-->
-    <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+    <TextAttr v-show="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
     <!--复用ChartGroup组件 不做显示-->
     <ChartGroup
       ref="chartGroup"
