@@ -5,7 +5,7 @@
         <el-button v-if="mobileLayoutStatus" size="mini" @click="editReset">
           {{ $t('commons.reset') }}
         </el-button>
-        <el-button size="mini" @click="editSave">
+        <el-button type="primary" size="mini" @click="editSave">
           {{ $t('commons.confirm') }}
         </el-button>
         <el-button size="mini" @click="editCancel">
@@ -51,7 +51,7 @@
         <el-button class="icon iconfont-tb icon-piliang-copy" size="mini" circle @click="batchOption" />
       </el-tooltip>
       <span style="float: right;margin-left: 10px">
-        <el-button size="mini" :disabled="saveButtonDisabled" @click="save(false)">
+        <el-button size="mini" type="primary" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
         </el-button>
         <el-button size="mini" @click="closePanelEdit">

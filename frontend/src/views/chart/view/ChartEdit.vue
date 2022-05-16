@@ -30,7 +30,7 @@
         <!--        <el-button size="mini" @click="closePanelEdit">-->
         <!--          {{ $t('chart.draw_back') }}-->
         <!--        </el-button>-->
-        <el-button type="warning" round size="mini" :disabled="!hasEdit" @click="reset">
+        <el-button round size="mini" :disabled="!hasEdit" @click="reset">
           {{ $t('chart.recover') }}
         </el-button>
         <!--        <el-button size="mini" type="primary" @click="closeEdit">-->
