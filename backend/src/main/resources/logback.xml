@@ -157,6 +157,10 @@
 		<appender-ref ref="console"/>
 	</logger>
 
+	<logger name="io.dataease.ext" level="${logger.sql.level}">
+		<appender-ref ref="console"/>
+	</logger>
+
 	<logger name="io.dataease.Application" additivity="false" level="${logger.level:INFO}">
 		<appender-ref ref="infoAsyncAppender"/>
 	</logger>

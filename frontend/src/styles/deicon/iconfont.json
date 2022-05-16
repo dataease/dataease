@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1236927",
+      "name": "下架",
+      "font_class": "unpublish",
+      "unicode": "e6e5",
+      "unicode_decimal": 59109
+    },
+    {
+      "icon_id": "1236928",
+      "name": "上架",
+      "font_class": "publish",
+      "unicode": "e6e6",
+      "unicode_decimal": 59110
+    },
+    {
+      "icon_id": "4933307",
+      "name": "发布",
+      "font_class": "fabu",
+      "unicode": "e71f",
+      "unicode_decimal": 59167
+    },
+    {
       "icon_id": "5807789",
       "name": "批量操作",
       "font_class": "piliang-copy",

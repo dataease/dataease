@@ -143,7 +143,8 @@ export function initPanelData(panelId, callback) {
       id: response.data.id,
       name: response.data.name,
       privileges: response.data.privileges,
-      sourcePanelName: response.data.sourcePanelName
+      sourcePanelName: response.data.sourcePanelName,
+      status: response.data.status
     })
     // 刷新联动信息
     getPanelAllLinkageInfo(panelId).then(rsp => {
@@ -196,6 +197,15 @@ export function exportDetails(data) {
     data: data,
     loading: true,
     responseType: 'blob'
+  })
+}
+
+export function updatePanelStatus(panelId, param) {
+  return request({
+    url: '/panel/group/updatePanelStatus/' + panelId,
+    method: 'post',
+    loading: false,
+    data: param
   })
 }
 

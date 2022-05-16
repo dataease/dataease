@@ -15,6 +15,8 @@ public class PanelGroupRequest extends PanelGroupDTO {
     private String sort;
     @ApiModelProperty("用户ID")
     private String userId;
+    @ApiModelProperty("是否是超级管理员")
+    private Boolean isAdmin;
     @ApiModelProperty("操作类型")
     private String optType;
     @ApiModelProperty("新建来源")
