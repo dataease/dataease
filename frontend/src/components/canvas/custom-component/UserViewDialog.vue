@@ -56,6 +56,7 @@ export default {
     customStyle() {
       let style = {
       }
+      console.log('触发检测0001')
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {

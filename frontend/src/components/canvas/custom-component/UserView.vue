@@ -263,7 +263,16 @@ export default {
     resultCount() {
       return this.canvasStyleData.panel.resultCount
     },
+    boxWidth() {
+      // console.log('修改触发=====0001boxWidth', this.element)
+      return this.element.commonBackground && this.element.commonBackground.boxWidth || 0
+    },
+    boxHeight() {
+      // console.log('修改触发=====0001boxWidth', this.element)
+      return this.element.commonBackground && this.element.commonBackground.boxHeight || 0
+    },
     innerPadding() {
+      // console.log('修改触发=====0001')
       return this.element.commonBackground && this.element.commonBackground.innerPadding || 0
     },
     ...mapState([
@@ -281,7 +290,24 @@ export default {
   watch: {
     'innerPadding': {
       handler: function(val1, val2) {
+        // console.log('监听视图层变化=============', val1, val2)
         this.resizeChart()
+      },
+      deep: true
+    },
+    'boxWidth': {
+      handler: function(val1, val2) {
+        // console.log('监听视图层变化=============boxWidth', val1, val2)
+        this.element.style.width = val1
+        // this.resizeChart()
+      },
+      deep: true
+    },
+    boxHeight: {
+      handler: function(val1, val2) {
+        // console.log('监听视图层变化=============boxWidth', val1, val2)
+        this.element.style.height = val1
+        // this.resizeChart()
       },
       deep: true
     },

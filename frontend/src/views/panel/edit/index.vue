@@ -556,6 +556,7 @@ export default {
       }
 
       style.width = this.canvasStyleData.width + 'px'
+      style.height = this.canvasStyleData.height + 'px'
       console.log('shezhi===', style, this.canvasStyleData)
       return style
     },

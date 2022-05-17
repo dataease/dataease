@@ -1,5 +1,6 @@
 <template>
   <div
+    :id="'eleId'+element.id"
     :style="style"
     :class="[
       {
@@ -336,6 +337,7 @@ export default {
   },
   data: function() {
     return {
+      manualSetting: false,
       left: this.x,
       top: this.y,
       right: null,
@@ -379,6 +381,14 @@ export default {
     }
   },
   computed: {
+    boxWidth() {
+      // console.log('修改触发=====0001boxWidth2222222222222222')
+      return this.element.commonBackground && this.element.commonBackground.boxWidth || 0
+    },
+    boxHeight() {
+      // console.log('修改触发=====0001boxWidth2222222222222222')
+      return this.element.commonBackground && this.element.commonBackground.boxHeight || 0
+    },
     // 编辑组件显示
     editBarShow() {
       // 编辑组件显示条件：1.当前组件存在 2.组件是激活状态或者当前在联动设置撞他 3.当前不在移动端画布编辑状态
@@ -506,6 +516,7 @@ export default {
           return 'auto'
         }
       }
+      // console.log('--------------------', this.curCanvasScale.matrixStyleWidth, this.curCanvasScale.matrixStyleWidth, this.width, this.curGap)
       if (this.element.auxiliaryMatrix) {
         const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
         return (width - this.curGap * 2) + 'px'
@@ -530,15 +541,26 @@ export default {
 
     // private
     mainSlotStyle() {
+      // console.log('宽高设置触发器===', this.computedMainSlotWidth, this.computedMainSlotHeight)
       const style = {
         width: this.computedMainSlotWidth,
         height: this.computedMainSlotHeight
       }
       return style
     },
+    manualSetting2() {
+      var key = false
+      // console.log('手动设置预支')
+      return key
+    },
     mainSlotStyleInner() {
       const style = {}
+      this.manualSetting2
+      // console.log('this.element.commonBackground===', this.element.commonBackground)
       if (this.element.commonBackground) {
+        // style['width'] = (this.config.commonBackground.boxWidth || 300) + 'px'
+        // style['height'] = (this.config.commonBackground.boxHeight || 100) + 'px'
+        // this.manualSetting = true
         style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
         style['border-radius'] = (this.element.commonBackground.borderRadius || 0) + 'px'
         if (this.element.commonBackground.enable) {
@@ -584,6 +606,24 @@ export default {
     ])
   },
   watch: {
+    'boxWidth': {
+      handler: function(val1, val2) {
+        // console.log('监听视图层变化=============2222222222222', val1, val2)
+        // this.resizeChart()
+        this.width = val1
+        // this.changeWidth(val1)
+      },
+      deep: true
+    },
+    'boxHeight': {
+      handler: function(val1, val2) {
+        // console.log('监听视图层变化=============2222222222222', val1, val2)
+        // this.resizeChart()
+        this.height = val1
+        // this.changeHeight(val1)
+      },
+      deep: true
+    },
     active(val) {
       this.enabled = val
       if (val) {
@@ -686,6 +726,11 @@ export default {
         this.$store.commit('setScrollAutoMove', 0)
       }
     },
+    element(val) {
+      // console.log('elemnet元素触动', val)
+      // val.style.width = val.commonBackground.boxWidth
+      // val.style.height = val.commonBackground.boxHeight
+    },
     // private 监控dragging  resizing
     resizing(val) {
       if (this.enabled) {
@@ -753,6 +798,15 @@ export default {
       this.elementDown(e)
     },
     elementMouseDown(e) {
+      // console.log('设置参数002', this.element, e)
+
+      // console.log('设置参数003', this.style)
+      var info = document.getElementById('eleId' + this.element.id)
+      // console.log('设置参数003', info.offsetWidth, info.offsetHeight)
+      this.element.commonBackground.boxWidth = info.offsetWidth
+      this.element.commonBackground.boxHeight = info.offsetHeight
+      this.element.style.width = this.element.commonBackground.boxWidth
+      this.element.style.height = this.element.commonBackground.boxWidth
       // private 设置当前组件数据及状态
       this.$store.commit('setClickComponentStatus', true)
       if (this.element.component !== 'v-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search' && this.element.component !== 'de-select-grid' && this.element.component !== 'de-number-range' && this.element.component !== 'de-date') {
@@ -762,6 +816,7 @@ export default {
       e.stopPropagation()
       // 此处阻止冒泡 但是外层需要获取pageX pageY
       this.element.auxiliaryMatrix && this.$emit('elementMouseDown', e)
+
       this.$store.commit('setCurComponent', { component: this.element, index: this.index })
       // 移动端组件点击自动置顶
       this.mobileLayoutStatus && this.$store.commit('topComponent')
@@ -804,6 +859,7 @@ export default {
         this.mouseClickPosition.bottom = this.bottom
         this.mouseClickPosition.width = this.width
         this.mouseClickPosition.height = this.height
+
         // 鼠标按下 重置上次鼠标指针位置
         this.latestMoveY = this.mouseClickPosition.mouseY
         if (this.parent) {
@@ -1249,6 +1305,7 @@ export default {
       this.element.propValue && this.element.propValue.viewId && eventBus.$emit('resizing', this.element.propValue.viewId)
     },
     changeWidth(val) {
+      // console.log('changeWidth====', val)
       // console.log('parentWidth', this.parentWidth)
       // console.log('parentHeight', this.parentHeight)
       // eslint-disable-next-line no-unused-vars

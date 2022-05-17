@@ -25,7 +25,9 @@ export const COMMON_BACKGROUND = {
   outerImage: null,
   alpha: 100,
   borderRadius: 5,
-  innerPadding: 0
+  innerPadding: 0,
+  boxHeight: 0,
+  boxWidth: 0
 }
 
 // 空组件仪表板样式
@@ -37,7 +39,9 @@ export const COMMON_BACKGROUND_NONE = {
   outerImage: null,
   alpha: 100,
   borderRadius: 0,
-  innerPadding: 0
+  innerPadding: 0,
+  boxHeight: 0,
+  boxWidth: 0
 }
 
 // 公共样式

@@ -7,7 +7,7 @@
     </div>
     <div v-if="normalAreaShow">
       <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
-        <span slot="icon" :title="$t('panel.setting')">
+        <span slot="icon" :title="$t('panel.setting')+'111'">
           <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
         </span>
       </setting-menu>
@@ -211,6 +211,7 @@ export default {
 
     },
     amRemoveItem() {
+      console.log('设置点击', 2222)
       this.$emit('amRemoveItem')
     },
     // 清除相同sourceViewId 的 联动条件
@@ -229,6 +230,7 @@ export default {
       })
     },
     linkJumpSet() {
+      console.log('设置点击', 3333)
       this.$emit('linkJumpSet')
     },
     goFile() {
@@ -250,6 +252,7 @@ export default {
       reader.readAsDataURL(file)
     },
     boardSet() {
+      console.log('添加设置功能', 1111)
       this.$emit('boardSet')
     }
   }

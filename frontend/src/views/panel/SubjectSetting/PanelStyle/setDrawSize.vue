@@ -29,7 +29,14 @@
             <el-col :span="24">
               <el-input-number v-model="width" :min="1" :max="10000" label="描述文字" @change="handleChange" />
             </el-col>
+            <el-col :span="24">
+              {{ $t('chart.canvasHeight') }}
+            </el-col>
+            <el-col :span="24">
+              <el-input-number v-model="height" :min="1" :max="10000" label="描述文字" @change="handleChange" />
+            </el-col>
           </el-row>
+
           <!-- <el-row>
             <el-col :span="2">
               H
@@ -81,6 +88,7 @@ export default {
     return {
       fileList: [],
       width: '1080',
+      height: '800',
       dialogImageUrl: '',
       dialogVisible: false,
       uploadDisabled: false,
@@ -99,6 +107,7 @@ export default {
     // 初始化赋值
     this.panel = this.canvasStyleData.panel
     this.width = this.canvasStyleData.width
+    this.height = this.canvasStyleData.height
     if (this.panel.imageUrl && typeof (this.panel.imageUrl) === 'string') {
       this.fileList.push({ url: this.panel.imageUrl })
     }
@@ -107,6 +116,7 @@ export default {
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
       canvasStyleData.width = this.width
+      canvasStyleData.height = this.height
       console.log('canvasStyleData', canvasStyleData)
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')

@@ -140,6 +140,7 @@ const data = {
           resizing: false
         }
       }
+      console.log('操作视图', component)
       state.styleChangeTimes = 0
       state.curComponent = component
       state.curComponentIndex = index

@@ -1402,6 +1402,8 @@ export default {
     json_params_error: '第三方参数解析失败，请检查参数格式是否正确',
     inner_padding: '内边距',
     board_radio: '边框半径',
+    box_width: '组件宽',
+    box_height: '组件高',
     background: '背景',
     component_style: '组件样式',
     web_set_tips: '部分网站可能设置不允许嵌入而无法显示',

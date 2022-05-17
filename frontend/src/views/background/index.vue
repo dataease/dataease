@@ -6,6 +6,25 @@
       </el-col>
     </el-row>
     <el-row class="main-content" disabled="!curComponent.commonBackground.enable">
+      <!-- 修改组件的宽高样式 -->
+      <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
+        <el-col :span="3">
+          <span class="params-title">{{ $t('panel.box_width') }}</span>
+        </el-col>
+        <el-col :span="8">
+          <!-- <el-input v-model="curComponent.commonBackground.boxWidth" placeholder="请输入内容" /> -->
+          <el-input-number v-model="curComponent.commonBackground.boxWidth" :min="0" />
+        </el-col>
+      </el-row>
+      <el-row style="height: 50px;overflow: hidden">
+        <el-col :span="3">
+          <span class="params-title">{{ $t('panel.box_height') }}</span>
+        </el-col>
+        <el-col :span="8">
+          <!-- <el-input v-model="curComponent.commonBackground.boxHeight" placeholder="请输入内容" /> -->
+          <el-input-number v-model="curComponent.commonBackground.boxHeight" :min="0" />
+        </el-col>
+      </el-row>
 
       <el-row style="height: 50px;overflow: hidden">
         <el-col :span="3">
@@ -162,6 +181,8 @@ export default {
       this.curComponent.commonBackground.alpha = this.backgroundOrigin.alpha
       this.curComponent.commonBackground.borderRadius = this.backgroundOrigin.borderRadius
       this.curComponent.commonBackground.innerPadding = this.backgroundOrigin.innerPadding
+      this.curComponent.commonBackground.boxWidth = this.backgroundOrigin.boxWidth
+      this.curComponent.commonBackground.boxHeight = this.backgroundOrigin.boxHeight
       this.$emit('backgroundSetClose')
     },
     save() {

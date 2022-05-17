@@ -939,6 +939,7 @@ export default {
           }
         }
       }
+      console.log('backgroundType--------',)
       return style
     },
     panelInfo() {
@@ -1033,6 +1034,7 @@ export default {
       this.boardSetVisible = false
     },
     boardSet(item) {
+      console.log('itsm00001', item)
       this.$emit('boardSet', item)
       this.boardSetVisible = true
     },

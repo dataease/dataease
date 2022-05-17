@@ -20,7 +20,7 @@
       <el-tooltip v-if="!canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.suspension')">
         <el-button class="icon iconfont-tb icon-xuanfuanniu" size="mini" circle @click="auxiliaryMatrixChange" />
       </el-tooltip>
-      <el-tooltip v-if="canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.matrix')">
+      <el-tooltip v-if="canvasStyleData.auxiliaryMatrix" :content="$t('panel.new_element_distribution')+':'+$t('panel.matrix')+'12321'">
         <el-button class="icon iconfont-tb icon-shujujuzhen" size="mini" circle @click="auxiliaryMatrixChange" />
       </el-tooltip>
       <el-tooltip :content="$t('panel.style')">
@@ -266,6 +266,12 @@ export default {
       // 清理联动信息
       this.$store.commit('clearPanelLinkageInfo')
       // 保存到数据库
+      console.log('this.canvasStyleData', this.componentData)
+      // this.componentData.forEach(ele => {
+      //   console.log('width', document.getElementById('eleId' + ele.id).offsetWidth)
+      //   ele.style.width = document.getElementById('eleId' + ele.id).offsetWidth
+      //   ele.style.height = document.getElementById('eleId' + ele.id).offsetHeight
+      // })
       const requestInfo = {
         id: this.$store.state.panel.panelInfo.id,
         panelStyle: JSON.stringify(this.canvasStyleData),
