@@ -5,7 +5,7 @@
         <path
           :d="smallGridPathD"
           fill="none"
-          stroke="rgba(207, 207, 207, 0.5)"
+          stroke="rgba(207, 207, 207, 0.3)"
           stroke-width="1"
         />
       </pattern>
@@ -14,7 +14,7 @@
         <path
           :d="middleGridPathD"
           fill="none"
-          stroke="rgba(207, 207, 207, 0.7)"
+          stroke="rgba(207, 207, 207, 0.3)"
           stroke-width="1.5"
         />
       </pattern>
@@ -23,8 +23,8 @@
         <path
           :d="pathD"
           fill="none"
-          stroke="rgba(64,158,255,0.5)"
-          stroke-width="2"
+          stroke="rgba(207, 207, 207, 0.7)"
+          stroke-width="2.5"
         />
       </pattern>
     </defs>
