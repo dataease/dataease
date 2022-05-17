@@ -656,6 +656,8 @@ export default {
     kettle_setting: 'Kettle 设置'
   },
   chart: {
+    canvasSize: '画布尺寸',
+    canvasWith: '画布宽度',
     title_repeat: '当前标题已存在',
     save_snapshot: '保存缩略图',
     datalist: '视图',
@@ -788,8 +790,8 @@ export default {
     filter: '过滤',
     none: '无',
     background: '背景',
-    canvasSize: '画布尺寸',
-    canvasWith: '画布宽度',
+    // canvasSize: '画布尺寸',
+    // canvasWith: '画布宽度',
     canvasHeight: '画布高度',
     border: '边角',
     border_width: '边框宽度',
@@ -852,6 +854,7 @@ export default {
     chart_line: '基础折线图',
     chart_line_stack: '堆叠折线图',
     chart_pie: '饼图',
+    chart_3Dpie: '3D饼图',
     chart_pie_rose: '南丁格尔玫瑰图',
     chart_funnel: '漏斗图',
     chart_radar: '雷达图',
@@ -1968,10 +1971,6 @@ export default {
   },
   wizard: {
     welcome_title: '欢迎使用DataIns',
-    data_connection: '数据连接',
-    data_preparation: '数据准备',
-    analysis_display: '分析展现',
-    resource_publishing: '资源发布',
     welcome_hint: '数据可视化自助探索分析工具',
     demo_video: '演示视频',
     quick_start: '快速入门',
@@ -1992,7 +1991,11 @@ export default {
     email: '邮箱：',
     tel: '电话：',
     web: '网址：',
-    add_datasource: '添加一个数据源'
+    add_datasource: '添加一个数据源',
+    data_connection: '数据连接',
+    data_preparation: '数据准备',
+    analysis_display: '分析展现',
+    resource_publishing: '资源发布'
   },
   kettle: {
     add: '添加 Kettle 服务',

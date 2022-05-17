@@ -89,6 +89,8 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
     s2.destroy()
   }
   s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
+  // console.log('S2',s2)
+  // s2.facet.setScrollOffset(1)
 
   // click
   s2.on(S2Event.DATA_CELL_CLICK, action)

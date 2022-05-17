@@ -1,7 +1,7 @@
 <template>
   <div id="clock" :style="{'--varBg': varBg}">
     <p class="date">{{ date }}</p>
-    <p v-if="time" class="time" :style="{'fontSize': (parseInt(element.style.fontSize) * 3) + 'px'}">{{ time }}</p>
+    <p v-if="time" class="time" :style="{'fontSize': (parseInt(element.style.fontSize) * 2) + 'px'}">{{ time }}</p>
   </div>
 </template>
 

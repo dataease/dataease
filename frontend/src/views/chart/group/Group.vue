@@ -200,9 +200,9 @@
       <el-row v-show="createActive === 2" style="padding: 0 20px;">
         <el-row class="chart-box">
           <span>
-            <span class="theme-border-class" style="font-size: 12px">{{ $t('chart.chart_type') }}1111</span>
+            <span class="theme-border-class" style="font-size: 12px">{{ $t('chart.chart_type') }}</span>
             <span style="float: right;">
-              <el-select v-model="view.render" class="render-select" style="width: 70px" size="mini" @change="changeType">
+              <el-select v-model="view.render" class="render-select" style="width: 90px" size="mini" @change="changeType">
                 <el-option
                   v-for="item in pluginRenderOptions"
                   :key="item.value"
@@ -411,7 +411,8 @@ export default {
       },
       renderOptions: [
         { name: 'AntV', value: 'antv' },
-        { name: 'ECharts', value: 'echarts' }
+        { name: 'ECharts', value: 'echarts' },
+        // { name: 'HighCharts', value: 'highcharts'}
       ],
       searchPids: [], // 查询命中的pid
       filterText: '',

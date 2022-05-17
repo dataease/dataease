@@ -653,6 +653,8 @@ export default {
     kettle_setting: 'Kettle Setting'
   },
   chart: {
+    canvasSize: 'canvas size',
+    canvasWith: 'canvas width',
     title_repeat: 'The Title Already Exist',
     save_snapshot: 'Save Snapshot',
     datalist: 'Chart',
@@ -784,8 +786,8 @@ export default {
     filter: 'Filter',
     none: 'None',
     background: 'Background',
-    canvasSize: 'canvas size',
-    canvasWith: 'canvas width',
+    // canvasSize: 'canvas size',
+    // canvasWith: 'canvas width',
     canvasHeight: 'canvas height',
     border: 'Corner',
     border_width: 'Border width',
@@ -1973,7 +1975,6 @@ export default {
     tel: 'Tel:',
     web: 'Web:',
     add_datasource: 'Add a datasource'
-
   },
   kettle: {
     add: 'Add Kettle',
