@@ -1,7 +1,7 @@
 <template>
   <div class="top-nav">
     <div v-loading="!axiosFinished" class="log">
-      <svg-icon v-if="!logoUrl && axiosFinished" icon-class="datains-logo" custom-class="top-nav-logo-icon" />
+      <svg-icon v-if="!logoUrl && axiosFinished" icon-class="datains-logo2" custom-class="top-nav-logo-icon" />
       <img v-if="logoUrl && axiosFinished" :src="logoUrl" width="140" alt="" style="padding-top: 10px;">
     </div>
     <el-menu

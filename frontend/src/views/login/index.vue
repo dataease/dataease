@@ -12,7 +12,7 @@
               {{ uiInfo['ui.loginTitle'].paramValue }}
             </div>
             <div v-else class="login-welcome">
-              {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || ' DataIns') }}
+              {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || '可视化配置平台') }}
             </div>
             <div class="login-form">
               <el-form-item v-if="loginTypes.length > 1">
