@@ -44,7 +44,7 @@ export default {
       columns: [],
 
       searchConfig: {
-        useQuickSearch: true,
+        useQuickSearch: false,
         useComplexSearch: true,
         quickPlaceholder: this.$t('log.search_by_key'),
         components: [
