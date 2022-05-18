@@ -1,0 +1,133 @@
+package io.dataease.service.sys.log;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import io.dataease.commons.constants.SysLogConstants;
+import io.dataease.commons.utils.AuthUtils;
+import io.dataease.dto.log.FolderItem;
+import io.dataease.ext.ExtSysLogMapper;
+import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.SysLogWithBLOBs;
+import io.dataease.plugins.common.dto.datasource.DataSourceType;
+import io.dataease.service.datasource.DatasourceService;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
+public class LogManager {
+
+    protected static final String contentFormat = "【%s】";
+
+    protected static final String positionFormat = "在【%s】";
+
+    protected static final String format = "给%s【%s】";
+
+    protected Gson gson = new Gson();
+
+
+    protected Type type = new TypeToken<List<FolderItem>>() {}.getType();
+
+
+
+    @Resource
+    private ExtSysLogMapper extSysLogMapper;
+
+    @Resource
+    private DatasourceService datasourceService;
+
+
+    public String detailInfo(SysLogWithBLOBs vo) {
+        String sourceName = vo.getSourceName();
+        String postion = null;
+        String operateTypeName = SysLogConstants.operateTypeName(vo.getOperateType());
+        operateTypeName = Translator.get(operateTypeName);
+        String sourceTypeName = SysLogConstants.sourceTypeName(vo.getSourceType());
+        sourceTypeName = Translator.get(sourceTypeName);
+        String result = operateTypeName + sourceTypeName + String.format(contentFormat, sourceName) + remarkInfo(vo);
+
+        if ((postion = vo.getPosition()) != null) {
+            List<FolderItem> folderItems = gson.fromJson(postion, type);
+            String template = folderItems.stream().map(folderItem -> folderItem.getName()).collect(Collectors.joining("/"));
+            String postionResult = String.format(positionFormat, template);
+            return postionResult + result;
+        }
+        return result;
+    }
+
+
+
+    public String remarkInfo(SysLogWithBLOBs vo) {
+        String remakrk = null;
+        if ((remakrk = vo.getRemark()) != null) {
+            List<FolderItem> targetInfos = gson.fromJson(remakrk, type);
+            String target = targetInfos.stream().map(item -> {
+                Integer targetType = item.getType();
+                String targetTypeName = SysLogConstants.sourceTypeName(targetType);
+                return String.format(format, targetTypeName, item.getName());
+            }).collect(Collectors.joining("/"));
+            return target;
+        }
+        return "";
+    }
+
+    public List<FolderItem> parentsAndSelf(String id, SysLogConstants.SOURCE_TYPE type) {
+        Integer value = type.getValue();
+        String typeValue = "";
+        switch (value) {
+            case 2:
+                typeValue = "dataset";
+                break;
+            case 3:
+                typeValue = "panel";
+                break;
+            case 7:
+                typeValue = "dept";
+                break;
+            default:
+                break;
+        }
+        List<String> ids = new ArrayList<>();
+        if (StringUtils.isNotBlank(typeValue)) {
+            ids.addAll(AuthUtils.parentResources(id, typeValue));
+        }else {
+            ids.add(id);
+        }
+        List<FolderItem> folderItems = extSysLogMapper.idAndName(ids, value);
+        folderItems.forEach(item -> item.setType(value));
+        return folderItems;
+    }
+
+    public FolderItem nameWithId(String id, Integer type) {
+        List<String> ids = new ArrayList<>();
+        ids.add(id);
+        List<FolderItem> folderItems = extSysLogMapper.idAndName(ids, type);
+        if (CollectionUtils.isNotEmpty(folderItems)) {
+            return folderItems.get(0);
+        }
+        return null;
+    }
+
+    public FolderItem dsTypeInfo(String typeId) {
+        ArrayList<DataSourceType> dataSourceTypes = new ArrayList<>(datasourceService.types());
+        String name = null;
+        for (int i = 0; i < dataSourceTypes.size(); i++) {
+            if (dataSourceTypes.get(i).getType().equals(typeId)){
+                name = dataSourceTypes.get(i).getName();
+                break;
+            }
+        }
+        FolderItem folderItem = new FolderItem();
+        folderItem.setId(typeId);
+        folderItem.setName(StringUtils.isNotBlank(name) ? name : typeId);
+        return folderItem;
+    }
+
+
+}
