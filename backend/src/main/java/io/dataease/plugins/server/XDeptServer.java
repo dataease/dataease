@@ -1,7 +1,9 @@
 package io.dataease.plugins.server;
 
 
+import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.service.ExtAuthService;
+import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.sys.response.DeptNodeResponse;
 import io.dataease.plugins.common.entity.XpackGridRequest;
@@ -70,6 +72,12 @@ public class XDeptServer {
     @RequiresPermissions("dept:add")
     @ApiOperation("创建")
     @PostMapping("/create")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.CREATE,
+        sourcetype = SysLogConstants.SOURCE_TYPE.DEPT,
+        positionIndex = 0,positionKey = "pid",
+        value = "deptId"
+    )
     public int create(@RequestBody XpackCreateDept dept){
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
         return deptService.add(dept);
@@ -78,6 +86,12 @@ public class XDeptServer {
     @RequiresPermissions("dept:del")
     @ApiOperation("删除")
     @PostMapping("/delete")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.DELETE,
+        sourcetype = SysLogConstants.SOURCE_TYPE.DEPT,
+        positionIndex = 0,positionKey = "pid",
+        value = "deptId"
+    )
     public void delete(@RequestBody List<XpackDeleteDept> requests){
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
         requests.forEach(request -> {
@@ -89,6 +103,12 @@ public class XDeptServer {
     @RequiresPermissions("dept:edit")
     @ApiOperation("更新")
     @PostMapping("/update")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+        sourcetype = SysLogConstants.SOURCE_TYPE.DEPT,
+        positionIndex = 0,positionKey = "pid",
+        value = "deptId"
+    )
     public int update(@RequestBody XpackCreateDept dept){
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
         return deptService.update(dept);

@@ -47,11 +47,12 @@ export function editDs(data) {
   })
 }
 
-export function delDs(id) {
+export function delDs(data) {
   return request({
-    url: 'datasource/delete/' + id,
+    url: 'datasource/delete',
     loading: true,
-    method: 'post'
+    method: 'post',
+    data
   })
 }
 
@@ -81,7 +82,7 @@ export function getSchema(data) {
   })
 }
 
-export function checkApiDatasource(data){
+export function checkApiDatasource(data) {
   return request({
     url: 'datasource/checkApiDatasource',
     method: 'post',

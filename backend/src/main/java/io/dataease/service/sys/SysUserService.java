@@ -94,6 +94,7 @@ public class SysUserService {
         }
         int insert = sysUserMapper.insert(user);
         SysUser dbUser = findOne(user);
+        request.setUserId(dbUser.getUserId());
         saveUserRoles(dbUser.getUserId(), request.getRoleIds());//插入用户角色关联
         return insert;
     }

@@ -3,7 +3,9 @@ package io.dataease.controller.sys;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysRole;
@@ -69,6 +71,11 @@ public class SysUserController {
     @ApiOperation("创建用户")
     @RequiresPermissions("user:add")
     @PostMapping("/create")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.CREATE,
+        sourcetype = SysLogConstants.SOURCE_TYPE.USER,
+        value = "userId"
+    )
     public void create(@RequestBody SysUserCreateRequest request) {
         sysUserService.save(request);
     }
@@ -76,6 +83,11 @@ public class SysUserController {
     @ApiOperation("更新用户")
     @RequiresPermissions("user:edit")
     @PostMapping("/update")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+        sourcetype = SysLogConstants.SOURCE_TYPE.USER,
+        value = "userId"
+    )
     public void update(@RequestBody SysUserCreateRequest request) {
         sysUserService.update(request);
     }
@@ -84,6 +96,10 @@ public class SysUserController {
     @RequiresPermissions("user:del")
     @PostMapping("/delete/{userId}")
     @ApiImplicitParam(paramType = "path", value = "用户ID", name = "userId", required = true, dataType = "Integer")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.DELETE,
+        sourcetype = SysLogConstants.SOURCE_TYPE.USER
+    )
     public void delete(@PathVariable("userId") Long userId) {
         sysUserService.delete(userId);
     }
@@ -92,6 +108,11 @@ public class SysUserController {
     @RequiresPermissions("user:edit")
     @RequiresRoles("1")
     @PostMapping("/updateStatus")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+        sourcetype = SysLogConstants.SOURCE_TYPE.USER,
+        value = "userId"
+    )
     public void updateStatus(@RequestBody SysUserStateRequest request) {
         sysUserService.updateStatus(request);
     }

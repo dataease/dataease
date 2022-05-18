@@ -2041,5 +2041,14 @@ export default {
     port: '端口',
     user: '用户名',
     passwd: '密码'
+  },
+  log: {
+    title: '操作日志',
+    optype: '操作类型',
+    detail: '操作详情',
+    user: '操作用户',
+    time: '操作时间',
+    export: '导出',
+    search_by_key: '搜索详情'
   }
 }
