@@ -127,6 +127,14 @@ export const assistList = [
     defaultClass: 'text-filter'
   },
   {
+    id: '10002',
+    component: 'de-rich-text',
+    type: 'de-rich-text',
+    label: '富文本',
+    icon: 'iconfont icon-fuwenbenkuang',
+    defaultClass: 'text-filter'
+  },
+  {
     id: '10004',
     component: 'rect-shape',
     type: 'rect-shape',
@@ -249,26 +257,28 @@ const list = [
   },
   {
     id: '10002',
-    component: 'v-button',
-    label: '按钮',
-    propValue: '按钮',
-    icon: 'button',
-    type: 'v-button',
+    component: 'de-rich-text',
+    label: '富文本',
+    propValue: '双击输入文字',
+    icon: 'icon-fuwenbenkuang',
+    type: 'de-rich-text',
     mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
     style: {
-      width: 100,
-      height: 34,
-      borderWidth: '',
-      borderColor: '',
-      borderRadius: '',
-      fontSize: 14,
+      width: 400,
+      height: 100,
+      fontSize: 22,
       fontWeight: 400,
       lineHeight: '',
       letterSpacing: 0,
-      textAlign: '',
-      color: '',
-      backgroundColor: ''
+      textAlign: 'center',
+      color: '#000000',
+      verticalAlign: 'middle'
     },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 2,
     miniSizex: 1,
     miniSizey: 1
   },

@@ -661,7 +661,6 @@ export default {
       this.maxH = val
     },
     w(val) {
-
       if (this.resizing || this.dragging) {
         return
       }
@@ -760,7 +759,7 @@ export default {
     elementMouseDown(e) {
       // private 设置当前组件数据及状态
       this.$store.commit('setClickComponentStatus', true)
-      if (this.element.component !== 'v-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search' && this.element.component !== 'de-select-grid' && this.element.component !== 'de-number-range' && this.element.component !== 'de-date') {
+      if (this.element.component !== 'v-text' && this.element.component !== 'de-rich-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search' && this.element.component !== 'de-select-grid' && this.element.component !== 'de-number-range' && this.element.component !== 'de-date') {
         e.preventDefault()
       }
       // 阻止冒泡事件
@@ -1003,7 +1002,7 @@ export default {
     move(e) {
       if (this.resizing) {
         this.handleResize(e)
-      } else if (this.dragging) {
+      } else if (this.dragging && !this.element.editing) {
         this.handleDrag(e)
       } else if (this.rotating) {
         this.handleRotate(e)

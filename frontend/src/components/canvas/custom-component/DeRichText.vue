@@ -1,13 +1,20 @@
 <template>
-  <div class="tinymce-editor" style="background-color: #8a8b8d!important;">
+  <div v-if="editStatus" class="rich-main-class">
     <Editor
+      v-show="canEdit"
       :id="tinymceId"
       v-model="myValue"
+      style="width: 100%;height: 100%"
       :init="init"
       :disabled="disabled"
       @onClick="onClick"
     />
+    <div v-show="!canEdit" style="width: 100%;height: 100%" @dblclick="setEdit" v-html="myValue" />
   </div>
+  <div v-else class="rich-main-class">
+    <div v-html="myValue" />
+  </div>
+
 </template>
 
 <script>
@@ -24,6 +31,8 @@ import 'tinymce/plugins/lists' // 列表插件
 import 'tinymce/plugins/charmap' // 特殊字符
 import 'tinymce/plugins/media' // 插入编辑媒体
 import 'tinymce/plugins/wordcount'// 字数统计
+import 'tinymce/plugins/table'// 表格
+import { mapState } from 'vuex'
 
 // const fonts = [
 //   '宋体=宋体',
@@ -54,37 +63,40 @@ import 'tinymce/plugins/wordcount'// 字数统计
 // ]
 
 export default {
+  name: 'DeRichText',
   components: {
     Editor
   },
   props: {
-    // 内容
-    value: {
+    propValue: {
       type: String,
-      default: ''
+      require: true
+    },
+    element: {
+      type: Object
+    },
+    editMode: {
+      type: String,
+      require: false,
+      default: 'preview'
+    },
+    active: {
+      type: Boolean,
+      require: false,
+      default: false
     },
     // 是否禁用
     disabled: {
       type: Boolean,
       default: false
-    },
-    // 插件
-    plugins: {
-      type: [String, Array],
-      default: 'advlist autolink link image lists charmap  media wordcount'
-    },
-    // 工具栏
-    toolbar: {
-      type: [String, Array],
-      // default: 'fontsizeselect bold italic alignleft aligncenter alignright forecolor backcolor  link'
-      default: 'undo redo |  fontsizeselect | bold italic forecolor backcolor| alignleft aligncenter alignright | link'
     }
   },
   data() {
     return {
+      canEdit: false,
       // 初始化配置
       tinymceId: 'tinymce',
-      myValue: this.value,
+      myValue: this.propValue,
       init: {
         selector: '#tinymce',
         toolbar_items_size: 'small',
@@ -92,31 +104,40 @@ export default {
         language: 'zh_CN',
         skin_url: '/tinymce/skins/ui/oxide', // 皮肤
         content_css: '/tinymce/skins/content/default/content.css',
-        plugins: this.plugins, // 插件
+        plugins: 'advlist autolink link image lists charmap  media wordcount table', // 插件
         // 工具栏
-        toolbar: this.toolbar,
+        toolbar: 'undo redo |  fontsizeselect | bold italic forecolor backcolor| alignleft aligncenter alignright | lists image media table link',
         toolbar_location: '/',
         fontsize_formats: '12px 14px 16px 18px 20px 22px 24px 28px 32px 36px 48px 56px 72px', // 字体大小
-        // font_formats: fonts.join(';'),
         menubar: false,
-        // height: 500, // 高度
-        placeholder: '在这里输入文字',
-
+        placeholder: '双击输入文字',
+        inline: true, // 开启内联模式
         branding: false
       }
     }
   },
+  computed: {
+    editStatus() {
+      return this.editMode === 'edit' && !this.mobileLayoutStatus
+    },
+    ...mapState([
+      'mobileLayoutStatus'
+    ])
+  },
   watch: {
     // 监听内容变化
-    value(newValue) {
+    active(val) {
+      if (!val) {
+        this.canEdit = false
+      }
+    },
+    // 监听内容变化
+    propValue(newValue) {
       this.myValue = (newValue == null ? '' : newValue)
     },
     myValue(newValue) {
-      if (this.triggerChange) {
-        this.$emit('change', newValue)
-      } else {
-        this.$emit('input', newValue)
-      }
+      this.element.propValue = newValue
+      this.$store.state.styleChangeTimes++
     }
   },
   mounted() {
@@ -126,10 +147,23 @@ export default {
     onClick(e) {
       this.$emit('onClick', e, tinymce)
     },
-    // 可以添加一些自己的自定义事件，如清空内容
-    clear() {
-      this.myValue = ''
+    setEdit() {
+      this.canEdit = true
+      this.element.editing = true
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .rich-main-class {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto!important;
+  }
+  ::-webkit-scrollbar {
+    width: 0px!important;
+    height: 0px!important;
+  }
+</style>
+

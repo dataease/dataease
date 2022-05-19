@@ -271,22 +271,6 @@
       </div>
     </el-dialog>
 
-    <!--文字组件对话框-->
-    <el-dialog
-      v-if="styleDialogVisible && curComponent"
-      :title="$t('panel.style')"
-      :visible.sync="styleDialogVisible"
-      custom-class="de-style-dialog"
-    >
-      <PanelTextEditor v-if="curComponent.type==='v-text'" />
-      <AttrListExtend v-else />
-      <div style="text-align: center">
-        <span slot="footer">
-          <el-button size="mini" @click="closeStyleDialog">{{ $t('commons.confirm') }}</el-button>
-        </span>
-      </div>
-    </el-dialog>
-
     <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="previewVisible">
       <Preview
         v-if="previewVisible"
@@ -305,7 +289,7 @@
     >
 
     <!--矩形样式组件-->
-    <TextAttr v-show="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+    <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
     <!--复用ChartGroup组件 不做显示-->
     <ChartGroup
       ref="chartGroup"
@@ -352,10 +336,8 @@ import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
 import { initPanelData, initViewCache } from '@/api/panel/panel'
 import Preview from '@/components/canvas/components/Editor/Preview'
-import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
-import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
 import ChartGroup from '@/views/chart/group/Group'
 import { chartCopy } from '@/api/chart/chart'
 // 引入样式
@@ -389,9 +371,7 @@ export default {
     FilterDialog,
     SubjectSetting,
     Preview,
-    AttrListExtend,
     AssistComponent,
-    PanelTextEditor,
     TextAttr,
     ChartGroup,
     ChartEdit
