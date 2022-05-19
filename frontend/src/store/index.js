@@ -159,6 +159,12 @@ const data = {
           dragging: false,
           resizing: false
         }
+        // Is the current component in editing status
+        if (!state.curComponent) {
+          component['editing'] = false
+        } else if (component.id !== state.curComponent.id) {
+          component['editing'] = false
+        }
       }
       state.styleChangeTimes = 0
       state.curComponent = component

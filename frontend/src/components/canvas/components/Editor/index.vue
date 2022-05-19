@@ -61,22 +61,8 @@
       @canvasDragging="canvasDragging"
       @editComponent="editComponent(index,item)"
     >
-      <component
-        :is="item.component"
-        v-if="renderOk&&item.type==='v-text'"
-        :id="'component' + item.id"
-        ref="wrapperChild"
-        class="component"
-        :style="getComponentStyleDefault(item.style)"
-        :prop-value="item.propValue"
-        :element="item"
-        :out-style="getShapeStyleInt(item.style)"
-        :edit-mode="'edit'"
-        :active="item === curComponent"
-        @input="handleInput"
-      />
       <de-out-widget
-        v-else-if="renderOk&&item.type==='custom'"
+        v-if="renderOk&&item.type==='custom'"
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
@@ -113,6 +99,7 @@
         :active="item === curComponent"
         :edit-mode="'edit'"
         :h="getShapeStyleIntDeDrag(item.style,'height')"
+        @input="handleInput"
       />
     </de-drag>
     <!--拖拽阴影部分-->

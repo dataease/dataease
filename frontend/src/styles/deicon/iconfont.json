@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "2471358",
+      "name": "富文本框",
+      "font_class": "fuwenbenkuang",
+      "unicode": "e670",
+      "unicode_decimal": 58992
+    },
+    {
       "icon_id": "1236927",
       "name": "下架",
       "font_class": "unpublish",
