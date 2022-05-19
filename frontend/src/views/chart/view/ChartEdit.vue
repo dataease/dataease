@@ -652,7 +652,7 @@
         </el-tab-pane>
         <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 300px">
           <chart-style
-            v-if="chartProperties"
+            v-if="chartProperties || view.isPlugin"
             :param="param"
             :view="view"
             :chart="chart"
@@ -1171,7 +1171,7 @@ export default {
       const _this = this
       if (_this.chart && _this.chart.render) {
         const viewConfig = TYPE_CONFIGS.filter(item => item.render === _this.chart.render && item.value === _this.chart.type)
-        if (viewConfig) {
+        if (viewConfig && viewConfig.length) {
           return viewConfig[0].properties
         } else {
           return null
