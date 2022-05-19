@@ -1,5 +1,6 @@
 <template>
-  <span>
+  <span style="position: relative;display: inline-block;">
+    <i class="el-icon-arrow-down el-icon-delete" style="position: absolute;top: 6px;right: 24px;color: #878d9f;cursor: pointer;z-index: 1;" @click="removeItem" />
     <el-dropdown trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis" :type="tagType">
@@ -346,7 +347,7 @@ export default {
     margin-left: 4px;
     color: #878d9f;
     position: absolute;
-    right: 25px;
+    right: 40px;
   }
 
   .inner-dropdown-menu{
