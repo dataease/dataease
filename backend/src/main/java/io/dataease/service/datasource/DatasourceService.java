@@ -27,11 +27,13 @@ import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.DatasetTableMapper;
 import io.dataease.plugins.common.base.mapper.DatasourceMapper;
+import io.dataease.plugins.common.constants.DatasourceCalculationMode;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.datasource.ApiProvider;
@@ -41,10 +43,8 @@ import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -131,6 +131,13 @@ public class DatasourceService {
                     datasourceDTO.setCalculationMode(dataSourceType.getCalculationMode());
                 }
             });
+            if(!datasourceDTO.getType().equalsIgnoreCase(DatasourceTypes.api.toString())){
+                JdbcConfiguration configuration = new Gson().fromJson(datasourceDTO.getConfiguration(), JdbcConfiguration.class);
+                if(StringUtils.isNotEmpty(configuration.getCustomDriver()) && !configuration.getCustomDriver().equalsIgnoreCase("default")){
+                    datasourceDTO.setCalculationMode(DatasourceCalculationMode.DIRECT);
+                }
+            }
+
             if(datasourceDTO.getType().equalsIgnoreCase(DatasourceTypes.mysql.toString())){
                 datasourceDTO.setConfiguration(JSONObject.toJSONString(new Gson().fromJson(datasourceDTO.getConfiguration(), MysqlConfiguration.class)) );
             }

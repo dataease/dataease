@@ -41,6 +41,23 @@
           </el-select>
         </el-form-item>
 
+        <el-form-item  v-if="datasourceType.isJdbc" :label="$t('driver.driver')">
+          <el-select
+            v-model="form.configuration.customDriver"
+            :placeholder="$t('driver.please_choose_driver')"
+            class="select-width"
+            filterable
+          >
+            <el-option
+              v-for="item in driverList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+              :disabled="!item.driverClass"
+            />
+          </el-select>
+        </el-form-item>
+
       <ds-configuration ref="dsConfig" v-if="!datasourceType.isPlugin" :datasource-type='datasourceType' :form="form" :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit"></ds-configuration>
       <plugin-com ref="pluginDsConfig" v-if="datasourceType.isPlugin"  :component-name="datasourceType.type" :obj="{form, disabled }" />
 
@@ -70,7 +87,15 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import {addDs, editDs, getSchema, validateDs, validateDsById, checkApiDatasource} from '@/api/system/datasource'
+import {
+  addDs,
+  editDs,
+  getSchema,
+  validateDs,
+  validateDsById,
+  checkApiDatasource,
+  listDriverByType
+} from '@/api/system/datasource'
 import {$confirm} from '@/utils/message'
 import i18n from '@/lang/index'
 import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
@@ -227,7 +252,8 @@ export default {
         {label: this.$t('dataset.location'), value: 5}
       ],
       height: 500,
-      disabledNext: false
+      disabledNext: false,
+      driverList: []
     }
   },
 
@@ -235,7 +261,7 @@ export default {
     if (this.params && this.params.id) {
       const row = this.params
       this.edit(row)
-      this.changeType()
+      this.changeType(true)
     } else {
       this.create()
       if (this.params && this.params.type) {
@@ -492,13 +518,19 @@ export default {
         }
       })
     },
-    changeType() {
+    changeType(init) {
       for (let i = 0; i < this.dsTypes.length; i++) {
         if (this.dsTypes[i].type === this.form.type) {
-          if(this.form.type !== 'api'){
+          if(this.form.type !== 'api' && !init){
             this.form.configuration.extraParams = this.dsTypes[i].extraParams
           }
           this.datasourceType = this.dsTypes[i]
+          if(this.datasourceType.isJdbc){
+            listDriverByType(this.datasourceType.type).then(res => {
+              this.driverList = res.data
+              this.driverList.push({id: 'default', name: 'Default', driverClass:'Default'})
+            })
+          }
         }
       }
     },

@@ -1328,7 +1328,22 @@ export default {
     sql_ds_union_error: 'Direct connect SQL dataset can not be union',
     api_data: 'API dataset'
   },
+  driver:{
+    driver: 'Driver',
+    please_choose_driver: 'Please choose driver',
+    mgm: 'Driver',
+    add: 'ADD Driver',
+    modify: 'Modify',
+    show_info: 'Driver info',
+    file_name: 'File name',
+    version: 'version'
+  },
   datasource: {
+    auth_method: 'Auth method',
+    passwd: 'UserName Password',
+    kerbers_info: 'Please make sure krb5 Conf, KeyTab key, added to path: /opt/dataease/conf',
+    client_principal: 'Client Principal',
+    keytab_Key_path: 'Keytab Key Path',
     datasource: 'Data Source',
     please_select_left: 'Please select the data source from the left',
     show_info: 'Data Source Info',
