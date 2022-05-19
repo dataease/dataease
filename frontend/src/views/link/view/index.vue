@@ -43,7 +43,8 @@ export default {
         this.$store.dispatch('panel/setPanelInfo', {
           id: res.data.id,
           name: res.data.name,
-          privileges: res.data.privileges
+          privileges: res.data.privileges,
+          status: res.data.status
         })
 
         panelInit(JSON.parse(res.data.panelData), JSON.parse(res.data.panelStyle))
