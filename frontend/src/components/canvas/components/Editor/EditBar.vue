@@ -91,7 +91,7 @@ export default {
     },
     // batch operation area
     batchOptAreaShow() {
-      return this.batchOptStatus && this.element.type === 'view'
+      return this.batchOptStatus && this.element.type === 'view' && !this.element.isPlugin
     },
     // 联动区域按钮显示
     linkageAreaShow() {

@@ -6,7 +6,7 @@
           <el-checkbox v-model="titleForm.show" @change="changeTitleStyle">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="titleForm.show">
-          <el-form-item :label="$t('chart.title')" class="form-item">
+          <el-form-item v-if="!this.batchOptStatus" :label="$t('chart.title')" class="form-item">
             <el-input
               v-model="titleForm.title"
               size="mini"
@@ -43,8 +43,8 @@
 
 <script>
 import { COLOR_PANEL, DEFAULT_TITLE_STYLE } from '../../chart/chart'
-import { checkTitle } from '@/api/chart/chart'
 import { checkViewTitle } from '@/components/canvas/utils/utils'
+import { mapState } from 'vuex'
 
 export default {
   name: 'TitleSelectorAntV',
@@ -65,6 +65,11 @@ export default {
       isSetting: false,
       predefineColors: COLOR_PANEL
     }
+  },
+  computed: {
+    ...mapState([
+      'batchOptStatus'
+    ])
   },
   watch: {
     'chart': {
@@ -90,7 +95,9 @@ export default {
         if (customStyle.text) {
           this.titleForm = customStyle.text
         }
-        this.titleForm.title = this.chart.title
+        if (!this.batchOptStatus) {
+          this.titleForm.title = this.chart.title
+        }
       }
     },
     init() {
@@ -104,15 +111,17 @@ export default {
       this.fontSize = arr
     },
     changeTitleStyle() {
-      if (this.titleForm.title.length < 1) {
-        this.$error(this.$t('chart.title_cannot_empty'))
-        this.titleForm.title = this.chart.title
-        return
-      }
-      if (checkViewTitle('update', this.chart.id, this.titleForm.title)) {
-        this.$error(this.$t('chart.title_repeat'))
-        this.titleForm.title = this.chart.title
-        return
+      if (!this.batchOptStatus) {
+        if (this.titleForm.title.length < 1) {
+          this.$error(this.$t('chart.title_cannot_empty'))
+          this.titleForm.title = this.chart.title
+          return
+        }
+        if (checkViewTitle('update', this.chart.id, this.titleForm.title)) {
+          this.$error(this.$t('chart.title_repeat'))
+          this.titleForm.title = this.chart.title
+          return
+        }
       }
       this.$emit('onTextChange', this.titleForm)
     },
