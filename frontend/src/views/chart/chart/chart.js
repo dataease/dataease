@@ -8,7 +8,8 @@ export const DEFAULT_COLOR_CASE = {
   tableStripe: true,
   dimensionColor: '#000000',
   quotaColor: '#000000',
-  tableBorderColor: '#cfdaf4'
+  tableBorderColor: '#cfdaf4',
+  seriesColors: [] // 格式：{"name":"s1","color":"","isCustom":false}
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
