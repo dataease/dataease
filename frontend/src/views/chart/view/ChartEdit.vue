@@ -652,7 +652,7 @@
         </el-tab-pane>
         <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 300px">
           <chart-style
-            v-if="chartProperties || view.isPlugin"
+            v-if="chartProperties"
             :param="param"
             :view="view"
             :chart="chart"
