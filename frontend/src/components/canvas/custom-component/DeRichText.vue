@@ -1,19 +1,20 @@
 <template>
-  <div v-if="editStatus" class="rich-main-class">
+  <div class="rich-main-class" @dblclick="setEdit">
     <Editor
-      v-show="canEdit"
+      v-if="editShow"
       :id="tinymceId"
       v-model="myValue"
       style="width: 100%;height: 100%"
       :init="init"
-      :disabled="disabled"
+      :disabled="!canEdit"
       @onClick="onClick"
     />
-    <div v-show="!canEdit" style="width: 100%;height: 100%" @dblclick="setEdit" v-html="myValue" />
+    <!--    <div v-show="!canEdit" style="width: 100%;height: 100%" @dblclick="setEdit" v-html="myValue" />-->
   </div>
-  <div v-else class="rich-main-class">
-    <div v-html="myValue" />
-  </div>
+<!--  <div v-else class="rich-main-class">-->
+<!--    <Editor :id="tinymceId"/>-->
+<!--    <div v-html="myValue" />-->
+<!--  </div>-->
 
 </template>
 
@@ -32,6 +33,10 @@ import 'tinymce/plugins/charmap' // 特殊字符
 import 'tinymce/plugins/media' // 插入编辑媒体
 import 'tinymce/plugins/wordcount'// 字数统计
 import 'tinymce/plugins/table'// 表格
+import 'tinymce/plugins/contextmenu'// contextmenu
+import 'tinymce/plugins/directionality'
+import 'tinymce/plugins/nonbreaking'
+import 'tinymce/plugins/pagebreak'
 import { mapState } from 'vuex'
 
 // const fonts = [
@@ -93,6 +98,7 @@ export default {
   },
   data() {
     return {
+      editShow: true,
       canEdit: false,
       // 初始化配置
       tinymceId: 'tinymce',
@@ -104,9 +110,13 @@ export default {
         language: 'zh_CN',
         skin_url: '/tinymce/skins/ui/oxide', // 皮肤
         content_css: '/tinymce/skins/content/default/content.css',
-        plugins: 'advlist autolink link image lists charmap  media wordcount table', // 插件
+        plugins: 'advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak', // 插件
         // 工具栏
-        toolbar: 'undo redo |  fontsizeselect | bold italic forecolor backcolor| alignleft aligncenter alignright | lists image media table link',
+        // toolbar: 'undo redo |  fontsizeselect fontselect | bold italic forecolor backcolor underline strikethrough | alignleft aligncenter alignright | lists image media table link | bullist numlist ',
+        toolbar: 'undo redo |fontsizeselect forecolor backcolor bold italic underline strikethrough link | ' +
+            'alignleft aligncenter alignright | bullist numlist |' +
+            ' blockquote subscript superscript removeformat | table image media | fullscreen ' +
+            '| bdmap indent2em lineheight formatpainter axupimgs',
         toolbar_location: '/',
         fontsize_formats: '12px 14px 16px 18px 20px 22px 24px 28px 32px 36px 48px 56px 72px', // 字体大小
         menubar: false,
@@ -128,7 +138,11 @@ export default {
     // 监听内容变化
     active(val) {
       if (!val) {
+        this.editShow = false
         this.canEdit = false
+        this.$nextTick(() => {
+          this.editShow = true
+        })
       }
     },
     // 监听内容变化
@@ -148,8 +162,10 @@ export default {
       this.$emit('onClick', e, tinymce)
     },
     setEdit() {
-      this.canEdit = true
-      this.element.editing = true
+      if (this.editStatus) {
+        this.canEdit = true
+        this.element.editing = true
+      }
     }
   }
 }
@@ -164,6 +180,28 @@ export default {
   ::-webkit-scrollbar {
     width: 0px!important;
     height: 0px!important;
+  }
+  ::v-deep ol {
+    display: block!important;
+    list-style-type: decimal;
+    margin-block-start: 1em!important;
+    margin-block-end: 1em!important;
+    margin-inline-start: 0px!important;
+    margin-inline-end: 0px!important;
+    padding-inline-start: 40px!important;
+  }
+  ::v-deep ul {
+    display: block!important;
+    list-style-type: disc;
+    margin-block-start: 1em!important;
+    margin-block-end: 1em!important;
+    margin-inline-start: 0px!important;
+    margin-inline-end: 0px!important;
+    padding-inline-start: 40px!important;
+  }
+  ::v-deep li {
+    display: list-item!important;
+    text-align: -webkit-match-parent!important;
   }
 </style>
 
