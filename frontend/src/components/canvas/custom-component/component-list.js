@@ -266,14 +266,7 @@ const list = [
     hyperlinks: HYPERLINKS,
     style: {
       width: 400,
-      height: 100,
-      fontSize: 22,
-      fontWeight: 400,
-      lineHeight: '',
-      letterSpacing: 0,
-      textAlign: 'center',
-      color: '#000000',
-      verticalAlign: 'middle'
+      height: 100
     },
     x: 1,
     y: 1,
