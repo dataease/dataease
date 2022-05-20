@@ -12,7 +12,7 @@
       style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;padding-right: 6px"
       class="attr-style theme-border-class"
     >
-      <el-row v-if="chart.mode!=='batchOpt'" class="padding-lr">
+      <el-row v-if="!batchOptStatus" class="padding-lr">
         <span class="title-text">{{ $t('chart.style_priority') }}</span>
         <el-row>
           <el-radio-group
@@ -274,6 +274,7 @@ import LegendSelectorAntV from '@/views/chart/components/component-style/LegendS
 import BackgroundColorSelector from '@/views/chart/components/component-style/BackgroundColorSelector'
 import SplitSelector from '@/views/chart/components/component-style/SplitSelector'
 import SplitSelectorAntV from '@/views/chart/components/component-style/SplitSelectorAntV'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ChartStyle',
@@ -321,7 +322,9 @@ export default {
     }
   },
   computed: {
-
+    ...mapState([
+      'batchOptStatus'
+    ])
   },
   created() {
 

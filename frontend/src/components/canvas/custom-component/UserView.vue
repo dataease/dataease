@@ -412,8 +412,11 @@ export default {
           this.chart.customAttr = this.sourceCustomAttrStr
           updateParams['customAttr'] = this.sourceCustomAttrStr
         } else if (param.custom === 'customStyle') {
-          this.sourceCustomStyleStr = this.chart.customStyle
           const sourceCustomStyle = JSON.parse(this.sourceCustomStyleStr)
+          // view's title use history
+          if (param.property === 'text') {
+            param.value.title = sourceCustomStyle.text.title
+          }
           sourceCustomStyle[param.property] = param.value
           this.sourceCustomStyleStr = JSON.stringify(sourceCustomStyle)
           this.chart.customStyle = this.sourceCustomStyleStr

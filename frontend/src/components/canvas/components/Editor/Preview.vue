@@ -256,13 +256,15 @@ export default {
     })
     // 监听画布div变动事件
     const tempCanvas = document.getElementById('canvasInfoTemp')
-    erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
-      _this.$nextTick(() => {
-        // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
-        _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
-        this.$emit('mainHeightChange', _this.mainHeight)
+    if (tempCanvas) {
+      erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
+        _this.$nextTick(() => {
+          // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
+          _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
+          this.$emit('mainHeightChange', _this.mainHeight)
+        })
       })
-    })
+    }
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     _this.$store.commit('clearLinkageSettingInfo', false)
     _this.canvasStyleDataInit()

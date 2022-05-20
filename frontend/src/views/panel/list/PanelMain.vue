@@ -30,6 +30,7 @@ import PanelList from '../list/PanelList'
 import PanelViewShow from '../list/PanelViewShow'
 import ShareTree from '../GrantAuth/shareTree'
 import Enshrine from '../enshrine/index'
+import { pluginTypes } from '@/api/chart/chart'
 
 export default {
   name: 'PanelMain',
@@ -59,6 +60,16 @@ export default {
     }
   },
   mounted() {
+    // init all views (include plugins) base info
+    localStorage.removeItem('plugin-views')
+    pluginTypes().then(res => {
+      const plugins = res.data
+      localStorage.setItem('plugin-views', JSON.stringify(plugins))
+      this.$store.commit('initViewRender', plugins)
+    }).catch(e => {
+      localStorage.setItem('plugin-views', null)
+      this.$store.commit('initViewRender', plugins)
+    })
     this.clear()
   },
   methods: {
