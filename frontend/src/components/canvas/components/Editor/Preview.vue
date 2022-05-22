@@ -1,7 +1,17 @@
 <template>
   <div class="bg" :style="customStyle" @scroll="canvasScroll">
     <div id="canvasInfoMain" ref="canvasInfoMain" :style="canvasInfoMainStyle">
+      <el-row v-if="showUnpublishedArea" class="custom-position">
+        <pre>
+            <svg-icon icon-class="unpublished" style="font-size: 75px" />
+            {{ $t('panel.panel_off') }}
+        </pre>
+      </el-row>
+      <el-row v-else-if="componentDataShow.length===0" class="custom-position">
+        {{ $t('panel.panelNull') }}
+      </el-row>
       <div
+        v-else
         id="canvasInfoTemp"
         ref="canvasInfoTemp"
         :style="[canvasInfoTempStyle,screenShotStyle]"
@@ -9,9 +19,6 @@
         @mouseup="deselectCurComponent"
         @mousedown="handleMouseDown"
       >
-        <el-row v-if="componentDataShow.length===0" class="custom-position">
-          {{ $t('panel.panelNull') }}
-        </el-row>
         <canvas-opt-bar />
         <ComponentWrapper
           v-for="(item, index) in componentDataInfo"
@@ -137,6 +144,20 @@ export default {
   created() {
   },
   computed: {
+    mainActiveName() {
+      return this.$store.state.panel.mainActiveName
+    },
+    showUnpublishedArea() {
+      return this.panelInfo.status === 'unpublished'
+      // if (this.mainActiveName === 'PanelMain') {
+      //   return this.panelInfo.status === 'unpublished' && this.panelInfo.privileges.indexOf('manage') === -1
+      // } else {
+      //   return this.panelInfo.status === 'unpublished'
+      // }
+    },
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
     showExportImgButton() {
       return this.showChartInfo.type && !this.showChartInfo.type.includes('table')
     },
@@ -235,13 +256,15 @@ export default {
     })
     // 监听画布div变动事件
     const tempCanvas = document.getElementById('canvasInfoTemp')
-    erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
-      _this.$nextTick(() => {
-        // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
-        _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
-        this.$emit('mainHeightChange', _this.mainHeight)
+    if (tempCanvas) {
+      erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
+        _this.$nextTick(() => {
+          // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
+          _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
+          this.$emit('mainHeightChange', _this.mainHeight)
+        })
       })
-    })
+    }
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     _this.$store.commit('clearLinkageSettingInfo', false)
     _this.canvasStyleDataInit()
@@ -372,7 +395,12 @@ export default {
   }
 
   .custom-position {
+    line-height: 30px;
+    width: 100%;
+    z-index: 100;
     height: 100%;
+    text-align: center;
+    cursor:not-allowed;
     flex: 1;
     display: flex;
     align-items: center;

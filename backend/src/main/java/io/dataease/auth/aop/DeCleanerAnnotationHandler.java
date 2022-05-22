@@ -2,10 +2,10 @@ package io.dataease.auth.aop;
 
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.auth.api.dto.CurrentUserDto;
-import io.dataease.auth.util.ReflectUtil;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.model.AuthURD;
+import io.dataease.commons.utils.AopUtils;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.listener.util.CacheUtils;
@@ -19,11 +19,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Aspect
@@ -43,7 +40,7 @@ public class DeCleanerAnnotationHandler {
             if (ObjectUtils.isNotEmpty(key) && ArrayUtils.isNotEmpty(args)) {
                 int pi = deCleaner.paramIndex();
                 Object arg = point.getArgs()[pi];
-                paramValue = getParamValue(arg, key, 0);
+                paramValue = AopUtils.getParamValue(arg, key, 0);
             }
 
             switch (type.name()) {
@@ -136,44 +133,5 @@ public class DeCleanerAnnotationHandler {
         });
     }
 
-    private Object getParamValue(Object arg, String key, int layer) throws Exception{
-        if (ObjectUtils.isNotEmpty(arg)) return null;
-        Class<?> parameterType = arg.getClass();
-        if (parameterType.isPrimitive() || ReflectUtil.isWrapClass(parameterType) || ReflectUtil.isString(parameterType)) {
-            return arg;
-        } else if (ReflectUtil.isArray(parameterType)) {
-            Object result;
-            for (int i = 0; i < Array.getLength(arg); i++) {
-                Object o = Array.get(arg, i);
 
-                if (ObjectUtils.isNotEmpty((result = getParamValue(o, key, layer)))) {
-                    return result;
-                }
-            }
-            return null;
-        } else if (ReflectUtil.isCollection(parameterType)) {
-            Object[] array = ((Collection) arg).toArray();
-            Object result;
-            for (int i = 0; i < array.length; i++) {
-                Object o = array[i];
-                if (ObjectUtils.isNotEmpty((result = getParamValue(o, key, layer)))) {
-                    return result;
-                }
-            }
-            return null;
-        } else if (ReflectUtil.isMap(parameterType)) {
-            Map<String, Object> argMap = (Map) arg;
-            String[] values = key.split("\\.");
-            Object o = argMap.get(values[layer]);
-            return getParamValue(o, key, ++layer);
-        } else {
-            // 当作自定义类处理
-            String[] values = key.split("\\.");
-            String fieldName = values[layer];
-
-            Object fieldValue = ReflectUtil.getFieldValue(arg, values[layer]);
-            return getParamValue(fieldValue, key, ++layer);
-
-        }
-    }
 }

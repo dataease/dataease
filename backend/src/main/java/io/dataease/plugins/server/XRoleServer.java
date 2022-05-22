@@ -3,7 +3,9 @@ package io.dataease.plugins.server;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.service.ExtAuthService;
+import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.plugins.common.entity.XpackGridRequest;
@@ -30,6 +32,11 @@ public class XRoleServer {
     @RequiresPermissions("role:add")
     @ApiOperation("新增角色")
     @PostMapping("/create")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.CREATE,
+        sourcetype = SysLogConstants.SOURCE_TYPE.ROLE,
+        value = "roleId"
+    )
     public void create(@RequestBody XpackRoleDto role){
         RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
         roleXpackService.save(role);
@@ -39,6 +46,10 @@ public class XRoleServer {
     @RequiresPermissions("role:del")
     @ApiOperation("删除角色")
     @PostMapping("/delete/{roleId}")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.DELETE,
+        sourcetype = SysLogConstants.SOURCE_TYPE.ROLE
+    )
     public void delete(@PathVariable("roleId") Long roleId){
         RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
         extAuthService.clearDeptResource(roleId);
@@ -49,6 +60,11 @@ public class XRoleServer {
     @RequiresPermissions("role:edit")
     @ApiOperation("更新角色")
     @PostMapping("/update")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+        sourcetype = SysLogConstants.SOURCE_TYPE.ROLE,
+        value = "roleId"
+    )
     public void update(@RequestBody XpackRoleDto role){
         RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
         roleXpackService.update(role);

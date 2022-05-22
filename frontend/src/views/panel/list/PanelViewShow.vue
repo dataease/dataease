@@ -37,12 +37,12 @@
               </el-button>
             </span>
 
-            <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
+            <span v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.save_to_panel')">
                 <el-button class="el-icon-folder-checked" size="mini" circle @click="saveToTemplate" />
               </el-tooltip>
             </span>
-            <span v-if="hasDataPermission('export',panelInfo.privileges)" style="float: right;margin-right: 10px">
+            <span v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-dropdown>
                 <el-button size="mini" class="el-icon-download" circle />
                 <el-dropdown-menu slot="dropdown">
@@ -52,25 +52,25 @@
                 </el-dropdown-menu>
               </el-dropdown>
             </span>
-            <span style="float: right;margin-right: 10px">
+            <span style="float: right;margin-right: 10px" v-if="panelInfo.status==='publish'">
               <el-tooltip :content="$t('panel.fullscreen_preview')">
                 <el-button class="el-icon-view" size="mini" circle @click="clickFullscreen" />
               </el-tooltip>
             </span>
 
-            <span style="float: right;margin-right: 10px">
+            <span style="float: right;margin-right: 10px" v-if="panelInfo.status==='publish'">
               <el-tooltip :content="$t('panel.new_tab_preview')">
                 <el-button class="el-icon-data-analysis" size="mini" circle @click="newTab" />
               </el-tooltip>
             </span>
 
-            <span v-if="!hasStar && panelInfo && showType !== 1" style="float: right;margin-right: 10px">
+            <span v-if="!hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.store')">
                 <el-button class="el-icon-star-off" size="mini" circle @click="star" />
               </el-tooltip>
             </span>
 
-            <span v-if="hasStar && panelInfo && showType !== 1" style="float: right;margin-right: 10px">
+            <span v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('commons.cancel')">
                 <el-button class="el-icon-star-on" size="mini" circle @click="unstar" />
               </el-tooltip>

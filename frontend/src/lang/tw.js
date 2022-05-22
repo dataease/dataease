@@ -1448,6 +1448,7 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    panel_off: '仪表板已下架',
     batch_opt: '批量操作',
     edit_leave_tips: '是否放弃编辑离开当前界面？',
     hyperlinks: '超鏈接',

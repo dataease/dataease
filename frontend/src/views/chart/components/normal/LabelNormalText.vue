@@ -235,7 +235,6 @@ export default {
           value: 0
         }
       }
-      console.log(this.pointParam)
       this.$refs['textData'].offsetTop
       if (this.trackMenu.length < 2) { // 只有一个事件直接调用
         this.trackClick(this.trackMenu[0])

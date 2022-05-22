@@ -213,10 +213,8 @@ export default {
     },
 
     antVAction(param) {
-      console.log(param, 'param')
       const cell = this.myChart.getCell(param.target)
       const meta = cell.getMeta()
-      console.log(meta, 'meta')
 
       let xAxis = []
       if (this.chart.xaxis) {
@@ -251,7 +249,6 @@ export default {
           dimensionList: dimensionList
         }
       }
-      console.log(this.pointParam, 'pointParam')
 
       if (this.trackMenu.length < 2) { // 只有一个事件直接调用
         this.trackClick(this.trackMenu[0])

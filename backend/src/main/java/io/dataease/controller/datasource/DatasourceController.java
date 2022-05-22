@@ -1,7 +1,10 @@
 package io.dataease.controller.datasource;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.annotation.DePermission;
+import io.dataease.commons.constants.SysLogConstants;
+import io.dataease.controller.datasource.request.DeleteDsRequest;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
@@ -39,6 +42,12 @@ public class DatasourceController {
     @DePermission(type = DePermissionType.DATASOURCE, value = "id")
     @ApiOperation("新增数据源")
     @PostMapping("/add")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.CREATE,
+        sourcetype = SysLogConstants.SOURCE_TYPE.DATASOURCE,
+        positionIndex = 0,positionKey = "type",
+        value = "id"
+    )
     public Datasource addDatasource(@RequestBody Datasource datasource) throws Exception{
         return datasourceService.addDatasource(datasource);
     }
@@ -81,15 +90,27 @@ public class DatasourceController {
     @RequiresPermissions("datasource:read")
     @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_MANAGE)
     @ApiOperation("删除数据源")
-    @PostMapping("/delete/{datasourceID}")
-    public ResultHolder deleteDatasource(@PathVariable(value = "datasourceID") String datasourceID) throws Exception {
-        return datasourceService.deleteDatasource(datasourceID);
+    @PostMapping("/delete")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.DELETE,
+        sourcetype = SysLogConstants.SOURCE_TYPE.DATASOURCE,
+        positionIndex = 0,positionKey = "type",
+        value = "id"
+    )
+    public ResultHolder deleteDatasource(@RequestBody DeleteDsRequest request) throws Exception {
+        return datasourceService.deleteDatasource(request.getId());
     }
 
     @RequiresPermissions("datasource:read")
     @DePermission(type = DePermissionType.DATASOURCE, value = "id", level = ResourceAuthLevel.DATASOURCE_LEVEL_MANAGE)
     @ApiOperation("更新数据源")
     @PostMapping("/update")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+        sourcetype = SysLogConstants.SOURCE_TYPE.DATASOURCE,
+        positionIndex = 0,positionKey = "type",
+        value = "id"
+    )
     public void updateDatasource(@RequestBody UpdataDsRequest dsRequest) throws Exception{
         datasourceService.updateDatasource(dsRequest);
     }

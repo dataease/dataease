@@ -24,7 +24,7 @@
     </el-header>
     <de-container>
       <de-aside-container class="ms-aside-container">
-        <div v-if="showAside" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
+        <div v-show="showAside" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
           <div
             style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px"
           >
@@ -228,7 +228,7 @@
 
       <div v-show="!mobileLayoutStatus&&rightDrawOpen" class="tools-window-main">
         <div v-show="showViewToolsAside">
-          <chart-edit ref="chartEditRef" :edit-from="'panel'" :param="chartEditParam" />
+          <chart-edit ref="chartEditRef" :edit-statue="showViewToolsAside&&!mobileLayoutStatus&&rightDrawOpen" :edit-from="'panel'" :param="chartEditParam" />
         </div>
         <div v-show="showBatchViewToolsAside">
           <chart-style-batch-set />
@@ -267,22 +267,6 @@
         <span slot="footer">
           <el-button size="mini" @click="cancelFilter">{{ $t('commons.cancel') }}</el-button>
           <el-button :disabled="!enableSureButton" type="primary" size="mini" @click="sureFilter">{{ $t('commons.confirm') }}</el-button>
-        </span>
-      </div>
-    </el-dialog>
-
-    <!--文字组件对话框-->
-    <el-dialog
-      v-if="styleDialogVisible && curComponent"
-      :title="$t('panel.style')"
-      :visible.sync="styleDialogVisible"
-      custom-class="de-style-dialog"
-    >
-      <PanelTextEditor v-if="curComponent.type==='v-text'" />
-      <AttrListExtend v-else />
-      <div style="text-align: center">
-        <span slot="footer">
-          <el-button size="mini" @click="closeStyleDialog">{{ $t('commons.confirm') }}</el-button>
         </span>
       </div>
     </el-dialog>
@@ -352,10 +336,8 @@ import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
 import { initPanelData, initViewCache } from '@/api/panel/panel'
 import Preview from '@/components/canvas/components/Editor/Preview'
-import AttrListExtend from '@/components/canvas/components/AttrListExtend'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
-import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
 import ChartGroup from '@/views/chart/group/Group'
 import { chartCopy } from '@/api/chart/chart'
 // 引入样式
@@ -389,9 +371,7 @@ export default {
     FilterDialog,
     SubjectSetting,
     Preview,
-    AttrListExtend,
     AssistComponent,
-    PanelTextEditor,
     TextAttr,
     ChartGroup,
     ChartEdit
@@ -1060,7 +1040,6 @@ export default {
     recordStyleChange(index) {
       if (index === this.$store.state.styleChangeTimes) {
         this.timeMachine = setTimeout(() => {
-          // console.log('recordSnapshot')
           this.$store.commit('recordSnapshot')
           this.$store.state.styleChangeTimes = 0
           this.destroyTimeMachine()

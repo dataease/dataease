@@ -1,6 +1,6 @@
 <template>
   <span style="position: relative;display: inline-block;">
-    <i v-show="false" class="el-icon-arrow-down el-icon-delete" style="position: absolute;top: 6px;right: 24px;color: #878d9f;cursor: pointer;z-index: 1;" @click="removeItem" />
+    <i class="el-icon-arrow-down el-icon-delete" style="position: absolute;top: 6px;right: 24px;color: #878d9f;cursor: pointer;z-index: 1;" @click="removeItem" />
     <el-dropdown trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis" :type="tagType">
@@ -181,7 +181,6 @@ export default {
       }
     },
     sort(param) {
-      // console.log(param)
       if (param.type === 'custom_sort') {
         const item = {
           index: this.index,
@@ -201,7 +200,6 @@ export default {
       }
     },
     dateStyle(param) {
-      // console.log(param)
       this.item.dateStyle = param.type
       this.$emit('onDimensionItemChange', this.item)
     },
@@ -211,7 +209,6 @@ export default {
       }
     },
     datePattern(param) {
-      // console.log(param)
       this.item.datePattern = param.type
       this.$emit('onDimensionItemChange', this.item)
     },

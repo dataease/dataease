@@ -35,9 +35,9 @@ public class DriverMgmController {
 
     @RequiresPermissions("datasource:read")
     @ApiOperation("删除驱动")
-    @PostMapping("/delete/{id}")
-    public void delete(@PathVariable String id) throws Exception{
-        driverService.delete(id);
+    @PostMapping("/delete")
+    public void delete(@RequestBody DeDriver deDriver) throws Exception{
+        driverService.delete(deDriver.getId());
     }
 
     @RequiresPermissions("datasource:read")

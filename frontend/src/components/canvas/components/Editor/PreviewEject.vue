@@ -104,7 +104,6 @@ export default {
             message: this.$t('panel.outer_param_decode_error'),
             type: 'error'
           })
-          console.log('outerParams Decode error：', e)
         }
       }
       if (tempParam) {
@@ -129,7 +128,6 @@ export default {
           if (--loadingCount === 0) {
             this.dataLoading = false
           }
-          console.log('queryTargetPanelJumpInfo error：', e)
         }
       }
       if (loadingCount === 0) {

@@ -50,7 +50,6 @@ export default {
         background: 'gray',
         position: 'absolute'
       }
-      // console.log('style=>' + JSON.stringify(style))
       return style
     },
     ...mapState([

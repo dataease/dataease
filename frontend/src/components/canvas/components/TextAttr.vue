@@ -394,7 +394,6 @@ export default {
         this.$nextTick(() => {
           this.init()
         })
-        // console.log('curComponent change')
       }
     }
   },
@@ -417,14 +416,11 @@ export default {
       } else {
         this.mainWidthOffset = document.getElementById('main-attr').offsetWidth - 50
       }
-      // console.log('mainWidthOffset:' + this.mainWidthOffset)
     },
     attrTabShow(attr) {
-      // console.log('attr:' + attr + this[this.curComponent.type].includes(attr))
       return this.curActiveTabInner && this[this.curActiveTabInner.type] && this[this.curActiveTabInner.type].includes(attr)
     },
     attrShow(attr) {
-      // console.log('attr:' + attr + this[this.curComponent.type].includes(attr))
       return this[this.curComponent.type].includes(attr)
     },
     goColor() {

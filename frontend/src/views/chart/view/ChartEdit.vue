@@ -1018,11 +1018,9 @@ import ValueFormatterEdit from '@/views/chart/components/value-formatter/ValueFo
 import ChartStyle from '@/views/chart/view/ChartStyle'
 import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
 import { TYPE_CONFIGS } from '@/views/chart/chart/util'
-import ChartStyleBack from '@/views/chart/view/ChartStyleBack'
 export default {
   name: 'ChartEdit',
   components: {
-    ChartStyleBack,
     CustomSortEdit,
     ChartStyle,
     ValueFormatterEdit,
@@ -1062,6 +1060,11 @@ export default {
       type: String,
       required: false,
       default: 'view'
+    },
+    editStatue: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data() {
@@ -1167,8 +1170,8 @@ export default {
     chartProperties() {
       const _this = this
       if (_this.chart && _this.chart.render) {
-        const viewConfig = TYPE_CONFIGS.filter(item => item.render === _this.chart.render && item.value === _this.chart.type)
-        if (viewConfig) {
+        const viewConfig = this.allViewRender.filter(item => item.render === _this.chart.render && item.value === _this.chart.type)
+        if (viewConfig && viewConfig.length) {
           return viewConfig[0].properties
         } else {
           return null
@@ -1185,7 +1188,8 @@ export default {
     },
     ...mapState([
       'curComponent',
-      'panelViewEditInfo'
+      'panelViewEditInfo',
+      'allViewRender'
     ])
     /* pluginRenderOptions() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
@@ -1196,13 +1200,18 @@ export default {
     } */
   },
   watch: {
+    'editStatue': function(val) {
+      if (val && this.param.id !== this.preChartId) {
+        this.preChartId = this.param.id
+        this.chartInit()
+      }
+    },
     'param': function(val) {
       if (this.param.optType === 'new') {
         //
-      } else if (this.param.id !== this.preChartId) {
+      } else if (this.param.id !== this.preChartId && this.editStatue) {
         this.preChartId = this.param.id
         this.chartInit()
-        // console.log('fromwatch:' + JSON.stringify(val))
       }
     },
     searchField(val) {
@@ -1237,7 +1246,6 @@ export default {
     this.bindPluginEvent()
     this.initFromPanel()
     this.chartInit()
-    // console.log('mounted')
   },
   activated() {
   },
@@ -1251,7 +1259,6 @@ export default {
       this.pluginRenderOptions = [...this.renderOptions, ...pluginOptions]
     },
     emptyTableData(id) {
-      console.log('emptyTableData:' + id)
       this.table = {}
       this.dimension = []
       this.quota = []
@@ -1560,7 +1567,6 @@ export default {
     // 将视图传入echart组件
     //   this.chart = response.data
     //   this.data = response.data.data
-    //   // console.log(JSON.stringify(this.chart))
     //   this.httpRequest.status = true
     //   if (this.chart.privileges) {
     //     this.param.privileges = this.chart.privileges
@@ -1667,7 +1673,6 @@ export default {
           // 将视图传入echart组件
           this.chart = response.data
           this.data = response.data.data
-          // console.log(JSON.stringify(this.chart))
           this.httpRequest.status = true
           if (this.chart.privileges) {
             this.param.privileges = this.chart.privileges
@@ -1732,7 +1737,6 @@ export default {
 
     // move回调方法
     onMove(e, originalEvent) {
-      // console.log(e)
       this.moveId = e.draggedContext.element.id
       return true
     },

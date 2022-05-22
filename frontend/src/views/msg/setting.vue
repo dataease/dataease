@@ -162,7 +162,6 @@ export default {
       })
     },
     nodeClick(data, node) {
-      // console.log(data)
     },
     getAllKidId(node, ids) {
       if (node.children && node.children.length > 0) {
@@ -190,7 +189,6 @@ export default {
         channelId: channelId,
         enable
       }
-      // console.log(param)
       batchUpdate(param).then(res => {
         this.loadSettingData()
       })

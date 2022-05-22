@@ -13,5 +13,7 @@ public class PanelStoreDto {
     private String name;
     @ApiModelProperty("仪表板Id")
     private String panelGroupId;
+    @ApiModelProperty("仪表板状态")
+    private String status;
 
 }

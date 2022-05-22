@@ -125,7 +125,8 @@ const data = {
     changeProperties: {
       customStyle: {},
       customAttr: {}
-    }
+    },
+    allViewRender: []
   },
   mutations: {
     ...animation.mutations,
@@ -158,6 +159,12 @@ const data = {
         component['optStatus'] = {
           dragging: false,
           resizing: false
+        }
+        // Is the current component in editing status
+        if (!state.curComponent) {
+          component['editing'] = false
+        } else if (component.id !== state.curComponent.id) {
+          component['editing'] = false
         }
       }
       state.styleChangeTimes = 0
@@ -544,7 +551,7 @@ const data = {
         // get view base info
         const viewBaseInfo = state.componentViewsData[id]
         // get properties
-        const viewConfig = TYPE_CONFIGS.filter(item => item.render === viewBaseInfo.render && item.value === viewBaseInfo.type)
+        const viewConfig = state.allViewRender.filter(item => item.render === viewBaseInfo.render && item.value === viewBaseInfo.type)
         const viewProperties = viewConfig ? viewConfig[0].properties : []
         if (state.mixProperties.length > 0) {
           // If it exists , taking the intersection
@@ -635,6 +642,12 @@ const data = {
         customStyle: {},
         customAttr: {}
       }
+    },
+    initViewRender(state, pluginViews) {
+      pluginViews.forEach(plugin => {
+        plugin.isPlugin = true
+      })
+      state.allViewRender = [...TYPE_CONFIGS, ...pluginViews]
     }
   },
   modules: {

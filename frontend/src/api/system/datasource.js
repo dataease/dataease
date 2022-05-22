@@ -61,11 +61,12 @@ export function editDs(data) {
   })
 }
 
-export function delDs(id) {
+export function delDs(data) {
   return request({
-    url: 'datasource/delete/' + id,
+    url: 'datasource/delete',
     loading: true,
-    method: 'post'
+    method: 'post',
+    data
   })
 }
 
@@ -95,7 +96,7 @@ export function getSchema(data) {
   })
 }
 
-export function checkApiDatasource(data){
+export function checkApiDatasource(data) {
   return request({
     url: 'datasource/checkApiDatasource',
     method: 'post',
@@ -129,11 +130,12 @@ export function deleteDriverFile(id) {
   })
 }
 
-export function delDriver(id) {
+export function delDriver(data) {
   return request({
-    url: 'driver/delete/' + id,
+    url: 'driver/delete',
     loading: true,
-    method: 'post'
+    method: 'post',
+    data
   })
 }
 export function updateDriver(data) {

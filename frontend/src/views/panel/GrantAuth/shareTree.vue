@@ -7,7 +7,7 @@
           <span slot-scope="{ data }" class="custom-tree-node father">
             <span style="display: flex; flex: 1 1 0%; width: 0px;" :class="!!data.msgNode ? 'msg-node-class': ''">
               <span v-if="!!data.id">
-                <svg-icon icon-class="panel" class="ds-icon-scene" />
+                <svg-icon :icon-class="'panel-'+data.status" class="ds-icon-scene" />
               </span>
               <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
             </span>
@@ -24,7 +24,7 @@
           <span slot-scope="{ data }" class="custom-tree-node father">
             <span style="display: flex; flex: 1 1 0%; width: 0px;" @click="viewMyShare(data)">
               <span v-if="!!data.id">
-                <svg-icon icon-class="panel" class="ds-icon-scene" />
+                <svg-icon :icon-class="'panel-'+data.status" class="ds-icon-scene" />
               </span>
               <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
             </span>
@@ -130,7 +130,6 @@ export default {
       return data
     },
     expandMsgNode(panelIds) {
-      // console.log(panelIds)
       this.$nextTick(() => {
         this.getMsgNodes(panelIds)
       })

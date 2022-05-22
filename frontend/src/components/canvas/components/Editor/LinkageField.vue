@@ -108,7 +108,6 @@ export default {
   mounted() {
     // 初始化映射关系 如果当前是相同的数据集且没有关联关系，则自动补充映射关系
     checkSameDataSet(this.curLinkageView.propValue.viewId, this.element.propValue.viewId).then(res => {
-      console.log('linkageFields:' + JSON.stringify(this.linkageInfo.linkageFields))
       if (res.data === 'YES' && this.linkageInfo.linkageFields.length === 0) {
         this.sourceLinkageInfo.targetViewFields.forEach(item => {
           this.addLinkageField(item.id, item.id)

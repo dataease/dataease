@@ -214,7 +214,6 @@ export default {
     },
 
     clickEditExcel(param) {
-      // console.log(param);
       switch (param.type) {
         case '0':
           this.$emit('switchComponent', {

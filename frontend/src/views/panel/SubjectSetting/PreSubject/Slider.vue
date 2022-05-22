@@ -169,7 +169,6 @@ export default {
       })
     },
     move(offset, direction, speed) {
-      // console.log(speed)
       if (!this.transitionEnd) return
       this.transitionEnd = false
       direction === -1 ? this.currentIndex += offset / this.sliderWidth : this.currentIndex -= offset / this.sliderWidth

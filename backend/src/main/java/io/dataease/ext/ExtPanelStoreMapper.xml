@@ -6,13 +6,14 @@
         <id column="store_id" property="storeId"></id>
         <result column="panel_group_id" property="panelGroupId"></result>
         <result column="name" property="name"></result>
+        <result column="status" property="status"></result>
     </resultMap>
 
 
 
 
     <select id="query" parameterType="io.dataease.ext.query.GridExample" resultMap="panelStoreMap">
-       select s.store_id,s.panel_group_id, g.name
+       select s.store_id,s.panel_group_id, g.name ,g.status
        from panel_store s
        inner join panel_group g on g.id = s.panel_group_id
         <if test="_parameter != null">

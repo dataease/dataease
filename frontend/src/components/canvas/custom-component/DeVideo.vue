@@ -109,40 +109,29 @@ export default {
     },
     // listen event
     onPlayerPlay(player) {
-      // console.log('player play!', player)
     },
     onPlayerEnded(player) {
-      // console.log('player ended!', player)
     },
     onPlayerLoadeddata(player) {
-      // console.log('player Loadeddata!', player)
     },
     onPlayerWaiting(player) {
-      // console.log('player Waiting!', player)
     },
     onPlayerPlaying(player) {
-      // console.log('player Playing!', player)
     },
     onPlayerTimeupdate(player) {
-      // console.log('player Timeupdate!', player.currentTime())
     },
     onPlayerCanplay(player) {
-      // console.log('player Canplay!', player)
     },
     onPlayerCanplaythrough(player) {
-      // console.log('player Ca
-      // console.log('example 01nplaythrough!', player)
     },
 
     // or listen state event
     playerStateChanged(playerCurrentState) {
-      // console.log('player current update state', playerCurrentState)
     },
 
     // player is ready
     playerReadied(player) {
       // seek to 10s
-      // console.log('example player 1 readied', player)
       // player.currentTime(10): the player is readied', player)
     }
   }

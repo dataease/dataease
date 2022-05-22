@@ -91,7 +91,7 @@ export default {
     },
     // batch operation area
     batchOptAreaShow() {
-      return this.batchOptStatus && this.element.type === 'view'
+      return this.batchOptStatus && this.element.type === 'view' && !this.element.isPlugin
     },
     // 联动区域按钮显示
     linkageAreaShow() {
@@ -147,13 +147,6 @@ export default {
   methods: {
     closePreview() {
       this.$emit('closePreview')
-    },
-    createTimer() {
-      if (!this.timer) {
-        this.timer = setInterval(() => {
-          console.log('t=' + this.curComponent.auxiliaryMatrix)
-        }, 5000)
-      }
     },
     destroyTimer() {
       if (this.timer) {
@@ -224,7 +217,7 @@ export default {
     edit() {
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit')
-      } else if (this.curComponent.type === 'v-text' || this.curComponent.type === 'rect-shape') {
+      } else if (this.curComponent.type === 'v-text' || this.curComponent.type === 'de-rich-text' || this.curComponent.type === 'rect-shape') {
         bus.$emit('component-dialog-style')
       } else { bus.$emit('change_panel_right_draw', true) }
     },
@@ -277,11 +270,9 @@ export default {
       if (val) {
         // push
         this.$store.commit('addCurBatchComponent', this.element.propValue.viewId)
-        console.log('push')
       } else {
         // remove
         this.$store.commit('removeCurBatchComponentWithId', this.element.propValue.viewId)
-        console.log('remove')
       }
     }
   }

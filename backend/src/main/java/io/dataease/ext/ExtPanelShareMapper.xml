@@ -5,6 +5,7 @@
     <resultMap id="treeNodeMap" type="io.dataease.dto.panel.PanelSharePo">
         <id column="id" property="id" />
         <result column="name" property="name" />
+        <result column="status" property="status" />
         <result column="creator" property="creator" />
         <result column="user_id"  jdbcType="BIGINT" property="userId" />
     </resultMap>
@@ -20,7 +21,7 @@
 
     <insert id="batchInsert" parameterType="io.dataease.plugins.common.base.domain.PanelShare">
         INSERT INTO panel_share (panel_group_id,target_id,granter,create_time,type)
-        VALUES 
+        VALUES
         <foreach collection="shares" item="share" separator=",">
             (#{share.panelGroupId}, #{share.targetId}, #{userName}, #{share.createTime}, #{share.type})
         </foreach>
@@ -35,7 +36,7 @@
     </delete>
 
     <select id="query" resultMap="treeNodeMap">
-        select distinct s.panel_group_id as id, u.nick_name as creator, g.name, u.user_id
+        select distinct s.panel_group_id as id, u.nick_name as creator, g.name, u.user_id, g.status
         from panel_share s
         left join panel_group g on g.id = s.panel_group_id
         left join sys_user u on u.username = IFNULL(s.granter,g.create_by)
@@ -54,7 +55,7 @@
     </select>
 
     <select id="queryOut" resultMap="treeNodeMap">
-        select distinct s.panel_group_id as id, g.name
+        select distinct s.panel_group_id as id, g.name, g.status
         from panel_share s
         left join panel_group g on g.id = s.panel_group_id
         where ( s.granter is not null and s.granter = #{userName} ) or ( s.granter is null and g.create_by = #{userName} )
@@ -63,10 +64,10 @@
     </select>
 
     <select id="queryWithResource" parameterType="io.dataease.controller.request.panel.PanelShareSearchRequest" resultMap="io.dataease.plugins.common.base.mapper.PanelShareMapper.BaseResultMap">
-        select s.* 
+        select s.*
         from panel_share s
         left join panel_group g on g.id = s.panel_group_id
-        where 
+        where
         s.panel_group_id = #{resourceId}
          <if test="type != null">
             and s.type = #{type}

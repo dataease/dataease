@@ -124,7 +124,7 @@ public class PanelGroupService {
         if (StringUtils.isEmpty(panelId)) { // 新建
             checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, null, request.getNodeType());
             panelId = newPanel(request);
-            panelGroupMapper.insert(request);
+            panelGroupMapper.insertSelective(request);
             // 清理权限缓存
             clearPermissionCache();
             sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);

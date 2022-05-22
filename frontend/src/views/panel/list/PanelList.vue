@@ -690,7 +690,13 @@ export default {
       this.$store.commit('refreshSnapshot')
       this.$store.commit('setComponentData', [])
       this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
-      this.$store.dispatch('panel/setPanelInfo', data)
+      this.$store.dispatch('panel/setPanelInfo', {
+        id: data.id,
+        name: data.name,
+        privileges: data.privileges,
+        sourcePanelName: data.sourcePanelName,
+        status: data.status
+      })
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },
     link(data) {
@@ -760,7 +766,6 @@ export default {
               children: res.data
             }
           ]
-          // console.log('tGroupData=>' + JSON.stringify(_this.tGroupData))
         } else {
           _this.tGroupData = res.data
         }

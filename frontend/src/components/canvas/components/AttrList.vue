@@ -108,7 +108,6 @@ export default {
   },
   computed: {
     styleKeys() {
-      // console.log(this.$store.state.curComponent.style)
       return this.$store.state.curComponent ? Object.keys(this.$store.state.curComponent.style) : []
     },
     curComponent() {
