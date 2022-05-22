@@ -89,7 +89,7 @@ public class DriverService {
         deDriverDetailsMapper.deleteByPrimaryKey(driverFileId);
     }
 
-    public void saveJar(MultipartFile file, String driverId) throws Exception {
+    public DeDriverDetails saveJar(MultipartFile file, String driverId) throws Exception {
         String filename = file.getOriginalFilename();
         String dirPath = DRIVER_PATH + driverId + "/";
         String filePath = dirPath + filename;
@@ -112,6 +112,7 @@ public class DriverService {
         deDriverDetails.setFileName(filename);
         deDriverDetails.setDriverClass(String.join(",", jdbcList));
         deDriverDetailsMapper.insert(deDriverDetails);
+        return deDriverDetails;
     }
 
     private List<String> getClassNameFrom(String jarName) {

@@ -211,7 +211,7 @@ export default {
       })
     },
     deleteDriverFile(row){
-      deleteDriverFile(row.id).then(res => {
+      deleteDriverFile(row).then(res => {
         this.$success(this.$t('commons.delete_success'))
         this.listDriverDetails()
       })

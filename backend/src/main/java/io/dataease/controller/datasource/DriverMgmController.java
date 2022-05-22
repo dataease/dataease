@@ -1,6 +1,8 @@
 package io.dataease.controller.datasource;
 
 
+import io.dataease.auth.annotation.DeLog;
+import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.dto.DriverDTO;
 import io.dataease.plugins.common.base.domain.DeDriver;
 import io.dataease.plugins.common.base.domain.DeDriverDetails;
@@ -9,7 +11,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
@@ -36,6 +37,13 @@ public class DriverMgmController {
     @RequiresPermissions("datasource:read")
     @ApiOperation("删除驱动")
     @PostMapping("/delete")
+    @DeLog(
+            operatetype = SysLogConstants.OPERATE_TYPE.DELETE,
+            sourcetype = SysLogConstants.SOURCE_TYPE.DRIVER,
+            positionIndex = 0,
+            positionKey = "type",
+            value = "id"
+    )
     public void delete(@RequestBody DeDriver deDriver) throws Exception{
         driverService.delete(deDriver.getId());
     }
@@ -50,6 +58,13 @@ public class DriverMgmController {
     @RequiresPermissions("datasource:read")
     @ApiOperation("添加驱动")
     @PostMapping("/save")
+    @DeLog(
+            operatetype = SysLogConstants.OPERATE_TYPE.CREATE,
+            sourcetype = SysLogConstants.SOURCE_TYPE.DRIVER,
+            positionIndex = 0,
+            positionKey = "type",
+            value = "id"
+    )
     public DeDriver save(@RequestBody DeDriver deDriver) throws Exception{
         return driverService.save(deDriver);
     }
@@ -57,6 +72,12 @@ public class DriverMgmController {
     @RequiresPermissions("datasource:read")
     @ApiOperation("更新驱动")
     @PostMapping("/update")
+    @DeLog(
+            operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+            sourcetype = SysLogConstants.SOURCE_TYPE.DRIVER,
+            positionIndex = 0,positionKey = "type",
+            value = "id"
+    )
     public DeDriver update(@RequestBody DeDriver deDriver) throws Exception{
         return driverService.update(deDriver);
     }
@@ -70,20 +91,34 @@ public class DriverMgmController {
 
     @RequiresPermissions("datasource:read")
     @ApiOperation("删除驱动文件")
-    @PostMapping("/deleteDriverFile/{id}")
-    public void deleteDriverFile(@PathVariable String id) throws Exception{
-        driverService.deleteDriverFile(id);
+    @PostMapping("/deleteDriverFile")
+    @DeLog(
+            operatetype = SysLogConstants.OPERATE_TYPE.DELETE,
+            sourcetype = SysLogConstants.SOURCE_TYPE.DRIVER_FILE,
+            positionIndex = 0,
+            positionKey = "deDriverId",
+            value = "id"
+    )
+    public void deleteDriverFile(@RequestBody DeDriverDetails deDriverDetails) throws Exception{
+        driverService.deleteDriverFile(deDriverDetails.getId());
     }
 
     @RequiresPermissions("datasource:read")
     @ApiOperation("驱动文件上传")
     @PostMapping("file/upload")
+    @DeLog(
+            operatetype = SysLogConstants.OPERATE_TYPE.UPLOADFILE,
+            sourcetype = SysLogConstants.SOURCE_TYPE.DRIVER_FILE,
+            positionIndex = 0,
+            positionKey = "deDriverId",
+            value = "id"
+    )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "file", value = "文件", required = true, dataType = "MultipartFile"),
             @ApiImplicitParam(name = "id", value = "驱动D", required = true, dataType = "String")
     })
-    public void excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") String id) throws Exception {
-        driverService.saveJar(file, id);
+    public DeDriverDetails excelUpload(@RequestParam("id") String id, @RequestParam("file") MultipartFile file) throws Exception {
+        return driverService.saveJar(file, id);
     }
 
 

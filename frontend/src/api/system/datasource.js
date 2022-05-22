@@ -122,11 +122,12 @@ export function listDriverDetails(id) {
   })
 }
 
-export function deleteDriverFile(id) {
+export function deleteDriverFile(data) {
   return request({
-    url: '/driver/deleteDriverFile/' + id,
+    url: '/driver/deleteDriverFile',
     method: 'post',
-    loading: true
+    loading: true,
+    data
   })
 }
 
