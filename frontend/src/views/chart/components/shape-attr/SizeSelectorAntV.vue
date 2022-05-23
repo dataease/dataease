@@ -411,8 +411,8 @@
           />
         </el-form-item>
         <!--liquid-end-->
-        <el-form-item v-if="showProperty(symbolOpacity)" :label="$t('chart.not_alpha')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.symbolOpacity" show-input :show-input-controls="false" input-size="mini" :min="0" :max="10" @change="changeBarSizeCase" />
+        <el-form-item v-if="showProperty('symbolOpacity')" :label="$t('chart.not_alpha')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.symbolOpacity" show-input :show-input-controls="false" input-size="mini" :min="0" :max="10" @change="changeBarSizeCase('symbolOpacity')" />
         </el-form-item>
 
         <el-form-item v-if="showProperty('symbolStrokeWidth') && sizeForm.scatterSymbol && sizeForm.scatterSymbol !== 'marker'" :label="$t('plugin_style.border')" class="form-item form-item-slider">
