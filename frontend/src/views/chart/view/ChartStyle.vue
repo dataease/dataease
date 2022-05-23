@@ -30,7 +30,15 @@
         <span class="padding-lr">{{ $t('chart.shape_attr') }}</span>
         <el-collapse v-model="attrActiveNames" class="style-collapse">
           <el-collapse-item name="color" :title="$t('chart.color')">
+            <color-selector-ext
+              v-if="view.render && view.render === 'antv' && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('pie') || view.type === 'funnel' || view.type === 'radar' || view.type === 'scatter')"
+              :param="param"
+              class="attr-selector"
+              :chart="chart"
+              @onColorChange="onColorChange"
+            />
             <color-selector
+              v-else
               :param="param"
               class="attr-selector"
               :chart="chart"
@@ -254,6 +262,7 @@
 <script>
 import PluginCom from '@/views/system/plugin/PluginCom'
 import ColorSelector from '@/views/chart/components/shape-attr/ColorSelector'
+import ColorSelectorExt from '@/views/chart/components/shape-attr/ColorSelectorExt'
 import SizeSelector from '@/views/chart/components/shape-attr/SizeSelector'
 import SizeSelectorAntV from '@/views/chart/components/shape-attr/SizeSelectorAntV'
 import LabelSelector from '@/views/chart/components/shape-attr/LabelSelector'
@@ -295,7 +304,13 @@ export default {
     TotalCfg,
     TooltipSelectorAntV,
     TooltipSelector,
-    LabelSelectorAntV, LabelSelector, SizeSelectorAntV, SizeSelector, ColorSelector, PluginCom
+    LabelSelectorAntV,
+    LabelSelector,
+    SizeSelectorAntV,
+    SizeSelector,
+    ColorSelector,
+    PluginCom,
+    ColorSelectorExt
   },
   props: {
     chart: {

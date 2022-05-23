@@ -1587,6 +1587,7 @@ export default {
       const view = this.buildParam(true, 'chart', false, switchType)
       if (!view) return
       viewEditSave(this.panelInfo.id, view).then(() => {
+        this.getData(this.param.id)
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
     },
@@ -2369,7 +2370,7 @@ export default {
       resetViewCacheCallBack(_this.param.id, _this.panelInfo.id, function(rsp) {
         _this.changeEditStatus(false)
         _this.getChart(_this.param.id, 'panel')
-        // _this.getData(_this.param.id)
+        _this.getData(_this.param.id)
         bus.$emit('view-in-cache', { type: 'propChange', viewId: _this.param.id })
       })
     },
@@ -2405,6 +2406,8 @@ export default {
           this.view.customAttr.label.position = 'middle'
         }
       }
+      // reset custom colors
+      this.view.customAttr.color.seriesColors = []
     },
 
     valueFormatter(item) {
