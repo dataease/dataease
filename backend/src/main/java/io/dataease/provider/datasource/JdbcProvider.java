@@ -3,6 +3,7 @@ package io.dataease.provider.datasource;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import com.google.gson.Gson;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.dto.datasource.*;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
@@ -31,13 +32,15 @@ public class JdbcProvider extends DefaultJdbcProvider {
 
     @Resource
     private DeDriverMapper deDriverMapper;
+
     @Override
-    public boolean isUseDatasourcePool(){
+    public boolean isUseDatasourcePool() {
         return true;
     }
+
     @Override
-    public String getType(){
-    return "built-in";
+    public String getType() {
+        return "built-in";
     }
     /**
      * 增加缓存机制 key 由 'provider_sql_' dsr.datasource.id dsr.table dsr.query共4部分组成，命中则使用缓存直接返回不再执行sql逻辑
@@ -69,14 +72,14 @@ public class JdbcProvider extends DefaultJdbcProvider {
 
     @Override
     public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
-        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")){
+        if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")) {
             datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
             return fetchResultField(datasourceRequest);
         }
         List<TableField> list = new LinkedList<>();
         try (Connection connection = getConnectionFromPool(datasourceRequest)) {
             if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")) {
-                Method setRemarksReporting = extendedJdbcClassLoader.loadClass("oracle.jdbc.driver.OracleConnection").getMethod("setRemarksReporting",boolean.class);
+                Method setRemarksReporting = extendedJdbcClassLoader.loadClass("oracle.jdbc.driver.OracleConnection").getMethod("setRemarksReporting", boolean.class);
                 setRemarksReporting.invoke(((DruidPooledConnection) connection).getConnection(), true);
             }
             DatabaseMetaData databaseMetaData = connection.getMetaData();
@@ -105,10 +108,10 @@ public class JdbcProvider extends DefaultJdbcProvider {
         } catch (SQLException e) {
             DataEaseException.throwException(e);
         } catch (Exception e) {
-            if(datasourceRequest.getDatasource().getType().equalsIgnoreCase("ds_doris")){
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("ds_doris")) {
                 datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
                 return fetchResultField(datasourceRequest);
-            }else {
+            } else {
                 DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
             }
 
@@ -210,9 +213,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
 
     private List<String[]> getDataResult(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
         String charset = null;
-        if(datasourceRequest != null && datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")){
+        if (datasourceRequest != null && datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")) {
             JdbcConfiguration JdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
-            if(StringUtils.isNotEmpty(JdbcConfiguration.getCharset()) && !JdbcConfiguration.getCharset().equalsIgnoreCase("Default") ){
+            if (StringUtils.isNotEmpty(JdbcConfiguration.getCharset()) && !JdbcConfiguration.getCharset().equalsIgnoreCase("Default")) {
                 charset = JdbcConfiguration.getCharset();
             }
         }
@@ -233,9 +236,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
                         row[j] = rs.getBoolean(j + 1) ? "1" : "0";
                         break;
                     default:
-                        if(charset != null && StringUtils.isNotEmpty(rs.getString(j + 1))){
+                        if (charset != null && StringUtils.isNotEmpty(rs.getString(j + 1))) {
                             row[j] = new String(rs.getString(j + 1).getBytes(charset), "UTF-8");
-                        }else {
+                        } else {
                             row[j] = rs.getString(j + 1);
                         }
                         break;
@@ -278,6 +281,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
         }
         return fieldList;
     }
+
     @Override
     public List<String[]> getData(DatasourceRequest dsr) throws Exception {
         List<String[]> list = new LinkedList<>();
@@ -294,6 +298,17 @@ public class JdbcProvider extends DefaultJdbcProvider {
             DataEaseException.throwException("Data source connection exception: " + e.getMessage());
         }
         return list;
+    }
+
+    @Override
+    public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
+        String queryStr = getTablesSql(datasourceRequest);
+        try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)) {
+        } catch (Exception e) {
+            LogUtil.error("Datasource is invalid: " + datasourceRequest.getDatasource().getName() , e);
+            io.dataease.plugins.common.exception.DataEaseException.throwException(e.getMessage());
+        }
+        return "Success";
     }
 
     @Override
@@ -376,26 +391,26 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 customDriver = hiveConfiguration.getCustomDriver();
                 jdbcurl = hiveConfiguration.getJdbc();
 
-                if(StringUtils.isNotEmpty(hiveConfiguration.getAuthMethod()) && hiveConfiguration.getAuthMethod().equalsIgnoreCase("kerberos")){
+                if (StringUtils.isNotEmpty(hiveConfiguration.getAuthMethod()) && hiveConfiguration.getAuthMethod().equalsIgnoreCase("kerberos")) {
                     System.setProperty("java.security.krb5.conf", "/opt/dataease/conf/krb5.conf");
                     ExtendedJdbcClassLoader classLoader;
-                    if(isDefaultClassLoader(customDriver)){
+                    if (isDefaultClassLoader(customDriver)) {
                         classLoader = extendedJdbcClassLoader;
-                    }else {
+                    } else {
                         deDriver = deDriverMapper.selectByPrimaryKey(customDriver);
                         classLoader = getCustomJdbcClassLoader(deDriver);
                     }
-                    Class<?> ConfigurationClass =  classLoader.loadClass("org.apache.hadoop.conf.Configuration");
-                    Method set =  ConfigurationClass.getMethod("set",String.class, String.class) ;
+                    Class<?> ConfigurationClass = classLoader.loadClass("org.apache.hadoop.conf.Configuration");
+                    Method set = ConfigurationClass.getMethod("set", String.class, String.class);
                     Object obj = ConfigurationClass.newInstance();
                     set.invoke(obj, "hadoop.security.authentication", "Kerberos");
 
-                    Class<?> UserGroupInformationClass =  classLoader.loadClass("org.apache.hadoop.security.UserGroupInformation");
-                    Method setConfiguration =  UserGroupInformationClass.getMethod("setConfiguration",ConfigurationClass) ;
-                    Method loginUserFromKeytab =  UserGroupInformationClass.getMethod("loginUserFromKeytab",String.class, String.class) ;
+                    Class<?> UserGroupInformationClass = classLoader.loadClass("org.apache.hadoop.security.UserGroupInformation");
+                    Method setConfiguration = UserGroupInformationClass.getMethod("setConfiguration", ConfigurationClass);
+                    Method loginUserFromKeytab = UserGroupInformationClass.getMethod("loginUserFromKeytab", String.class, String.class);
                     setConfiguration.invoke(null, obj);
                     loginUserFromKeytab.invoke(null, hiveConfiguration.getUsername(), "/opt/dataease/conf/" + hiveConfiguration.getPassword());
-                }else {
+                } else {
                     username = hiveConfiguration.getUsername();
                     password = hiveConfiguration.getPassword();
                 }
@@ -428,12 +443,12 @@ public class JdbcProvider extends DefaultJdbcProvider {
         }
 
         Connection conn;
-        String driverClassName ;
+        String driverClassName;
         ExtendedJdbcClassLoader jdbcClassLoader;
-        if(isDefaultClassLoader(customDriver)){
+        if (isDefaultClassLoader(customDriver)) {
             driverClassName = defaultDriver;
             jdbcClassLoader = extendedJdbcClassLoader;
-        }else {
+        } else {
             driverClassName = deDriver.getDriverClass();
             jdbcClassLoader = getCustomJdbcClassLoader(deDriver);
         }
@@ -442,11 +457,11 @@ public class JdbcProvider extends DefaultJdbcProvider {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(jdbcClassLoader);
-            conn= driverClass.connect(jdbcurl, props);
-        }catch (Exception e){
+            conn = driverClass.connect(jdbcurl, props);
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
-        }finally {
+        } finally {
             Thread.currentThread().setContextClassLoader(classLoader);
         }
         return conn;
@@ -454,7 +469,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
 
 
     @Override
-    public JdbcConfiguration setCredential(DatasourceRequest datasourceRequest, DruidDataSource dataSource) throws Exception{
+    public JdbcConfiguration setCredential(DatasourceRequest datasourceRequest, DruidDataSource dataSource) throws Exception {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         JdbcConfiguration jdbcConfiguration = new JdbcConfiguration();
         switch (datasourceType) {
@@ -537,9 +552,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
         dataSource.setUsername(jdbcConfiguration.getUsername());
 
         ExtendedJdbcClassLoader classLoader;
-        if(isDefaultClassLoader(jdbcConfiguration.getCustomDriver())){
+        if (isDefaultClassLoader(jdbcConfiguration.getCustomDriver())) {
             classLoader = extendedJdbcClassLoader;
-        }else {
+        } else {
             DeDriver deDriver = deDriverMapper.selectByPrimaryKey(jdbcConfiguration.getCustomDriver());
             classLoader = getCustomJdbcClassLoader(deDriver);
         }
@@ -667,7 +682,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
             case sqlServer:
                 return "select name from sys.schemas;";
             case db2:
-                return "select SCHEMANAME from syscat.SCHEMATA   WHERE \"DEFINER\" ='USER'".replace("USER", db2Configuration.getUsername().toUpperCase()) ;
+                return "select SCHEMANAME from syscat.SCHEMATA   WHERE \"DEFINER\" ='USER'".replace("USER", db2Configuration.getUsername().toUpperCase());
             case pg:
                 return "SELECT nspname FROM pg_namespace;";
             case redshift:

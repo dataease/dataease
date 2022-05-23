@@ -228,6 +228,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -265,6 +266,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -307,6 +309,8 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'colorPanel',
+        'customColor',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -378,6 +382,8 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'colorPanel',
+        'customColor',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -450,6 +456,8 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'colorPanel',
+        'customColor',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -520,6 +528,8 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'colorPanel',
+        'customColor',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -588,6 +598,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'label-selector-ant-v': [
@@ -647,6 +658,8 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'colorPanel',
+        'customColor',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -718,6 +731,8 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'colorPanel',
+        'customColor',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -788,6 +803,8 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'colorPanel',
+        'customColor',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -838,6 +855,8 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'colorPanel',
+        'customColor',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -888,6 +907,8 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'colorPanel',
+        'customColor',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -937,6 +958,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'label-selector-ant-v': [
@@ -1015,6 +1037,8 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'colorPanel',
+        'customColor',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -1081,6 +1105,8 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'colorPanel',
+        'customColor',
         'alpha'
       ],
       'label-selector-ant-v': [
@@ -1269,6 +1295,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -1317,6 +1344,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -1390,6 +1418,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -1464,6 +1493,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -1552,6 +1582,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -1625,6 +1656,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -1698,6 +1730,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -1772,6 +1805,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -1846,6 +1880,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -1903,6 +1938,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -1962,6 +1998,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -2024,6 +2061,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -2074,6 +2112,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -2144,6 +2183,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
@@ -2199,6 +2239,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'size-selector': [
