@@ -354,7 +354,7 @@ export default {
   },
   methods: {
     showProperties(property) {
-      return this.properties.includes(property)
+      return this.properties && this.properties.length && this.properties.includes(property)
     },
     showPropertiesCollapse(propertiesInfo) {
       let includeCount = 0
