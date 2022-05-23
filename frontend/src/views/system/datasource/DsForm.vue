@@ -136,7 +136,8 @@ export default {
           maxIdleTime: 30,
           acquireIncrement: 5,
           idleConnectionTestPeriod: 5,
-          connectTimeout: 5
+          connectTimeout: 5,
+          customDriver: ''
         },
         apiConfiguration: []
       },
@@ -528,7 +529,8 @@ export default {
           this.datasourceType = this.dsTypes[i]
           if(this.datasourceType.isJdbc){
             listDriverByType(this.datasourceType.type).then(res => {
-              this.driverList = [{id: 'default', name: 'Default', driverClass:'Default'}]
+              this.driverList = []
+              this.driverList.push({id: 'default', name: 'Default', driverClass:'Default'})
               this.driverList = this.driverList.concat(res.data)
             })
           }
