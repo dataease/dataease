@@ -523,12 +523,13 @@ export default {
         if (this.dsTypes[i].type === this.form.type) {
           if(this.form.type !== 'api' && !init){
             this.form.configuration.extraParams = this.dsTypes[i].extraParams
+            this.form.configuration.customDriver = ''
           }
           this.datasourceType = this.dsTypes[i]
           if(this.datasourceType.isJdbc){
             listDriverByType(this.datasourceType.type).then(res => {
-              this.driverList = res.data
-              this.driverList.push({id: 'default', name: 'Default', driverClass:'Default'})
+              this.driverList = [{id: 'default', name: 'Default', driverClass:'Default'}]
+              this.driverList = this.driverList.concat(res.data)
             })
           }
         }
