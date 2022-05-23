@@ -2,7 +2,7 @@
   <div style="width: 100%">
     <el-col>
       <el-form ref="totalForm" :model="totalForm" label-width="80px" size="mini">
-        <el-divider v-show="showProperty('row')" content-position="center" class="divider-style">{{ $t('chart.row_cfg') }}</el-divider>
+        <el-divider v-if="showProperty('row')" content-position="center" class="divider-style">{{ $t('chart.row_cfg') }}</el-divider>
         <el-form-item v-show="showProperty('row')" :label="$t('chart.total_show')" class="form-item">
           <el-checkbox v-model="totalForm.row.showGrandTotals" @change="changeTotalCfg('row')">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
@@ -33,7 +33,7 @@
           </el-form-item>
         </div>
 
-        <el-divider v-show="showProperty('col')" content-position="center" class="divider-style">{{ $t('chart.col_cfg') }}</el-divider>
+        <el-divider v-if="showProperty('col')" content-position="center" class="divider-style">{{ $t('chart.col_cfg') }}</el-divider>
         <el-form-item v-show="showProperty('col')" :label="$t('chart.total_show')" class="form-item">
           <el-checkbox v-model="totalForm.col.showGrandTotals" @change="changeTotalCfg('col')">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
