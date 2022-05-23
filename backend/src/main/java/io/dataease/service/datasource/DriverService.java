@@ -30,7 +30,7 @@ import java.util.jar.JarFile;
 @Service
 public class DriverService {
 
-    private static String DRIVER_PATH = "/opt/dataease/drivers/custom/";
+    private static String DRIVER_PATH = "/opt/dataease/custom-drivers/";
     @Resource
     private DeDriverMapper deDriverMapper;
     @Resource
