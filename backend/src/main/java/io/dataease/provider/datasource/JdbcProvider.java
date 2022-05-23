@@ -3,6 +3,7 @@ package io.dataease.provider.datasource;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import com.google.gson.Gson;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.dto.datasource.*;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
@@ -297,6 +298,17 @@ public class JdbcProvider extends DefaultJdbcProvider {
             DataEaseException.throwException("Data source connection exception: " + e.getMessage());
         }
         return list;
+    }
+
+    @Override
+    public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
+        String queryStr = getTablesSql(datasourceRequest);
+        try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)) {
+        } catch (Exception e) {
+            LogUtil.error("Datasource is invalid: " + datasourceRequest.getDatasource().getName() , e);
+            io.dataease.plugins.common.exception.DataEaseException.throwException(e.getMessage());
+        }
+        return "Success";
     }
 
     @Override
