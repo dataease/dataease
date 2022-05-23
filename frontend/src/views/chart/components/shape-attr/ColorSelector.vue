@@ -329,7 +329,7 @@ export default {
     },
 
     initCustomColor(reset) {
-      if (this.chart.render && this.chart.render === 'antv' &&
+      if (!this.batchOptStatus && this.chart.render && this.chart.render === 'antv' &&
         (this.chart.type.includes('bar') ||
           this.chart.type.includes('line') ||
           this.chart.type.includes('pie') ||
