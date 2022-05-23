@@ -2024,5 +2024,8 @@ export default {
     port: 'Port',
     user: 'User',
     passwd: 'Password'
+  },
+  plugin_style: {
+    border: 'Border'
   }
 }

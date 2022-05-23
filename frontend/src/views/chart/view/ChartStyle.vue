@@ -1,7 +1,7 @@
 <template>
   <el-row class="view-panel">
     <plugin-com
-      v-if="view.isPlugin"
+      v-if="pluginShow"
       style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
       class="attr-style theme-border-class"
       :component-name="view.type + '-style'"
@@ -29,22 +29,24 @@
       <el-row>
         <span class="padding-lr">{{ $t('chart.shape_attr') }}</span>
         <el-collapse v-model="attrActiveNames" class="style-collapse">
-          <el-collapse-item name="color" :title="$t('chart.color')">
+          <el-collapse-item name="color"  v-show="showPropertiesCollapse(['color-selector'])" :title="$t('chart.color')">
             <color-selector
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['color-selector']"
               @onColorChange="onColorChange($event,'color-selector')"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['size-selector','no-mix'])"
+            v-show="showPropertiesCollapse(['size-selector'])"
             name="size"
             :title="$t('chart.size')"
           >
             <size-selector
               :param="param"
               class="attr-selector"
+              :property-inner="propertyInnerAll['size-selector']"
               :chart="chart"
               @onSizeChange="onSizeChange($event,'size-selector')"
             />
@@ -58,6 +60,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['size-selector-ant-v']"
               @onSizeChange="onSizeChange($event,'size-selector-ant-v')"
             />
           </el-collapse-item>
@@ -71,6 +74,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['label-selector']"
               @onLabelChange="onLabelChange($event,'label-selector')"
             />
             <label-selector-ant-v
@@ -78,6 +82,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['label-selector-ant-v']"
               @onLabelChange="onLabelChange($event,'label-selector-ant-v')"
             />
           </el-collapse-item>
@@ -91,6 +96,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['tooltip-selector']"
               @onTooltipChange="onTooltipChange($event,'tooltip-selector')"
             />
             <tooltip-selector-ant-v
@@ -98,6 +104,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['tooltip-selector-ant-v']"
               @onTooltipChange="onTooltipChange($event,'tooltip-selector-ant-v')"
             />
           </el-collapse-item>
@@ -110,6 +117,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['total-cfg']"
               @onTotalCfgChange="onTotalCfgChange($event,'total-cfg')"
             />
           </el-collapse-item>
@@ -128,6 +136,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['x-axis-selector']"
               @onChangeXAxisForm="onChangeXAxisForm($event,'x-axis-selector')"
             />
             <x-axis-selector-ant-v
@@ -135,6 +144,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['x-axis-selector-ant-v']"
               @onChangeXAxisForm="onChangeXAxisForm($event,'x-axis-selector-ant-v')"
             />
           </el-collapse-item>
@@ -148,6 +158,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['y-axis-selector']"
               @onChangeYAxisForm="onChangeYAxisForm($event,'y-axis-selector')"
             />
             <y-axis-selector-ant-v
@@ -155,6 +166,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['y-axis-selector-ant-v']"
               @onChangeYAxisForm="onChangeYAxisForm($event,'y-axis-selector-ant-v')"
             />
           </el-collapse-item>
@@ -168,6 +180,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['y-axis-ext-selector']"
               @onChangeYAxisForm="onChangeYAxisExtForm($event,'y-axis-ext-selector')"
             />
             <y-axis-ext-selector-ant-v
@@ -175,6 +188,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['y-axis-ext-selector-ant-v']"
               @onChangeYAxisForm="onChangeYAxisExtForm($event,'y-axis-ext-selector-ant-v')"
             />
           </el-collapse-item>
@@ -188,6 +202,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['split-selector']"
               @onChangeSplitForm="onChangeSplitForm($event,'split-selector')"
             />
             <split-selector-ant-v
@@ -195,6 +210,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['split-selector-ant-v']"
               @onChangeSplitForm="onChangeSplitForm($event,'split-selector-ant-v')"
             />
           </el-collapse-item>
@@ -204,6 +220,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['title-selector']"
               @onTextChange="onTextChange($event,'title-selector')"
             />
             <title-selector-ant-v
@@ -211,6 +228,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['title-selector-ant-v']"
               @onTextChange="onTextChange($event,'title-selector-ant-v')"
             />
           </el-collapse-item>
@@ -224,6 +242,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['legend-selector']"
               @onLegendChange="onLegendChange($event,'legend-selector')"
             />
             <legend-selector-ant-v
@@ -231,6 +250,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
+              :property-inner="propertyInnerAll['legend-selector-ant-v']"
               @onLegendChange="onLegendChange($event,'legend-selector-ant-v')"
             />
           </el-collapse-item>
@@ -313,6 +333,10 @@ export default {
     properties: {
       type: Array,
       required: true
+    },
+    propertyInnerAll: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -322,6 +346,9 @@ export default {
     }
   },
   computed: {
+    pluginShow() {
+      return this.view.isPlugin && !this.batchOptStatus
+    },
     ...mapState([
       'batchOptStatus'
     ])
@@ -336,7 +363,7 @@ export default {
     showPropertiesCollapse(propertiesInfo) {
       let includeCount = 0
       // Property does not support mixed mode
-      if (propertiesInfo.includes('no-mix') && this.chart.type === 'mix') {
+      if (propertiesInfo.includes('no-mix') && this.chart.type.includes('mix')) {
         return false
       } else {
         propertiesInfo.forEach(property => {

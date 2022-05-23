@@ -652,11 +652,12 @@
         </el-tab-pane>
         <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 300px">
           <chart-style
-            v-if="chartProperties"
+            v-if="chartProperties || view.isPlugin"
             :param="param"
             :view="view"
             :chart="chart"
             :properties="chartProperties"
+            :property-inner-all="chartPropertyInnerAll"
             @calcStyle="calcStyle"
             @onColorChange="onColorChange"
             @onSizeChange="onSizeChange"
@@ -1167,18 +1168,24 @@ export default {
     }
   },
   computed: {
-    chartProperties() {
+    chartConfig() {
       const _this = this
       if (_this.chart && _this.chart.render) {
         const viewConfig = this.allViewRender.filter(item => item.render === _this.chart.render && item.value === _this.chart.type)
         if (viewConfig && viewConfig.length) {
-          return viewConfig[0].properties
+          return viewConfig[0]
         } else {
           return null
         }
       } else {
         return null
       }
+    },
+    chartProperties() {
+      return this.chartConfig ? this.chartConfig.properties : null
+    },
+    chartPropertyInnerAll() {
+      return this.chartConfig ? this.chartConfig.propertyInner : null
     },
     chartType() {
       return this.chart.type

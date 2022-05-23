@@ -38,7 +38,33 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'size-selector-ant-v',
       'title-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'tableHeaderBgColor',
+        'tableItemBgColor',
+        'tableFontColor',
+        'tableBorderColor',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'tableTitleFontSize',
+        'tableItemFontSize',
+        'tableHeaderAlign',
+        'tableItemAlign',
+        'tableTitleHeight',
+        'tableItemHeight',
+        'tableColumnMode'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -50,7 +76,35 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'size-selector-ant-v',
       'title-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'tableHeaderBgColor',
+        'tableItemBgColor',
+        'tableFontColor',
+        'tableBorderColor',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'tablePageMode',
+        'tablePageSize',
+        'tableTitleFontSize',
+        'tableItemFontSize',
+        'tableHeaderAlign',
+        'tableItemAlign',
+        'tableTitleHeight',
+        'tableItemHeight',
+        'tableColumnMode'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -63,7 +117,37 @@ export const TYPE_CONFIGS = [
       'size-selector-ant-v',
       'total-cfg',
       'title-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'tableHeaderBgColor',
+        'tableItemBgColor',
+        'tableFontColor',
+        'tableBorderColor',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'tableTitleFontSize',
+        'tableItemFontSize',
+        'tableHeaderAlign',
+        'tableItemAlign',
+        'tableTitleHeight',
+        'tableItemHeight',
+        'tableColumnMode'
+      ],
+      'total-cfg': [
+        'row',
+        'col'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -75,7 +159,27 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'size-selector-ant-v',
       'title-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'quotaColor',
+        'dimensionColor'
+      ],
+      'size-selector-ant-v': [
+        'quotaFontSize',
+        'dimensionShow',
+        'dimensionFontSize',
+        'spaceSplit'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -87,7 +191,27 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'size-selector-ant-v',
       'title-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'quotaColor',
+        'dimensionColor'
+      ],
+      'size-selector-ant-v': [
+        'quotaFontSize',
+        'dimensionShow',
+        'dimensionFontSize',
+        'spaceSplit'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -100,7 +224,31 @@ export const TYPE_CONFIGS = [
       'size-selector-ant-v',
       'label-selector-ant-v',
       'title-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'gaugeMax',
+        'gaugeStartAngle',
+        'gaugeEndAngle'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -113,7 +261,32 @@ export const TYPE_CONFIGS = [
       'size-selector-ant-v',
       'label-selector-ant-v',
       'title-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'liquidShape',
+        'liquidMax',
+        'liquidSize'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -130,7 +303,61 @@ export const TYPE_CONFIGS = [
       'y-axis-selector-ant-v',
       'title-selector-ant-v',
       'legend-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'lineWidth',
+        'lineSymbol',
+        'lineSymbolSize',
+        'lineSmooth'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'x-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'y-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -147,7 +374,61 @@ export const TYPE_CONFIGS = [
       'y-axis-selector-ant-v',
       'title-selector-ant-v',
       'legend-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'lineWidth',
+        'lineSymbol',
+        'lineSymbolSize',
+        'lineSmooth'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'x-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'y-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition'
+      ]
+    }
   },
 
   {
@@ -165,7 +446,60 @@ export const TYPE_CONFIGS = [
       'y-axis-selector-ant-v',
       'title-selector-ant-v',
       'legend-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'barDefault',
+        'barGap'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color',
+        'position'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'x-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'y-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -175,13 +509,67 @@ export const TYPE_CONFIGS = [
     icon: 'bar-stack',
     properties: [
       'color-selector',
+      'size-selector-ant-v',
       'label-selector-ant-v',
       'tooltip-selector-ant-v',
       'x-axis-selector-ant-v',
       'y-axis-selector-ant-v',
       'title-selector-ant-v',
       'legend-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'barDefault',
+        'barGap'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color',
+        'position'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'x-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'y-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -196,7 +584,49 @@ export const TYPE_CONFIGS = [
       'x-axis-selector-ant-v',
       'y-axis-selector-ant-v',
       'title-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color',
+        'position'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'x-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'y-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -213,7 +643,61 @@ export const TYPE_CONFIGS = [
       'y-axis-selector-ant-v',
       'title-selector-ant-v',
       'legend-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'barDefault',
+        'barGap'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color',
+        'position'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'x-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'axisValue',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'y-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -230,9 +714,63 @@ export const TYPE_CONFIGS = [
       'y-axis-selector-ant-v',
       'title-selector-ant-v',
       'legend-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'barDefault',
+        'barGap'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color',
+        'position'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'x-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'axisValue',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'y-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'axisValue',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition'
+      ]
+    }
   },
-
   {
     render: 'antv',
     category: 'chart.chart_type_distribute',
@@ -246,7 +784,42 @@ export const TYPE_CONFIGS = [
       'tooltip-selector-ant-v',
       'title-selector-ant-v',
       'legend-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'pieInnerRadius',
+        'pieOuterRadius'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color',
+        'position'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -261,7 +834,41 @@ export const TYPE_CONFIGS = [
       'tooltip-selector-ant-v',
       'title-selector-ant-v',
       'legend-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'pieInnerRadius',
+        'pieOuterRadius'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -277,7 +884,42 @@ export const TYPE_CONFIGS = [
       'split-selector-ant-v',
       'title-selector-ant-v',
       'legend-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'radarShape',
+        'radarSize'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color',
+        'position'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -291,7 +933,37 @@ export const TYPE_CONFIGS = [
       'tooltip-selector-ant-v',
       'title-selector-ant-v',
       'legend-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -303,7 +975,25 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'tooltip-selector-ant-v',
       'title-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
 
   {
@@ -321,7 +1011,59 @@ export const TYPE_CONFIGS = [
       'y-axis-selector-ant-v',
       'title-selector-ant-v',
       'legend-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'scatterSymbol',
+        'scatterSymbolSize'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'x-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'y-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -335,7 +1077,38 @@ export const TYPE_CONFIGS = [
       'tooltip-selector-ant-v',
       'title-selector-ant-v',
       'legend-selector-ant-v'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color',
+        'position'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition'
+      ]
+    }
   },
   /* 下面是echarts图表类型 */
   {
@@ -348,7 +1121,31 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'size-selector',
       'title-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'tableHeaderBgColor',
+        'tableItemBgColor',
+        'tableFontColor',
+        'alpha'
+      ],
+      'size-selector': [
+        'tableTitleFontSize',
+        'tableItemFontSize',
+        'tableTitleHeight',
+        'tableItemHeight',
+        'tableColumnMode'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
   {
     render: 'echarts',
@@ -360,6 +1157,33 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'size-selector',
       'title-selector'
+    ],
+    propertyInner: {
+      'color-selector': [
+        'tableHeaderBgColor',
+        'tableItemBgColor',
+        'tableFontColor',
+        'alpha'
+      ]
+    },
+    'size-selector': [
+      'tablePageMode',
+      'tablePageSize',
+      'tableTitleFontSize',
+      'tableItemFontSize',
+      'tableTitleHeight',
+      'tableItemHeight',
+      'tableColumnMode'
+    ],
+    'title-selector': [
+      'show',
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'vPosition',
+      'isItalic',
+      'isBolder'
     ]
   },
 
@@ -373,7 +1197,29 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'size-selector',
       'title-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'quotaColor',
+        'dimensionColor'
+      ],
+      'size-selector': [
+        'quotaFontSize',
+        'dimensionShow',
+        'dimensionFontSize',
+        'spaceSplit'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
   {
     render: 'echarts',
@@ -385,7 +1231,28 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'size-selector',
       'title-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'quotaColor',
+        'dimensionColor'
+      ],
+      'size-selector': [
+        'quotaFontSize',
+        'dimensionShow',
+        'dimensionFontSize',
+        'spaceSplit'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
   {
     render: 'echarts',
@@ -397,8 +1264,38 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'size-selector',
       'label-selector',
-      'title-selector',
-    ]
+      'title-selector'
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'gaugeMin',
+        'gaugeMax',
+        'gaugeStartAngle',
+        'gaugeEndAngle'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'position',
+        'formatter',
+        'gaugeFormatter'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
 
   {
@@ -416,7 +1313,63 @@ export const TYPE_CONFIGS = [
       'y-axis-selector',
       'title-selector',
       'legend-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'lineWidth',
+        'lineSymbol',
+        'lineSymbolSize',
+        'lineSmooth'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'x-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'y-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
   },
   {
     render: 'echarts',
@@ -433,7 +1386,63 @@ export const TYPE_CONFIGS = [
       'y-axis-selector',
       'title-selector',
       'legend-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'lineWidth',
+        'lineSymbol',
+        'lineSymbolSize',
+        'lineSmooth'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'x-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'y-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
   },
   {
     render: 'echarts',
@@ -451,7 +1460,77 @@ export const TYPE_CONFIGS = [
       'y-axis-ext-selector',
       'title-selector',
       'legend-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'barDefault',
+        'barWidth',
+        'barGap',
+        'lineWidth',
+        'lineType',
+        'lineSymbol',
+        'lineSymbolSize',
+        'lineArea',
+        'bubble_scatterSymbol',
+        'bubble_scatterSymbolSize'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'position',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'x-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'y-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'y-ext-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
   },
 
   {
@@ -469,7 +1548,63 @@ export const TYPE_CONFIGS = [
       'y-axis-selector',
       'title-selector',
       'legend-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'barDefault',
+        'barWidth',
+        'barGap'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'position',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'x-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'y-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
   },
   {
     render: 'echarts',
@@ -486,7 +1621,63 @@ export const TYPE_CONFIGS = [
       'y-axis-selector',
       'title-selector',
       'legend-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'barDefault',
+        'barWidth',
+        'barGap'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'position',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'x-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'y-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
   },
   {
     render: 'echarts',
@@ -503,7 +1694,64 @@ export const TYPE_CONFIGS = [
       'y-axis-selector',
       'title-selector',
       'legend-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'barDefault',
+        'barWidth',
+        'barGap'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'position',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'x-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'axisValue',
+        'splitLine'
+      ],
+      'y-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
   },
   {
     render: 'echarts',
@@ -520,7 +1768,65 @@ export const TYPE_CONFIGS = [
       'y-axis-selector',
       'title-selector',
       'legend-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'barDefault',
+        'barWidth',
+        'barGap'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'position',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'x-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'axisValue',
+        'splitLine'
+      ],
+      'y-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'axisValue',
+        'splitLine'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
   },
 
   {
@@ -536,7 +1842,49 @@ export const TYPE_CONFIGS = [
       'tooltip-selector',
       'title-selector',
       'legend-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'pieInnerRadius',
+        'pieOuterRadius'
+      ],
+      'label-selector': [
+        'show',
+        'labelLine',
+        'fontSize',
+        'color',
+        'position',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
   },
   {
     render: 'echarts',
@@ -551,7 +1899,50 @@ export const TYPE_CONFIGS = [
       'tooltip-selector',
       'title-selector',
       'legend-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'pieInnerRadius',
+        'pieOuterRadius',
+        'pieRoseType',
+        'pieRoseRadius'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'position',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
   },
   {
     render: 'echarts',
@@ -567,7 +1958,55 @@ export const TYPE_CONFIGS = [
       'split-selector',
       'title-selector',
       'legend-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'radarShape',
+        'radarSize'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'position',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'split-selector': [
+        'name',
+        'axisLine',
+        'axisLabel',
+        'splitLine',
+        'splitArea'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
   },
   {
     render: 'echarts',
@@ -581,7 +2020,39 @@ export const TYPE_CONFIGS = [
       'label-selector',
       'tooltip-selector',
       'title-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'treemapWidth',
+        'treemapHeight'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   },
 
   {
@@ -599,7 +2070,62 @@ export const TYPE_CONFIGS = [
       'y-axis-selector',
       'title-selector',
       'legend-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'scatterSymbol',
+        'scatterSymbolSize'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'position',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'x-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'y-axis-selector': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
   },
   {
     render: 'echarts',
@@ -614,7 +2140,47 @@ export const TYPE_CONFIGS = [
       'tooltip-selector',
       'title-selector',
       'legend-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+        'funnelWidth'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'position',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
   },
 
   {
@@ -629,7 +2195,39 @@ export const TYPE_CONFIGS = [
       'label-selector',
       'tooltip-selector',
       'title-selector'
-    ]
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'alpha'
+      ],
+      'size-selector': [
+
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'position',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ]
+    }
   }
 ]
 

@@ -407,17 +407,17 @@ export default {
         const updateParams = { 'id': this.chart.id, 'stylePriority': 'view' }
         if (param.custom === 'customAttr') {
           const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
-          sourceCustomAttr[param.property] = param.value
+          sourceCustomAttr[param.property][param.value.modifyName] = param.value[param.value.modifyName]
           this.sourceCustomAttrStr = JSON.stringify(sourceCustomAttr)
           this.chart.customAttr = this.sourceCustomAttrStr
           updateParams['customAttr'] = this.sourceCustomAttrStr
         } else if (param.custom === 'customStyle') {
           const sourceCustomStyle = JSON.parse(this.sourceCustomStyleStr)
           // view's title use history
-          if (param.property === 'text') {
-            param.value.title = sourceCustomStyle.text.title
-          }
-          sourceCustomStyle[param.property] = param.value
+          // if (param.property === 'text') {
+          //   param.value.title = sourceCustomStyle.text.title
+          // }
+          sourceCustomStyle[param.property][param.value.modifyName] = param.value[param.value.modifyName]
           this.sourceCustomStyleStr = JSON.stringify(sourceCustomStyle)
           this.chart.customStyle = this.sourceCustomStyleStr
           updateParams['customStyle'] = this.sourceCustomStyleStr
