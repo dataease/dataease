@@ -97,7 +97,7 @@
                 <span v-if="data.nodeType === 'folder'">
                   <i class="el-icon-folder" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+                <span :class="data.status" style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)" class="child">
                 <span v-if="data.nodeType ==='folder'" @click.stop>
@@ -864,6 +864,13 @@ export default {
   .father:hover .child {
     /*display: inline;*/
     visibility: visible;
+  }
+
+  .unpublished {
+    color: #b2b2b2
+  }
+
+  .publish {
   }
 
 </style>

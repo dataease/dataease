@@ -109,6 +109,11 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    activeTab: {
+      type: String,
+      required: false,
+      default: 'none'
     }
   },
   data() {
@@ -148,12 +153,12 @@ export default {
       return this.$store.state.panel.mainActiveName
     },
     showUnpublishedArea() {
-      return this.panelInfo.status === 'unpublished'
-      // if (this.mainActiveName === 'PanelMain') {
-      //   return this.panelInfo.status === 'unpublished' && this.panelInfo.privileges.indexOf('manage') === -1
-      // } else {
-      //   return this.panelInfo.status === 'unpublished'
-      // }
+      // return this.panelInfo.status === 'unpublished'
+      if (this.mainActiveName === 'PanelMain' && this.activeTab==='') {
+        return this.panelInfo.status === 'unpublished' && this.panelInfo.privileges.indexOf('manage') === -1
+      } else {
+        return this.panelInfo.status === 'unpublished'
+      }
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
