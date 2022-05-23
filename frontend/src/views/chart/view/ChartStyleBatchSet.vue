@@ -9,6 +9,7 @@
       :view="batchOptChartInfo"
       :chart="batchOptChartInfo"
       :properties="mixProperties"
+      :property-inner-all="mixPropertiesInner"
       @calcStyle="calcStyle"
       @onColorChange="onColorChange"
       @onSizeChange="onSizeChange"
@@ -49,7 +50,8 @@ export default {
   computed: {
     ...mapState([
       'batchOptChartInfo',
-      'mixProperties'
+      'mixProperties',
+      'mixPropertiesInner'
     ])
   },
   watch: {

@@ -2050,5 +2050,8 @@ export default {
     port: '端口',
     user: '用戶名',
     passwd: '密碼'
+  },
+  plugin_style: {
+    border: '边框'
   }
 }

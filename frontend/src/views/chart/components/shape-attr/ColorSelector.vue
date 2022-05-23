@@ -2,8 +2,8 @@
   <div style="width: 100%">
     <el-col>
       <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini">
-        <div v-if="sourceType==='view' || sourceType==='panelEchart'">
-          <el-form-item v-show="chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.color_case')" class="form-item">
+        <div>
+          <el-form-item v-show="showProperty('value')" :label="$t('chart.color_case')" class="form-item">
             <el-popover
               placement="bottom"
               width="400"
@@ -12,7 +12,7 @@
               <div style="padding: 6px 10px;">
                 <div>
                   <span class="color-label">{{ $t('chart.system_case') }}</span>
-                  <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColorOption">
+                  <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColorOption('value')">
                     <el-option v-for="option in colorCases" :key="option.value" :label="option.name" :value="option.value" style="display: flex;align-items: center;">
                       <div style="float: left">
                         <span v-for="(c,index) in option.colors" :key="index" :style="{width: '20px',height: '20px',float: 'left',backgroundColor: c}" />
@@ -45,34 +45,34 @@
             </el-popover>
           </el-form-item>
 
-          <el-form-item v-show="(chart.type && (chart.type.includes('text') || chart.type === 'label')) || sourceType==='panelTable'" :label="$t('chart.quota_color')" class="form-item">
-            <el-color-picker v-model="colorForm.quotaColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          <el-form-item v-show="showProperty('quotaColor')" :label="$t('chart.quota_color')" class="form-item">
+            <el-color-picker v-model="colorForm.quotaColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('quotaColor')" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && chart.type.includes('text') || chart.type === 'label') || sourceType==='panelTable'" :label="$t('chart.dimension_color')" class="form-item">
-            <el-color-picker v-model="colorForm.dimensionColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          <el-form-item v-show="showProperty('dimensionColor')" :label="$t('chart.dimension_color')" class="form-item">
+            <el-color-picker v-model="colorForm.dimensionColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('dimensionColor')" />
           </el-form-item>
         </div>
-        <div v-if="sourceType==='view' || sourceType==='panelTable'">
-          <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_header_bg')" class="form-item">
-            <el-color-picker v-model="colorForm.tableHeaderBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+        <div>
+          <el-form-item v-show="showProperty('tableHeaderBgColor')" :label="$t('chart.table_header_bg')" class="form-item">
+            <el-color-picker v-model="colorForm.tableHeaderBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableHeaderBgColor')" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_item_bg')" class="form-item">
-            <el-color-picker v-model="colorForm.tableItemBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          <el-form-item v-show="showProperty('tableItemBgColor')" :label="$t('chart.table_item_bg')" class="form-item">
+            <el-color-picker v-model="colorForm.tableItemBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableItemBgColor')" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_item_font_color')" class="form-item">
-            <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          <el-form-item v-show="showProperty('tableFontColor')" :label="$t('chart.table_item_font_color')" class="form-item">
+            <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableFontColor')" />
           </el-form-item>
-          <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_border_color')" class="form-item">
-            <el-color-picker v-model="colorForm.tableBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          <el-form-item v-show="showProperty('tableBorderColor')" :label="$t('chart.table_border_color')" class="form-item">
+            <el-color-picker v-model="colorForm.tableBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableBorderColor')" />
           </el-form-item>
           <!--              暂时不支持该功能-->
           <!--              <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.stripe')" class="form-item">-->
-          <!--                <el-checkbox v-model="colorForm.tableStripe" @change="changeColorCase">{{ $t('chart.stripe') }}</el-checkbox>-->
+          <!--                <el-checkbox v-model="colorForm.tableStripe" @change="changeColorCase('tableStripe')">{{ $t('chart.stripe') }}</el-checkbox>-->
           <!--              </el-form-item>-->
         </div>
 
-        <el-form-item v-show="chart.type && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.not_alpha')" class="form-item form-item-slider">
-          <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase" />
+        <el-form-item v-show="showProperty('alpha')" :label="$t('chart.not_alpha')" class="form-item form-item-slider">
+          <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase('alpha')" />
         </el-form-item>
       </el-form>
     </el-col>
@@ -92,6 +92,13 @@ export default {
     chart: {
       type: Object,
       required: true
+    },
+    propertyInner: {
+      type: Array,
+      required: false,
+      default: function() {
+        return []
+      }
     },
     sourceType: {
       type: String,
@@ -206,7 +213,7 @@ export default {
     this.init()
   },
   methods: {
-    changeColorOption() {
+    changeColorOption(modifyName = 'value') {
       const that = this
       const items = this.colorCases.filter(ele => {
         return ele.value === that.colorForm.value
@@ -220,9 +227,12 @@ export default {
       this.customColor = this.colorForm.colors[0]
       this.colorIndex = 0
 
-      this.changeColorCase()
+      this.changeColorCase(modifyName)
     },
-    changeColorCase() {
+    changeColorCase(modifyName) {
+      this.colorForm['modifyName'] = modifyName
+      this.$emit('onColorChange', this.colorForm)
+      this.colorForm['modifyName'] = 'colors'
       this.$emit('onColorChange', this.colorForm)
       // this.customColor = null
       // this.colorIndex = 0
@@ -253,11 +263,16 @@ export default {
     },
     switchColorCase() {
       this.colorForm.colors[this.colorIndex] = this.customColor
+      this.colorForm['modifyName'] = 'value'
+      this.$emit('onColorChange', this.colorForm)
+      this.colorForm['modifyName'] = 'colors'
       this.$emit('onColorChange', this.colorForm)
     },
-
     resetCustomColor() {
       this.changeColorOption()
+    },
+    showProperty(property) {
+      return this.propertyInner.includes(property)
     }
   }
 }

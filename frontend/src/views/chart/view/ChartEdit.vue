@@ -657,6 +657,7 @@
             :view="view"
             :chart="chart"
             :properties="chartProperties"
+            :property-inner-all="chartPropertyInnerAll"
             :dimension-data="dimensionData"
             :quota-data="quotaData"
             @calcStyle="calcStyle"
@@ -1170,18 +1171,24 @@ export default {
     }
   },
   computed: {
-    chartProperties() {
+    chartConfig() {
       const _this = this
       if (_this.chart && _this.chart.render) {
         const viewConfig = this.allViewRender.filter(item => item.render === _this.chart.render && item.value === _this.chart.type)
         if (viewConfig && viewConfig.length) {
-          return viewConfig[0].properties || []
+          return viewConfig[0]
         } else {
-          return []
+          return null
         }
       } else {
-        return []
+        return null
       }
+    },
+    chartProperties() {
+      return this.chartConfig ? this.chartConfig.properties : null
+    },
+    chartPropertyInnerAll() {
+      return this.chartConfig ? this.chartConfig.propertyInner : null
     },
     chartType() {
       return this.chart.type
@@ -2377,7 +2384,7 @@ export default {
       resetViewCacheCallBack(_this.param.id, _this.panelInfo.id, function(rsp) {
         _this.changeEditStatus(false)
         _this.getChart(_this.param.id, 'panel')
-        _this.getData(_this.param.id)
+        // _this.getData(_this.param.id)
         bus.$emit('view-in-cache', { type: 'propChange', viewId: _this.param.id })
       })
     },

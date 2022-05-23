@@ -2066,5 +2066,8 @@ export default {
     time: '操作时间',
     export: '导出',
     search_by_key: '搜索详情'
+  },
+  plugin_style: {
+    border: '边框'
   }
 }

@@ -90,7 +90,7 @@
         <!--        <div id="imageWrapper" ref="imageWrapper" style="width: 4096px;height: 2160px">-->
         <div id="imageWrapper" ref="imageWrapper" :style="imageWrapperStyle">
           <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
-            <Preview v-if="showMainFlag" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
+            <Preview v-if="showMainFlag" :active-tab="activeTab" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
           </fullscreen>
         </div>
       </el-row>
@@ -147,7 +147,7 @@ import ShareHead from '@/views/panel/GrantAuth/ShareHead'
 import { initPanelData, updatePanelStatus } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import { dataURLToBlob } from '@/components/canvas/utils/utils'
-import { findResourceAsBase64, readFile } from '@/api/staticResource/staticResource'
+import { findResourceAsBase64 } from '@/api/staticResource/staticResource'
 
 export default {
   name: 'PanelViewShow',

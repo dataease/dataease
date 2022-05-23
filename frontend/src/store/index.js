@@ -119,6 +119,7 @@ const data = {
     // Currently selected components
     curBatchOptComponents: [],
     mixProperties: [],
+    mixPropertiesInner: {},
     batchOptChartInfo: null,
     batchOptViews: {},
     // properties changed
@@ -552,15 +553,6 @@ const data = {
         const viewBaseInfo = state.componentViewsData[id]
         // get properties
         const viewConfig = state.allViewRender.filter(item => item.render === viewBaseInfo.render && item.value === viewBaseInfo.type)
-        const viewProperties = viewConfig ? viewConfig[0].properties : []
-        if (state.mixProperties.length > 0) {
-          // If it exists , taking the intersection
-          state.mixProperties = state.mixProperties.filter(property => viewProperties.indexOf(property) > -1)
-        } else {
-          // If it doesn't exist, assignment directly
-          state.mixProperties = deepCopy(viewProperties)
-        }
-
         if (viewConfig && viewConfig.length > 0) {
           state.batchOptViews[id] = viewConfig[0]
           this.commit('setBatchOptChartInfo')
@@ -570,16 +562,27 @@ const data = {
     setBatchOptChartInfo(state) {
       let render = null
       let type = null
+      let allTypes = ''
       let isPlugin = null
       state.mixProperties = []
+      state.mixPropertiesInner = {}
+      let mixPropertiesTemp = []
+      let mixPropertyInnerTemp = {}
       if (state.batchOptViews && JSON.stringify(state.batchOptViews) !== '{}') {
         for (const key in state.batchOptViews) {
-          if (state.mixProperties.length > 0) {
+          if (mixPropertiesTemp.length > 0) {
             // If it exists , taking the intersection
-            state.mixProperties = state.mixProperties.filter(property => state.batchOptViews[key].properties.indexOf(property) > -1)
+            mixPropertiesTemp = mixPropertiesTemp.filter(property => state.batchOptViews[key].properties.indexOf(property) > -1)
+            // 根据当前的mixPropertiesTemp 再对 mixPropertyInnerTemp 进行过滤
+            mixPropertiesTemp.forEach(propertyInnerItem => {
+              if (mixPropertyInnerTemp[propertyInnerItem] && state.batchOptViews[key].propertyInner[propertyInnerItem]) {
+                mixPropertyInnerTemp[propertyInnerItem] = mixPropertyInnerTemp[propertyInnerItem].filter(propertyInnerItemValue => state.batchOptViews[key].propertyInner[propertyInnerItem].indexOf(propertyInnerItemValue) > -1)
+              }
+            })
           } else {
             // If it doesn't exist, assignment directly
-            state.mixProperties = deepCopy(state.batchOptViews[key].properties)
+            mixPropertiesTemp = deepCopy(state.batchOptViews[key].properties)
+            mixPropertyInnerTemp = deepCopy(state.batchOptViews[key].propertyInner)
           }
 
           if (render && render !== state.batchOptViews[key].render) {
@@ -588,6 +591,7 @@ const data = {
             render = state.batchOptViews[key].render
           }
 
+          allTypes = allTypes + '-' + state.batchOptViews[key].value
           if (type && type !== state.batchOptViews[key].value) {
             type = 'mix'
           } else {
@@ -600,6 +604,16 @@ const data = {
             isPlugin = state.batchOptViews[key].isPlugin
           }
         }
+        mixPropertiesTemp.forEach(property => {
+          if (mixPropertyInnerTemp[property] && mixPropertyInnerTemp[property].length) {
+            state.mixPropertiesInner[property] = mixPropertyInnerTemp[property]
+            state.mixProperties.push(property)
+          }
+        })
+
+        // if (type && type === 'mix') {
+        //   type = type + '-' + allTypes
+        // }
         // Assembly history settings 'customAttr' & 'customStyle'
         state.batchOptChartInfo = {
           'mode': 'batchOpt',
@@ -618,6 +632,7 @@ const data = {
       // Currently selected components
       state.curBatchOptComponents = []
       state.mixProperties = []
+      state.mixPropertyInnder = {}
       state.batchOptChartInfo = null
       state.batchOptViews = {}
       state.changeProperties = {
@@ -636,6 +651,7 @@ const data = {
       // Currently selected components
       state.curBatchOptComponents = []
       state.mixProperties = []
+      state.mixPropertyInnder = {}
       state.batchOptChartInfo = null
       state.batchOptViews = {}
       state.changeProperties = {
