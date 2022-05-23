@@ -17,7 +17,7 @@
       <span :title="$t('panel.matrix')">
         <i v-if="activeModel==='edit'&&curComponent.auxiliaryMatrix" class="icon iconfont icon-shujujuzhen" @click.stop="auxiliaryMatrixChange" />
       </span>
-      <span :title="$t('panel.suspension')">
+      <span :title="$t('panel.suspension')+'cheshi'">
         <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
       </span>
       <span :title="$t('panel.details')">
@@ -148,24 +148,27 @@ export default {
       this.$emit('showViewDetails')
     },
     auxiliaryMatrixChange() {
+      this.curComponent.auxiliaryMatrix = false
       if (this.curComponent.auxiliaryMatrix) {
-        this.curComponent.auxiliaryMatrix = false
-        this.$emit('amRemoveItem')
+        // this.curComponent.auxiliaryMatrix = false
+        // this.$emit('amRemoveItem')
       } else {
-        this.curComponent.x = Math.round(this.curComponent.style.left / this.curCanvasScale.matrixStyleOriginWidth) + 1
-        this.curComponent.y = Math.round(this.curComponent.style.top / this.curCanvasScale.matrixStyleOriginHeight) + 1
-        this.curComponent.sizex = Math.round(this.curComponent.style.width / this.curCanvasScale.matrixStyleOriginWidth)
-        this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
-        this.curComponent.sizey = this.curComponent.sizey > this.miniHeight ? this.curComponent.sizey : this.miniHeight
-        this.curComponent.sizex = this.curComponent.sizex > this.miniWidth ? this.curComponent.sizex : this.miniWidth
-        this.curComponent.auxiliaryMatrix = true
-        this.$emit('amAddItem')
+        // this.curComponent.auxiliaryMatrix = false
+        // this.$emit('amRemoveItem')
+        // this.curComponent.x = Math.round(this.curComponent.style.left / this.curCanvasScale.matrixStyleOriginWidth) + 1
+        // this.curComponent.y = Math.round(this.curComponent.style.top / this.curCanvasScale.matrixStyleOriginHeight) + 1
+        // this.curComponent.sizex = Math.round(this.curComponent.style.width / this.curCanvasScale.matrixStyleOriginWidth)
+        // this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
+        // this.curComponent.sizey = this.curComponent.sizey > this.miniHeight ? this.curComponent.sizey : this.miniHeight
+        // this.curComponent.sizex = this.curComponent.sizex > this.miniWidth ? this.curComponent.sizex : this.miniWidth
+        // this.curComponent.auxiliaryMatrix = false
+        // this.$emit('amAddItem')
       }
-      setTimeout(() => {
-        this.recordMatrixCurShadowStyle()
-      }, 50)
-      this.$store.state.styleChangeTimes++
-      bus.$emit('auxiliaryMatrixChange')
+      // setTimeout(() => {
+      // this.recordMatrixCurShadowStyle()
+      // }, 50)
+      // this.$store.state.styleChangeTimes++
+      // bus.$emit('auxiliaryMatrixChange')
     },
     // 记录当前样式 跟随阴影位置 矩阵处理
     recordMatrixCurShadowStyle() {
@@ -179,6 +182,7 @@ export default {
         width: width,
         height: height
       }
+      console.log('矩阵处理style====', style)
       this.$store.commit('setShapeStyle', style)
       // resize
       this.$emit('resizeView')

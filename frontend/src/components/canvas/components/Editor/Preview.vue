@@ -1,6 +1,7 @@
 <template>
   <div class="bg" :style="customStyle" @scroll="canvasScroll">
     <div id="canvasInfoMain" ref="canvasInfoMain" :style="canvasInfoMainStyle">
+      <!-- <div>数据问题</div> -->
       <div
         id="canvasInfoTemp"
         ref="canvasInfoTemp"
@@ -126,22 +127,36 @@ export default {
       showChartInfo: {},
       showChartTableInfo: {},
       // 布局展示 1.pc pc端布局 2.mobile 移动端布局
-      terminal: 'pc'
+      terminal: 'pc',
+      offsetWidth: 1100,
+      scaleSize: 1
     }
   },
   created() {
   },
   computed: {
+    scaleNewHeight() {
+      var height = 800
+      // if (this.offsetWidth <= this.canvasStyleData.width) {
+      //   height = this.canvasStyleData.height * (this.offsetWidth / this.canvasStyleData.width)
+      // } else {
+      //   height = this.canvasStyleData.height
+      // }
+      console.log('修改高度====')
+      height = this.canvasStyleData.height * (this.offsetWidth / this.canvasStyleData.width)
+      console.log('修改高度====', height)
+      return height
+    },
     canvasInfoMainStyle() {
       if (this.backScreenShot) {
         return {
           width: '100%',
-          height: this.mainHeight
+          height: this.scaleNewHeight + 'px'
         }
       } else {
         return {
           width: '100%',
-          height: '100%'
+          height: this.scaleNewHeight + 'px'
         }
       }
     },
@@ -149,12 +164,12 @@ export default {
       if (this.screenShot) {
         return {
           width: '100%',
-          height: this.mainHeight
+          height: this.scaleNewHeight + 'px'
         }
       } else {
         return {
           width: '100%',
-          height: '100%'
+          height: this.scaleNewHeight + 'px'
         }
       }
     },
@@ -162,6 +177,7 @@ export default {
       let style = {
         width: '100%'
       }
+      console.log('样式修改库=====', this.canvasStyleData)
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
@@ -178,8 +194,10 @@ export default {
       if (this.backScreenShot) {
         style.height = this.mainHeight
       } else {
-        style.padding = '5px'
+        // style.padding = '5px'
       }
+      style.height = this.scaleNewHeight + 'px'
+      console.log('改变的样式库===', style)
       return style
     },
     screenShotStyle() {
@@ -187,6 +205,10 @@ export default {
     },
     // 此处单独计算componentData的值 不放入全局mapState中
     componentDataInfo() {
+      console.log('this.componentDataShow', this.componentDataShow)
+      this.componentDataShow.forEach(res => {
+        console.log('res==', res)
+      })
       return this.componentDataShow
     },
     ...mapState([
@@ -217,17 +239,34 @@ export default {
   },
   mounted() {
     this._isMobile()
+
     const _this = this
     const erd = elementResizeDetectorMaker()
+    this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
+    this.scaleSize = document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width
     // 监听主div变动事件
     erd.listenTo(document.getElementById('canvasInfoMain'), element => {
       _this.$nextTick(() => {
+        console.log('div变动变化==', document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
+        console.log('画布高度缩放 === ', this.canvasStyleData.height * (document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width))
+        // this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
         _this.restore()
+        // this.canvasStyleData.height = this.canvasStyleData.height * (document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
       })
     })
+    erd.listenTo(document.getElementById('canvasInfoMain'), element => {
+      _this.$nextTick(() => {
+
+        // this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
+        // _this.restore()
+        // this.canvasStyleData.height = this.canvasStyleData.height * (document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
+      })
+    })
+
     // 监听画布div变动事件
     const tempCanvas = document.getElementById('canvasInfoTemp')
     erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
+      console.log('修改状态值')
       _this.$nextTick(() => {
         // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
         _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
@@ -274,12 +313,17 @@ export default {
       const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
       const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
       this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
+      // this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
+      // this.scaleWidth = this.scaleSize * 100 // 获取宽度比
       // 如果是后端截图方式使用 的高度伸缩比例和宽度比例相同
       if (this.backScreenShot) {
-        this.scaleHeight = this.scaleWidth
+        this.scaleHeight = this.scaleWidth * 100
       } else {
-        this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
+        // this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
+        this.scaleHeight = this.scaleWidth// 获取高度比
+        // this.scaleHeight = this.scaleSize// 获取高度比
       }
+      console.log('原代码中的宽高比例==', this.scaleHeight, this.scaleWidth)
       this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
       this.handleScaleChange()
     },
@@ -292,15 +336,19 @@ export default {
       return data
     },
     format(value, scale) {
+      console.log('value===', value, value * scale / 100)
       return value * scale / 100
     },
     handleScaleChange() {
       if (this.componentData) {
         const componentData = deepCopy(this.componentData)
+        console.log('componentData====', componentData)
         componentData.forEach(component => {
+          console.log('切割线===================================================')
           Object.keys(component.style).forEach(key => {
             if (this.needToChangeHeight.includes(key)) {
               component.style[key] = this.format(component.style[key], this.scaleHeight)
+              console.log('循环对象得到的key===', key, component.style[key])
             }
             if (this.needToChangeWidth.includes(key)) {
               if (key === 'fontSize' && this.terminal === 'mobile') {
@@ -308,12 +356,20 @@ export default {
               } else {
                 component.style[key] = this.format(component.style[key], this.scaleWidth)
               }
+              console.log('循环对象得到的key===222', key, component.style[key])
             }
           })
+        })
+        setTimeout(() => {
+          console.log('componentData改编过的===', componentData)
         })
         this.componentDataShow = componentData
         this.$nextTick(() => (eventBus.$emit('resizing', '')))
       }
+      // this.scaleNewHeight = this.canvasStyleData.height * (document.getElementById('canvasInfoTemp').offsetWidth / this.canvasStyleData.width)
+      // this.$nextTick(() => {
+      //   this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
+      // })
     },
     openChartDetailsDialog(chartInfo) {
       this.showChartInfo = chartInfo.chart

@@ -137,6 +137,9 @@ export function initPanelData(panelId, callback) {
   // 加载视图数据
   findOne(panelId).then(response => {
     // 初始化视图data和style 数据
+    console.log('初始化数据3333', response)
+    console.log('页面 数 据 来源===', JSON.parse(response.data.panelData))
+    console.log('页面 样 式 来源===', JSON.parse(response.data.panelStyle))
     panelInit(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle))
     // 设置当前仪表板全局信息
     store.dispatch('panel/setPanelInfo', {
@@ -144,6 +147,7 @@ export function initPanelData(panelId, callback) {
       name: response.data.name,
       privileges: response.data.privileges,
       sourcePanelName: response.data.sourcePanelName
+      // width:
     })
     // 刷新联动信息
     getPanelAllLinkageInfo(panelId).then(rsp => {

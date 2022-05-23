@@ -340,6 +340,7 @@ export default {
           symmetricPoint
         })
         // console.log('this is test:' + JSON.stringify(this.element.propValue.viewId))
+        console.log('元素是否修改状态=======11111111')
         this.$store.commit('setShapeStyle', style)
         this.element.propValue && this.element.propValue.viewId && eventBus.$emit('resizing', this.element.propValue.viewId)
       }

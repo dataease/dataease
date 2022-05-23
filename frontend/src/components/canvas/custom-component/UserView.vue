@@ -299,7 +299,7 @@ export default {
       handler: function(val1, val2) {
         // console.log('监听视图层变化=============boxWidth', val1, val2)
         this.element.style.width = val1
-        // this.resizeChart()
+        this.resizeChart()
       },
       deep: true
     },
@@ -307,7 +307,7 @@ export default {
       handler: function(val1, val2) {
         // console.log('监听视图层变化=============boxWidth', val1, val2)
         this.element.style.height = val1
-        // this.resizeChart()
+        this.resizeChart()
       },
       deep: true
     },

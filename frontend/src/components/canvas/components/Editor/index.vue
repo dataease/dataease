@@ -1236,16 +1236,21 @@ export default {
         return style['rotate']
       }
       if (prop === 'width') {
-        return this.format(style['width'], this.scaleWidth)
+        // return this.format(style['width'], this.scaleWidth)
+        return style['width']
       }
       if (prop === 'left') {
-        return this.format(style['left'], this.scaleWidth)
+        // return this.format(style['left'], this.scaleWidth)
+        return style['left']
       }
       if (prop === 'height') {
-        return this.format(style['height'], this.scaleHeight)
+        // conditions
+        // return this.format(style['height'], this.scaleHeight)
+        return style['height']
       }
       if (prop === 'top') {
-        const top = this.format(style['top'], this.scaleHeight)
+        // const top = this.format(style['top'], this.scaleHeight)
+        const top = style['top']
         // console.log('top:' + top)
         return top
       }
@@ -1340,6 +1345,7 @@ export default {
       return true
     },
     containerMouseDown(e) {
+      console.log('修改值状态', e)
       // e.preventDefault();
       if (!this.infoBox) {
         this.infoBox = {}
@@ -1580,6 +1586,8 @@ export default {
 <style lang="scss" scoped>
 .editor {
     position: relative;
+    width: 100%;
+    height: 100%;
     /*background: #fff;*/
     margin: auto;
     /*会影响设置组件不能出现在最高层*/

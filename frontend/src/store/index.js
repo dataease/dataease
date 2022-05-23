@@ -84,7 +84,7 @@ const data = {
     // 拖拽的组件信息
     dragComponentInfo: null,
     // 仪表板组件间隙大小 px
-    componentGap: 5,
+    componentGap: 0,
     // 移动端布局状态
     mobileLayoutStatus: false,
     // 公共链接状态(当前是否是公共链接打开)
@@ -165,6 +165,7 @@ const data = {
         if (height || height === 0) curComponent.style.height = (height / curCanvasScale.scalePointHeight) + 0.0000001
         if (rotate || rotate === 0) curComponent.style.rotate = rotate
       }
+      console.log('宽高处理出？？？？？？', width, height, curComponent, curCanvasScale)
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {

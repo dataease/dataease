@@ -181,8 +181,9 @@ export default {
       this.curComponent.commonBackground.alpha = this.backgroundOrigin.alpha
       this.curComponent.commonBackground.borderRadius = this.backgroundOrigin.borderRadius
       this.curComponent.commonBackground.innerPadding = this.backgroundOrigin.innerPadding
-      this.curComponent.commonBackground.boxWidth = this.backgroundOrigin.boxWidth
-      this.curComponent.commonBackground.boxHeight = this.backgroundOrigin.boxHeight
+      this.curComponent.commonBackground.boxWidth = Math.floor(this.backgroundOrigin.boxWidth)
+      this.curComponent.commonBackground.boxHeight = Math.floor(this.backgroundOrigin.boxHeight)
+      console.log('this.curComponent.commonBackground.boxWidth=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')
     },
     save() {

@@ -267,11 +267,15 @@ export default {
       this.$store.commit('clearPanelLinkageInfo')
       // 保存到数据库
       console.log('this.canvasStyleData', this.componentData)
-      // this.componentData.forEach(ele => {
-      //   console.log('width', document.getElementById('eleId' + ele.id).offsetWidth)
-      //   ele.style.width = document.getElementById('eleId' + ele.id).offsetWidth
-      //   ele.style.height = document.getElementById('eleId' + ele.id).offsetHeight
-      // })
+      this.componentData.forEach(ele => {
+        console.log('width', document.getElementById('eleId' + ele.id).offsetWidth)
+        ele.commonBackground.boxWidth = document.getElementById('eleId' + ele.id).offsetWidth
+        ele.commonBackground.boxHeight = document.getElementById('eleId' + ele.id).offsetHeight
+        ele.style.width = document.getElementById('eleId' + ele.id).offsetWidth
+        ele.style.height = document.getElementById('eleId' + ele.id).offsetHeight
+
+        console.log('获取盒子到左边和右边的距离', document.getElementById('eleId' + ele.id).offsetTop, document.getElementById('eleId' + ele.id).offsetLeft)
+      })
       const requestInfo = {
         id: this.$store.state.panel.panelInfo.id,
         panelStyle: JSON.stringify(this.canvasStyleData),
@@ -375,7 +379,7 @@ export default {
       this.$store.commit('clearLinkageSettingInfo')
     },
     auxiliaryMatrixChange() {
-      this.canvasStyleData.auxiliaryMatrix = !this.canvasStyleData.auxiliaryMatrix
+      this.canvasStyleData.auxiliaryMatrix = false
     },
     // 启用移动端布局
     openMobileLayout() {
