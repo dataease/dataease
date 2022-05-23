@@ -2263,3 +2263,124 @@ export function customSort(custom, data) {
 
   return joinArr.concat(subArr)
 }
+
+export function customColor(custom, res, colors) {
+  const result = []
+  for (let i = 0; i < res.length; i++) {
+    const r = res[i]
+    let flag = false
+    for (let j = 0; j < custom.length; j++) {
+      const c = custom[j]
+      if (r.name === c.name) {
+        flag = true
+        result.push(c)
+      }
+    }
+    if (!flag) {
+      result.push(r)
+    }
+  }
+  return result
+}
+
+export function getColors(chart, colors, reset) {
+  // 自定义颜色，先按照没有设定的情况，并排好序，当做最终结果
+  let seriesColors = []
+  let series
+  if (chart.type.includes('stack')) {
+    if (chart.data) {
+      const data = chart.data.datas
+      const stackData = []
+      for (let i = 0; i < data.length; i++) {
+        const s = data[i]
+        stackData.push(s.category)
+      }
+      const sArr = stackData.filter(function(item, index, stackData) {
+        return stackData.indexOf(item, 0) === index
+      })
+
+      for (let i = 0; i < sArr.length; i++) {
+        const s = sArr[i]
+        seriesColors.push({
+          name: s,
+          color: colors[i % colors.length],
+          isCustom: false
+        })
+      }
+    }
+  } else if (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type.includes('radar')) {
+    if (Object.prototype.toString.call(chart.yaxis) === '[object Array]') {
+      series = JSON.parse(JSON.stringify(chart.yaxis))
+    } else {
+      series = JSON.parse(chart.yaxis)
+    }
+    for (let i = 0; i < series.length; i++) {
+      const s = series[i]
+      seriesColors.push({
+        name: s.name,
+        color: colors[i % colors.length],
+        isCustom: false
+      })
+    }
+  } else {
+    if (chart.data) {
+      const data = chart.data.datas
+      // data 的维度值，需要根据自定义顺序排序
+      // let customSortData
+      // if (Object.prototype.toString.call(chart.customSort) === '[object Array]') {
+      //   customSortData = JSON.parse(JSON.stringify(chart.customSort))
+      // } else {
+      //   customSortData = JSON.parse(chart.customSort)
+      // }
+      // if (customSortData && customSortData.length > 0) {
+      //   data = customSort(customSortData, data)
+      // }
+
+      for (let i = 0; i < data.length; i++) {
+        const s = data[i]
+        seriesColors.push({
+          name: s.field,
+          color: colors[i % colors.length],
+          isCustom: false
+        })
+      }
+    }
+  }
+  // 如果有自定义，则与上述中的结果合并。
+  // res，custom，以custom为准，去掉res中不存在的，并将custom中name一样的color赋值给res，不存在的name，即新增值，使用i % colors.length，从配色方案中选
+  if (!reset) {
+    let sc = null
+    if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
+      sc = JSON.parse(JSON.stringify(chart.customAttr)).color.seriesColors
+    } else {
+      sc = JSON.parse(chart.customAttr).color.seriesColors
+    }
+    if (sc && sc.length > 0) {
+      seriesColors = customColor(sc, seriesColors)
+    }
+    // 根据isCustom字段，修正color
+    for (let i = 0; i < seriesColors.length; i++) {
+      if (!seriesColors[i].isCustom) {
+        seriesColors[i].color = colors[i % colors.length]
+      }
+    }
+  }
+  return seriesColors
+}
+
+export function antVCustomColor(chart) {
+  const colors = []
+  if (chart.customAttr) {
+    const customAttr = JSON.parse(chart.customAttr)
+    // color
+    if (customAttr.color) {
+      const c = JSON.parse(JSON.stringify(customAttr.color))
+
+      const customColors = getColors(chart, c.colors, false)
+      for (let i = 0; i < customColors.length; i++) {
+        colors.push(hexColorToRGBA(customColors[i].color, c.alpha))
+      }
+    }
+  }
+  return colors
+}

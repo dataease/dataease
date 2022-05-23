@@ -21,7 +21,8 @@ public class SysLogConstants {
         UNAUTHORIZE(7, "OPERATE_TYPE_UNAUTHORIZE"),
         CREATELINK(8, "OPERATE_TYPE_CREATELINK"),
         DELETELINK(9, "OPERATE_TYPE_DELETELINK"),
-        MODIFYLINK(10, "OPERATE_TYPE_MODIFYLINK");
+        MODIFYLINK(10, "OPERATE_TYPE_MODIFYLINK"),
+        UPLOADFILE(11, "OPERATE_TYPE_UPLOADFILE");
         private Integer value;
         private String name;
         OPERATE_TYPE(Integer value, String name) {
@@ -52,7 +53,9 @@ public class SysLogConstants {
         /*LINK(5, "SOURCE_TYPE_LINK"),*/
         USER(6, "SOURCE_TYPE_USER"),
         DEPT(7, "SOURCE_TYPE_DEPT"),
-        ROLE(8, "SOURCE_TYPE_ROLE");
+        ROLE(8, "SOURCE_TYPE_ROLE"),
+        DRIVER(9, "SOURCE_TYPE_DRIVER"),
+        DRIVER_FILE(10, "SOURCE_TYPE_DRIVER_FILE");
         private Integer value;
         private String name;
 

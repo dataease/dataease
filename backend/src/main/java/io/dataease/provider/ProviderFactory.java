@@ -1,6 +1,5 @@
 package io.dataease.provider;
 
-import com.google.gson.Gson;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.config.SpringContextUtil;
@@ -25,7 +24,7 @@ public class ProviderFactory implements ApplicationContextAware {
         for(final DatasourceTypes d: DatasourceTypes.values()) {
             final ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) context).getBeanFactory();
             if(d.isDatasource()){
-                DataSourceType dataSourceType = new DataSourceType(d.getType(), d.getName(), false, d.getExtraParams(), d.getCalculationMode());
+                DataSourceType dataSourceType = new DataSourceType(d.getType(), d.getName(), false, d.getExtraParams(), d.getCalculationMode(), d.isJdbc());
                 if(dataSourceType.getType().equalsIgnoreCase("oracle")){
                     dataSourceType.setCharset(d.getCharset());
                 }

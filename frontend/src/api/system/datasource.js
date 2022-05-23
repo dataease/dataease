@@ -15,6 +15,13 @@ export function listDatasource() {
     method: 'get'
   })
 }
+export function listDrivers() {
+  return request({
+    url: '/driver/list',
+    loading: true,
+    method: 'post'
+  })
+}
 export function listDatasourceType() {
   return request({
     url: '/datasource/types',
@@ -25,6 +32,13 @@ export function listDatasourceType() {
 export function listDatasourceByType(type) {
   return request({
     url: '/datasource/list/' + type,
+    loading: true,
+    method: 'get'
+  })
+}
+export function listDriverByType(type) {
+  return request({
+    url: '/driver/list/' + type,
     loading: true,
     method: 'get'
   })
@@ -87,6 +101,49 @@ export function checkApiDatasource(data) {
     url: 'datasource/checkApiDatasource',
     method: 'post',
     loading: false,
+    data
+  })
+}
+
+export function addDriver(data) {
+  return request({
+    url: '/driver/save',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
+export function listDriverDetails(id) {
+  return request({
+    url: '/driver/listDriverDetails/' + id,
+    method: 'get',
+    loading: true
+  })
+}
+
+export function deleteDriverFile(data) {
+  return request({
+    url: '/driver/deleteDriverFile',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
+export function delDriver(data) {
+  return request({
+    url: 'driver/delete',
+    loading: true,
+    method: 'post',
+    data
+  })
+}
+export function updateDriver(data) {
+  return request({
+    url: 'driver/update/',
+    loading: true,
+    method: 'post',
     data
   })
 }

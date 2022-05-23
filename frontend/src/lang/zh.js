@@ -1330,7 +1330,22 @@ export default {
     sql_ds_union_error: '直连模式下SQL数据集，不支持关联',
     api_data: 'API 数据集'
   },
+  driver:{
+    driver: '驱动',
+    please_choose_driver: '请选择驱动',
+    mgm: '驱动管理',
+    add: '添加驱动',
+    modify: '修改',
+    show_info: '驱动信息',
+    file_name: '文件名',
+    version: '版本'
+  },
   datasource: {
+    auth_method: '认证方式',
+    passwd: '用户名密码',
+    kerbers_info: '请确保 krb5.Conf、Keytab Key，已经添加到路径：/opt/dataease/conf',
+    client_principal: 'Client Principal',
+    keytab_Key_path: 'Keytab Key Path',
     datasource: '数据源',
     please_select_left: '请从左侧选择数据源',
     show_info: '数据源信息',

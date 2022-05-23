@@ -5,7 +5,7 @@
       style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
       class="attr-style theme-border-class"
       :component-name="view.type + '-style'"
-      :obj="{view, param, chart}"
+      :obj="{view, param, chart, dimensionData, quotaData}"
     />
     <div
       v-else
@@ -29,8 +29,17 @@
       <el-row>
         <span class="padding-lr">{{ $t('chart.shape_attr') }}</span>
         <el-collapse v-model="attrActiveNames" class="style-collapse">
+          <el-collapse-item name="color" :title="$t('chart.color')">
+            <color-selector-ext
+              v-if="view.render && view.render === 'antv' && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('pie') || view.type === 'funnel' || view.type === 'radar' || view.type === 'scatter')"
+              :param="param"
+              class="attr-selector"
+              :chart="chart"
+              @onColorChange="onColorChange"
+            />
           <el-collapse-item name="color"  v-show="showPropertiesCollapse(['color-selector'])" :title="$t('chart.color')">
             <color-selector
+              v-else
               :param="param"
               class="attr-selector"
               :chart="chart"
@@ -274,6 +283,7 @@
 <script>
 import PluginCom from '@/views/system/plugin/PluginCom'
 import ColorSelector from '@/views/chart/components/shape-attr/ColorSelector'
+import ColorSelectorExt from '@/views/chart/components/shape-attr/ColorSelectorExt'
 import SizeSelector from '@/views/chart/components/shape-attr/SizeSelector'
 import SizeSelectorAntV from '@/views/chart/components/shape-attr/SizeSelectorAntV'
 import LabelSelector from '@/views/chart/components/shape-attr/LabelSelector'
@@ -315,7 +325,13 @@ export default {
     TotalCfg,
     TooltipSelectorAntV,
     TooltipSelector,
-    LabelSelectorAntV, LabelSelector, SizeSelectorAntV, SizeSelector, ColorSelector, PluginCom
+    LabelSelectorAntV,
+    LabelSelector,
+    SizeSelectorAntV,
+    SizeSelector,
+    ColorSelector,
+    PluginCom,
+    ColorSelectorExt
   },
   props: {
     chart: {
@@ -331,6 +347,14 @@ export default {
       required: true
     },
     properties: {
+      type: Array,
+      required: true
+    },
+    dimensionData: {
+      type: Array,
+      required: true
+    },
+    quotaData: {
       type: Array,
       required: true
     },
@@ -358,7 +382,7 @@ export default {
   },
   methods: {
     showProperties(property) {
-      return this.properties.includes(property)
+      return this.properties && this.properties.length && this.properties.includes(property)
     },
     showPropertiesCollapse(propertiesInfo) {
       let includeCount = 0
