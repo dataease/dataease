@@ -11,6 +11,7 @@ import {
 } from '@/views/chart/chart/common/common_antv'
 
 import { Scatter } from '@antv/g2plot'
+import { antVCustomColor } from '@/views/chart/chart/util'
 
 export function baseScatterOptionAntV(plot, container, chart, action) {
   // theme
@@ -86,6 +87,8 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
       options.shape = s.scatterSymbol
     }
   }
+  // custom color
+  options.color = antVCustomColor(chart)
 
   // 开始渲染
   if (plot) {
