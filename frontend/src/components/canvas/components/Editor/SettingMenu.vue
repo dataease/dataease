@@ -85,6 +85,7 @@ export default {
       this.deleteCurCondition()
       this.$store.commit('deleteComponent')
       this.$store.commit('recordSnapshot', 'deleteComponent')
+      console.log('设置参数001')
       this.$store.commit('setCurComponent', { component: null, index: null })
     },
 
@@ -138,6 +139,7 @@ export default {
     },
     // 设置边框
     boardSet() {
+      console.log('点击条状组件样式设置窗口====')
       this.$emit('boardSet')
     }
   }

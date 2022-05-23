@@ -25,7 +25,7 @@ export function matchesSelectorToParentElements(el, selector, baseNode) {
 
 export function getComputedSize($el) {
   const style = window.getComputedStyle($el)
-
+  console.log('返回浮点数？？？？', parseFloat(style.getPropertyValue('width'), 10), parseFloat(style.getPropertyValue('height'), 10))
   return [
     parseFloat(style.getPropertyValue('width'), 10),
     parseFloat(style.getPropertyValue('height'), 10)
@@ -33,6 +33,7 @@ export function getComputedSize($el) {
 }
 // 添加事件
 export function addEvent(el, event, handler) {
+  // console.log('执行鼠标事件=================', el, event, handler)
   if (!el) {
     return
   }

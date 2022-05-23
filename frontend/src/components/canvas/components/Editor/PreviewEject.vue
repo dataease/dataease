@@ -23,6 +23,7 @@ export default {
   },
   computed: {
     bgStyle() {
+      console.log('this.backScreenSho===1111', this.backScreenSho)
       if (this.backScreenShot) {
         return { height: this.mainHeight }
       } else {

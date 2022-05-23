@@ -24,6 +24,7 @@ const mutations = {
     state.mainActiveName = mainActiveName
   },
   setPanelInfo: (state, panelInfo) => {
+    console.log('存储数据======', panelInfo)
     state.panelInfo = panelInfo
   },
   setCanvasStyleDataTemp: (state, canvasStyleDataTemp) => {

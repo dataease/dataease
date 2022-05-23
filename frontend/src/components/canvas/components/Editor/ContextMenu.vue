@@ -45,6 +45,7 @@ export default {
   methods: {
     edit() {
       // 编辑时临时保存 当前修改的画布
+      console.log('保存接口', this.componentData)
       this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
       this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
       if (this.curComponent.type === 'view') {
