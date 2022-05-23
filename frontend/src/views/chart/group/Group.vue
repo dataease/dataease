@@ -822,6 +822,7 @@ export default {
       view.customFilter = JSON.stringify([])
       view.drillFields = JSON.stringify([])
       view.extBubble = JSON.stringify([])
+      view.viewFields = JSON.stringify([])
       this.setChartDefaultOptions(view)
       const _this = this
       post('/chart/view/newOne/' + this.panelInfo.id, view, true).then(response => {
