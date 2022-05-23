@@ -652,11 +652,13 @@
         </el-tab-pane>
         <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 300px">
           <chart-style
-            v-if="chartProperties"
+            v-if="chartProperties || view.isPlugin"
             :param="param"
             :view="view"
             :chart="chart"
             :properties="chartProperties"
+            :dimension-data="dimensionData"
+            :quota-data="quotaData"
             @calcStyle="calcStyle"
             @onColorChange="onColorChange"
             @onSizeChange="onSizeChange"
@@ -1082,6 +1084,7 @@ export default {
         yaxisExt: [],
         extStack: [],
         drillFields: [],
+        viewFields: [],
         extBubble: [],
         show: true,
         type: 'bar',
@@ -1172,12 +1175,12 @@ export default {
       if (_this.chart && _this.chart.render) {
         const viewConfig = this.allViewRender.filter(item => item.render === _this.chart.render && item.value === _this.chart.type)
         if (viewConfig && viewConfig.length) {
-          return viewConfig[0].properties
+          return viewConfig[0].properties || []
         } else {
-          return null
+          return []
         }
       } else {
-        return null
+        return []
       }
     },
     chartType() {
@@ -1528,6 +1531,7 @@ export default {
       this.view = JSON.parse(JSON.stringify(view))
       // stringify json param
       view.xaxis = JSON.stringify(view.xaxis)
+      view.viewFields = JSON.stringify(view.viewFields)
       view.xaxisExt = JSON.stringify(view.xaxisExt)
       view.yaxis = JSON.stringify(view.yaxis)
       view.yaxisExt = JSON.stringify(view.yaxisExt)
@@ -1587,6 +1591,7 @@ export default {
       const view = this.buildParam(true, 'chart', false, switchType)
       if (!view) return
       viewEditSave(this.panelInfo.id, view).then(() => {
+        this.getData(this.param.id)
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
     },
@@ -1595,6 +1600,7 @@ export default {
       // 将视图传入echart...组件
       const view = JSON.parse(JSON.stringify(this.view))
       view.xaxis = JSON.stringify(this.view.xaxis)
+      view.viewFields = JSON.stringify(this.view.viewFields)
       view.xaxisExt = JSON.stringify(this.view.xaxisExt)
       view.yaxis = JSON.stringify(this.view.yaxis)
       view.yaxisExt = JSON.stringify(this.view.yaxisExt)
@@ -1659,6 +1665,7 @@ export default {
         }).then(response => {
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
+          this.view.viewFields = this.view.viewFields ? JSON.parse(this.view.viewFields) : []
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
@@ -1709,6 +1716,7 @@ export default {
               this.initTableData(response.data.tableId)
             }
             this.view = JSON.parse(JSON.stringify(response.data))
+            this.view.viewFields = this.view.viewFields ? JSON.parse(this.view.viewFields) : []
             this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
             this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
             this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
@@ -2369,7 +2377,7 @@ export default {
       resetViewCacheCallBack(_this.param.id, _this.panelInfo.id, function(rsp) {
         _this.changeEditStatus(false)
         _this.getChart(_this.param.id, 'panel')
-        // _this.getData(_this.param.id)
+        _this.getData(_this.param.id)
         bus.$emit('view-in-cache', { type: 'propChange', viewId: _this.param.id })
       })
     },
@@ -2405,6 +2413,8 @@ export default {
           this.view.customAttr.label.position = 'middle'
         }
       }
+      // reset custom colors
+      this.view.customAttr.color.seriesColors = []
     },
 
     valueFormatter(item) {

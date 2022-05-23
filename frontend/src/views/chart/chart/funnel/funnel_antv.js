@@ -1,5 +1,6 @@
 import { getLabel, getLegend, getPadding, getTheme, getTooltip } from '@/views/chart/chart/common/common_antv'
 import { Funnel } from '@antv/g2plot'
+import { antVCustomColor } from '@/views/chart/chart/util'
 
 export function baseFunnelOptionAntV(plot, container, chart, action) {
   // theme
@@ -62,6 +63,8 @@ export function baseFunnelOptionAntV(plot, container, chart, action) {
       const s = JSON.parse(JSON.stringify(customAttr.size))
     }
   }
+  // custom color
+  options.color = antVCustomColor(chart)
 
   // 开始渲染
   if (plot) {

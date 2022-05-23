@@ -10,6 +10,7 @@ import {
   getSlider,
   getAnalyse
 } from '@/views/chart/chart/common/common_antv'
+import { antVCustomColor } from '@/views/chart/chart/util'
 
 export function baseLineOptionAntV(plot, container, chart, action) {
   // theme
@@ -90,6 +91,8 @@ export function baseLineOptionAntV(plot, container, chart, action) {
       }
     }
   }
+  // custom color
+  options.color = antVCustomColor(chart)
 
   // 开始渲染
   if (plot) {
@@ -184,6 +187,8 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
       }
     }
   }
+  // custom color
+  options.color = antVCustomColor(chart)
 
   // 开始渲染
   if (plot) {
