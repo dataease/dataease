@@ -5,7 +5,7 @@
       style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
       class="attr-style theme-border-class"
       :component-name="view.type + '-style'"
-      :obj="{view, param, chart}"
+      :obj="{view, param, chart, dimensionData, quotaData}"
     />
     <div
       v-else
@@ -326,6 +326,14 @@ export default {
       required: true
     },
     properties: {
+      type: Array,
+      required: true
+    },
+    dimensionData: {
+      type: Array,
+      required: true
+    },
+    quotaData: {
       type: Array,
       required: true
     }

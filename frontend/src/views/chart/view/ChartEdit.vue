@@ -657,6 +657,8 @@
             :view="view"
             :chart="chart"
             :properties="chartProperties"
+            :dimension-data="dimensionData"
+            :quota-data="quotaData"
             @calcStyle="calcStyle"
             @onColorChange="onColorChange"
             @onSizeChange="onSizeChange"
@@ -1082,6 +1084,7 @@ export default {
         yaxisExt: [],
         extStack: [],
         drillFields: [],
+        viewFields: [],
         extBubble: [],
         show: true,
         type: 'bar',
@@ -1528,6 +1531,7 @@ export default {
       this.view = JSON.parse(JSON.stringify(view))
       // stringify json param
       view.xaxis = JSON.stringify(view.xaxis)
+      view.viewFields = JSON.stringify(view.viewFields)
       view.xaxisExt = JSON.stringify(view.xaxisExt)
       view.yaxis = JSON.stringify(view.yaxis)
       view.yaxisExt = JSON.stringify(view.yaxisExt)
@@ -1596,6 +1600,7 @@ export default {
       // 将视图传入echart...组件
       const view = JSON.parse(JSON.stringify(this.view))
       view.xaxis = JSON.stringify(this.view.xaxis)
+      view.viewFields = JSON.stringify(this.view.viewFields)
       view.xaxisExt = JSON.stringify(this.view.xaxisExt)
       view.yaxis = JSON.stringify(this.view.yaxis)
       view.yaxisExt = JSON.stringify(this.view.yaxisExt)
@@ -1660,6 +1665,7 @@ export default {
         }).then(response => {
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
+          this.view.viewFields = this.view.viewFields ? JSON.parse(this.view.viewFields) : []
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
@@ -1710,6 +1716,7 @@ export default {
               this.initTableData(response.data.tableId)
             }
             this.view = JSON.parse(JSON.stringify(response.data))
+            this.view.viewFields = this.view.viewFields ? JSON.parse(this.view.viewFields) : []
             this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
             this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
             this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
