@@ -154,7 +154,7 @@ export default {
     },
     showUnpublishedArea() {
       // return this.panelInfo.status === 'unpublished'
-      if (this.mainActiveName === 'PanelMain' && this.activeTab==='') {
+      if (this.mainActiveName === 'PanelMain' && this.activeTab === 'PanelList') {
         return this.panelInfo.status === 'unpublished' && this.panelInfo.privileges.indexOf('manage') === -1
       } else {
         return this.panelInfo.status === 'unpublished'

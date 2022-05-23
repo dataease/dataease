@@ -53,7 +53,7 @@
               </el-form-item>
             </span>
           </span>
-          <el-divider v-show="showProperty('splitLine')"   />
+          <el-divider v-if="showProperty('splitLine')"   />
           <el-form-item v-show="showProperty('splitLine')"  :label="$t('chart.axis_show')" class="form-item">
             <el-checkbox v-model="axisForm.splitLine.show" @change="changeYAxisStyle('splitLine')">{{ $t('chart.axis_show') }}</el-checkbox>
           </el-form-item>
@@ -72,7 +72,7 @@
               </el-radio-group>
             </el-form-item>
           </span>
-          <el-divider v-show="showProperty('axisLabel')" />
+          <el-divider v-if="showProperty('axisLabel')" />
           <el-form-item v-show="showProperty('axisLabel')"  :label="$t('chart.axis_label_show')" class="form-item">
             <el-checkbox v-model="axisForm.axisLabel.show" @change="changeYAxisStyle('axisLabel')">{{ $t('chart.axis_label_show') }}</el-checkbox>
           </el-form-item>
@@ -89,7 +89,7 @@
               </el-select>
             </el-form-item>
           </span>
-          <el-divider v-show="showProperty('axisLabel')" />
+          <el-divider v-if="showProperty('axisLabel')" />
           <el-form-item v-show="showProperty('axisLabel')"  :label="$t('chart.content_formatter')" class="form-item">
             <el-input v-model="axisForm.axisLabel.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeYAxisStyle('axisLabel')" />
           </el-form-item>

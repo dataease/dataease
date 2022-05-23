@@ -53,7 +53,7 @@
               </el-form-item>
             </span>
           </span>
-          <el-divider />
+          <el-divider v-if="showProperty('splitLine')" />
           <el-form-item v-show="showProperty('splitLine')" :label="$t('chart.axis_show')" class="form-item">
             <el-checkbox v-model="axisForm.splitLine.show" @change="changeYAxisStyle('splitLine')">{{ $t('chart.axis_show') }}</el-checkbox>
           </el-form-item>
@@ -65,7 +65,7 @@
               <el-slider v-model="axisForm.splitLine.lineStyle.width" :min="1" :max="10" show-input :show-input-controls="false" input-size="mini" @change="changeYAxisStyle('lineStyle')" />
             </el-form-item>
           </span>
-          <el-divider />
+          <el-divider v-if="showProperty('axisLabel')" />
           <el-form-item v-show="showProperty('axisLabel')" :label="$t('chart.axis_label_show')" class="form-item">
             <el-checkbox v-model="axisForm.axisLabel.show" @change="changeYAxisStyle('axisLabel')">{{ $t('chart.axis_label_show') }}</el-checkbox>
           </el-form-item>
