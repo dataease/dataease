@@ -3,14 +3,14 @@
     <el-col>
       <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini">
         <div>
-          <el-form-item v-show="showProperty('value')" :label="$t('chart.color_case')" class="form-item">
+          <el-form-item :label="$t('chart.color_case')" class="form-item">
             <el-popover
               placement="bottom"
               width="400"
               trigger="click"
             >
               <div style="padding: 6px 10px;">
-                <div>
+                <div v-show="showProperty('value')">
                   <span class="color-label">{{ $t('chart.system_case') }}</span>
                   <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColorOption('value')">
                     <el-option v-for="option in colorCases" :key="option.value" :label="option.name" :value="option.value" style="display: flex;align-items: center;">
@@ -22,23 +22,58 @@
                   </el-select>
                   <el-button size="mini" type="text" style="margin-left: 2px;" @click="resetCustomColor">{{ $t('commons.reset') }}</el-button>
                 </div>
-                <div style="display: flex;align-items: center;margin-top: 10px;">
-                  <span class="color-label">{{ $t('chart.custom_case') }}</span>
-                  <span>
-                    <el-radio-group v-model="customColor" class="color-type">
-                      <el-radio v-for="(c,index) in colorForm.colors" :key="index" :label="c" style="padding: 2px;" @change="switchColor(index)">
-                        <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
-                      </el-radio>
-                    </el-radio-group>
-                  </span>
+                <!--自定义配色方案-->
+                <div
+                  v-show="showProperty('custom')"
+                >
+                  <div style="display: flex;align-items: center;margin-top: 10px;">
+                    <span class="color-label">{{ $t('chart.custom_case') }}</span>
+                    <span>
+                      <el-radio-group v-model="customColor" class="color-type">
+                        <el-radio v-for="(c,index) in colorForm.colors" :key="index" :label="c" style="padding: 2px;" @change="switchColor(index)">
+                          <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
+                        </el-radio>
+                      </el-radio-group>
+                    </span>
+                  </div>
+                  <div style="display: flex;align-items: center;margin-top: 10px;">
+                    <span class="color-label" />
+                    <span>
+                      <el-color-picker v-model="customColor" class="color-picker-style" :predefine="predefineColors" @change="switchColorCase" />
+                    </span>
+                  </div>
                 </div>
-                <div style="display: flex;align-items: center;margin-top: 10px;">
+                <!--自定义系列或维度枚举值颜色-->
+                <div v-show="showProperty('colorPanel')" style="display: flex;align-items: center;margin-top: 10px;">
                   <span class="color-label" />
                   <span>
-                    <el-color-picker v-model="customColor" class="color-picker-style" :predefine="predefineColors" @change="switchColorCase" />
+                    <span v-for="(c,index) in colorForm.colors" :key="index" style="padding: 2px;">
+                      <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
+                    </span>
                   </span>
                 </div>
               </div>
+
+              <div
+                v-if="!batchOptStatus"
+                v-show="showProperty('customColor')"
+                class="custom-color-style"
+              >
+                <div
+                  v-for="(item,index) in colorForm.seriesColors"
+                  :key="index"
+                  style="display: flex;align-items: center;margin: 2px 0;"
+                >
+                  <span class="span-label" :title="item.name">{{ item.name }}</span>
+                  <el-color-picker
+                    v-model="item.color"
+                    class="color-picker-style"
+                    :predefine="predefineColors"
+                    @change="switchCustomColor(index)"
+                  />
+                </div>
+              </div>
+
               <div slot="reference" style="cursor: pointer;margin-top: 2px;width: 180px;">
                 <span v-for="(c,index) in colorForm.colors" :key="index" :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
               </div>
@@ -81,6 +116,8 @@
 
 <script>
 import { COLOR_PANEL, DEFAULT_COLOR_CASE } from '../../chart/chart'
+import { getColors } from '@/views/chart/chart/util'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ColorSelector',
@@ -209,6 +246,11 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState([
+      'batchOptStatus'
+    ])
+  },
   mounted() {
     this.init()
   },
@@ -226,6 +268,10 @@ export default {
 
       this.customColor = this.colorForm.colors[0]
       this.colorIndex = 0
+
+      // reset custom color
+      this.colorForm.seriesColors = []
+      this.initCustomColor(true)
 
       this.changeColorCase(modifyName)
     },
@@ -254,6 +300,8 @@ export default {
           }
 
           this.colorForm.tableBorderColor = this.colorForm.tableBorderColor ? this.colorForm.tableBorderColor : DEFAULT_COLOR_CASE.tableBorderColor
+
+          this.initCustomColor()
         }
       }
     },
@@ -273,6 +321,24 @@ export default {
     },
     showProperty(property) {
       return this.propertyInner.includes(property)
+    },
+
+    switchCustomColor(index) {
+      this.colorForm.seriesColors[index].isCustom = true
+      this.switchColorCase()
+    },
+
+    initCustomColor(reset) {
+      if (this.chart.render && this.chart.render === 'antv' &&
+        (this.chart.type.includes('bar') ||
+          this.chart.type.includes('line') ||
+          this.chart.type.includes('pie') ||
+          this.chart.type === 'funnel' ||
+          this.chart.type === 'radar' ||
+          this.chart.type === 'scatter')) {
+        const chart = JSON.parse(JSON.stringify(this.chart))
+        this.colorForm.seriesColors = getColors(chart, this.colorForm.colors, reset)
+      }
     }
   }
 }
@@ -326,4 +392,19 @@ export default {
   .el-radio.is-checked{
     border: 1px solid #0a7be0;
   }
+
+.span-label {
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
+.custom-color-style {
+  height: 300px;
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid #e6e6e6;
+}
 </style>

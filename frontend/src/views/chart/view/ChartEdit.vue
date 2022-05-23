@@ -1282,6 +1282,7 @@ export default {
       this.resetDrill()
       this.initFromPanel()
       this.getChart(this.param.id)
+      this.getData(this.param.id)
     },
     bindPluginEvent() {
       bus.$on('show-dimension-edit-filter', this.showDimensionEditFilter)
