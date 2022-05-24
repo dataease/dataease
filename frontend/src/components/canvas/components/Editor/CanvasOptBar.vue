@@ -39,8 +39,8 @@ export default {
     z-index: 10;
     height: 20px;
     border-radius:2px;
-    padding-left: 5px;
-    padding-right: 2px;
+    padding-left: 3px;
+    padding-right: 0px;
     cursor:pointer!important;
     opacity: 0.8;
     /*background-color: #0a7be0;*/

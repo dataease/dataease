@@ -351,7 +351,7 @@ const list = [
       height: 200
     },
     x: 1,
-    y: 36,
+    y: 108,
     sizex: 12,
     sizey: 6,
     auxiliaryMatrix: true,

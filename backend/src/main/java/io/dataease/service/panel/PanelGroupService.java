@@ -265,6 +265,7 @@ public class PanelGroupService {
             List<String> panelIds = panelResult.stream().map(VAuthModelDTO::getId).collect(Collectors.toList());
             VAuthModelRequest viewRequest = new VAuthModelRequest();
             viewRequest.setPids(panelIds);
+//             Version 1.11 only gets the current panel
             List<VAuthModelDTO> viewResult = extVAuthModelMapper.queryAuthModelViews(viewRequest);
             if (CollectionUtils.isNotEmpty(viewResult)) {
                 result.addAll(viewResult);
@@ -277,6 +278,36 @@ public class PanelGroupService {
                     result.addAll(TreeUtils.mergeTree(viewOriginal, "public_chart"));
                 }
             }
+
+        }
+        return result;
+    }
+
+    public List<VAuthModelDTO> queryPanelMultiplexingViewTree() {
+        List<VAuthModelDTO> result = new ArrayList<>();
+        VAuthModelRequest panelRequest = new VAuthModelRequest();
+        panelRequest.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        panelRequest.setModelType("panel");
+        List<VAuthModelDTO> panelResult = extVAuthModelMapper.queryAuthModel(panelRequest);
+        // 获取仪表板下面的视图
+        if (CollectionUtils.isNotEmpty(panelResult)) {
+            result.addAll(panelResult);
+            List<String> panelIds = panelResult.stream().map(VAuthModelDTO::getId).collect(Collectors.toList());
+            VAuthModelRequest viewRequest = new VAuthModelRequest();
+            viewRequest.setPids(panelIds);
+            // Version 1.11 only gets the current panel
+//            List<VAuthModelDTO> viewResult = extVAuthModelMapper.queryAuthModelViews(viewRequest);
+//            if (CollectionUtils.isNotEmpty(viewResult)) {
+//                result.addAll(viewResult);
+//            }
+            result = TreeUtils.mergeTree(result, "panel_list");
+//            if (AuthUtils.getUser().getIsAdmin()) {
+//                // 原有视图的目录结构
+//                List<VAuthModelDTO> viewOriginal = extVAuthModelMapper.queryAuthViewsOriginal(viewRequest);
+//                if (CollectionUtils.isNotEmpty(viewOriginal) && viewOriginal.size() > 1) {
+//                    result.addAll(TreeUtils.mergeTree(viewOriginal, "public_chart"));
+//                }
+//            }
 
         }
         return result;
@@ -531,9 +562,9 @@ public class PanelGroupService {
         }
     }
 
-    public void updatePanelStatus(String panelId,PanelGroupBaseInfoRequest request){
-        Assert.notNull(request.getStatus(),"status can not be null");
-        Assert.notNull(panelId,"panelId can not be null");
+    public void updatePanelStatus(String panelId, PanelGroupBaseInfoRequest request) {
+        Assert.notNull(request.getStatus(), "status can not be null");
+        Assert.notNull(panelId, "panelId can not be null");
         PanelGroupWithBLOBs panelGroup = new PanelGroupWithBLOBs();
         panelGroup.setId(panelId);
         panelGroup.setStatus(request.getStatus());

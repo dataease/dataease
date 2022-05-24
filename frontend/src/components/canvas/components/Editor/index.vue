@@ -15,7 +15,6 @@
   >
     <!-- 网格线 -->
     <Grid v-if="showGrid" :matrix-style="matrixStyle" />
-    <!--    positionBox:{{positionBoxInfo}}-->
     <PGrid v-if="psDebug" :position-box="positionBoxInfoArray" :matrix-style="matrixStyle" />
 
     <!-- 仪表板联动清除按钮-->
@@ -99,6 +98,7 @@
         :active="item === curComponent"
         :edit-mode="'edit'"
         :h="getShapeStyleIntDeDrag(item.style,'height')"
+        :canvas-style-data="canvasStyleData"
         @input="handleInput"
       />
     </de-drag>
@@ -212,12 +212,6 @@ import { buildFilterMap } from '@/utils/conditionUtil'
 import _ from 'lodash'
 import $ from 'jquery'
 import Background from '@/views/background/index'
-import { ApplicationContext } from '@/utils/ApplicationContext'
-import {
-  BASE_MOBILE_STYLE,
-  COMMON_BACKGROUND_NONE,
-  HYPERLINKS
-} from '@/components/canvas/custom-component/component-list'
 
 let positionBox = []
 let coordinates = [] // 坐标点集合
@@ -1013,12 +1007,6 @@ export default {
     }
   },
   watch: {
-    // 'canvasStyleData.aidedDesign.matrixBase': {
-    //   handler(newVal, oldVal) {
-    //     this.changeComponentSizePoint(newVal / oldVal)
-    //   },
-    //   deep: true
-    // },
     customStyle: {
       handler(newVal) {
         // 获取当前宽高（宽高改变后重新渲染画布）

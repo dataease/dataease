@@ -68,7 +68,7 @@ export default {
       this.$store.commit('initViewRender', plugins)
     }).catch(e => {
       localStorage.setItem('plugin-views', null)
-      this.$store.commit('initViewRender', plugins)
+      this.$store.commit('initViewRender', [])
     })
     this.clear()
   },

@@ -1,6 +1,10 @@
 <template>
   <div style="width: 100%;height: 100vh;background-color: #f7f8fa">
-    <Preview v-if="show" />
+    <Preview
+      v-if="show"
+      :component-data="componentData"
+      :canvas-style-data="canvasStyleData"
+    />
   </div>
 </template>
 
@@ -12,6 +16,7 @@ import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import { queryPanelJumpInfo, queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
 import { panelInit } from '@/components/canvas/utils/utils'
 import { getOuterParamsInfo } from '@/api/panel/outerParams'
+import { mapState } from 'vuex'
 
 export default {
   name: 'LinkView',
@@ -30,6 +35,12 @@ export default {
     return {
       show: false
     }
+  },
+  computed: {
+    ...mapState([
+      'canvasStyleData',
+      'componentData'
+    ])
   },
   created() {
     this.show = false

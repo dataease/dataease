@@ -8,9 +8,60 @@ import { uuid } from 'vue-uuid'
 export default {
   state: {
     copyData: null, // 复制粘贴剪切
-    isCut: false
+    isCut: false,
+    viewBase: {
+      style: {
+        width: 300,
+        height: 200,
+        top: 0,
+        left: 0
+      },
+      x: 1,
+      y: 108,
+      sizex: 48,
+      sizey: 24
+    }
   },
   mutations: {
+    copyMultiplexingComponents(state) {
+      const _this = this
+      state.isCut = false
+      const canvasStyleData = state.canvasStyleData
+      const curCanvasScale = state.curCanvasScale
+      const componentGap = state.componentGap
+      Object.keys(state.curMultiplexingComponents).forEach(function(viewId, index) {
+        const component =
+          {
+            ...deepCopy(state.curMultiplexingComponents[viewId]),
+            ...deepCopy(state.viewBase),
+            'auxiliaryMatrix': canvasStyleData.auxiliaryMatrix
+          }
+
+        const tilePosition = index % 3
+        const divisiblePosition = parseInt(index / 3)
+        if (canvasStyleData.auxiliaryMatrix) {
+          const width = component.sizex * curCanvasScale.matrixStyleOriginWidth
+          // 取余 平铺4个 此处x 位置偏移
+          component.x = component.x + component.sizex * tilePosition
+          component.style.left = (component.x - 1) * curCanvasScale.matrixStyleOriginWidth
+          component.style.top = (component.y - 1) * curCanvasScale.matrixStyleOriginHeight
+          component.style.width = width
+          component.style.height = component.sizey * curCanvasScale.matrixStyleOriginHeight
+        } else {
+          const width = component.style.width
+          const height = component.style.height
+          component.style.top = component.style.top + divisiblePosition * (height + componentGap)
+          component.style.left = component.style.left + tilePosition * (width + componentGap)
+          component.style.width = width
+          component.style.height = height
+        }
+        state.copyData = {
+          data: component,
+          index: index
+        }
+        _this.commit('paste', true)
+      })
+    },
     copy(state) {
       if (!state.curComponent) return
       state.copyData = {

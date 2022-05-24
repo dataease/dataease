@@ -52,13 +52,13 @@
                 </el-dropdown-menu>
               </el-dropdown>
             </span>
-            <span style="float: right;margin-right: 10px" v-if="panelInfo.status==='publish'">
+            <span v-if="panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.fullscreen_preview')">
                 <el-button class="el-icon-view" size="mini" circle @click="clickFullscreen" />
               </el-tooltip>
             </span>
 
-            <span style="float: right;margin-right: 10px" v-if="panelInfo.status==='publish'">
+            <span v-if="panelInfo.status==='publish'" style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('panel.new_tab_preview')">
                 <el-button class="el-icon-data-analysis" size="mini" circle @click="newTab" />
               </el-tooltip>
@@ -90,7 +90,15 @@
         <!--        <div id="imageWrapper" ref="imageWrapper" style="width: 4096px;height: 2160px">-->
         <div id="imageWrapper" ref="imageWrapper" :style="imageWrapperStyle">
           <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
-            <Preview v-if="showMainFlag" :active-tab="activeTab" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
+            <Preview
+              v-if="showMainFlag"
+              :component-data="componentData"
+              :canvas-style-data="canvasStyleData"
+              :active-tab="activeTab"
+              :in-screen="!fullscreen"
+              :show-type="'width'"
+              :screen-shot="dataLoading"
+            />
           </fullscreen>
         </div>
       </el-row>

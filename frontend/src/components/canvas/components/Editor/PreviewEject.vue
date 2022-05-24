@@ -1,6 +1,12 @@
 <template>
   <div v-loading="dataLoading" class="bg" :style="bgStyle">
-    <Preview v-if="!dataLoading" :back-screen-shot="backScreenShot" @mainHeightChange="mainHeightChange" />
+    <Preview
+      v-if="!dataLoading"
+      :component-data="componentData"
+      :canvas-style-data="canvasStyleData"
+      :back-screen-shot="backScreenShot"
+      @mainHeightChange="mainHeightChange"
+    />
   </div>
 </template>
 <script>
@@ -10,6 +16,7 @@ import { initPanelData } from '@/api/panel/panel'
 import { queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import { getOuterParamsInfo } from '@/api/panel/outerParams'
+import { mapState } from 'vuex'
 
 export default {
   components: { Preview },
@@ -28,7 +35,11 @@ export default {
       } else {
         return { height: '100vh!important' }
       }
-    }
+    },
+    ...mapState([
+      'canvasStyleData',
+      'componentData'
+    ])
   },
   watch: {
     '$route.params.reportId': function() {

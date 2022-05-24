@@ -165,6 +165,14 @@ export function queryPanelViewTree() {
   })
 }
 
+export function queryPanelMultiplexingViewTree() {
+  return request({
+    url: '/panel/group/queryPanelMultiplexingViewTree',
+    method: 'post',
+    loading: false
+  })
+}
+
 export function initPanelComponentsData(panelId, callback) {
   // 加载仪表板组件视图数据
   queryPanelComponents(panelId).then(rep => {
