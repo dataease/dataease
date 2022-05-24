@@ -153,7 +153,7 @@
 import { post } from '@/api/dataset/dataset'
 import { getToken } from '@/utils/auth'
 import i18n from '@/lang'
-import {$alert} from "@/utils/message";
+import {$alert, $confirm} from "@/utils/message";
 import store from "@/store";
 
 const token = getToken()
@@ -366,8 +366,17 @@ export default {
           editType: this.param.editType ? this.param.editType : 0
         }
       }
+      if (this.param.editType === 0 && this.param.tableId) {
+        $confirm(i18n.t('dataset.repeat_datasource_msg'), () => {
+          this.saveExcelData(sheetFileMd5, table)
+        })
+      }else {
+        this.saveExcelData(sheetFileMd5, table)
+      }
+    },
+    saveExcelData(sheetFileMd5, table) {
       if (new Set(sheetFileMd5).size !== sheetFileMd5.length && !this.param.tableId) {
-        this.$confirm(this.$t('dataset.merge_msg'), this.$t('dataset.merge_title'), {
+        this.$confirm(this.$t('dataset.excel_replace_msg'), this.$t('dataset.merge_title'), {
           distinguishCancelAndClose: true,
           confirmButtonText: this.$t('dataset.merge'),
           cancelButtonText: this.$t('dataset.no_merge'),
