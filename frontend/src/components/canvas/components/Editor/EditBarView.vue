@@ -1,6 +1,6 @@
 <template>
   <div class="bar-main">
-    <div>
+    <div v-if="!positionCheck('multiplexing')">
       <span v-if="isEdit" :title="$t('panel.edit')">
         <i class="icon iconfont icon-edit" @click.stop="edit" />
       </span>
@@ -8,7 +8,9 @@
         <i class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
       </span>
     </div>
-
+    <div v-if="positionCheck('multiplexing')" style="margin-right: -1px;width: 18px;z-index: 5">
+      <el-checkbox size="medium" @change="multiplexingCheck" />
+    </div>
   </div>
 </template>
 
@@ -17,14 +19,24 @@ import bus from '@/utils/bus'
 import { mapState } from 'vuex'
 export default {
   props: {
+    element: {
+      type: Object,
+      default: null
+    },
     viewId: {
       type: String,
       required: true
     },
+    // Deprecated
     isEdit: {
       type: Boolean,
       required: false,
       default: true
+    },
+    showPosition: {
+      type: String,
+      required: false,
+      default: 'NotProvided'
     }
   },
   data() {
@@ -39,10 +51,19 @@ export default {
     }
   },
   computed: {
+    // gapStyle() {
+    //   return {
+    //     'right': this.curGap + 'px!important'
+    //   }
+    // },
+    // curGap() {
+    //   return (this.canvasStyleData.panel.gap === 'yes' && this.element.auxiliaryMatrix) ? this.componentGap : 0
+    // },
     ...mapState([
       'linkageSettingStatus',
       'componentData',
-      'canvasStyleData'
+      'canvasStyleData',
+      'componentGap'
     ])
   },
   mounted() {
@@ -63,7 +84,20 @@ export default {
     },
     showViewDetails() {
       this.$emit('showViewDetails')
+    },
+    positionCheck(position) {
+      return this.showPosition === position
+    },
+    multiplexingCheck(val) {
+      if (val) {
+        // push
+        this.$store.commit('addCurMultiplexingComponent', { 'component': this.element, 'componentId': this.viewId })
+      } else {
+        // remove
+        this.$store.commit('removeCurMultiplexingComponentWithId', this.viewId)
+      }
     }
+
   }
 }
 </script>
@@ -74,9 +108,9 @@ export default {
     right: 0px;
     float:right;
     z-index: 2;
-    border-radius:2px;
-    padding-left: 5px;
-    padding-right: 2px;
+    border-radius:2px!important;
+    padding-left: 3px!important;
+    padding-right: 0px!important;
     cursor:pointer!important;
     background-color: #0a7be0;
   }

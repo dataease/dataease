@@ -21,7 +21,7 @@ import event from '@/components/canvas/store/event'
 import layer from '@/components/canvas/store/layer'
 import snapshot from '@/components/canvas/store/snapshot'
 import lock from '@/components/canvas/store/lock'
-import { valueValid, formatCondition, formatLinkageCondition } from '@/utils/conditionUtil'
+import { valueValid, formatCondition } from '@/utils/conditionUtil'
 import { Condition } from '@/components/widget/bean/Condition'
 
 import {
@@ -118,6 +118,8 @@ const data = {
     batchOptStatus: false,
     // Currently selected components
     curBatchOptComponents: [],
+    // Currently selected Multiplexing components
+    curMultiplexingComponents: {},
     mixProperties: [],
     mixPropertiesInner: {},
     batchOptChartInfo: null,
@@ -559,6 +561,14 @@ const data = {
         }
       }
     },
+    removeCurMultiplexingComponentWithId(state, id) {
+      delete state.curMultiplexingComponents[id]
+    },
+    addCurMultiplexingComponent(state, { component, componentId }) {
+      if (componentId) {
+        state.curMultiplexingComponents[componentId] = component
+      }
+    },
     setBatchOptChartInfo(state) {
       let render = null
       let type = null
@@ -647,9 +657,11 @@ const data = {
       this.commit('setCurComponent', { component: null, index: null })
       this.commit('clearLinkageSettingInfo', false)
       this.commit('resetViewEditInfo')
+      this.commit('initCurMultiplexingComponents')
       state.batchOptStatus = false
       // Currently selected components
       state.curBatchOptComponents = []
+      state.curMultiplexingComponents = {}
       state.mixProperties = []
       state.mixPropertyInnder = {}
       state.batchOptChartInfo = null
@@ -664,6 +676,9 @@ const data = {
         plugin.isPlugin = true
       })
       state.allViewRender = [...TYPE_CONFIGS, ...pluginViews]
+    },
+    initCurMultiplexingComponents(state) {
+      state.curMultiplexingComponents = {}
     }
   },
   modules: {

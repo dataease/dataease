@@ -111,11 +111,10 @@
               style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;"
             >
               <el-button
-                :class="show&&showIndex===0? 'button-show':'button-closed'"
                 circle
-                class="el-icon-copy-document"
+                class="el-icon-copy-document button-closed"
                 size="mini"
-                @click="showPanel(0)"
+                @click="showMultiplexing(true)"
               />
             </div>
             <div class="button-text" style="position: relative; margin: 18px auto 16px;">
@@ -123,7 +122,7 @@
                 style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
               >
                 <!--                {{ $t('panel.view') }}-->
-                复用
+                {{ $t('panel.multiplexing') }}
               </div>
             </div>
             <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
@@ -150,7 +149,7 @@
           :close-on-press-escape="false"
           :modal-append-to-body="true"
         >
-          <view-select v-show=" show && showIndex===0" @newChart="newChart" />
+          <!--          <view-select v-show=" show && showIndex===0" @newChart="newChart" />-->
           <filter-group v-show=" show &&showIndex===1" />
           <subject-setting v-show=" show &&showIndex===2" />
           <assist-component v-show=" show &&showIndex===3" />
@@ -276,6 +275,8 @@
         v-if="previewVisible"
         :in-screen="!previewVisible"
         :show-type="canvasStyleData.selfAdaption?'full':'width'"
+        :canvas-style-data="canvasStyleData"
+        :component-data="componentData"
       />
     </fullscreen>
     <input
@@ -312,6 +313,25 @@
       <OuterParamsSet v-if="outerParamsSetVisible" @outerParamsSetVisibleChange="outerParamsSetVisibleChange" />
     </el-dialog>
 
+    <!--复用视图全屏显示框-->
+    <el-dialog
+      :visible="multiplexingShow"
+      :show-close="false"
+      class="dialog-css"
+      :fullscreen="true"
+    >
+      <multiplexing v-if="multiplexingShow" :view-data="viewData" />
+      <div slot="title" class="dialog-footer title-text">
+        <span style="font-size: 14px;">
+          {{ $t('panel.multiplexing') }}
+        </span>
+        <span style="float: right;">
+          <el-button type="primary" size="mini" @click="saveMultiplexing()">{{ $t('commons.confirm') }}</el-button>
+          <el-button size="mini" @click="showMultiplexing(false)">{{ $t('commons.cancel') }}</el-button>
+        </span>
+      </div>
+    </el-dialog>
+
   </el-row>
 </template>
 
@@ -325,7 +345,7 @@ import ViewSelect from '../ViewSelect'
 import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
-import { deepCopy, matrixBaseChange, panelInit } from '@/components/canvas/utils/utils'
+import { deepCopy, matrixBaseChange } from '@/components/canvas/utils/utils'
 import componentList, {
   BASE_MOBILE_STYLE,
   COMMON_BACKGROUND,
@@ -334,7 +354,7 @@ import componentList, {
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
-import { initPanelData, initViewCache } from '@/api/panel/panel'
+import { initPanelData, initViewCache, queryPanelMultiplexingViewTree } from '@/api/panel/panel'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
@@ -354,10 +374,12 @@ import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
 import ChartEdit from '@/views/chart/view/ChartEdit'
 import OuterParamsSet from '@/views/panel/OuterParamsSet/index'
 import ChartStyleBatchSet from '@/views/chart/view/ChartStyleBatchSet'
+import Multiplexing from '@/views/panel/ViewSelect/multiplexing'
 
 export default {
   name: 'PanelEdit',
   components: {
+    Multiplexing,
     ChartStyleBatchSet,
     OuterParamsSet,
     ComponentWait,
@@ -378,6 +400,8 @@ export default {
   },
   data() {
     return {
+      viewData: [],
+      multiplexingShow: false,
       asideToolType: 'none',
       outerParamsSetVisible: false,
       autoMoveOffSet: 15,
@@ -545,6 +569,9 @@ export default {
         return this.pcMatrixCount
       }
     },
+    multiplexingDisabled() {
+      return Object.keys(this.curMultiplexingComponents) === 0
+    },
     ...mapState([
       'curComponent',
       'curCanvasScale',
@@ -560,7 +587,8 @@ export default {
       'mobileMatrixCount',
       'mobileLayoutStyle',
       'scrollAutoMove',
-      'batchOptStatus'
+      'batchOptStatus',
+      'curMultiplexingComponents'
     ])
   },
 
@@ -616,12 +644,18 @@ export default {
         _this.restore()
       })
     })
+    this.loadMultiplexingViewTree()
   },
   beforeDestroy() {
     const elx = this.$refs.rightPanel
     elx && elx.remove()
   },
   methods: {
+    loadMultiplexingViewTree() {
+      queryPanelMultiplexingViewTree().then(res => {
+        this.viewData = res.data
+      })
+    },
     closeOuterParamsSetDialog() {
       this.outerParamsSetVisible = false
     },
@@ -1080,6 +1114,15 @@ export default {
       const canvasInfoMobile = document.getElementById('canvasInfoMobile')
       canvasInfoMobile.scrollTop = canvasInfoMobile.scrollTop + offset
       this.$store.commit('setScrollAutoMove', this.scrollAutoMove + offset)
+    },
+    showMultiplexing(type) {
+      this.multiplexingShow = type
+    },
+    saveMultiplexing() {
+      this.showMultiplexing(false)
+      this.$store.commit('copyMultiplexingComponents')
+      this.$store.commit('recordSnapshot')
+      this.$store.state.styleChangeTimes++
     }
   }
 }
@@ -1348,4 +1391,15 @@ export default {
     height: calc(100vh - 100px);
   }
 
+  .dialog-css ::v-deep .el-dialog__title {
+    font-size: 14px;
+  }
+
+  .dialog-css ::v-deep .el-dialog__header {
+    padding: 20px 20px 0;
+  }
+
+  .dialog-css ::v-deep .el-dialog__body {
+    padding: 10px 20px 20px;
+  }
 </style>

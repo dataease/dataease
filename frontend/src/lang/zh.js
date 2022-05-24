@@ -1456,6 +1456,7 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    multiplexing: '复用',
     panel_off: '仪表板已下架',
     batch_opt: '批量操作',
     edit_leave_tips: '是否放弃编辑离开当前界面？',

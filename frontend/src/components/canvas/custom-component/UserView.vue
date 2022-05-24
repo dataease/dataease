@@ -8,7 +8,14 @@
       'rect-shape'
     ]"
   >
-    <EditBarView v-if="editBarViewShowFlag" :is-edit="isEdit" :view-id="element.propValue.viewId" @showViewDetails="openChartDetailsDialog" />
+    <EditBarView
+      v-if="editBarViewShowFlag"
+      :element="element"
+      :show-position="showPosition"
+      :is-edit="isEdit"
+      :view-id="element.propValue.viewId"
+      @showViewDetails="openChartDetailsDialog"
+    />
     <div v-if="requestStatus==='error'" class="chart-error-class">
       <div class="chart-error-message-class">
         {{ message }},{{ $t('chart.chart_show_error') }}
@@ -163,6 +170,18 @@ export default {
     filters: {
       type: Array,
       default: () => []
+    },
+    canvasStyleData: {
+      type: Object,
+      required: false,
+      default: function() {
+        return {}
+      }
+    },
+    showPosition: {
+      type: String,
+      required: false,
+      default: 'NotProvided'
     }
   },
   data() {
@@ -214,7 +233,7 @@ export default {
       }
     },
     editBarViewShowFlag() {
-      return this.active && this.inTab && !this.mobileLayoutStatus
+      return (this.active && this.inTab && !this.mobileLayoutStatus) || this.showPosition === 'multiplexing'
     },
     charViewShowFlag() {
       return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.chart.type !== 'label' && this.renderComponent() === 'echarts'
@@ -298,13 +317,11 @@ export default {
       return this.element.commonBackground && this.element.commonBackground.innerPadding || 0
     },
     ...mapState([
-      'canvasStyleData',
       'nowPanelTrackInfo',
       'nowPanelJumpInfo',
       'publicLinkStatus',
       'previewCanvasScale',
       'mobileLayoutStatus',
-      'componentData',
       'panelViewDetailsInfo',
       'componentViewsData',
       'curBatchOptComponents'

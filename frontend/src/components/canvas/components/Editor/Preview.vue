@@ -29,6 +29,8 @@
           :terminal="terminal"
           :filters="filterMap[item.propValue && item.propValue.viewId]"
           :screen-shot="screenShot"
+          :canvas-style-data="canvasStyleData"
+          :show-position="showPosition"
         />
         <!--视图详情-->
         <el-dialog
@@ -114,6 +116,25 @@ export default {
       type: String,
       required: false,
       default: 'none'
+    },
+    componentData: {
+      type: Array,
+      required: false,
+      default: function() {
+        return []
+      }
+    },
+    canvasStyleData: {
+      type: Object,
+      required: false,
+      default: function() {
+        return {}
+      }
+    },
+    showPosition: {
+      type: String,
+      required: false,
+      default: 'NotProvided'
     }
   },
   data() {
@@ -224,11 +245,7 @@ export default {
       return this.componentDataShow
     },
     ...mapState([
-      'isClickComponent',
-      'curComponent',
-      'componentData',
-      'canvasStyleData',
-      'componentGap'
+      'isClickComponent'
     ]),
     filterMap() {
       const map = buildFilterMap(this.componentData)

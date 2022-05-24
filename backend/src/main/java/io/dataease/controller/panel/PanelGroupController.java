@@ -97,6 +97,13 @@ public class PanelGroupController {
         return panelGroupService.queryPanelViewTree();
     }
 
+    @ApiOperation("仪表板视图复用信息")
+    @PostMapping("/queryPanelMultiplexingViewTree")
+    @I18n
+    public List<VAuthModelDTO> queryPanelMultiplexingViewTree() {
+        return panelGroupService.queryPanelMultiplexingViewTree();
+    }
+
     @ApiOperation("仪表板组件信息")
     @GetMapping("/queryPanelComponents/{id}")
     @I18n
