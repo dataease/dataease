@@ -1,21 +1,38 @@
 <template>
   <el-row ref="mainPlayer" style="width: 100%;height: 100%">
-    <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
-      <video ref="player" class="centered-video" name="centeredVideo" :loop="pOption.loop" controls muted />
-      <div v-if="editMode==='edit'" class="stream-mask" />
+    <div v-if="element.streamMediaLinks.videoType == 'flv'">
+      <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
+        <video ref="player" class="centered-video" name="centeredVideo" :loop="pOption.loop" controls muted />
+        <div v-if="editMode==='edit'" class="stream-mask" />
+      </div>
+      <div v-else class="info-stream-class">
+        {{ $t('panel.stream_media_add_tips') }}
+      </div>
     </div>
-    <div v-else class="info-stream-class">
-      {{ $t('panel.stream_media_add_tips') }}
+    <div v-if="element.streamMediaLinks.videoType == 'hls'">
+      <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
+        <video
+          ref="videoPlayer"
+          class="video-js vjs-default-skin vjs-big-play-centered"
+          :loop="pOption.loop"
+          controls
+          muted
+        />
+      </div>
     </div>
   </el-row>
 </template>
 <script>
+import videojs from 'video.js'
 
 import flvjs from 'flv.js'
 import '@/custom-theme.css'
 import bus from '@/utils/bus'
 
 export default {
+  components: {
+
+  },
   props: {
     propValue: {
       type: String,
@@ -43,7 +60,8 @@ export default {
     return {
       pOption: this.element.streamMediaLinks[this.element.streamMediaLinks.videoType],
       flvPlayer: null,
-      videoShow: true
+      videoShow: true,
+      Hlvplayer: null
     }
   },
 
@@ -66,19 +84,24 @@ export default {
       deep: true
     }
   },
-  created() {
-  },
+  created() {},
   mounted() {
-    this.initOption()
-    bus.$on('streamMediaLinksChange-' + this.element.id, () => {
-      this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType],
-      this.flvPlayer = null,
-      this.videoShow = false
-      this.$nextTick(() => {
-        this.videoShow = true
-        this.initOption()
+    console.log('DeStreamMedia', this.element.streamMediaLinks.videoType, this.element.streamMediaLinks)
+    if (this.element.streamMediaLinks.videoType === 'flv') {
+      this.initOption()
+      bus.$on('streamMediaLinksChange-' + this.element.id, () => {
+        this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType],
+        this.flvPlayer = null,
+        this.videoShow = false
+        this.$nextTick(() => {
+          this.videoShow = true
+          this.initOption()
+        })
       })
-    })
+    }
+    if (this.element.streamMediaLinks.videoType === 'hls') {
+      this.initOptionHlv()
+    }
   },
   methods: {
     initOption() {
@@ -94,6 +117,34 @@ export default {
             console.log(error)
           }
         }
+      }
+    },
+    initOptionHlv() {
+      var options = {
+        autoplay: 'muted', // 自动播放
+        loop: true, // 视频一结束就重新开始
+        controls: true,
+        muted: true, // 默认情况下将使所有音频静音
+        fullscreen: {
+          options: {
+            navigationUI: 'hide'
+          }
+        },
+        sources: [{
+          src: '', // 实测可以
+          type: 'application/x-mpegURL'
+        }]
+      }
+      options.sources[0].src = this.pOption.url
+      var obj = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+      options = Object.assign(options, obj)
+      this.Hlvplayer = videojs(this.$refs.videoPlayer, options, function onPlayerReady() {
+
+      })
+    },
+    beforeDestroy() {
+      if (this.Hlvplayer) {
+        this.Hlvplayer.dispose()
       }
     }
   }
@@ -147,4 +198,3 @@ export default {
     justify-content: center;
   }
 </style>
-

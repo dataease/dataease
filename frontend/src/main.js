@@ -89,6 +89,7 @@ Vue.use(vueToPdf)
 
 import VueVideoPlayer from 'vue-video-player'
 import 'video.js/dist/video-js.css'
+import 'videojs-flash'
 Vue.use(VueVideoPlayer)
 
 // 控制标签宽高成比例的指令

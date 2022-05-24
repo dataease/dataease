@@ -8,10 +8,12 @@
     <el-row>
       <el-form ref="form" size="mini" label-width="70px">
         <el-form-item :label="$t('panel.video_type')">
-          <el-radio-group v-model="streamMediaInfoTemp.videoType">
+          <el-radio-group v-model="streamMediaInfoTemp.videoType" style="line-height: 28px;margin-top: 5px;">
             <el-radio :label="'flv'">FLV</el-radio>
-            <!--            <el-radio :label="'hls'">HLS 直播</el-radio>-->
-            <!--                    <el-radio :label="'rtmp'">{{$t('panel.streaming_media')}}</el-radio>-->
+            <el-radio :label="'hls'">HLS 直播</el-radio>
+            <el-radio :label="'rtmp'">RTMP 直播</el-radio>
+            <el-radio :label="'webrtc'">WEBRTC 直播</el-radio>
+            <!-- <el-radio :label="'rtmp'">{{ $t('panel.streaming_media') }}</el-radio> -->
           </el-radio-group>
           <span style="color: #909399; font-size: 8px;margin-left: 3px">
             Tips:{{ $t('panel.live_tips') }}
@@ -37,6 +39,27 @@
             <el-input v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].url" />
           </el-form-item>
         </el-row>
+        <el-row v-if="streamMediaInfoTemp.videoType==='hls'">
+          <el-form-item :label="$t('panel.is_live')">
+            <el-radio-group v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].isLive">
+              <el-radio :label="true">{{ $t('panel.yes') }}</el-radio>
+              <el-radio :label="false">{{ $t('panel.no') }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item v-if="!streamMediaInfoTemp[streamMediaInfoTemp.videoType].isLive" :label="$t('panel.auto_play')">
+            <el-switch v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].autoplay" size="mini" />
+          </el-form-item>
+          <el-form-item v-if="!streamMediaInfoTemp[streamMediaInfoTemp.videoType].isLive" :label="$t('panel.play_frequency')">
+            <el-radio-group v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].loop">
+              <el-radio :label="false">{{ $t('panel.play_once') }}</el-radio>
+              <el-radio :label="true">{{ $t('panel.play_circle') }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item :label="$t('panel.video_links')">
+            <el-input v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].url" />
+          </el-form-item>
+        </el-row>
+
         <el-form-item>
           <el-button type="primary" @click="onSubmit">{{ $t('panel.confirm') }}</el-button>
           <el-button @click="onClose">{{ $t('panel.cancel') }}</el-button>
@@ -92,6 +115,7 @@ export default {
   methods: {
     init() {
       this.streamMediaInfoTemp = deepCopy(this.linkInfo)
+      console.log('this.linkInfo', this.linkInfo)
     },
     onSubmit() {
       this.streamMediaInfoTemp[this.streamMediaInfoTemp.videoType].url = checkAddHttp(this.streamMediaInfoTemp[this.streamMediaInfoTemp.videoType].url)
