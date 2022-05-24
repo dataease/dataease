@@ -1,21 +1,28 @@
 package io.dataease.service.sys.log;
 
 
+import cn.hutool.core.date.DateUtil;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.CustomCellWriteUtil;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.SysLogGridDTO;
 import io.dataease.dto.log.FolderItem;
+import io.dataease.dto.log.LogExcel;
 import io.dataease.ext.ExtSysLogMapper;
 import io.dataease.ext.query.GridExample;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysLogWithBLOBs;
 import io.dataease.plugins.common.base.mapper.SysLogMapper;
+import mondrian.olap.fun.vba.Excel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,8 +30,13 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -142,7 +154,32 @@ public class LogService {
     }
 
     public void exportExcel(HttpServletResponse response) throws Exception{
+        BaseGridRequest request = new BaseGridRequest();
+        GridExample gridExample = request.convertExample();
+        List<SysLogWithBLOBs> lists = extSysLogMapper.query(gridExample);
+        List<LogExcel> excels = lists.stream().map(item -> {
+            LogExcel logExcel = new LogExcel();
+            String operateTypeName = SysLogConstants.operateTypeName(item.getOperateType());
+            String sourceTypeName = SysLogConstants.sourceTypeName(item.getSourceType());
+            logExcel.setOptype(Translator.get(operateTypeName) + " " + Translator.get(sourceTypeName));
+            logExcel.setDetail(logManager.detailInfo(item));
+            logExcel.setUser(item.getNickName());
+            logExcel.setTime(DateUtil.formatDateTime(new Date(item.getTime())));
+            return logExcel;
+        }).collect(Collectors.toList());
+        // 导出时候会出现中⽂⽆法识别问题，需要转码
+        String name = "log.xlsx";
+        String fileName = new String(name.getBytes("gb2312"),"ISO8859-1");
+        response.setContentType("application/vnd.ms-excel;chartset=utf-8");
+        response.setHeader("Content-Disposition","attachment;filename=" + fileName);
+        //调⽤⼯具类
+        ExcelWriter writer = EasyExcel.write(response.getOutputStream()).build();
+        WriteSheet sheet = EasyExcel.writerSheet(0,"sheet").head(LogExcel.class).registerWriteHandler(new CustomCellWriteUtil()).build();
+        writer.write(excels,sheet);
+        writer.finish(); // 使⽤完毕之后要关闭
 
     }
+
+
 
 }

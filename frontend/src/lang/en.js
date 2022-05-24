@@ -1328,7 +1328,7 @@ export default {
     sql_ds_union_error: 'Direct connect SQL dataset can not be union',
     api_data: 'API dataset'
   },
-  driver:{
+  driver: {
     driver: 'Driver',
     please_choose_driver: 'Please choose driver',
     mgm: 'Driver',
@@ -2039,6 +2039,15 @@ export default {
     port: 'Port',
     user: 'User',
     passwd: 'Password'
+  },
+  log: {
+    title: 'Operate Log',
+    optype: 'Operate Type',
+    detail: 'Detail',
+    user: 'User',
+    time: 'Time',
+    export: 'Export',
+    search_by_key: 'Search by key'
   },
   plugin_style: {
     border: 'Border'

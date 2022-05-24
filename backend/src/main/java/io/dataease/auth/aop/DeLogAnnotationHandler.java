@@ -4,6 +4,7 @@ package io.dataease.auth.aop;
 import io.dataease.auth.annotation.DeLog;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.AopUtils;
+import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.controller.ResultHolder;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.log.FolderItem;
@@ -84,7 +85,7 @@ public class DeLogAnnotationHandler {
                     items.add(folderItem);
                     sysLogDTO.setPositions(items);
                 }else {
-                    List<FolderItem> parentsAndSelf = parents(bottomPositionValue.toString(), sourcetype);
+                    List<FolderItem> parentsAndSelf = logManager.parentsAndSelf(bottomPositionValue.toString(), sourcetype);
                     sysLogDTO.setPositions(parentsAndSelf);
                 }
 
@@ -98,7 +99,7 @@ public class DeLogAnnotationHandler {
             SysLogConstants.SOURCE_TYPE targetType = deLog.targetType();
             Object bottomTargetValue = AopUtils.getParamValue(targetArg, targetKey, 0);
             if (ObjectUtils.isNotEmpty(bottomTargetValue)) {
-                List<FolderItem> parentsAndSelf = parents(bottomTargetValue.toString(), targetType);
+                List<FolderItem> parentsAndSelf = logManager.parentsAndSelf(bottomTargetValue.toString(), targetType);
                 sysLogDTO.setRemarks(parentsAndSelf);
             }
         }
@@ -136,9 +137,7 @@ public class DeLogAnnotationHandler {
         return deLog;
     }
 
-    public List<FolderItem> parents(String value,  SysLogConstants.SOURCE_TYPE type) {
-        return logManager.parentsAndSelf(value, type);
-    }
+
 
 
 }

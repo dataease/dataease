@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.utils.AuthUtils;
+import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
@@ -12,6 +13,7 @@ import io.dataease.controller.request.panel.PanelGroupBaseInfoRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.controller.request.panel.PanelViewDetailsRequest;
 import io.dataease.dto.PanelGroupExtendDataDTO;
+import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.dataset.DataSetTableDTO;
@@ -28,6 +30,7 @@ import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.staticResource.StaticResourceService;
 import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
@@ -54,6 +57,8 @@ import java.util.stream.Collectors;
 public class PanelGroupService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+
+    private final SysLogConstants.SOURCE_TYPE sourceType = SysLogConstants.SOURCE_TYPE.PANEL;
 
     private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
     @Resource
@@ -128,6 +133,7 @@ public class PanelGroupService {
             // 清理权限缓存
             clearPermissionCache();
             sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, sourceType, panelId, request.getPid(), null, null);
         } else if ("toDefaultPanel".equals(request.getOptType())) { // 转存为默认仪表板
             panelId = UUID.randomUUID().toString();
             PanelGroupWithBLOBs newDefaultPanel = panelGroupMapper.selectByPrimaryKey(request.getId());
@@ -144,11 +150,19 @@ public class PanelGroupService {
             // 清理权限缓存
             clearPermissionCache();
             sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, sourceType, panelId, PanelConstants.PANEL_GATHER_DEFAULT_PANEL, null, null);
         } else if ("copy".equals(request.getOptType())) {
             panelId = this.panelGroupCopy(request, null, true);
             // 清理权限缓存
             clearPermissionCache();
             sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
+            if (StringUtils.isBlank(request.getPid())) {
+                PanelGroupWithBLOBs panel = panelGroupMapper.selectByPrimaryKey(request.getId());
+                if (ObjectUtils.isNotEmpty(panel)) {
+                    request.setPid(panel.getPid());
+                }
+            }
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, sourceType, panelId, request.getPid(), null, null);
         } else if ("move".equals(request.getOptType())) {
             PanelGroupWithBLOBs panelInfo = panelGroupMapper.selectByPrimaryKey(request.getId());
             if (panelInfo.getPid().equalsIgnoreCase(request.getPid())) {
@@ -163,6 +177,7 @@ public class PanelGroupService {
             record.setId(request.getId());
             record.setPid(request.getPid());
             panelGroupMapper.updateByPrimaryKeySelective(record);
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, sourceType, request.getId(), panelInfo.getPid(), request.getPid(), sourceType);
 
         } else {
             // 更新
@@ -170,6 +185,14 @@ public class PanelGroupService {
                 checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_UPDATE, request.getId(), request.getNodeType());
             }
             panelGroupMapper.updateByPrimaryKeySelective(request);
+            if (StringUtils.isBlank(request.getPid())) {
+                PanelGroupWithBLOBs panel = panelGroupMapper.selectByPrimaryKey(request.getId());
+                if (ObjectUtils.isNotEmpty(panel)) {
+                    request.setPid(panel.getPid());
+                }
+            }
+
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, sourceType, request.getId(), request.getPid(), null, sourceType);
         }
 
         //带有权限的返回
@@ -202,7 +225,8 @@ public class PanelGroupService {
     public void deleteCircle(String id) {
         Assert.notNull(id, "id cannot be null");
         sysAuthService.checkTreeNoManageCount("panel", id);
-
+        PanelGroupWithBLOBs panel = panelGroupMapper.selectByPrimaryKey(id);
+        SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.DELETE, sourceType, panel.getId(), panel.getPid(), null, null);
         //清理view 和 view cache
         extPanelGroupMapper.deleteCircleView(id);
         extPanelGroupMapper.deleteCircleViewCache(id);
@@ -218,6 +242,10 @@ public class PanelGroupService {
         extPanelLinkJumpMapper.deleteJumpTargetViewInfoWithPanel(id);
         extPanelLinkJumpMapper.deleteJumpInfoWithPanel(id);
         extPanelLinkJumpMapper.deleteJumpWithPanel(id);
+
+        DeLogUtils.save(sysLogDTO);
+
+
     }
 
 

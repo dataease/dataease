@@ -3,14 +3,14 @@
     <el-col>
       <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini">
         <div>
-          <el-form-item :label="$t('chart.color_case')" class="form-item">
+          <el-form-item v-show="showProperty('value')" :label="$t('chart.color_case')" class="form-item">
             <el-popover
               placement="bottom"
               width="400"
               trigger="click"
             >
               <div style="padding: 6px 10px;">
-                <div v-show="showProperty('value')">
+                <div>
                   <span class="color-label">{{ $t('chart.system_case') }}</span>
                   <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColorOption('value')">
                     <el-option v-for="option in colorCases" :key="option.value" :label="option.name" :value="option.value" style="display: flex;align-items: center;">
