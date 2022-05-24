@@ -1328,7 +1328,7 @@ export default {
     sql_ds_union_error: '直連模式下SQL數據集，不支持關聯',
     api_data: 'API 數據集'
   },
-  driver:{
+  driver: {
     driver: '驅動',
     please_choose_driver: '青選擇驅動',
     mgm: '驅動管理',
@@ -2051,6 +2051,15 @@ export default {
     port: '端口',
     user: '用戶名',
     passwd: '密碼'
+  },
+  log: {
+    title: '操作日誌',
+    optype: '操作類型',
+    detail: '操作詳情',
+    user: '操作用戶',
+    time: '操作時間',
+    export: '導出',
+    search_by_key: '搜索詳情'
   },
   plugin_style: {
     border: '邊框'

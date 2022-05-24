@@ -1,10 +1,12 @@
 package io.dataease.controller.dataset;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.annotation.DePermissions;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
+import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.response.DataSetDetail;
 import io.dataease.dto.dataset.DataSetTableDTO;
@@ -65,6 +67,13 @@ public class DataSetTableController {
     }, logical = Logical.AND)
     @ApiOperation("修改")
     @PostMapping("alter")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+        sourcetype = SysLogConstants.SOURCE_TYPE.DATASET,
+        value = "id",
+        positionIndex = 0,
+        positionKey = "sceneId"
+    )
     public void alter(@RequestBody DataSetTableRequest request) throws Exception {
         dataSetTableService.alter(request);
     }

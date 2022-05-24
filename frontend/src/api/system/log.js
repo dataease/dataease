@@ -21,6 +21,7 @@ export function exportExcel() {
   return request({
     url: '/api/log/export',
     method: 'post',
-    loading: true
+    loading: true,
+    responseType: 'blob'
   })
 }

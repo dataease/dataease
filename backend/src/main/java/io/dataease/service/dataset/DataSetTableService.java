@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.dto.SysLogDTO;
 import io.dataease.ext.ExtDataSetGroupMapper;
 import io.dataease.ext.ExtDataSetTableMapper;
 import io.dataease.ext.UtilMapper;
@@ -178,6 +179,7 @@ public class DataSetTableService {
                     sysAuthService.copyAuth(sheetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
                     saveExcelTableField(sheetTable.getId(), excelSheetDataList.get(0).getFields(), true);
                     datasetIdList.add(sheetTable.getId());
+                    DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
                 }
                 datasetIdList.forEach(datasetId -> {
                     commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetId, "all_scope", "初始导入",
@@ -208,11 +210,13 @@ public class DataSetTableService {
                     sysAuthService.copyAuth(sheetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
                     saveExcelTableField(sheetTable.getId(), sheet.getFields(), true);
                     datasetIdList.add(sheetTable.getId());
+                    DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
                 }
                 datasetIdList.forEach(datasetId -> {
                     commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetId, "all_scope", "初始导入",
                             null, datasetIdList));
                 });
+
 
             }
             return;
@@ -253,6 +257,7 @@ public class DataSetTableService {
             commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetTable.getId(), "add_scope", "追加",
                     null, Arrays.asList(datasetTable.getId())));
         }
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
     }
 
     @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
@@ -268,6 +273,8 @@ public class DataSetTableService {
             datasetTable.setCreateBy(AuthUtils.getUser().getUsername());
             datasetTable.setCreateTime(System.currentTimeMillis());
             int insert = datasetTableMapper.insert(datasetTable);
+
+
             // 清理权限缓存
             CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
             sysAuthService.copyAuth(datasetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
@@ -276,6 +283,7 @@ public class DataSetTableService {
             if (insert == 1) {
                 saveTableField(datasetTable);
                 extractData(datasetTable);
+                DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
             }
         } else {
             int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
@@ -287,6 +295,7 @@ public class DataSetTableService {
                             || StringUtils.equalsIgnoreCase(datasetTable.getType(), "union")) {
                         saveTableField(datasetTable);
                     }
+                    DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
                 }
             }
         }
@@ -300,6 +309,7 @@ public class DataSetTableService {
 
     public void delete(String id) throws Exception {
         DatasetTable table = datasetTableMapper.selectByPrimaryKey(id);
+        SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DATASET, table.getId(), table.getSceneId(), null, null);
         datasetTableMapper.deleteByPrimaryKey(id);
         dataSetTableFieldsService.deleteByTableId(id);
         // 删除同步任务
@@ -311,6 +321,7 @@ public class DataSetTableService {
             if (table.getMode() == 1) {
                 deleteDorisTable(id, table);
             }
+            DeLogUtils.save(sysLogDTO);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1771,6 +1782,8 @@ public class DataSetTableService {
         } else {
             datasetTableIncrementalConfigMapper.updateByPrimaryKey(datasetTableIncrementalConfig);
         }
+        DatasetTable datasetTable = get(datasetTableIncrementalConfig.getTableId());
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
         checkColumes(datasetTableIncrementalConfig);
     }
 
