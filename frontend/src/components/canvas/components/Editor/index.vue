@@ -1153,11 +1153,12 @@ export default {
       result['rotate'] = style['rotate']
       result['borderWidth'] = style['borderWidth']
       result['opacity'] = style['opacity']
-
+      console.log('这里的style改变了什么======', style, result)
       return result
     },
 
     getComponentStyleDefault(style) {
+      console.log('style触发器1111==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
       return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       // return style
     },
@@ -1186,7 +1187,8 @@ export default {
 
     format(value, scale) {
       // 自适应画布区域 返回原值
-      return value * scale / 100
+      // return value * scale / 100  // 原来的缩放
+      return value
     },
     changeScale() {
       if (this.canvasStyleData.matrixCount) {

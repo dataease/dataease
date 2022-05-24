@@ -899,7 +899,11 @@ export default {
       this.show = false
     },
     previewFullScreen() {
-      this.previewVisible = true
+      console.log('触发全屏功能=====')
+      // this.previewVisible = true
+      this.$nextTick(() => {
+        this.previewVisible = true
+      })
     },
     changeAidedDesign() {
       this.aidedButtonActive = !this.aidedButtonActive
