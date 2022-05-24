@@ -611,9 +611,9 @@ const data = {
           }
         })
 
-        // if (type && type === 'mix') {
-        //   type = type + '-' + allTypes
-        // }
+        if (type && type === 'mix') {
+          type = type + '-' + allTypes
+        }
         // Assembly history settings 'customAttr' & 'customStyle'
         state.batchOptChartInfo = {
           'mode': 'batchOpt',
