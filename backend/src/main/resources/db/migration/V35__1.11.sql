@@ -47,7 +47,7 @@ CREATE TABLE `sys_log` (
 
 SET FOREIGN_KEY_CHECKS = 1;
 
-INSERT INTO `sys_menu` VALUES (618, 1, 1, 1, '日志管理', 'system-log', 'system/log/index', 15, 'peoples', 'log', b'0', b'0', b'0', 'log:read', NULL, NULL, NULL, 1620281952752);
+INSERT INTO `sys_menu` VALUES (618, 1, 1, 1, '日志管理', 'system-log', 'system/log/index', 15, 'log', 'log', b'0', b'0', b'0', 'log:read', NULL, NULL, NULL, 1620281952752);
 INSERT INTO `sys_menu` VALUES (619, 618, 0, 2, '导出日志', NULL, NULL, 1, NULL, NULL, b'0', b'0', b'0', 'log:export', NULL, NULL, NULL, NULL);
 
 
