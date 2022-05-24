@@ -56,3 +56,9 @@ ALTER TABLE `chart_view` ADD COLUMN `view_fields` LONGTEXT COMMENT '视图字段
 UPDATE `chart_view` SET `view_fields` = '[]';
 ALTER TABLE `chart_view_cache` ADD COLUMN `view_fields` LONGTEXT COMMENT '视图字段集合';
 UPDATE `chart_view_cache` SET `view_fields` = '[]';
+
+
+INSERT INTO `my_plugin` (`name`, `store`, `free`, `cost`, `category`, `descript`, `version`, `creator`, `load_mybatis`,
+                         `install_time`, `module_name`, `ds_type`)
+VALUES ('Presto 数据源插件', 'default', '0', '0', 'datasource', 'Presto 插件', '1.0-SNAPSHOT', 'DATAEASE', '0',
+        '1650765903630', 'presto-backend', 'presto');
