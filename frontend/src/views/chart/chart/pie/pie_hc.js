@@ -76,6 +76,7 @@ export const BASE_PIE = {
       fontWeight: 'normal'
     }
   },
+  legend: {},
 
   plotOptions: {
     pie: {
@@ -84,7 +85,8 @@ export const BASE_PIE = {
       depth: 35,
       dataLabels: {
         enabled: true
-      }
+      },
+      showInLegend: false
     }
   },
 
@@ -101,22 +103,48 @@ export const BASE_PIE = {
 
 let terminalType = 'pc'
 export function basePieOption(chart_option, chart, terminal = 'pc') {
-  console.log('饼3', chart_option, chart, terminal)
+  console.log('apple......')
   terminalType = terminal
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
-    /* if (customAttr.color) {
-      chart_option.color = customAttr.color.colors
-    }*/
+    if (customAttr.color) {
+      chart_option.colors = customAttr.color.colors
+    }
     // tooltip
-    /* if (customAttr.tooltip) {
+    if (customAttr.tooltip) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
-      chart_option.tooltip = tooltip
-    }*/
+
+      chart_option.tooltip.enabled = tooltip.show
+      chart_option.tooltip.style = { fontSize: tooltip.textStyle.fontSize, color: tooltip.textStyle.color }
+      let formatter = tooltip.formatter
+      formatter = formatter.replace('{a}', '{series.name}')
+      formatter = formatter.replace('{b}', '{point.name}')
+      formatter = formatter.replace('{c}', '{point.y}')
+      formatter = formatter.replace('{d', '{point.percentage')
+      chart_option.tooltip.formatter = formatter
+    }
+
+    // label
+    if (customAttr.label) {
+      const dataLabels = {}
+      dataLabels.enabled = customAttr.label.show
+      dataLabels.color = customAttr.label.color
+      dataLabels.style = { color: customAttr.label.color, fontSize: customAttr.label.fontSize }
+      const reg = new RegExp('\n', 'g')
+      let formatter = customAttr.label.formatter.replace(reg, '<br/>')
+      formatter = formatter.replace('{a}', '{series.name}')
+      formatter = formatter.replace('{b}', '{point.name}')
+      formatter = formatter.replace('{c}', '{point.y}')
+      formatter = formatter.replace('{d', '{point.percentage')
+      dataLabels.format = formatter
+
+      chart_option.plotOptions.pie.dataLabels = dataLabels
+    }
   }
+
   // 处理data
   if (chart.data) {
     chart_option.title.text = chart.title
@@ -124,26 +152,15 @@ export function basePieOption(chart_option, chart, terminal = 'pc') {
       chart_option.series[0].name = chart.data.series[0].name
       // size
       /* if (customAttr.size) {
-        chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
-      }*/
-      // label
-      /* if (customAttr.label) {
-        chart_option.series[0].label = customAttr.label
-        chart_option.series[0].labelLine = customAttr.label.labelLine
-      }*/
+          chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
+        }*/
+
       const valueArr = chart.data.series[0].data
-      console.log('valueArr: ', valueArr)
       for (let i = 0; i < valueArr.length; i++) {
         const y = valueArr[i]
-        console.log('value arr: ', y)
         y.name = chart.data.x[i]
         y.y = y.value
-        // color
-        /* y.itemStyle = {
-          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
-          borderRadius: 0
-        }
-        y.type = 'pie'*/
+
         chart_option.series[0].data.push(y)
       }
     }
@@ -156,56 +173,31 @@ export function componentStyle(chart_option, chart) {
   const padding = '8px'
   if (chart.customStyle) {
     const customStyle = JSON.parse(chart.customStyle)
+
     if (customStyle.text) {
-      chart_option.title.show = customStyle.text.show
-      // 水平方向
-      if (customStyle.text.hPosition === 'left') {
-        chart_option.title.left = padding
-      } else if (customStyle.text.hPosition === 'right') {
-        chart_option.title.right = padding
-      } else {
-        chart_option.title.left = customStyle.text.hPosition
-      }
-      // 垂直方向
-      if (customStyle.text.vPosition === 'top') {
-        chart_option.title.top = padding
-      } else if (customStyle.text.vPosition === 'bottom') {
-        chart_option.title.bottom = padding
-      } else {
-        chart_option.title.top = customStyle.text.vPosition
-      }
-      const style = chart_option.title.textStyle ? chart_option.title.textStyle : {}
+      chart_option.title.text = customStyle.text.show ? chart.title : ''
+      const style = chart_option.title.style ? chart_option.title.style : {}
       style.fontSize = customStyle.text.fontSize
       style.color = customStyle.text.color
       customStyle.text.isItalic ? style.fontStyle = 'italic' : style.fontStyle = 'normal'
       customStyle.text.isBolder ? style.fontWeight = 'bold' : style.fontWeight = 'normal'
       chart_option.title.textStyle = style
+      chart_option.title.align = customStyle.text.hPosition
+      chart_option.title.verticalAlign = customStyle.text.vPosition
     }
+
     if (customStyle.legend && chart_option.legend) {
-      chart_option.legend.show = customStyle.legend.show
-      // 水平方向
-      if (customStyle.legend.hPosition === 'left') {
-        chart_option.legend.left = padding
-      } else if (customStyle.legend.hPosition === 'right') {
-        chart_option.legend.right = padding
-      } else {
-        chart_option.legend.left = customStyle.legend.hPosition
-      }
-      // 垂直方向
-      if (customStyle.legend.vPosition === 'top') {
-        chart_option.legend.top = padding
-      } else if (customStyle.legend.vPosition === 'bottom') {
-        chart_option.legend.bottom = padding
-      } else {
-        chart_option.legend.top = customStyle.legend.vPosition
-      }
-      chart_option.legend.orient = customStyle.legend.orient
-      chart_option.legend.icon = customStyle.legend.icon
-      chart_option.legend.textStyle = customStyle.legend.textStyle
+      chart_option.plotOptions.pie.showInLegend = customStyle.legend.show
+      // chart_option.legend.padding = padding
+      chart_option.legend.layout = customStyle.legend.orient
+      chart_option.legend.verticalAlign = customStyle.legend.vPosition
+      chart_option.legend.align = customStyle.legend.hPosition
+
+      chart_option.legend.itemStyle = customStyle.legend.textStyle
     }
 
     if (customStyle.background) {
-      chart_option.backgroundColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
+      chart_option.chart.backgroundColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
     }
   }
 }
@@ -228,6 +220,7 @@ export function hexColorToRGBA(hex, alpha) {
     return 'rgb(0,0,0)'
   }
 }
+
 export const DEFAULT_YAXIS_EXT_STYLE = {
   show: true,
   position: 'right',
@@ -259,6 +252,7 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
     splitCount: null
   }
 }
+
 export function uuid() {
   return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
 }

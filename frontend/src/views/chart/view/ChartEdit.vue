@@ -727,6 +727,13 @@
                       :chart="chart"
                       @onLabelChange="onLabelChange"
                     />
+                    <label-selector
+                      v-else-if="view.render && view.render === 'highcharts'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onLabelChange="onLabelChange"
+                    />
                   </el-collapse-item>
                   <el-collapse-item
                     v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
@@ -742,6 +749,13 @@
                     />
                     <tooltip-selector-ant-v
                       v-else-if="view.render && view.render === 'antv'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onTooltipChange="onTooltipChange"
+                    />
+                    <tooltip-selector
+                      v-else-if="view.render && view.render === 'highcharts'"
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -860,6 +874,13 @@
                       :chart="chart"
                       @onTextChange="onTextChange"
                     />
+                    <title-selector
+                      v-else-if="view.render && view.render === 'highcharts'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onTextChange="onTextChange"
+                    />
                   </el-collapse-item>
                   <el-collapse-item
                     v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall' && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
@@ -875,6 +896,13 @@
                     />
                     <legend-selector-ant-v
                       v-else-if="view.render && view.render === 'antv'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onLegendChange="onLegendChange"
+                    />
+                    <legend-selector
+                      v-else-if="view.render && view.render === 'highcharts'"
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -1364,7 +1392,7 @@ export default {
       drillFilters: [],
       renderOptions: [
         { name: 'AntV', value: 'antv' },
-        { name: 'ECharts', value: 'echarts' },
+        { name: 'ECharts', value: 'echarts' }
         // { name: 'HighCharts', value: 'highcharts' }
       ],
       drill: false,

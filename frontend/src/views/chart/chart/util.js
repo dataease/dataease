@@ -320,12 +320,12 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_map',
     icon: 'map'
   },
-  /* 下面是highcharts图表类型 */
-  // {
-  //   render: 'highcharts',
-  //   category: 'chart.chart_type_distribute',
-  //   value: '3Dpie',
-  //   title: 'chart.chart_3Dpie',
-  //   icon: '3Dpie'
-  // },
+  // highcharts
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_distribute',
+    value: '3dpie',
+    title: 'chart.chart_pie',
+    icon: '3dpie'
+  }
 ]

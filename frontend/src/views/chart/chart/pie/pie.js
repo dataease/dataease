@@ -2,6 +2,7 @@ import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
 
 export function basePieOption(chart_option, chart) {
+  console.log('chart data pie: ', chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -38,6 +39,8 @@ export function basePieOption(chart_option, chart) {
         //   value: valueArr[i]
         // }
         const y = valueArr[i]
+
+        console.log('valueArr: ', y)
         y.name = chart.data.x[i]
         // color
         y.itemStyle = {
@@ -45,8 +48,10 @@ export function basePieOption(chart_option, chart) {
           borderRadius: 0
         }
         y.type = 'pie'
+        console.log('y: ', y)
         chart_option.series[0].data.push(y)
       }
+      console.log('chart_option.series[0]: ', chart_option.series[0])
     }
   }
   // console.log(chart_option);
