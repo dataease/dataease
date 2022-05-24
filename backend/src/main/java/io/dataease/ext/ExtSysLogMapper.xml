@@ -37,13 +37,28 @@
 
         <if test="type == 2">
             id, name
-            from dataset_group
-            <where>
-                id in
-                <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
-                    #{id}
-                </foreach>
-            </where>
+            from (
+                select id, name from dataset_group
+                <where>
+                    id in
+                    <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </where>
+
+                union all
+
+                select id, name from dataset_table
+                <where>
+                    id in
+                    <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </where>
+
+            ) dataset
+
+
         </if>
 
         <if test="type == 3">
@@ -52,6 +67,10 @@
             <where>
                 id in
                 <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+                ORDER BY FIELD(id,
+                <foreach collection="ids" item="id" index="index" open="" separator="," close=")">
                     #{id}
                 </foreach>
             </where>

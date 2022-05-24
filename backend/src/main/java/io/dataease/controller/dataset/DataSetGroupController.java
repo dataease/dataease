@@ -1,10 +1,13 @@
 package io.dataease.controller.dataset;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.annotation.DePermissions;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
+import io.dataease.commons.constants.SysLogConstants;
+import io.dataease.controller.dataset.request.DeleteGroupRequest;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.plugins.common.base.domain.DatasetGroup;
@@ -57,9 +60,15 @@ public class DataSetGroupController {
 
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("删除")
-    @PostMapping("/delete/{id}")
-    public void tree(@PathVariable String id) throws Exception {
-        dataSetGroupService.delete(id);
+    @PostMapping("/delete")
+    @DeLog(
+        operatetype = SysLogConstants.OPERATE_TYPE.DELETE,
+        sourcetype = SysLogConstants.SOURCE_TYPE.DATASET,
+        positionIndex = 0,positionKey = "pid",
+        value = "id"
+    )
+    public void tree(@RequestBody DeleteGroupRequest request) throws Exception {
+        dataSetGroupService.delete(request.getId());
     }
 
     @ApiIgnore

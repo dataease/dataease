@@ -4,7 +4,6 @@
       v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
       :data="data"
       :columns="columns"
-      local-key="logGrid"
       :search-config="searchConfig"
       :pagination-config="paginationConfig"
       @select="select"
@@ -15,13 +14,13 @@
         <el-button v-permission="['log:export']" icon="el-icon-download" size="mini" @click="exportData">{{ $t('log.export') }}</el-button>
       </template>
 
-      <el-table-column prop="opType" :label="$t('log.optype')" width="120">
+      <el-table-column :show-overflow-tooltip="true" prop="opType" :label="$t('log.optype')" width="140">
         <template v-slot:default="{row}">
           <span>{{ row.opType + row.sourceType }}</span>
         </template>
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" prop="detail" :label="$t('log.detail')" />
-      <el-table-column prop="user" :label="$t('log.user')" width="80" />
+      <el-table-column :show-overflow-tooltip="true" prop="user" :label="$t('log.user')" width="100" />
       <el-table-column :show-overflow-tooltip="true" prop="time" sortable="custom" :label="$t('log.time')" width="180">
         <template v-slot:default="scope">
           <span>{{ scope.row.time | timestampFormatDate }}</span>
@@ -96,7 +95,14 @@ export default {
     exportData() {
       console.log('exportting...')
       exportExcel().then(res => {
-
+        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = 'log.xlsx' // 下载的文件名
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       })
     },
 
