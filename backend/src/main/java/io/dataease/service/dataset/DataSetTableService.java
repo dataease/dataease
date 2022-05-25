@@ -581,7 +581,11 @@ public class DataSetTableService {
             } else {
                 // check doris table
                 if (!checkEngineTableIsExists(dataSetTableRequest.getId())) {
-                    throw new RuntimeException(Translator.get("i18n_data_not_sync"));
+                    if(dataSetTableRequest.isPreviewForTask()){
+                        return map;
+                    }else {
+                        throw new RuntimeException(Translator.get("i18n_data_not_sync"));
+                    }
                 }
                 Datasource ds = engineService.getDeEngine();
                 JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);

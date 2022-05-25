@@ -6,6 +6,7 @@ import io.dataease.plugins.common.dto.datasource.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -38,4 +39,5 @@ public class DataSetTableRequest extends DatasetTable {
     private List<ExcelSheetData> sheets;
     @ApiModelProperty("是否合并sheet")
     private boolean mergeSheet = false;
+    private boolean previewForTask = false;
 }
