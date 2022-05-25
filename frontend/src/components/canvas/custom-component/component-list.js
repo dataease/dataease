@@ -226,6 +226,28 @@ export const otherList = [
   }
 ]
 
+export const USER_VIEW = {
+  id: '10005',
+  component: 'user-view',
+  label: '用户视图',
+  propValue: '',
+  icon: 'juxing',
+  type: 'view',
+  mobileStyle: BASE_MOBILE_STYLE,
+  hyperlinks: HYPERLINKS,
+  style: {
+    width: 300,
+    height: 200
+  },
+  x: 1,
+  y: 108,
+  sizex: 12,
+  sizey: 6,
+  auxiliaryMatrix: true,
+  miniSizex: 1,
+  miniSizey: 1
+}
+
 // 编辑器左侧组件列表
 const list = [
   {
@@ -337,27 +359,7 @@ const list = [
     miniSizex: 1,
     miniSizey: 1
   },
-  {
-    id: '10005',
-    component: 'user-view',
-    label: '用户视图',
-    propValue: '',
-    icon: 'juxing',
-    type: 'view',
-    mobileStyle: BASE_MOBILE_STYLE,
-    hyperlinks: HYPERLINKS,
-    style: {
-      width: 300,
-      height: 200
-    },
-    x: 1,
-    y: 108,
-    sizex: 12,
-    sizey: 6,
-    auxiliaryMatrix: true,
-    miniSizex: 1,
-    miniSizey: 1
-  },
+  USER_VIEW,
   {
     id: '10006',
     component: 'de-tabs',

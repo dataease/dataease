@@ -329,13 +329,13 @@ public class PanelGroupService {
 //                result.addAll(viewResult);
 //            }
             result = TreeUtils.mergeTree(result, "panel_list");
-//            if (AuthUtils.getUser().getIsAdmin()) {
-//                // 原有视图的目录结构
-//                List<VAuthModelDTO> viewOriginal = extVAuthModelMapper.queryAuthViewsOriginal(viewRequest);
-//                if (CollectionUtils.isNotEmpty(viewOriginal) && viewOriginal.size() > 1) {
-//                    result.addAll(TreeUtils.mergeTree(viewOriginal, "public_chart"));
-//                }
-//            }
+            if (AuthUtils.getUser().getIsAdmin()) {
+                // 原有视图的目录结构
+                List<VAuthModelDTO> viewOriginal = extVAuthModelMapper.queryAuthViewsOriginal(viewRequest);
+                if (CollectionUtils.isNotEmpty(viewOriginal) && viewOriginal.size() > 1) {
+                    result.addAll(TreeUtils.mergeTree(viewOriginal, "public_chart"));
+                }
+            }
 
         }
         return result;
