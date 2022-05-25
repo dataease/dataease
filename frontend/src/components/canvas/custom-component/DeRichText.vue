@@ -9,13 +9,7 @@
       :disabled="!canEdit"
       @onClick="onClick"
     />
-    <!--    <div v-show="!canEdit" style="width: 100%;height: 100%" @dblclick="setEdit" v-html="myValue" />-->
   </div>
-<!--  <div v-else class="rich-main-class">-->
-<!--    <Editor :id="tinymceId"/>-->
-<!--    <div v-html="myValue" />-->
-<!--  </div>-->
-
 </template>
 
 <script>
@@ -101,10 +95,10 @@ export default {
       editShow: true,
       canEdit: false,
       // 初始化配置
-      tinymceId: 'tinymce',
+      tinymceId: 'tinymce-' + this.element.id,
       myValue: this.propValue,
       init: {
-        selector: '#tinymce',
+        selector: '#tinymce-' + this.element.id,
         toolbar_items_size: 'small',
         language_url: '/tinymce/langs/zh_CN.js', // 汉化路径是自定义的，一般放在public或static里面
         language: 'zh_CN',
@@ -138,11 +132,8 @@ export default {
     // 监听内容变化
     active(val) {
       if (!val) {
-        this.editShow = false
         this.canEdit = false
-        this.$nextTick(() => {
-          this.editShow = true
-        })
+        this.reShow()
       }
     },
     // 监听内容变化
@@ -165,7 +156,14 @@ export default {
       if (this.editStatus) {
         this.canEdit = true
         this.element.editing = true
+        this.reShow()
       }
+    },
+    reShow() {
+      this.editShow = false
+      this.$nextTick(() => {
+        this.editShow = true
+      })
     }
   }
 }
