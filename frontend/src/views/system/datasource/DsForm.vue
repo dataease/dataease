@@ -285,7 +285,8 @@ export default {
         maxIdleTime: 30,
         acquireIncrement: 5,
         idleConnectionTestPeriod: 5,
-        connectTimeout: 5
+        connectTimeout: 5,
+      customDriver: ''
       }
 
     },
