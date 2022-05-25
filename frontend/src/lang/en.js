@@ -1248,7 +1248,8 @@ export default {
       pending: 'Pause',
       exec: 'Execute Once',
       confirm_exec: 'Manual trigger execution？',
-      change_success: 'State switch successful'
+      change_success: 'State switch successful',
+      excel_replace_msg: 'Calculation fields, custom datasets, associated datasets, dashboards, etc. may be affected. Confirm the replacement？'
     },
     field_group_type: 'Type',
     location: 'Location',
