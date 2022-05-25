@@ -1366,7 +1366,7 @@ export default {
   }
 
   .tools-window-main {
-    width: 300px;
+    width: 350px;
     background-color: #FFFFFF;
     transition: 1s;
   }

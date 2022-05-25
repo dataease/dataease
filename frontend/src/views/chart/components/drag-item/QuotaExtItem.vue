@@ -359,7 +359,7 @@ export default {
 
   .item-span-style{
     display: inline-block;
-    width: 50px;
+    width: 80px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
