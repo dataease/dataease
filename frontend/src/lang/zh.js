@@ -1339,7 +1339,8 @@ export default {
     modify: '修改',
     show_info: '驱动信息',
     file_name: '文件名',
-    version: '版本'
+    version: '版本',
+    please_set_driverClass: '请指定驱动类',
   },
   datasource: {
     auth_method: '认证方式',

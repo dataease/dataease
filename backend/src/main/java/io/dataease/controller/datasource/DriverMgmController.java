@@ -45,7 +45,7 @@ public class DriverMgmController {
             value = "id"
     )
     public void delete(@RequestBody DeDriver deDriver) throws Exception{
-        driverService.delete(deDriver.getId());
+        driverService.delete(deDriver);
     }
 
     @RequiresPermissions("datasource:read")

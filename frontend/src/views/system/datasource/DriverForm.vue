@@ -26,7 +26,7 @@
         <el-form-item :label="$t('commons.name')" prop="name">
           <el-input v-model="driverForm.name" autocomplete="off"/>
         </el-form-item>
-        <el-form-item :label="$t('commons.description')" prop="desc">
+        <el-form-item :label="$t('commons.description')">
           <el-input v-model="driverForm.desc" autocomplete="off"/>
         </el-form-item>
         <el-form-item :label="$t('datasource.type')" prop="type">
@@ -62,7 +62,7 @@
 <!--          </el-select>-->
 <!--        </el-form-item>-->
 
-        <el-form-item :label="$t('driver.driver')" >
+        <el-form-item :label="$t('driver.driver')" prop="driverClass">
           <el-input v-model="driverForm.driverClass" autocomplete="off"/>
         </el-form-item>
 
@@ -90,7 +90,7 @@
       </el-upload>
     <fu-table :data="driverFiles">
       <el-table-column prop="fileName" :label="$t('driver.file_name')"/>
-      <el-table-column prop="version" :label="$t('driver.version')"/>
+<!--      <el-table-column prop="version" :label="$t('driver.version')"/>-->
       <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix/>
     </fu-table>
 
@@ -151,7 +151,8 @@ export default {
           {min: 2, max: 50, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
         desc: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
           {min: 2, max: 200, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
-        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur'}]
+        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur'}],
+        driverClass: [{required: true, message: i18n.t('driver.please_set_driverClass'), trigger: 'blur'}]
       },
       canEdit: false,
       driverFiles: [],
@@ -231,9 +232,14 @@ export default {
       this.disabled = this.params && this.params.id && this.params.showModel && this.params.showModel === 'show' && !this.canEdit
     },
     save(){
-      updateDriver(this.driverForm).then(res => {
-        this.$success(i18n.t('commons.success'))
-        this.canEdit = false
+      this.$refs.driverForm.validate(valid => {
+          if (!valid) {
+            return false
+          }
+        updateDriver(this.driverForm).then(res => {
+          this.$success(i18n.t('commons.success'))
+          this.canEdit = false
+        })
       })
     },
     reset() {

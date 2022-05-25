@@ -137,7 +137,7 @@ export default {
           acquireIncrement: 5,
           idleConnectionTestPeriod: 5,
           connectTimeout: 5,
-          customDriver: ''
+          customDriver: 'default'
         },
         apiConfiguration: []
       },
@@ -286,7 +286,7 @@ export default {
         acquireIncrement: 5,
         idleConnectionTestPeriod: 5,
         connectTimeout: 5,
-      customDriver: ''
+        customDriver: 'default'
       }
 
     },
@@ -525,7 +525,7 @@ export default {
         if (this.dsTypes[i].type === this.form.type) {
           if(this.form.type !== 'api' && !init){
             this.form.configuration.extraParams = this.dsTypes[i].extraParams
-            this.form.configuration.customDriver = ''
+            this.form.configuration.customDriver = 'default'
           }
           this.datasourceType = this.dsTypes[i]
           if(this.datasourceType.isJdbc){

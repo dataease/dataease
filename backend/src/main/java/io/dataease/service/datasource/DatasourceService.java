@@ -406,6 +406,12 @@ public class DatasourceService {
         return ApiProvider.checkApiDefinition(apiDefinition, response);
     }
 
+    public List<Datasource> listByType(String type){
+        DatasourceExample example = new DatasourceExample();
+        example.createCriteria().andTypeEqualTo(type);
+        return datasourceMapper.selectByExampleWithBLOBs(example);
+    }
+
     private void checkAndUpdateDatasourceStatus(Datasource datasource){
         try {
             Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());

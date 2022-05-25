@@ -449,6 +449,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
             driverClassName = defaultDriver;
             jdbcClassLoader = extendedJdbcClassLoader;
         } else {
+            if(deDriver == null){
+                deDriver = deDriverMapper.selectByPrimaryKey(customDriver);
+            }
             driverClassName = deDriver.getDriverClass();
             jdbcClassLoader = getCustomJdbcClassLoader(deDriver);
         }

@@ -111,7 +111,7 @@
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="driverForm.name"/>
           </el-form-item>
-          <el-form-item :label="$t('commons.description')" prop="desc">
+          <el-form-item :label="$t('commons.description')">
             <el-input v-model="driverForm.desc"/>
           </el-form-item>
           <el-form-item :label="$t('datasource.type')" prop="type">
@@ -123,7 +123,7 @@
               filterable
             >
               <el-option
-                v-for="item in dsTypes"
+                v-for="item in dsTypesForDriver"
                 :key="item.type"
                 :label="item.name"
                 :value="item.type"
@@ -156,6 +156,7 @@ import {
   delDriver,
   listDriverByType
 } from '@/api/system/datasource'
+import {ApplicationContext} from "@/utils/ApplicationContext";
 
 export default {
   name: 'DsTree',
@@ -170,6 +171,7 @@ export default {
       expandedArray: [],
       tData: [],
       dsTypes: [],
+      dsTypesForDriver: [],
       showSearchInput: false,
       key: '',
       showView: 'Datasource',
@@ -242,6 +244,11 @@ export default {
     datasourceTypes() {
       listDatasourceType().then(res => {
         this.dsTypes = res.data
+          this.dsTypes.forEach(item => {
+            if(item.isJdbc){
+              this.dsTypesForDriver.push(item)
+            }
+          })
       })
     },
     refreshType(datasource) {

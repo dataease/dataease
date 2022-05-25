@@ -1337,7 +1337,8 @@ export default {
     modify: '修改',
     show_info: '驅動信息',
     file_name: '文件名',
-    version: '版本'
+    version: '版本',
+    please_set_driverClass: '請指定驅動類'
   },
   datasource: {
     auth_method: '認證方式',

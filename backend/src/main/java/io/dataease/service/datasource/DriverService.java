@@ -1,14 +1,20 @@
 package io.dataease.service.datasource;
 
+import com.google.gson.Gson;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.DeFileUtils;
 import io.dataease.dto.DriverDTO;
+import io.dataease.dto.datasource.SqlServerConfiguration;
+import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.domain.DeDriver;
 import io.dataease.plugins.common.base.domain.DeDriverDetails;
 import io.dataease.plugins.common.base.domain.DeDriverDetailsExample;
 import io.dataease.plugins.common.base.mapper.DeDriverDetailsMapper;
 import io.dataease.plugins.common.base.mapper.DeDriverMapper;
+import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.provider.ExtendedJdbcClassLoader;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,13 +61,18 @@ public class DriverService {
         return driverDTOS;
     }
 
-    public void delete(String driverId) {
-        deDriverMapper.deleteByPrimaryKey(driverId);
-
+    public void delete(DeDriver deDriver) {
+        for (Datasource datasource : datasourceService.listByType(deDriver.getType())) {
+            JdbcConfiguration configuration = new Gson().fromJson(datasource.getConfiguration(), JdbcConfiguration.class);
+            if(StringUtils.isNotEmpty(configuration.getCustomDriver()) && configuration.getCustomDriver().equalsIgnoreCase(deDriver.getId())){
+                throw new RuntimeException(Translator.get("I18N_DRIVER_NOT_DELETE"));
+            }
+        }
+        deDriverMapper.deleteByPrimaryKey(deDriver.getId());
         DeDriverDetailsExample example = new DeDriverDetailsExample();
-        example.createCriteria().andDeDriverIdEqualTo(driverId);
+        example.createCriteria().andDeDriverIdEqualTo(deDriver.getId());
         deDriverDetailsMapper.deleteByExample(example);
-        DeFileUtils.deleteFile(DRIVER_PATH + driverId + "/");
+        DeFileUtils.deleteFile(DRIVER_PATH + deDriver.getId() + "/");
     }
 
     public DeDriver save(DeDriver deDriver) {

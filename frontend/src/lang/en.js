@@ -1337,7 +1337,8 @@ export default {
     modify: 'Modify',
     show_info: 'Driver info',
     file_name: 'File name',
-    version: 'version'
+    version: 'version',
+    please_set_driverClass: 'Please specify driver class'
   },
   datasource: {
     auth_method: 'Auth method',
