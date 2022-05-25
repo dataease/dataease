@@ -75,18 +75,22 @@ export default {
           })
         })
       } else if (params.showType === 'view') {
+        _this.componentData = []
         const componentId = uuid.v1()
         _this.canvasStyleData = deepCopy(DEFAULT_COMMON_CANVAS_STYLE_STRING)
         const userView = {
           ... deepCopy(USER_VIEW),
-          'id': componentId }
+          'id': componentId,
+          'auxiliaryMatrix': false }
         userView.style.width = _this.canvasStyleData.width
         userView.style.height = _this.canvasStyleData.height
         userView['propValue'] = {
           'viewId': params.showId,
           'id': componentId
         }
-        _this.componentData.push(userView)
+        _this.$nextTick(() => {
+          _this.componentData.push(userView)
+        })
       }
     }
   }
