@@ -27,7 +27,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial,FangSong,SimHei,STHeiti,STKaiti,STSong,STFangsong sans-serif;
 }
 
 label {
@@ -815,7 +815,7 @@ div:focus {
 }
 
 .pwd-tips > span {
-    
+
     font-weight: 800;
     color: #F56C6C;
 }
