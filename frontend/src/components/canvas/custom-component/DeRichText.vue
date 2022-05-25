@@ -9,13 +9,7 @@
       :disabled="!canEdit"
       @onClick="onClick"
     />
-    <!--    <div v-show="!canEdit" style="width: 100%;height: 100%" @dblclick="setEdit" v-html="myValue" />-->
   </div>
-<!--  <div v-else class="rich-main-class">-->
-<!--    <Editor :id="tinymceId"/>-->
-<!--    <div v-html="myValue" />-->
-<!--  </div>-->
-
 </template>
 
 <script>
@@ -101,10 +95,10 @@ export default {
       editShow: true,
       canEdit: false,
       // 初始化配置
-      tinymceId: 'tinymce',
+      tinymceId: 'tinymce-' + this.element.id,
       myValue: this.propValue,
       init: {
-        selector: '#tinymce',
+        selector: '#tinymce-' + this.element.id,
         toolbar_items_size: 'small',
         language_url: '/tinymce/langs/zh_CN.js', // 汉化路径是自定义的，一般放在public或static里面
         language: 'zh_CN',
@@ -113,11 +107,12 @@ export default {
         plugins: 'advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak', // 插件
         // 工具栏
         // toolbar: 'undo redo |  fontsizeselect fontselect | bold italic forecolor backcolor underline strikethrough | alignleft aligncenter alignright | lists image media table link | bullist numlist ',
-        toolbar: 'undo redo |fontsizeselect forecolor backcolor bold italic underline strikethrough link | ' +
+        toolbar: 'undo redo |formatselect fontselect fontsizeselect forecolor backcolor bold italic underline strikethrough link | ' +
             'alignleft aligncenter alignright | bullist numlist |' +
             ' blockquote subscript superscript removeformat | table image media | fullscreen ' +
             '| bdmap indent2em lineheight formatpainter axupimgs',
         toolbar_location: '/',
+        font_formats: '微软雅黑=Microsoft YaHei;宋体=SimSun;黑体=SimHei;仿宋=FangSong;华文黑体=STHeiti;华文楷体=STKaiti;华文宋体=STSong;华文仿宋=STFangsong;Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings',
         fontsize_formats: '12px 14px 16px 18px 20px 22px 24px 28px 32px 36px 48px 56px 72px', // 字体大小
         menubar: false,
         placeholder: '双击输入文字',
@@ -138,11 +133,8 @@ export default {
     // 监听内容变化
     active(val) {
       if (!val) {
-        this.editShow = false
         this.canEdit = false
-        this.$nextTick(() => {
-          this.editShow = true
-        })
+        this.reShow()
       }
     },
     // 监听内容变化
@@ -165,7 +157,14 @@ export default {
       if (this.editStatus) {
         this.canEdit = true
         this.element.editing = true
+        this.reShow()
       }
+    },
+    reShow() {
+      this.editShow = false
+      this.$nextTick(() => {
+        this.editShow = true
+      })
     }
   }
 }

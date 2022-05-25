@@ -40,7 +40,7 @@
     </el-row>
     <el-row class="view-panel-row">
       <el-tabs :stretch="true" class="tab-header">
-        <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 300px">
+        <el-tab-pane :label="$t('chart.chart_data')" class="padding-tab" style="width: 350px">
           <div v-if="view.dataFrom==='template'" class="view-panel-Mask">
             <span style="opacity: 1;">
               <el-button
@@ -56,7 +56,7 @@
             </span>
           </div>
           <el-row class="view-panel">
-            <el-col class="theme-border-class" :span="12" style="border-right: 1px solid #E6E6E6;">
+            <el-col class="theme-border-class" :span="11" style="border-right: 1px solid #E6E6E6;">
               <div style="display: flex;align-items: center;justify-content: center;padding: 6px;">
                 <el-input
                   v-model="searchField"
@@ -145,7 +145,7 @@
             </el-col>
 
             <el-col
-              :span="12"
+              :span="13"
               style="height: 100%;border-right: 1px solid #E6E6E6;"
               class="theme-border-class"
             >
@@ -650,7 +650,7 @@
             </el-col>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 300px">
+        <el-tab-pane :label="$t('chart.chart_style')" class="padding-tab" style="width: 350px">
           <chart-style
             v-if="chartProperties || view.isPlugin"
             :param="param"
@@ -675,7 +675,7 @@
             @onChangeBackgroundForm="onChangeBackgroundForm"
           />
         </el-tab-pane>
-        <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 300px;">
+        <el-tab-pane :label="$t('chart.senior')" class="padding-tab" style="width: 350px;">
           <el-row class="view-panel">
             <div
               v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge')) || view.type === 'text'"
@@ -2523,7 +2523,7 @@ export default {
   position:absolute;
   top:0px;
   left: 0px;
-  width: 300px;
+  width: 350px;
   z-index: 2;
   cursor:not-allowed;
   display: flex;
@@ -2848,7 +2848,7 @@ span {
 }
 
 ::v-deep .item-axis {
-  width: 128px !important;
+  width: 168px !important;
 }
 
 ::v-deep .el-slider__input {
