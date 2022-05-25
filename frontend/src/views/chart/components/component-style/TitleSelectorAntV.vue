@@ -22,7 +22,7 @@
             </el-select>
           </el-form-item>
            <el-form-item v-show="showProperty('color')" :label="$t('chart.text_color')" class="form-item">
-            <el-color-picker v-model="titleForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeTitleStyle('fontSize')" />
+            <el-color-picker v-model="titleForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeTitleStyle('color')" />
           </el-form-item>
            <el-form-item v-show="showProperty('hPosition')" :label="$t('chart.text_h_position')" class="form-item">
             <el-radio-group v-model="titleForm.hPosition" size="mini" @change="changeTitleStyle('hPosition')">
