@@ -27,9 +27,12 @@ import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import { findOne } from '@/api/panel/panel'
-import { panelDataPrepare } from '@/components/canvas/utils/utils'
+import { deepCopy, panelDataPrepare } from '@/components/canvas/utils/utils'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import MultiplexingView from '@/views/panel/ViewSelect/multiplexingView'
+import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
+import { USER_VIEW } from '@/components/canvas/custom-component/component-list'
+import { uuid } from 'vue-uuid'
 
 export default {
   name: 'Multiplexing',
@@ -61,7 +64,7 @@ export default {
   methods: {
     showDetails(params) {
       const _this = this
-      _this.selectedPanel = params.showId
+      _this.selectedPanel = params
       if (params.showType === 'panel') {
         this.panelLoading = true
         findOne(params.showId).then(response => {
@@ -71,6 +74,19 @@ export default {
             _this.canvasStyleData = rsp.componentStyle
           })
         })
+      } else if (params.showType === 'view') {
+        const componentId = uuid.v1()
+        _this.canvasStyleData = deepCopy(DEFAULT_COMMON_CANVAS_STYLE_STRING)
+        const userView = {
+          ... deepCopy(USER_VIEW),
+          'id': componentId }
+        userView.style.width = _this.canvasStyleData.width
+        userView.style.height = _this.canvasStyleData.height
+        userView['propValue'] = {
+          'viewId': params.showId,
+          'id': componentId
+        }
+        _this.componentData.push(userView)
       }
     }
   }
