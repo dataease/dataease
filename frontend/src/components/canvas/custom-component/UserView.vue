@@ -233,7 +233,7 @@ export default {
       }
     },
     editBarViewShowFlag() {
-      return (this.active && this.inTab && !this.mobileLayoutStatus) || this.showPosition === 'multiplexing'
+      return (this.active && this.inTab && !this.mobileLayoutStatus) || this.showPosition.includes('multiplexing')
     },
     charViewShowFlag() {
       return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.chart.type !== 'label' && this.renderComponent() === 'echarts'
