@@ -55,7 +55,8 @@ public class SysLogConstants {
         DEPT(7, "SOURCE_TYPE_DEPT"),
         ROLE(8, "SOURCE_TYPE_ROLE"),
         DRIVER(9, "SOURCE_TYPE_DRIVER"),
-        DRIVER_FILE(10, "SOURCE_TYPE_DRIVER_FILE");
+        DRIVER_FILE(10, "SOURCE_TYPE_DRIVER_FILE"),
+        MENU(11, "SOURCE_TYPE_MENU");
         private Integer value;
         private String name;
 
