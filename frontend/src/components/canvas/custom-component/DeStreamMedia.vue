@@ -11,21 +11,22 @@
     </div>
     <div v-if="element.streamMediaLinks.videoType == 'hls'">
       <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
-        <video id="myPlayerHls" class="video-js vjs-default-skin" controls preload="auto" width="500px" />
-      </div>
-      <div v-if="element.streamMediaLinks.videoType == 'rtmp'">
-        <video
-          id="myVideo1"
-          :loop="pOption.loop"
-          controls
-          class="vjs-default-skin vjs-big-play-centered vjs-16-9 video-js"
-          preload="auto"
-        />
-      </div>
-      <div v-if="element.streamMediaLinks.videoType == 'webrtc'">
-        <video id="remote-video" />
+        <video id="myPlayerHls" ref="myPlayerHls" :destroyOnClose="true" class="video-js vjs-default-skin" controls preload="auto" width="500px">
+          <!-- <source src="http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8" type="application/x-mpegURL" /> -->
+        </video>
       </div>
     </div>
+    <div v-if="element.streamMediaLinks.videoType == 'rtmp'">
+      <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
+        <video id="myPlayerRtmp" ref="myPlayerRtmp" :destroyOnClose="true" class="vjs-default-skin vjs-big-play-centered vjs-16-9 video-js" controls preload="auto" width="500px">
+          <!-- <source src="http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8" type="application/x-mpegURL" /> -->
+        </video>
+      </div>
+    </div>
+    <div v-if="element.streamMediaLinks.videoType == 'webrtc'">
+      <video id="remote-video" />
+    </div>
+
   </el-row>
 </template>
 <script>
@@ -73,7 +74,7 @@ export default {
       // hls
       myPlayerHls: null,
       // rtmp
-      myPlayer: null,
+      myPlayerRtmp: null,
       // webrtc
       tt: null,
       heartCheck: null,
@@ -111,13 +112,14 @@ export default {
       deep: true
     }
   },
-  created() {},
+  created() {
+  },
   mounted() {
     if (this.element.streamMediaLinks.videoType === 'flv') {
       this.initOption()
       bus.$on('streamMediaLinksChange-' + this.element.id, () => {
-        this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType],
-        this.flvPlayer = null,
+        this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+        this.flvPlayer = null
         this.videoShow = false
         this.$nextTick(() => {
           this.videoShow = true
@@ -145,7 +147,7 @@ export default {
       )
     }
     if (this.element.streamMediaLinks.videoType === 'rtmp') {
-      this.myPlayer = videojs('myVideo1', {
+      this.myPlayerRtmp = videojs('myPlayerRtmp', {
         sources: [{
           type: 'rtmp/flv',
           src: this.pOption.url.substring(7)
@@ -163,6 +165,18 @@ export default {
     }
     if (this.element.streamMediaLinks.videoType === 'webrtc') {
       this.initOptionWeb()
+    }
+  },
+  beforeDestroy() {
+    if (this.myPlayerHls) {
+      const myPlayerHls = this.$refs.myPlayerHls // 不能用document 获取节点
+      videojs(myPlayerHls).dispose() // 销毁video实例，避免出现节点不存在 但是flash一直在执行，报 this.el.......is not function
+      this.myPlayerHls.dispose()
+    }
+    if (this.myPlayerRtmp) {
+      const myPlayerRtmp = this.$refs.myPlayerRtmp // 不能用document 获取节点
+      videojs(myPlayerRtmp).dispose() // 销毁video实例，避免出现节点不存在 但是flash一直在执行，报 this.el.......is not function
+      this.myPlayerRtmp.dispose()
     }
   },
   methods: {
@@ -211,11 +225,6 @@ export default {
         })
       }
     },
-    beforeDestroy() {
-      if (this.playerHlv) {
-        this.playerHlv.dispose()
-      }
-    },
     initOptionWeb() {
       const that = this
       if (!this.pOption.url) {
@@ -228,10 +237,10 @@ export default {
       this.createWebSocket()
 
       this.remoteVideo = document.querySelector('#remote-video')
-      this.remoteVideo.onloadeddata = () => {
-        console.log('播放对方视频')
-        this.remoteVideo.play()
-      }
+      // this.remoteVideo.onloadeddata = () => {
+      //   console.log('播放对方视频')
+      //   this.remoteVideo.play()
+      // }
       const PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window
         .webkitRTCPeerConnection
 
