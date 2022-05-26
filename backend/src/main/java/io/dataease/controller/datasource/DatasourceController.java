@@ -88,7 +88,7 @@ public class DatasourceController {
     }
 
     @RequiresPermissions("datasource:read")
-    @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_MANAGE)
+    @DePermission(type = DePermissionType.DATASOURCE, level = ResourceAuthLevel.DATASOURCE_LEVEL_MANAGE, value = "id")
     @ApiOperation("删除数据源")
     @PostMapping("/delete")
     @DeLog(
