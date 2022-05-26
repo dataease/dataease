@@ -26,10 +26,10 @@ export const valueValid = condition => {
 }
 
 export const formatCondition = obj => {
-  const { component, value, operator } = obj
+  const { component, value, operator, isTree } = obj
   const fieldId = component.options.attrs.fieldId
   const viewIds = component.options.attrs.viewIds
-  const condition = new Condition(component.id, fieldId, operator, value, viewIds)
+  const condition = new Condition(component.id, fieldId, operator, value, viewIds, isTree)
   return condition
 }
 
