@@ -109,7 +109,7 @@ public class XAuthServer {
             return SysLogConstants.SOURCE_TYPE.DATASOURCE;
         }
         if (StringUtils.equals("menu", sourceType)) {
-            return SysLogConstants.SOURCE_TYPE.DATASOURCE;
+            return SysLogConstants.SOURCE_TYPE.MENU;
         }
         if (StringUtils.equals("dataset", sourceType)) {
             return SysLogConstants.SOURCE_TYPE.DATASET;
