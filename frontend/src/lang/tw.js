@@ -2065,6 +2065,7 @@ export default {
     user: '操作用戶',
     time: '操作時間',
     export: '導出',
+    confirm: '確定導出嗎？',
     search_by_key: '搜索詳情'
   },
   plugin_style: {

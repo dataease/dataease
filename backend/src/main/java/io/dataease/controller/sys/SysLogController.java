@@ -17,7 +17,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -51,7 +50,8 @@ public class SysLogController {
 
     @ApiOperation("导出操作日志")
     @PostMapping("/export")
-    public void export(HttpServletResponse response) throws Exception{
-        logService.exportExcel(response);
+    @ApiImplicitParam(name = "request", value = "查询条件", required = true)
+    public void export(@RequestBody BaseGridRequest request) throws Exception{
+        logService.exportExcel(request);
     }
 }

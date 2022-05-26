@@ -2054,6 +2054,7 @@ export default {
     user: 'User',
     time: 'Time',
     export: 'Export',
+    confirm: 'Sure Export ?',
     search_by_key: 'Search by key'
   },
   plugin_style: {
